@@ -1,10 +1,12 @@
-import { useState, useEffect, Fragment, use } from "react";
+import { useState, useEffect, Fragment, use, Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { Switch, Route } from "react-router-dom";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase } from "@fortawesome/free-solid-svg-icons";
-import { Stack, Typography, Link } from "@mui/material";
+import { Box, Stack, Typography, Link } from "@mui/material";
+import { SubAppSkeleton } from "shell/components/SubAppSkeleton";
 import { Database } from "@zesty-io/material";
 
 import { fetchModels } from "shell/store/models";
@@ -37,7 +39,24 @@ import { useParams } from "../../../../shell/hooks/useParams";
 
 // Makes sure that other apps using legacy theme does not get affected with the palette
 
+// Local Suspense boundary so lazy-loading the "content" namespace shows a
+// fallback in the sub-app area only, instead of blanking the whole shell.
 export default function ContentEditor() {
+  return (
+    <Suspense fallback={<SubAppSkeleton />}>
+      <ContentEditorContent />
+    </Suspense>
+  );
+}
+
+function ContentEditorContent() {
+  // Requesting the namespaces here triggers their lazy load and suspends this
+  // subtree until ready; child components use bare useTranslation() with
+  // qualified keys once they're in the store.
+  // "schema" is hoisted here so FieldTooltipBody (deep in the field editor)
+  // always finds it loaded — preventing a Suspense throw inside the MUI Tooltip
+  // portal that would cascade into an infinite setState loop.
+  const { t } = useTranslation(["content", "schema", "seo"]);
   const navContent = useSelector((state) => state.navContent);
   const dispatch = useDispatch();
   const [params] = useParams();
@@ -77,7 +96,7 @@ export default function ContentEditor() {
           sx={{ width: "100%", alignItems: "center", justifyContent: "center" }}
         >
           <Typography variant="h1" color="text.primary">
-            Please create a new content model
+            {t("content.emptyCreateModel")}
           </Typography>
           <Link
             underline="none"
@@ -92,7 +111,7 @@ export default function ContentEditor() {
             }}
           >
             <Database />
-            &nbsp; Schema
+            &nbsp; {t("shell.navSchema")}
           </Link>
         </Stack>
       ) : (

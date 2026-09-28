@@ -28,8 +28,10 @@ import { usePermission } from "../../../../../../../../shell/hooks/use-permissio
 import { CascadingMenuItem } from "../../../../../../../../shell/components/CascadingMenuItem";
 import { APIEndpoints } from "../../../../components/APIEndpoints";
 import { RenameItemDialog } from "./RenameItemDialog";
+import { useTranslation } from "react-i18next";
 
 export const MoreMenu = () => {
+  const { t } = useTranslation();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -63,7 +65,7 @@ export const MoreMenu = () => {
   return (
     <>
       <Tooltip
-        title="More Options"
+        title={t("content.itemEditMoreOptions")}
         enterDelay={1000}
         enterNextDelay={1000}
         placement="bottom-start"
@@ -108,7 +110,7 @@ export const MoreMenu = () => {
             <ListItemIcon>
               <DriveFileRenameOutlineRounded />
             </ListItemIcon>
-            Rename Variant
+            {t("content.itemEditRenameVariant")}
           </MenuItem>
         )}
         <MenuItem
@@ -120,13 +122,15 @@ export const MoreMenu = () => {
           <ListItemIcon>
             <ContentCopyRounded />
           </ListItemIcon>
-          Duplicate {type === "block" ? "Variant" : "Item"}
+          {type === "block"
+            ? t("content.itemEditDuplicateVariant")
+            : t("content.itemEditDuplicateItem")}
         </MenuItem>
         <MenuItem onClick={() => handleCopyClick(itemZUID)}>
           <ListItemIcon>
             {isCopied ? <CheckRounded /> : <WidgetsRounded />}
           </ListItemIcon>
-          Copy ZUID
+          {t("content.itemListCopyZuid")}
         </MenuItem>
         <CascadingMenuItem
           MenuItemComponent={
@@ -134,7 +138,7 @@ export const MoreMenu = () => {
               <ListItemIcon>
                 <BoltRounded />
               </ListItemIcon>
-              View Quick Access API
+              {t("content.itemListViewQuickAccessApi")}
               <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
             </>
           }
@@ -148,7 +152,7 @@ export const MoreMenu = () => {
                 <ListItemIcon>
                   <DataObjectRounded />
                 </ListItemIcon>
-                View Site Generators API
+                {t("content.itemListViewSiteGeneratorsApi")}
                 <KeyboardArrowRightRounded color="action" sx={{ ml: "auto" }} />
               </>
             }
@@ -164,7 +168,7 @@ export const MoreMenu = () => {
           <ListItemIcon>
             <Database />
           </ListItemIcon>
-          Edit Model
+          {t("content.itemListEditModel")}
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -174,7 +178,7 @@ export const MoreMenu = () => {
           <ListItemIcon>
             <CodeRounded />
           </ListItemIcon>
-          Edit Template
+          {t("content.itemListEditTemplate")}
         </MenuItem>
         {canDelete && (
           <MenuItem
@@ -187,7 +191,9 @@ export const MoreMenu = () => {
             <ListItemIcon>
               <DeleteRounded />
             </ListItemIcon>
-            Delete {type === "block" ? "Variant" : "Item"}
+            {type === "block"
+              ? t("content.itemEditDeleteVariant")
+              : t("content.itemEditDeleteItem")}
           </MenuItem>
         )}
       </Menu>

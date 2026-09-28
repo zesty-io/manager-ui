@@ -1,4 +1,5 @@
 import { useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
@@ -20,6 +21,7 @@ const filterSx = {
 
 export function LeadExporter() {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   return (
     <Box
@@ -47,7 +49,7 @@ export function LeadExporter() {
       <Box sx={{ ...filterSx, ml: "auto" }}>
         <TextField
           name="text-filter"
-          placeholder="Search across all of your leads"
+          placeholder={t("leads.searchAcrossAllOfYourLeads")}
           type="search"
           variant="outlined"
           fullWidth

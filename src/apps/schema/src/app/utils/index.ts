@@ -4,6 +4,7 @@ import { Validation } from "../components/AddFieldModal/FieldFormInput";
 import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import { FileTable, Block } from "@zesty-io/material";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
+import i18n from "shell/i18n";
 
 export const modelIconMap = {
   templateset: DescriptionRoundedIcon,
@@ -13,10 +14,10 @@ export const modelIconMap = {
 };
 
 export const modelNameMap = {
-  templateset: "Single Page",
-  dataset: "Dataset",
-  pageset: "Multi Page",
-  block: "Block",
+  templateset: "schema.modelNameSinglePage",
+  dataset: "schema.modelNameDataset",
+  pageset: "schema.modelNameMultiPage",
+  block: "schema.modelNameBlock",
 };
 
 export const RESERVED_FIELD_NAMES = ["og_image"];
@@ -78,7 +79,10 @@ export const getErrorMessage = ({
         outerValue.forEach((innerValue, innerIndex) => {
           errors[outerIndex][innerIndex] =
             innerValue.length > maxLength
-              ? `Shorten to less than ${maxLength} characters (${innerValue.length}/${maxLength})`
+              ? i18n.t("schema.errorShortenToLess", {
+                  maxLength,
+                  currentLength: innerValue.length,
+                })
               : "";
         });
       });
@@ -92,7 +96,7 @@ export const getErrorMessage = ({
         if (!seenKeys.includes(key)) {
           seenKeys.push(key);
         } else {
-          errors[index][0] = "An option with this value already exists";
+          errors[index][0] = i18n.t("schema.errorOptionValueExists");
         }
       });
     }
@@ -100,7 +104,7 @@ export const getErrorMessage = ({
     return errors;
   } else {
     if (validate.includes("required") && isEmpty(value)) {
-      return `${label} is required`;
+      return i18n.t("schema.errorFieldIsRequired", { label });
     }
 
     if (
@@ -108,7 +112,7 @@ export const getErrorMessage = ({
       fieldNames?.length &&
       fieldNames.includes(value as string)
     ) {
-      return "A field with this API/Parsley Reference already exists";
+      return i18n.t("schema.errorFieldReferenceExists");
     }
 
     if (
@@ -116,13 +120,14 @@ export const getErrorMessage = ({
       maxLength &&
       (value as string)?.length > maxLength
     ) {
-      return `Shorten to less than ${maxLength} characters (${
-        (value as string)?.length
-      }/${maxLength})`;
+      return i18n.t("schema.errorShortenToLess", {
+        maxLength,
+        currentLength: value.length,
+      });
     }
     // check for reserved field names
     if (RESERVED_FIELD_NAMES.includes(value)) {
-      return `"${value}" is a System Reserved Field Name`;
+      return i18n.t("schema.errorSystemReservedFieldName", { value });
     }
 
     return "";

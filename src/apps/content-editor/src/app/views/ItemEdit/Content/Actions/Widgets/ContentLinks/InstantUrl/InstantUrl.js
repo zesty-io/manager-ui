@@ -6,8 +6,10 @@ import Link from "@mui/material/Link";
 import ListItem from "@mui/material/ListItem";
 
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 export function InstantUrl(props) {
+  const { t } = useTranslation();
   const instantApiEnabled = useSelector((state) =>
     state.settings.instance.find(
       (setting) =>
@@ -31,7 +33,7 @@ export function InstantUrl(props) {
             underline="none"
             color="secondary"
             target="_blank"
-            title="Instant API"
+            title={t("content.itemEditInstantApi")}
             href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.item?.meta?.ZUID}.json`}
             sx={{
               color: "info.dark",

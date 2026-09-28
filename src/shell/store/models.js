@@ -1,6 +1,7 @@
 import { formatName } from "utility/formatName";
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
+import i18n from "shell/i18n";
 
 export function models(state = {}, action) {
   switch (action.type) {
@@ -76,7 +77,7 @@ export function fetchModels() {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to fetch models`,
+              message: i18n.t("shell.failedFetchModels"),
             })
           );
           if (res.error) {
@@ -111,7 +112,7 @@ export function fetchModel(modelZUID) {
           dispatch(
             notify({
               kind: "warn",
-              message: `Failed to fetch models`,
+              message: i18n.t("shell.failedFetchModels"),
             })
           );
           if (res.error || res.message) {
@@ -123,7 +124,9 @@ export function fetchModel(modelZUID) {
         dispatch(
           notify({
             kind: "warn",
-            message: `Failed to fetch model: ${err?.message || err || ""}`,
+            message: i18n.t("shell.failedFetchModel", {
+              error: err?.message || err || "",
+            }),
           })
         );
       },
@@ -163,7 +166,7 @@ export function duplicateModel(ZUID) {
       dispatch(
         notify({
           kind: "warn",
-          message: `Missing model: ${ZUID}`,
+          message: i18n.t("shell.missingModel", { ZUID }),
         })
       );
       return;

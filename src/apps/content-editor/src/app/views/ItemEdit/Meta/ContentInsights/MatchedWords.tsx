@@ -7,6 +7,7 @@ import { useParams } from "react-router";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { cleanContent } from "./index";
 import { DYNAMIC_META_FIELD_NAMES } from "../index";
+import { useTranslation } from "react-i18next";
 
 type MatchedWordsProps = {
   uniqueNonCommonWordsArray: string[];
@@ -14,6 +15,7 @@ type MatchedWordsProps = {
 export const MatchedWords = ({
   uniqueNonCommonWordsArray,
 }: MatchedWordsProps) => {
+  const { t } = useTranslation();
   const { itemZUID } = useParams<{
     itemZUID: string;
   }>();
@@ -65,12 +67,12 @@ export const MatchedWords = ({
   return (
     <Box mt={1.5} mb={2}>
       <Typography variant="h6" color="text.secondary" fontWeight={700} mb={1}>
-        Content and Meta Matched Words
+        {t("content.itemEditMetaContentAndMetaMatchedWords")}
       </Typography>
       <Stack direction="row" gap={1} flexWrap="wrap">
         {!contentAndMetaWordMatches?.length && (
           <Typography variant="body2" color="text.secondary">
-            No Matching Words
+            {t("content.itemEditMetaNoMatchingWords")}
           </Typography>
         )}
         {contentAndMetaWordMatches
@@ -86,7 +88,11 @@ export const MatchedWords = ({
           ))}
         {contentAndMetaWordMatches?.length > 10 && (
           <Chip
-            label={`See ${showAll ? "Less" : "More"}`}
+            label={
+              showAll
+                ? t("content.itemEditMetaSeeLess")
+                : t("content.itemEditMetaSeeMore")
+            }
             size="small"
             variant="outlined"
             icon={

@@ -2,6 +2,7 @@ import idb from "utility/idb";
 import { request } from "utility/request";
 import { Sentry } from "utility/sentry";
 import { notify } from "shell/store/notifications";
+import i18n from "shell/i18n";
 
 const INITIAL_STATE = {
   ZUID: "",
@@ -104,7 +105,9 @@ export function fetchRecentItems(userZUID, start) {
       if (res.status === 400) {
         dispatch(
           notify({
-            message: `There was an issue fetching recent items: ${res.error}`,
+            message: i18n.t("shell.failedFetchRecentItems", {
+              error: res.error,
+            }),
             kind: "error",
           })
         );

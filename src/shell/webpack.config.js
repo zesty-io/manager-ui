@@ -12,6 +12,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
 
+const { execSync } = require("child_process");
 const release = require("../../etc/release");
 const CONFIG = require("./app.config");
 const isCoverage = true;
@@ -30,7 +31,7 @@ module.exports = async (env) => {
       managedPaths: [],
     },
     cache:
-      process.env.NODE_ENV === "development"
+      process.env.NODE_ENV === "development" && !process.env.CI
         ? // enables 5 second build times from cache instead of 30 seconds
           {
             type: "filesystem",
@@ -216,6 +217,15 @@ module.exports = async (env) => {
       // Inject app config into bundle based on env
       new webpack.DefinePlugin({
         __CONFIG__: JSON.stringify(CONFIG[process.env.NODE_ENV]),
+        __GIT_HASH__: JSON.stringify(
+          (() => {
+            try {
+              return execSync("git rev-parse --short HEAD").toString().trim();
+            } catch {
+              return "dev";
+            }
+          })()
+        ),
       }),
     ],
     optimization: {

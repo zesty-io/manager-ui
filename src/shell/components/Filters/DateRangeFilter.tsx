@@ -13,6 +13,8 @@ import {
   DateRange,
 } from "@mui/x-date-pickers-pro";
 import { AdapterDateFns } from "@mui/x-date-pickers-pro/AdapterDateFns";
+import { useTranslation } from "react-i18next";
+import { formatLocalized, getDateFnsLocale } from "../../i18n/dates";
 import CloseIcon from "@mui/icons-material/Close";
 import { format, parse, isValid } from "date-fns";
 
@@ -35,9 +37,10 @@ const parseYMDLocal = (s?: string | null) =>
 export const DateRangeFilter: FC<DateRangeFilterProps> = ({
   value,
   onChange,
-  headerTitle = "Select a date range...",
-  inactiveButtonText = "Date range",
+  headerTitle,
+  inactiveButtonText,
 }) => {
+  const { t, i18n } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange<Date>>([
     null,
@@ -75,12 +78,13 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
   }, [value]);
 
   const isFilterActive = Boolean(value?.from && value?.to);
+  const modalTitle = headerTitle ?? t("shell.selectDateRange");
   const buttonText = isFilterActive
-    ? `${format(parseYMDLocal(value.from)!, "MMM d, yyyy")} to ${format(
-        parseYMDLocal(value.to)!,
+    ? `${formatLocalized(
+        parseYMDLocal(value.from)!,
         "MMM d, yyyy"
-      )}`
-    : inactiveButtonText;
+      )} to ${formatLocalized(parseYMDLocal(value.to)!, "MMM d, yyyy")}`
+    : inactiveButtonText ?? t("shell.dateRange");
 
   return (
     <>
@@ -107,7 +111,7 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
                 textTransform="capitalize"
                 fontWeight={600}
               >
-                {headerTitle}
+                {modalTitle}
               </Typography>
               <IconButton size="small" onClick={() => setIsModalOpen(false)}>
                 <CloseIcon fontSize="small" />
@@ -115,7 +119,10 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({
             </Box>
           </DialogTitle>
           <DialogContent sx={{ px: 0, pb: 2.5 }}>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <LocalizationProvider
+              dateAdapter={AdapterDateFns}
+              adapterLocale={getDateFnsLocale(i18n.language)}
+            >
               <DateRangeCalendar
                 value={selectedDateRange}
                 onChange={(newValue, selectionState) => {

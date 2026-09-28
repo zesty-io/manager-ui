@@ -8,6 +8,7 @@ import {
   useCallback,
 } from "react";
 import { connect, useDispatch } from "react-redux";
+import { Trans, useTranslation } from "react-i18next";
 import debounce from "lodash/debounce";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -29,8 +30,14 @@ import SortByAlphaIcon from "@mui/icons-material/SortByAlpha";
 import PersonIcon from "@mui/icons-material/Person";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+import { isValid } from "date-fns";
 
 import { Loader } from "shell/components/legacy/Loader";
+import i18n from "shell/i18n";
+import {
+  formatDistanceToNowLocalized,
+  formatLocalized,
+} from "shell/i18n/dates";
 
 import { searchItems } from "shell/store/content";
 import { notify } from "shell/store/notifications";
@@ -67,7 +74,7 @@ export default forwardRef((props, providedRef) => {
               dispatch(
                 notify({
                   kind: "warn",
-                  message: `Error searching for term: ${term}`,
+                  message: i18n.t("shell.legacySearchError", { term }),
                 })
               );
             }
@@ -195,6 +202,7 @@ const List = connect((state) => {
     models: state.models,
   };
 })((props) => {
+  const { t } = useTranslation();
   const [sortType, setSortType] = useState("default");
   const [filterTerm, setFilterTerm] = useState("");
 
@@ -267,47 +275,47 @@ const List = connect((state) => {
     >
       <li className={styles.Actions}>
         <div className={styles.SortBy}>
-          <p className={styles.Title}>Sort By</p>
+          <p className={styles.Title}>{t("shell.legacySearchSortBy")}</p>
 
           <Button
             variant="contained"
             onClick={() => setSortType("default")}
             startIcon={<SortIcon />}
           >
-            Default
+            {t("shell.legacySearchSortDefault")}
           </Button>
           <Button
             variant="contained"
             onClick={() => setSortType("alpha")}
             startIcon={<SortByAlphaIcon />}
           >
-            Title
+            {t("shell.legacySearchSortTitle")}
           </Button>
           <Button
             variant="contained"
             onClick={() => setSortType("edited")}
             startIcon={<CalendarMonthIcon />}
           >
-            Edited
+            {t("shell.legacySearchSortEdited")}
           </Button>
           <Button
             variant="contained"
             onClick={() => setSortType("created")}
             startIcon={<PersonSearchIcon />}
           >
-            Created
+            {t("shell.legacySearchSortCreated")}
           </Button>
           <Button
             variant="contained"
             onClick={() => setSortType("user")}
             startIcon={<PersonIcon />}
           >
-            User
+            {t("shell.legacySearchSortUser")}
           </Button>
         </div>
 
         <div className={styles.FilterBy}>
-          <p className={styles.Title}>Filter By</p>
+          <p className={styles.Title}>{t("shell.legacySearchFilterBy")}</p>
           <TextField
             onChange={(evt) => setFilterTerm(evt.target.value)}
             size="small"
@@ -320,13 +328,17 @@ const List = connect((state) => {
 
       {props.loading && (
         <li>
-          <Loader label="Searching" />
+          <Loader label={t("shell.legacySearchSearching")} />
         </li>
       )}
 
       {!props.loading && !props.options.length && (
         <li className={styles.headline}>
-          No results found for search term: <strong>{props.term}</strong>
+          <Trans
+            i18nKey="shell.legacySearchNoResultsRich"
+            values={{ term: props.term }}
+            components={{ strong: <strong /> }}
+          />
         </li>
       )}
 
@@ -351,6 +363,7 @@ const List = connect((state) => {
 });
 
 const ListOption = (props) => {
+  const { t } = useTranslation();
   const createdBy = props.users.find(
     (user) => user.ZUID === props.opt?.web?.createdByUserZUID
   );
@@ -364,14 +377,14 @@ const ListOption = (props) => {
     : null;
   const createdOn =
     createdDate && isValid(createdDate)
-      ? format(createdDate, "MMM d, yyyy h:mm a")
+      ? formatLocalized(createdDate, "MMM d, yyyy h:mm a")
       : "";
   const editedDate = props.opt?.meta?.updatedAt
     ? new Date(props.opt.meta.updatedAt)
     : null;
   const editedAgo =
     editedDate && isValid(editedDate)
-      ? formatDistanceToNow(editedDate, { addSuffix: true })
+      ? formatDistanceToNowLocalized(editedDate, { addSuffix: true })
       : "";
 
   let modelIcon;
@@ -413,8 +426,8 @@ const ListOption = (props) => {
             </Fragment>
           ) : (
             <Fragment>
-              <FontAwesomeIcon icon={faExclamationTriangle} /> Item missing meta
-              title
+              <FontAwesomeIcon icon={faExclamationTriangle} />{" "}
+              {t("shell.legacySearchItemMissingMeta")}
             </Fragment>
           )}
         </span>
@@ -438,14 +451,20 @@ const ListOption = (props) => {
       )}
 
       {/* meta */}
-      <p className={styles.caption}>{`Created by ${
-        createdBy
-          ? `${createdBy.firstName} ${createdBy.lastName}`
-          : "Unknown User"
-      } on ${createdOn}`}</p>
-      <p
-        className={styles.caption}
-      >{`Version ${props.opt?.meta?.version} was edited ${editedAgo}`}</p>
+      <p className={styles.caption}>
+        {t("shell.legacySearchCreatedByOn", {
+          name: createdBy
+            ? `${createdBy.firstName} ${createdBy.lastName}`
+            : t("shell.unknownUser"),
+          date: createdOn,
+        })}
+      </p>
+      <p className={styles.caption}>
+        {t("shell.legacySearchVersionEdited", {
+          version: props.opt?.meta?.version,
+          editedAgo,
+        })}
+      </p>
     </li>
   );
 };

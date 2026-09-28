@@ -2,8 +2,10 @@ import { Switch, SwitchProps, Tooltip, Box } from "@mui/material";
 import { useContext } from "react";
 import { styled } from "@mui/material/styles";
 import { DuoModeContext } from "../../../../../../../../shell/contexts/duoModeContext";
+import { useTranslation } from "react-i18next";
 
 export const DuoModeSwitch = () => {
+  const { t } = useTranslation();
   const {
     value: showDuoMode,
     setValue: setShowDuoMode,
@@ -16,7 +18,11 @@ export const DuoModeSwitch = () => {
 
   return (
     <Tooltip
-      title={`Switch ${showDuoMode ? "off" : "on"} DUO Mode`}
+      title={
+        showDuoMode
+          ? t("content.itemEditSwitchOffDuoMode")
+          : t("content.itemEditSwitchOnDuoMode")
+      }
       enterDelay={1000}
       enterNextDelay={1000}
       placement="top-start"

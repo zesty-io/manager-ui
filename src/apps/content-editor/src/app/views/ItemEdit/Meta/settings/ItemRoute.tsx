@@ -20,6 +20,7 @@ import { ContentItemWithDirtyAndPublishing } from "../../../../../../../../shell
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { Error } from "../../../../components/Editor/Field/FieldShell";
 import { hasErrors } from "./util";
+import { useTranslation } from "react-i18next";
 
 const TextFieldWithCursorPosition = withCursorPosition(TextField);
 
@@ -33,6 +34,7 @@ export const ItemRoute = ({
   error,
   onUpdateErrors,
 }: ItemRouteProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { itemZUID, modelZUID } = useParams<{
     itemZUID: string;
@@ -90,7 +92,7 @@ export const ItemRoute = ({
                 setIsUnique(!matches.length);
                 onUpdateErrors("pathPart", {
                   CUSTOM_ERROR: !!matches.length
-                    ? "This URL Path Part is already taken. Please enter a new different URL Path part."
+                    ? t("content.itemEditMetaUrlPathTaken")
                     : "",
                 });
               } else {
@@ -103,7 +105,9 @@ export const ItemRoute = ({
               dispatch(
                 notify({
                   kind: "warn",
-                  message: `API failed to return data ${res ? res.status : ""}`,
+                  message: t("content.itemEditMetaApiFailedWithStatus", {
+                    status: res ? res.status : "",
+                  }),
                 })
               );
             }
@@ -111,7 +115,7 @@ export const ItemRoute = ({
           .finally(() => setIsLoading(false))
       );
     }, 1000),
-    [parent]
+    [parent, t]
   );
 
   const handleInputChange = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -142,10 +146,10 @@ export const ItemRoute = ({
     <Box id="pathPart" data-cy="pathPart">
       <FieldShell
         settings={{
-          label: "URL Path Part",
+          label: t("content.itemEditMetaUrlPathPart"),
           required: true,
         }}
-        customTooltip="Also known as a URL slug, it is the last part of the URL address that serves as a unique identifier of the page. They must be unique within your instance, lowercased, and cannot contain non alphanumeric characters. This helps ensure you create SEO friendly structured and crawlabale URLs."
+        customTooltip={t("content.itemEditMetaUrlPathPartTooltip")}
         withInteractiveTooltip={false}
         errors={error}
       >

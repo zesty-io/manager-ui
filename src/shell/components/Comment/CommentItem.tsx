@@ -1,5 +1,6 @@
 import { theme } from "@zesty-io/material";
 import { useRef, useEffect, useState, useContext } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Stack,
   Typography,
@@ -18,10 +19,11 @@ import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRena
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { isValid } from "date-fns";
 import { useLocation, useParams } from "react-router";
 import { useSelector } from "react-redux";
 
+import { formatDistanceToNowLocalized } from "../../i18n/dates";
 import { useUpdateCommentStatusMutation } from "../../services/accounts";
 import { MD5 } from "../../../utility/md5";
 import { InputField } from "./InputField";
@@ -69,6 +71,7 @@ export const CommentItem = ({
   onParentCommentDeleted,
   commentCount,
 }: CommentItemProps) => {
+  const { t } = useTranslation();
   const { resourceZUID } = useParams<PathParams>();
   const location = useLocation();
   const [_, __, commentZUIDtoEdit, setCommentZUIDtoEdit] =
@@ -94,7 +97,7 @@ export const CommentItem = ({
   const createdDate = createdOn ? new Date(createdOn) : null;
   const createdAgo =
     createdDate && isValid(createdDate)
-      ? formatDistanceToNow(createdDate, { addSuffix: true })
+      ? formatDistanceToNowLocalized(createdDate, { addSuffix: true })
       : "";
 
   useEffect(() => {
@@ -200,7 +203,7 @@ export const CommentItem = ({
             <Box>
               {withResolveButton && (
                 <Tooltip
-                  title="Mark as Resolved"
+                  title={t("shell.markAsResolved")}
                   placement="top-start"
                   disableInteractive
                 >
@@ -216,7 +219,7 @@ export const CommentItem = ({
                 </Tooltip>
               )}
               <Tooltip
-                title="More Options"
+                title={t("shell.moreOptions")}
                 placement="top-start"
                 disableInteractive
               >
@@ -288,14 +291,14 @@ export const CommentItem = ({
                 <ListItemIcon>
                   <DriveFileRenameOutlineRoundedIcon />
                 </ListItemIcon>
-                <ListItemText>Edit</ListItemText>
+                <ListItemText>{t("common.edit")}</ListItemText>
               </MenuItem>
             )}
             <MenuItem data-cy="CopyCommentLinkButton" onClick={handleCopyClick}>
               <ListItemIcon>
                 {isCopied ? <CheckRoundedIcon /> : <LinkRoundedIcon />}
               </ListItemIcon>
-              <ListItemText>Copy Link</ListItemText>
+              <ListItemText>{t("shell.copyLink")}</ListItemText>
             </MenuItem>
             {withReopenButton && (
               <MenuItem
@@ -307,7 +310,7 @@ export const CommentItem = ({
                 <ListItemIcon>
                   <RestartAltRoundedIcon />
                 </ListItemIcon>
-                <ListItemText>Re-open</ListItemText>
+                <ListItemText>{t("shell.reopen")}</ListItemText>
               </MenuItem>
             )}
             {isLoggedInUserCommentCreator && (
@@ -321,7 +324,7 @@ export const CommentItem = ({
                 <ListItemIcon>
                   <DeleteRoundedIcon />
                 </ListItemIcon>
-                <ListItemText>Delete</ListItemText>
+                <ListItemText>{t("common.delete")}</ListItemText>
               </MenuItem>
             )}
           </Menu>

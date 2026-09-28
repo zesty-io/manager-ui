@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   Modal,
@@ -11,6 +12,7 @@ import api from "../../api";
 
 import styles from "./Meta.less";
 export function Meta(props) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState({
     meta: {},
@@ -36,13 +38,16 @@ export function Meta(props) {
     <Modal open={props.open} className={styles.Meta}>
       <ModalHeader className={styles.ModalHeader}>
         <h1 className={styles.title}>{props.route}</h1>
-        <p>Viewing meta data for the item at this route</p>
+        <p>{t("activePreview.viewingMetaData")}</p>
         {/* <Url href={{CONFIG}/content/${props.item.meta.contentModelZUID}/${props.item.meta.ZUID}}>Edit Item</Url> */}
       </ModalHeader>
       <ModalContent>
-        <WithLoader condition={!loading} message="Loading related item">
+        <WithLoader
+          condition={!loading}
+          message={t("activePreview.loadingRelatedItem")}
+        >
           <ul className={styles.Item}>
-            <h2>Meta</h2>
+            <h2>{t("activePreview.meta")}</h2>
             <ul>
               {Object.keys(item.meta).map((prop, index) => (
                 <li key={index}>
@@ -50,7 +55,7 @@ export function Meta(props) {
                 </li>
               ))}
             </ul>
-            <h2>Web</h2>
+            <h2>{t("activePreview.web")}</h2>
             <ul>
               {Object.keys(item.web).map((prop, index) => (
                 <li key={index}>

@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import TopReq from "./TopReq";
+import { useTranslation } from "react-i18next";
 
 import { WithLoader } from "shell/components/legacy/WithLoader";
 
@@ -53,6 +54,7 @@ const floatWithCommas = (x) => {
 };
 
 export default function Metrics() {
+  const { t } = useTranslation();
   const [timePeriod, setTimePeriod] = useState(30);
   const { start, end } = getDates(timePeriod);
   const dates = useMemo(() => {
@@ -88,36 +90,38 @@ export default function Metrics() {
       <section className={styles.MetricsHeader}>
         <ButtonGroup variant="contained">
           <Button
-            title="Past Day"
+            title={t("reports.pastDay")}
             onClick={() => setTimePeriod(1)}
             disabled={timePeriod === 1}
           >
-            Past day
+            {t("reports.pastDay")}
           </Button>
           <Button
-            title="Past Day Week"
+            title={t("reports.pastDayWeek")}
             onClick={() => setTimePeriod(7)}
             disabled={timePeriod === 7}
           >
-            Past 7 days
+            {t("reports.past7Days")}
           </Button>
           <Button
-            title="Past 30 Days"
+            title={t("reports.past30Days")}
             onClick={() => setTimePeriod(30)}
             disabled={timePeriod === 30}
           >
-            Past 30 days
+            {t("reports.past30Days")}
           </Button>
         </ButtonGroup>
 
-        <h1 className={styles.subheadline}>Zesty.io Usage Report </h1>
+        <h1 className={styles.subheadline}>
+          Zesty.io {t("reports.usageReport")}
+        </h1>
       </section>
 
       <WithLoader
         width="100%"
         height="calc(100vh - 54px)"
         condition={!usageLoading && !requestsLoading}
-        message="Loading metrics"
+        message={t("reports.loadingMetrics")}
       >
         <Body {...bodyProps} />
       </WithLoader>
@@ -132,22 +136,24 @@ const Body = ({
   usageError,
   ...rest
 }) => {
-  if (requestError)
+  const { t } = useTranslation();
+  if (requestError) {
     return (
       <Notice className={styles.ErrorMessage}>
-        An error occured while loading metrics: {requestError.message}
+        {t("reports.metricsLoadError", { message: requestError.message })}
       </Notice>
     );
-  else if (usageError)
+  } else if (usageError) {
     return (
       <Notice className={styles.ErrorMessage}>
-        An error occured while loading metrics: {usageError.message}
+        {t("reports.metricsLoadError", { message: usageError.message })}
       </Notice>
     );
-  else
+  } else {
     return (
       <Content requestData={requestData} usageData={usageData} {...rest} />
     );
+  }
 };
 
 const Content = ({
@@ -157,6 +163,7 @@ const Content = ({
   EndDisplay,
   timePeriod,
 }) => {
+  const { t } = useTranslation();
   const totalMediaThroughput = usageData.MediaConsumption.TotalGBs;
   const totalMediaRequests = usageData.MediaConsumption.TotalRequests;
 
@@ -176,7 +183,7 @@ const Content = ({
   ];
 
   const pieChartData = {
-    labels: ["Media Requests", "Page Requests"],
+    labels: [t("common.mediaRequests"), t("reports.pageRequests")],
     datasets: [
       {
         data: [totalMediaRequests, totalPageRequests],
@@ -195,7 +202,11 @@ const Content = ({
   const barChartData = {
     labels: barChartLabels,
     datasets: [
-      { data: barChartSeries, label: "Requests", backgroundColor: colors },
+      {
+        data: barChartSeries,
+        label: t("reports.requests"),
+        backgroundColor: colors,
+      },
     ],
   };
 
@@ -217,7 +228,7 @@ const Content = ({
             color="secondary"
             href={fullPath}
             target="_blank"
-            title="Redirect URL"
+            title={t("reports.redirectUrl")}
           >
             <FontAwesomeIcon icon={faExternalLinkAlt} />
             &nbsp;<code>{path}</code>
@@ -277,13 +288,17 @@ const Content = ({
             sx={{ display: "flex", justifyContent: "space-between" }}
           >
             <h1 className={styles.headline}>
-              {`Usage Report for ${timePeriod} ${
-                timePeriod > 1 ? "days" : "day"
-              } : ${StartDisplay} - ${EndDisplay}`}
+              {t("reports.usageReportFor", {
+                timePeriod,
+                unit: timePeriod > 1 ? "days" : "day",
+                startDisplay: StartDisplay,
+                endDisplay: EndDisplay,
+              })}
             </h1>
             <aside>
               <p>
-                Instance ZUID:
+                {t("reports.instanceZuid")}
+                {":"}
                 <CopyButton
                   size="small"
                   value={usageData.Account.Zuid}
@@ -292,7 +307,8 @@ const Content = ({
               </p>
 
               <p>
-                CDN URL:&nbsp;
+                {t("reports.cdnUrl")}
+                {":"}
                 <CopyButton
                   size="small"
                   value={usageData.Account.CdnURL}
@@ -306,14 +322,14 @@ const Content = ({
       {/* Total Usage Breakdown */}
       <figure>
         <Card sx={{ m: 2 }}>
-          <CardHeader title="Total Usage Breakdown"></CardHeader>
+          <CardHeader title={t("reports.totalUsageBreakdown")}></CardHeader>
           <CardContent className={styles.CardContentGraphs}>
             <div className={styles.GraphTitles}>
-              <p>Total Bandwidth</p>
+              <p>{t("reports.totalBandwidth")}</p>
               <h1 className={styles.headline}>
                 {floatWithCommas(totalThroughput)} GB
               </h1>
-              <p>Total Requests</p>
+              <p>{t("reports.totalRequests")}</p>
               <h1 className={styles.headline}>
                 {numberWithCommas(totalRequests)}
               </h1>
@@ -337,17 +353,17 @@ const Content = ({
       {/* Bandwidth Breakdown */}
       <section>
         <Card sx={{ m: 2 }}>
-          <CardHeader title="Bandwidth Breakdown"></CardHeader>
+          <CardHeader title={t("reports.bandwidthBreakdown")}></CardHeader>
           <CardContent className={styles.CardContentBandwidth}>
             <div>
-              <p>Total Bandwidth</p>
+              <p>{t("reports.totalBandwidth")}</p>
               <p className={styles.headline}>
                 {floatWithCommas(totalThroughput)} GB
               </p>
             </div>
 
             <div>
-              <p>HTML/CSS/Javascript Bandwidth</p>
+              <p>{t("reports.htmlCssBandwidth")}</p>
               <p
                 className={cx(
                   styles.headline,
@@ -360,14 +376,14 @@ const Content = ({
             </div>
 
             <div>
-              <p>Media Bandwidth</p>
+              <p>{t("reports.mediaBandwidth")}</p>
               <p className={cx(styles.headline, styles.IsInfo)}>
                 {floatWithCommas(totalMediaThroughput)} GB
               </p>
             </div>
 
             <div>
-              <p>Successful Media Requests</p>
+              <p>{t("reports.successfulMediaRequests")}</p>
               <p className={cx(styles.IsInfo, styles.headline)}>
                 {numberWithCommas(usageData.MediaConsumption.TotalRequests)}
               </p>
@@ -378,38 +394,40 @@ const Content = ({
 
       <section>
         <Card sx={{ m: 2 }}>
-          <CardHeader title="Platform Request Breakdown (Total)"></CardHeader>
+          <CardHeader
+            title={t("reports.platformRequestBreakdown")}
+          ></CardHeader>
           <CardContent className={styles.CardContentRequest}>
             <div>
-              <p>Successful Page Loads (200)</p>
+              <p>{t("reports.successfulPageLoads")}</p>
               <p className={cx(styles.IsSuccess, styles.headline)}>
                 {numberWithCommas(reqs["200"])}
               </p>
             </div>
 
             <div>
-              <p>Page Redirects (301)</p>
+              <p>{t("reports.pageRedirects")}</p>
               <p className={cx(styles.IsWarning, styles.headline)}>
                 {numberWithCommas(reqs["301"])}
               </p>
             </div>
 
             <div>
-              <p>Failing Not Found (404)</p>
+              <p>{t("reports.failingNotFound")}</p>
               <p className={cx(styles.IsOrange, styles.headline)}>
                 {numberWithCommas(reqs["404"])}
               </p>
             </div>
 
             <div>
-              <p>Malicious/Deflected (403)</p>
+              <p>{t("reports.maliciousDeflected")}</p>
               <p className={cx(styles.IsDanger, styles.headline)}>
                 {numberWithCommas(reqs["403"])}
               </p>
             </div>
 
             <div>
-              <p>Other</p>
+              <p>{t("reports.other")}</p>
               <p className={styles.headline}>
                 {numberWithCommas(reqs["other"])}
               </p>
@@ -421,17 +439,21 @@ const Content = ({
         <section>
           <Card sx={{ m: 2 }}>
             <CardHeader
-              title="Top Requested Pages"
+              title={t("reports.topRequestedPages")}
               sx={{ color: "success.main" }}
             ></CardHeader>
             <CardContent>
               <table className={cx(styles.MetricsTable)}>
                 <thead>
                   <tr className={cx(styles.MetricsTableRow)}>
-                    <th className={cx(styles.MetricsTableRowCell)}>URL</th>
-                    <th className={cx(styles.MetricsTableRowCell)}>Requests</th>
                     <th className={cx(styles.MetricsTableRowCell)}>
-                      Bandwidth
+                      {t("reports.url")}
+                    </th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      {t("reports.requests")}
+                    </th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      {t("reports.bandwidth")}
                     </th>
                   </tr>
                 </thead>
@@ -458,7 +480,7 @@ const Content = ({
         <section>
           <Card sx={{ m: 2 }}>
             <CardHeader
-              title="Top Requested Media"
+              title={t("reports.topRequestedMedia")}
               sx={{ color: "secondary.main" }}
             ></CardHeader>
             <CardContent>
@@ -466,11 +488,13 @@ const Content = ({
                 <thead>
                   <tr className={cx(styles.MetricsTableRow)}>
                     <th className={cx(styles.MetricsTableRowCell)}>
-                      File Name
+                      {t("reports.fileName")}
                     </th>
-                    <th className={cx(styles.MetricsTableRowCell)}>Request</th>
                     <th className={cx(styles.MetricsTableRowCell)}>
-                      Bandwidth
+                      {t("reports.request")}
+                    </th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      {t("reports.bandwidth")}
                     </th>
                   </tr>
                 </thead>
@@ -487,17 +511,21 @@ const Content = ({
         <section>
           <Card sx={{ m: 2 }}>
             <CardHeader
-              title="Top File Not Found (404)"
+              title={t("reports.topFileNotFound")}
               sx={{ color: "warning.main" }}
             ></CardHeader>
             <CardContent>
               <table className={cx(styles.MetricsTable)}>
                 <thead>
                   <tr className={cx(styles.MetricsTableRow)}>
-                    <th className={cx(styles.MetricsTableRowCell)}>URL</th>
-                    <th className={cx(styles.MetricsTableRowCell)}>Request</th>
                     <th className={cx(styles.MetricsTableRowCell)}>
-                      Bandwidth
+                      {t("reports.url")}
+                    </th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      {t("reports.request")}
+                    </th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      {t("reports.bandwidth")}
                     </th>
                   </tr>
                 </thead>
@@ -524,17 +552,21 @@ const Content = ({
         <section>
           <Card sx={{ m: 2 }}>
             <CardHeader
-              title="Top 301 Redirects"
+              title={t("reports.top301Redirects")}
               sx={{ color: "warning.main" }}
             ></CardHeader>
             <CardContent>
               <table className={cx(styles.MetricsTable)}>
                 <thead>
                   <tr className={cx(styles.MetricsTableRow)}>
-                    <th className={cx(styles.MetricsTableRowCell)}>URL</th>
-                    <th className={cx(styles.MetricsTableRowCell)}>Request</th>
                     <th className={cx(styles.MetricsTableRowCell)}>
-                      Bandwidth
+                      {t("reports.url")}
+                    </th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      {t("reports.request")}
+                    </th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      {t("reports.bandwidth")}
                     </th>
                   </tr>
                 </thead>
@@ -561,17 +593,21 @@ const Content = ({
         <section>
           <Card sx={{ m: 2 }}>
             <CardHeader
-              title="Top Malicous / Deflected Requests"
+              title={t("reports.topMaliciousDeflected")}
               sx={{ color: "error.main" }}
             ></CardHeader>
             <CardContent>
               <table className={cx(styles.MetricsTable)}>
                 <thead>
                   <tr className={cx(styles.MetricsTableRow)}>
-                    <th className={cx(styles.MetricsTableRowCell)}>URL</th>
-                    <th className={cx(styles.MetricsTableRowCell)}>Request</th>
                     <th className={cx(styles.MetricsTableRowCell)}>
-                      Bandwidth
+                      {t("reports.url")}
+                    </th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      {t("reports.request")}
+                    </th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      {t("reports.bandwidth")}
                     </th>
                   </tr>
                 </thead>
@@ -598,15 +634,19 @@ const Content = ({
 
         <section>
           <Card sx={{ m: 2 }}>
-            <CardHeader title="All Response Codes"></CardHeader>
+            <CardHeader title={t("reports.allResponseCodes")}></CardHeader>
             <CardContent>
               <table className={cx(styles.MetricsTable)}>
                 <thead>
                   <tr className={cx(styles.MetricsTableRow)}>
-                    <th className={cx(styles.MetricsTableRowCell)}>Code</th>
-                    <th className={cx(styles.MetricsTableRowCell)}>Requests</th>
                     <th className={cx(styles.MetricsTableRowCell)}>
-                      Bandwidth
+                      {t("common.code")}
+                    </th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      {t("reports.requests")}
+                    </th>
+                    <th className={cx(styles.MetricsTableRowCell)}>
+                      {t("reports.bandwidth")}
                     </th>
                   </tr>
                 </thead>

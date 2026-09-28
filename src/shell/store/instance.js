@@ -1,5 +1,6 @@
 import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
+import i18n from "shell/i18n";
 
 /**
  * Unique instance id from URL
@@ -75,7 +76,7 @@ export function fetchDomains() {
         dispatch(
           notify({
             kind: "warn",
-            message: "Failed to load domains",
+            message: i18n.t("shell.failedLoadDomains"),
           })
         );
       });

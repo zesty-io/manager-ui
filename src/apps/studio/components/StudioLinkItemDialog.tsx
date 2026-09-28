@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dialog,
@@ -67,6 +68,7 @@ export const StudioLinkItemDialog = ({
   onClose,
   onConfirm,
 }: StudioLinkItemDialogProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   // A link binds to the item itself, so the dialog stops there: no field step,
   // and only items whose model has a view (getUrl() resolves nothing else).
@@ -211,16 +213,16 @@ export const StudioLinkItemDialog = ({
           second line under the header and swap the padding to MUI's 16px/24px. */}
       <DialogTitle component="div" sx={{ p: 2.5, pr: 6 }}>
         <Typography variant="h6" fontWeight={600}>
-          Link other content item
+          {t("content.studioLinkItemDialogTitle")}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {isItemLink
-            ? "Link to the page of a specific content item"
-            : "Link to a content field on a specific content item"}
+            ? t("content.studioLinkItemDialogSubtitleForItem")
+            : t("content.studioLinkItemDialogSubtitle")}
         </Typography>
         <IconButton
           data-cy="StudioLinkItemDialogClose"
-          aria-label="Close"
+          aria-label={t("content.studioLinkItemDialogCloseAriaLabel")}
           onClick={onClose}
           size="small"
           sx={{ position: "absolute", right: 12, top: 12 }}
@@ -236,11 +238,11 @@ export const StudioLinkItemDialog = ({
       <DialogContent sx={{ p: 0, bgcolor: (theme) => theme.palette.grey[50] }}>
         <Stack gap={2.5} p={2.5}>
           <FieldWrapper
-            label="Content Item"
+            label={t("content.studioLinkItemContentItemLabel")}
             tooltip={
               isItemLink
-                ? "The link points at this exact item, including its language. Only models with a page are listed."
-                : "The field is read from this exact item, including its language."
+                ? t("content.studioLinkItemContentItemTooltipForItem")
+                : t("content.studioLinkItemContentItemTooltip")
             }
           >
             <SearchField
@@ -256,12 +258,12 @@ export const StudioLinkItemDialog = ({
 
           {item && !isItemLink ? (
             <FieldWrapper
-              label="Field to connect"
-              tooltip="Only fields this element can render are listed."
+              label={t("content.studioLinkItemFieldLabel")}
+              tooltip={t("content.studioLinkItemFieldTooltip")}
             >
               {!isFetchingFields && fieldOptions.length === 0 ? (
                 <Typography variant="body2" color="text.secondary">
-                  This item's model has no linkable fields.
+                  {t("content.studioLinkItemNoLinkableFields")}
                 </Typography>
               ) : (
                 <TextField
@@ -315,7 +317,7 @@ export const StudioLinkItemDialog = ({
           color="inherit"
           onClick={onClose}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="StudioLinkItemConfirm"
@@ -324,7 +326,7 @@ export const StudioLinkItemDialog = ({
           disabled={!canConfirm}
           onClick={handleConfirm}
         >
-          Link item
+          {t("content.studioLinkItemConfirm")}
         </Button>
       </DialogActions>
     </Dialog>

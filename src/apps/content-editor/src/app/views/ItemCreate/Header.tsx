@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Stack,
@@ -26,14 +27,16 @@ import { useParams } from "../../../../../../shell/hooks/useParams";
 import { CreateContentItemDialogContext } from "../../../../../../shell/contexts/CreateContentItemDialogProvider";
 
 type DropdownMenuType = "default" | "addNew";
+// Maps each action to its i18n key; t() can't run at module scope so the
+// label lookup happens inside the component.
 const DropdownMenu: Record<DropdownMenuType, Record<string, string>> = {
   default: {
-    publishNow: "Create & Publish Now",
-    schedulePublish: "Create & Schedule Publish",
+    publishNow: "content.itemCreatePublishNow",
+    schedulePublish: "content.itemCreateSchedulePublish",
   },
   addNew: {
-    publishAddNew: "Create, Publish & Add New",
-    schedulePublishAddNew: "Create, Schedule Publish & Add New",
+    publishAddNew: "content.itemCreatePublishAddNew",
+    schedulePublishAddNew: "content.itemCreateSchedulePublishAddNew",
   },
 };
 
@@ -44,6 +47,7 @@ interface Props {
   isDirty: boolean;
 }
 export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
+  const { t } = useTranslation();
   const [params] = useParams();
   const [dropdownMenuType, setDropdownMenuType] =
     useState<DropdownMenuType | null>(null);
@@ -82,7 +86,9 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
               overflow: "hidden",
             }}
           >
-            Create {model.type === "block" ? "Variant" : `${model.label} Item`}
+            {model.type === "block"
+              ? t("content.itemCreateTitleVariant")
+              : t("content.itemCreateTitleItem", { label: model.label })}
           </Typography>
         </Stack>
         <Stack direction="row" gap={1} flexShrink={0} alignItems="flex-start">
@@ -101,7 +107,7 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
                 loading={isLoading}
                 variant="outlined"
               >
-                Create & Add New
+                {t("content.itemCreateAddNew")}
               </Button>
               <Button
                 size="xsmall"
@@ -145,7 +151,7 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
               variant="contained"
               data-cy="CreateItemSaveButton"
             >
-              Create
+              {t("common.create")}
             </Button>
             <Button
               size="xsmall"
@@ -221,7 +227,7 @@ export const Header = ({ model, onSave, isLoading, isDirty }: Props) => {
                     <CalendarTodayRoundedIcon />
                   )}
                 </ListItemIcon>
-                <ListItemText>{value}</ListItemText>
+                <ListItemText>{t(value)}</ListItemText>
               </MenuItem>
             )
           )}
