@@ -80,6 +80,10 @@ const selectItemHeadTags = createSelector(
 
 export const ItemLockContext = createContext();
 
+// Per-item lock count so a slow release can't unlock an item that was since re-locked.
+// Module scope so it survives ItemEdit unmounting and remounting (e.g. item -> list -> item)
+const lockEpochs = {};
+
 export default function ItemEdit() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -89,8 +93,6 @@ export default function ItemEdit() {
   const { modelZUID, itemZUID } = useParams();
   const metaRef = useRef(null);
   const fieldErrorRef = useRef(null);
-  // Per-item lock count so a slow release can't unlock an item that was since re-locked
-  const lockEpochRef = useRef({});
   const item = useSelector((state) => state.content[itemZUID]);
   const model = useSelector((state) => state.models[modelZUID]);
   const tags = useSelector((state) => selectItemHeadTags(state, itemZUID));
@@ -159,7 +161,7 @@ export default function ItemEdit() {
 
     // on mount and modelZUID/itemZUID update,
     // lock item and load all item data
-    lockEpochRef.current[itemZUID] = (lockEpochRef.current[itemZUID] ?? 0) + 1;
+    lockEpochs[itemZUID] = (lockEpochs[itemZUID] ?? 0) + 1;
     lockItem(itemZUID);
     load(modelZUID, itemZUID);
     setSaveClicked(false);
@@ -295,12 +297,12 @@ export default function ItemEdit() {
 
   async function releaseLock(itemZUID) {
     // Local lockState is stale in the unmount cleanup, so ask the server who holds the lock
-    const epoch = lockEpochRef.current[itemZUID];
+    const epoch = lockEpochs[itemZUID];
     const current = await dispatch(checkLock(itemZUID));
     if (
       current?.userZUID &&
       current.userZUID === user.ZUID &&
-      epoch === lockEpochRef.current[itemZUID]
+      epoch === lockEpochs[itemZUID]
     ) {
       dispatch(unlock(itemZUID));
     }
