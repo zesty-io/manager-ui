@@ -271,7 +271,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     if (!showChatThread) {
       if (isInCodeApp) {
         const fileName = getRefRegistry()?.["code-editor"]?.context()?.fileName;
-        return `/${fileName?.trim()?.replace(/^\/+/, "")}`;
+        return fileName ? `/${fileName.trim().replace(/^\/+/, "")}` : "";
       }
 
       if (isInContentApp || isInContentMeta || isInBlocks) {
@@ -530,6 +530,8 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
 
   const handleGenerateSuggestions = useCallback(
     (sourcePrompt: string) => {
+      if (!urlChatZUID && !userRole?.role?.ZUID) return;
+
       const systemInstruction = suggestionSystemInstruction(
         Object.keys(getRefRegistry() || {}),
         getRefRegistry()
@@ -549,8 +551,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
         chatZuid: urlChatZUID,
         url: window.location.href,
         // roleZUID is needed to create a new chat session when Generate Suggestions button is clicked and there is no existing chatZUID yet
-        ...(!urlChatZUID &&
-          userRole?.role?.ZUID && { roleZuid: userRole.role.ZUID }),
+        ...(!urlChatZUID && { roleZuid: userRole?.role?.ZUID }),
       });
       setResponses((prev) => ({
         ...prev,
@@ -572,6 +573,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     (chatZUID: string) => {
       isAwaitingLiveResponseRef.current = false;
       setResponses({});
+      setComposerSeed("");
       setUrlChatZUID(chatZUID);
     },
     [setUrlChatZUID]
@@ -579,6 +581,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
 
   const handleStartNewChat = useCallback(() => {
     setResponses({});
+    setComposerSeed("");
     setIsStartingNewChat(true);
   }, []);
 
@@ -587,6 +590,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     hasAutoSelectedLatestSessionRef.current = true;
     removeUrlChatZUID();
     setResponses({});
+    setComposerSeed("");
     setIsStartingNewChat(false);
   }, [removeUrlChatZUID]);
 
