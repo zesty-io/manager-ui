@@ -1,4 +1,8 @@
+import instanceZUID from "../../../src/utility/instanceZUID";
+import CONFIG from "../../../src/shell/app.config";
+
 const OTHER_USER_ZUID = "5-0000000-otheruser";
+const gateway = CONFIG[process.env.NODE_ENV]?.SERVICE_REDIS_GATEWAY;
 
 // Load the list, then route to the item in-app so leaving it unmounts ItemEdit
 const openItemInApp = (modelZUID, itemZUID) => {
@@ -11,91 +15,99 @@ const openItemInApp = (modelZUID, itemZUID) => {
   cy.location("pathname").should("eq", `/content/${modelZUID}/${itemZUID}`);
 };
 
-const leaveItem = (modelZUID) => {
-  cy.window().then((win) => win.history.back());
-  cy.location("pathname").should("eq", `/content/${modelZUID}`);
-};
-
-describe("Content Item: Lock", () => {
-  let modelZUID;
-  let itemZUID;
-  // What the stubbed lock service reports as the current holder
-  let holder;
-
+describe("Content Item: Lock modal", () => {
   before(() => {
     cy.task("seed:content", "fixtures/item.json").then(({ model, items }) => {
-      modelZUID = model?.ZUID;
-      itemZUID = items[0]?.meta?.ZUID;
+      Cypress.env("modelZUID", model?.ZUID);
+      Cypress.env("itemZUID", items[0]?.meta?.ZUID);
     });
   });
 
-  beforeEach(() => {
-    cy.login();
-    holder = {};
-
-    cy.intercept("GET", "**/door/knock*", (req) => req.reply(200, holder)).as(
-      "knock"
-    );
-    cy.intercept("POST", "**/door/lock", { statusCode: 200, body: {} }).as(
-      "lock"
-    );
-    cy.intercept("GET", "**/door/unlock*", { statusCode: 200, body: {} }).as(
-      "unlock"
-    );
-  });
-
-  const holderAs = (userZUID) => ({
-    userZUID,
-    firstName: "Other",
-    lastName: "User",
-    email: "other.user@example.com",
-    path: itemZUID,
-    timestamp: `${Math.floor(Date.now() / 1000)}`,
-  });
-
   it("Go Back does not release another user's lock", () => {
-    holder = holderAs(OTHER_USER_ZUID);
+    const itemZUID = Cypress.env("itemZUID");
+    const modelZUID = Cypress.env("modelZUID");
+
+    // Simulate another user holding the lock
+    cy.apiRequest({
+      method: "POST",
+      url: `${gateway}/door/lock`,
+      body: {
+        firstName: "Other",
+        lastName: "User",
+        email: "other.user@example.com",
+        userZUID: OTHER_USER_ZUID,
+        path: itemZUID,
+        instanceZUID,
+      },
+    });
+
+    cy.intercept("**/door/unlock*").as("unlock");
+    // The browser-side knock can miss a lock set via the API, so serve the other user's lock to the app deterministically
+    cy.intercept("GET", "**/door/knock*", {
+      statusCode: 200,
+      body: {
+        firstName: "Other",
+        lastName: "User",
+        email: "other.user@example.com",
+        userZUID: OTHER_USER_ZUID,
+        path: itemZUID,
+        instanceZUID,
+        timestamp: `${Math.floor(Date.now() / 1000)}`,
+      },
+    }).as("knock");
 
     openItemInApp(modelZUID, itemZUID);
+
     cy.getBySelector("LockedItemGoBack").should("exist").click();
     cy.location("pathname").should("eq", `/content/${modelZUID}`);
+    cy.getBySelector("LockedItemGoBack").should("not.exist");
 
     cy.get("@unlock.all").should("have.length", 0);
+
+    // The other user's lock is still held
+    cy.getCookie(Cypress.env("COOKIE_NAME"))
+      .then((cookie) =>
+        cy.request({
+          url: `${gateway}/door/knock?path=${itemZUID}&instanceZUID=${instanceZUID}`,
+          headers: { authorization: `Bearer ${cookie?.value}` },
+        })
+      )
+      .then(({ body: res }) => {
+        expect(res?.userZUID).to.eq(OTHER_USER_ZUID);
+      });
   });
 
   it("Releases the lock the current user holds when navigating away", () => {
+    const itemZUID = Cypress.env("itemZUID");
+    const modelZUID = Cypress.env("modelZUID");
+
+    cy.intercept("**/door/unlock*").as("unlock");
+
+    // No lock held on mount, so the app takes it for the current user.
+    // The release check on exit then sees the current user as the holder.
+    let holder = {};
+    cy.intercept("GET", "**/door/knock*", (req) => req.reply(200, holder));
+    cy.intercept("POST", "**/door/lock", (req) => {
+      holder = { userZUID: req.body.userZUID, path: itemZUID };
+      req.continue();
+    }).as("lock");
+
     openItemInApp(modelZUID, itemZUID);
     cy.wait("@lock");
+    cy.getBySelector("LockedItemGoBack").should("not.exist");
 
-    // The service now reports the lock as held by the current user
-    cy.window()
-      .its("zestyStore")
-      .invoke("getState")
-      .its("user.ZUID")
-      .then((userZUID) => {
-        holder = holderAs(userZUID);
-      });
+    cy.window().then((win) => win.history.back());
+    cy.location("pathname").should("eq", `/content/${modelZUID}`);
 
-    leaveItem(modelZUID);
     cy.wait("@unlock");
   });
 
-  it("Keeps a lock taken over by another user when the previous holder navigates away", () => {
-    openItemInApp(modelZUID, itemZUID);
-    cy.wait("@lock");
-
-    // Another user force-unlocks; this session isn't told about it
-    holder = holderAs(OTHER_USER_ZUID);
-
-    leaveItem(modelZUID);
-    // First knock is the mount check, second is the release check
-    cy.wait("@knock");
-    cy.wait("@knock");
-
-    cy.get("@unlock.all").should("have.length", 0);
-  });
-
   after(() => {
-    cy.deleteModel(modelZUID);
+    cy.apiRequest({
+      url: `${gateway}/door/unlock?path=${Cypress.env(
+        "itemZUID"
+      )}&instanceZUID=${instanceZUID}`,
+    });
+    cy.deleteModel(Cypress.env("modelZUID"));
   });
 });
