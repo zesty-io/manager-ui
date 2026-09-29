@@ -636,6 +636,7 @@
   "studioAiPaintNoReply": "Het canvas reageerde niet. Mogelijk draait de pagina een oudere Studio-bridge, of helemaal geen.",
   "studioAiPaintNotFound": "Het canvas toont de weergave van deze pagina niet, dus het voorbeeld kon niet worden getoond.",
   "studioAiPlaceholder": "Vraag om wijzigingen op paginaniveau",
+  "studioAiPreviewNoInstance": "De voorbeeldhost van de instantie is nog niet bekend, dus het voorbeeld kon niet worden weergegeven.",
   "studioAiPreviewRejected": "De voorbeeldservice heeft het bestand geweigerd of kon niet worden bereikt. Het inhoudsfilter weigert sommige markup; een Parsley-fout of een onbekend veld in het gegenereerde bestand kan ook de oorzaak zijn.",
   "studioAiPreviewRendering": "Voorbeeld wordt gemaakt…",
   "studioAiPreviewReviewHint": "De wijziging staat nog klaar: controleer haar voordat je opslaat, of annuleer haar.",

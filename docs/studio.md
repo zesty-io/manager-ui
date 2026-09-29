@@ -62,9 +62,24 @@ Envelopes are asymmetric — always check `source` before trusting a message:
 
 **Bridge → host** (handled in `useStudioBridge.ts`): `BRIDGE_READY` · `BRIDGE_ERROR` · `DOM_EVENT` · `LAYERS_TREE` · `TEMPLATE_SOURCE_MAP` · `REORDER_OUTPUT` · `LAYOUT_CONTENT_UPDATE` · `STATIC_EDIT_REJECTED` · `STATIC_EDIT_IMAGE` · `CODE_REGION_REPLACED`
 
-**Host → bridge** (`payload.action`): `injectCss` · `setInteractionMode` · `requestLayersTree` · `addClass` · `removeClass` · `addClassByLayoutId` · `removeClassByLayoutId` · `enableEditing` · `disableEditing` · `setTextByField` · `setHtmlByField` · `setSelectedLayoutId` · `clearSelectedLayout` · `enableReorderByUid` · `disableReorderByUid` · `moveLayoutElement` · `enterStaticEditingByLayoutId` · `updateElementText` · `updateElementAttr` · `updateElementTag` · `updateImageSrc` · `syncTemplateSource` · `replaceCodeRegion`
+**Host → bridge** (`payload.action`): `injectCss` · `setInteractionMode` · `requestLayersTree` · `addClass` · `removeClass` · `addClassByLayoutId` · `removeClassByLayoutId` · `enableEditing` · `disableEditing` · `setTextByField` · `setHtmlByField` · `setSelectedLayoutId` · `clearSelectedLayout` · `enableReorderByUid` · `disableReorderByUid` · `moveLayoutElement` · `enterStaticEditingByLayoutId` · `updateElementText` · `updateElementAttr` · `updateElementTag` · `updateImageSrc` · `syncTemplateSource` · `replaceCodeRegion` · `setPreviewLock`
 
 `updateElementText` carries three non-obvious fields: `previewValue` (a resolved value to _display_ while the template keeps `value`), `previewAsHtml` (parse it as markup rather than writing a text node), and `textIndex` (which of the leaf's own text runs to write).
+
+`BRIDGE_READY` carries `path`, the canvas page's `location.pathname`. Studio's AI preview compares it with the page it loaded, to tell a reload under a staged change from the canvas navigating away.
+
+The AI preview uses one command pair. `replaceCodeRegion` (`codeId`, `html`, optional `requestId`) paints `html` between a region's `data-code-boundary` comments and is answered by `CODE_REGION_REPLACED` (`codeId`, `ok`, `count`, echoed `requestId`, and `reason` when `ok` is false):
+
+| `reason`           | Meaning                                                                                 |
+| ------------------ | --------------------------------------------------------------------------------------- |
+| `region-not-found` | the page has no region with that `codeId`                                               |
+| `invalid-html`     | `html` was not a string                                                                 |
+| `replace-failed`   | the swap threw; `error` carries the message                                             |
+| `missing-code-id`  | the payload had no `codeId`                                                             |
+| `cancelled`        | a paint held for the initial page state was dropped by `setPreviewLock` `locked: false` |
+| `superseded`       | a paint held for the initial page state was replaced by a newer one                     |
+
+A paint that arrives before the bridge has posted its first `TEMPLATE_SOURCE_MAP` and `LAYERS_TREE` is held until it has; only the latest is kept. A successful paint also locks the canvas. `setPreviewLock` (`locked`) makes the canvas view-only while the preview shows: gestures, edits and link or form navigation post nothing, an in-flight drag or static edit is abandoned, and the layers tree is not re-emitted. Studio never unlocks — every way out reloads the frame, and a reloaded bridge starts unlocked.
 
 `DOM_EVENT.eventType` is one of `mousedown | dblclick | click | input | mouseover | mouseout | escape`, and carries `element.dataset` plus, in layout mode, a `breadcrumb`.
 

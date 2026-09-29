@@ -53,6 +53,12 @@ type LayoutReorderState = {
   primaryCodeId: string;
 };
 
+// What a failed layout save adds to the error it rethrows.
+type LayoutSaveFailure = {
+  failedCodeId?: string;
+  savedCount?: number;
+};
+
 // Apply a new layoutStructure to a cached template source. Used both for
 // single-region reorders and for the per-region post-processing of a cross-
 // region drag, where blocks may have moved between sibling/nested templates.
@@ -617,10 +623,11 @@ export const useLayoutReorderState = ({
             };
           });
         } catch (err) {
-          (err as any).failedCodeId = codeId;
+          const failure = err as LayoutSaveFailure;
+          failure.failedCodeId = codeId;
           // The regions written before this one stay written.
-          (err as any).savedCount = savedResults.length;
-          throw err;
+          failure.savedCount = savedResults.length;
+          throw failure;
         }
       }
 

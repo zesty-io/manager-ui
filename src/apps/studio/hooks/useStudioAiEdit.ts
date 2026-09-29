@@ -63,7 +63,6 @@ type Args = {
   // because the fields store is untyped (see AppState's TODO).
   pageFields: any[];
   randomHashID?: string;
-  previewPassword?: string;
   pendingLayoutCodeIds: string[];
   stageLayoutSourceUpdate: (
     codeId: string,
@@ -96,7 +95,6 @@ export const useStudioAiEdit = ({
   pageItemZUID,
   pageFields,
   randomHashID,
-  previewPassword,
   pendingLayoutCodeIds,
   stageLayoutSourceUpdate,
   readStagedLayoutSource,
@@ -144,10 +142,6 @@ export const useStudioAiEdit = ({
       ) || null,
     [pageModelZUID, webViews]
   );
-
-  // Always https: the dev config's http:// preview host redirects, and a
-  // preflighted request cannot follow a redirect.
-  const previewOrigin = `https://${randomHashID ?? ""}${CONFIG.URL_PREVIEW}`;
 
   const readSource = useCallback(() => {
     if (!pageView) return "";
@@ -227,14 +221,22 @@ export const useStudioAiEdit = ({
         });
         return;
       }
+      // Without the instance's hash the request would go to the bare preview
+      // domain, carrying the user's token.
+      if (!randomHashID) {
+        setPreview({
+          status: "error",
+          message: t("content.studioAiPreviewNoInstance"),
+        });
+        return;
+      }
       setPreview({ status: "loading" });
-      // The bridge paints the result between the canvas's own region markers.
-      const query = new URLSearchParams({ studio: "bridge" });
-      if (previewPassword) query.set("zpw", previewPassword);
       let html: string;
       try {
         html = await renderParsleyPreview({
-          url: `${previewOrigin}/-/pvl/?${query}`,
+          // Always https: the dev config's http:// preview host redirects, and
+          // a preflighted request cannot follow a redirect.
+          origin: `https://${randomHashID}${CONFIG.URL_PREVIEW}`,
           parsley: view,
           itemZUID: pageItemZUID,
           timeout: PVL_TIMEOUT_MS,
@@ -255,8 +257,7 @@ export const useStudioAiEdit = ({
       describePreviewError,
       pageItemZUID,
       paint,
-      previewOrigin,
-      previewPassword,
+      randomHashID,
       renderParsleyPreview,
       t,
     ]

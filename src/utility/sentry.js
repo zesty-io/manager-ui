@@ -22,6 +22,17 @@ if (["stage", "production"].includes(__CONFIG__?.ENV)) {
     normalizeDepth: 10, // increases depth of redux state tree sent
     maxBreadcrumbs: 50, // reduce for performance purposes
     beforeBreadcrumb: (breadcrumb, hint) => {
+      // Preview URLs carry the instance's preview password in `zpw`.
+      if (
+        (breadcrumb.category === "fetch" || breadcrumb.category === "xhr") &&
+        typeof breadcrumb.data?.url === "string"
+      ) {
+        breadcrumb.data.url = breadcrumb.data.url.replace(
+          /([?&]zpw=)[^&#]*/g,
+          "$1REDACTED"
+        );
+      }
+
       if (
         hint?.event?.target &&
         (breadcrumb.category === "ui.click" ||

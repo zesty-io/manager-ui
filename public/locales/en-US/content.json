@@ -636,6 +636,7 @@
   "studioAiPaintNoReply": "The canvas did not respond. The page may be running an older Studio bridge, or none.",
   "studioAiPaintNotFound": "The canvas does not show this page's view, so the preview could not be painted.",
   "studioAiPlaceholder": "Ask for page-level edits",
+  "studioAiPreviewNoInstance": "The instance's preview host is not known yet, so the preview could not be rendered.",
   "studioAiPreviewRejected": "The preview service rejected the file or could not be reached. Its content filter refuses some markup; a Parsley error or an unknown field in the generated file can also cause this.",
   "studioAiPreviewRendering": "Rendering the preview…",
   "studioAiPreviewReviewHint": "The change is still staged: review it before saving, or cancel it.",

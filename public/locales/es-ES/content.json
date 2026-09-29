@@ -653,6 +653,7 @@
   "studioAiPaintNoReply": "El lienzo no respondió. Es posible que la página use una versión anterior del bridge de Studio, o ninguna.",
   "studioAiPaintNotFound": "El lienzo no muestra la vista de esta página, así que no se pudo pintar la vista previa.",
   "studioAiPlaceholder": "Pide cambios a nivel de página",
+  "studioAiPreviewNoInstance": "Aún no se conoce el host de vista previa de la instancia, así que no se pudo generar la vista previa.",
   "studioAiPreviewRejected": "El servicio de vista previa rechazó el archivo o no se pudo contactar. Su filtro de contenido rechaza cierto marcado; un error de Parsley o un campo desconocido en el archivo generado también pueden causarlo.",
   "studioAiPreviewRendering": "Generando la vista previa…",
   "studioAiPreviewReviewHint": "El cambio sigue preparado: revísalo antes de guardar o cancélalo.",

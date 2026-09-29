@@ -2197,7 +2197,6 @@ export const StudioWrapper = () => {
     pageItemZUID,
     pageFields,
     randomHashID: instance?.randomHashID,
-    previewPassword: previewLock?.value,
     pendingLayoutCodeIds,
     stageLayoutSourceUpdate,
     readStagedLayoutSource,

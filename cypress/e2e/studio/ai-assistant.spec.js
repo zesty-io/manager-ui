@@ -10,6 +10,7 @@ describe("Studio AI Assistant", () => {
   let viewZUID = "";
   let viewFileName = "";
   let otherPath = "/";
+  const seededPages = [];
 
   before(() => {
     cy.task("seed:content", "fixtures/studio.json").then(
@@ -17,6 +18,7 @@ describe("Studio AI Assistant", () => {
         itemZUID = items[0].meta.ZUID;
         modelZUID = model.ZUID;
         studioPath = `/${items[0].web.pathPart}`;
+        seededPages.push(items[0]);
         viewZUID = view?.ZUID || "";
         viewFileName = view?.fileName || "";
         expect(viewZUID, "seeded view").to.match(/^11-/);
@@ -24,6 +26,7 @@ describe("Studio AI Assistant", () => {
     );
     cy.task("seed:content", "fixtures/studio.json").then(({ items }) => {
       otherPath = `/${items[0].web.pathPart}`;
+      seededPages.push(items[0]);
     });
   });
 
@@ -36,18 +39,42 @@ describe("Studio AI Assistant", () => {
 
   // Waits for the page's view list too, so a test that visits again never
   // aborts a request an intercept of its own has caught.
-  const visitStudio = () => {
+  const visitStudio = (onBeforeLoad = () => {}) => {
     cy.intercept("GET", "**/v1/web/views?status=dev").as("webViews");
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/studio?path=${studioPath}`, {
-        onBeforeLoad: clearChatHistory,
+        onBeforeLoad: (win) => {
+          clearChatHistory(win);
+          onBeforeLoad(win);
+        },
       });
     });
     cy.wait("@webViews");
   };
 
+  // The search index is eventually consistent, and Studio resolves its page
+  // with one path search. A page seeded moments ago can be missing from it, and
+  // opens as "Preview only" with no AI button. Adds only a seeded page the
+  // index has not returned yet; the rest of the response is real.
+  const indexSeededPages = () =>
+    cy.intercept(
+      { method: "GET", url: "**/search/items**", query: { field: "path" } },
+      (req) =>
+        req.continue((res) => {
+          const data = res.body?.data;
+          const page = seededPages.find(
+            (item) => req.query.q.replace(/^\/|\/$/g, "") === item.web.pathPart
+          );
+          if (!page || !Array.isArray(data)) return;
+          if (!data.some((item) => item.meta?.ZUID === page.meta.ZUID)) {
+            data.push(page);
+          }
+        })
+    );
+
   beforeEach(() => {
     cy.stubStaffUser();
+    indexSeededPages();
     visitStudio();
   });
 
@@ -264,6 +291,65 @@ describe("Studio AI Assistant", () => {
       .should("have.attr", "aria-disabled", "true")
       .and("have.attr", "inert");
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
+  });
+
+  it("puts the preview password in the PVL URL but not in the request's actions", () => {
+    const PASSWORD = "e2e-preview-password";
+    // The instance under test has no preview lock, so one is added.
+    cy.intercept("GET", "**/env/settings", (req) =>
+      req.continue((res) => {
+        res.body.data.push({
+          key: "preview_lock_password",
+          keyFriendly: "Preview Lock Password",
+          category: "general",
+          dataType: "text",
+          value: PASSWORD,
+        });
+      })
+    );
+    stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
+    stubPvl({ statusCode: 200, body: '<p class="studio-e2e-ai">Rendered</p>' });
+    // Records every action that reaches the store, through the compose hook
+    // redux-devtools-extension reads when the store module loads.
+    visitStudio((win) => {
+      win.__storeActions = [];
+      win.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ = (enhancer) => (createStore) =>
+        enhancer((...args) => {
+          const store = createStore(...args);
+          return {
+            ...store,
+            dispatch: (action) => {
+              win.__storeActions.push(action);
+              return store.dispatch(action);
+            },
+          };
+        });
+    });
+    openAiPanel();
+    sendPrompt("Add a line under the heading");
+
+    cy.wait("@pvl")
+      .its("request.url")
+      .should("match", new RegExp(`[?&]zpw=${PASSWORD}$`));
+    // The Sentry middleware reports the last action with every error, and a
+    // mutation's actions carry its arguments.
+    cy.window()
+      .its("__storeActions")
+      .then((actions) => {
+        const serialized = actions.map((action) => JSON.stringify(action));
+        expect(
+          serialized.some((action) => action.includes(PASSWORD)),
+          "the settings load is recorded"
+        ).to.eq(true);
+        const pvl = actions.filter(
+          (action) => action.meta?.arg?.endpointName === "renderParsleyPreview"
+        );
+        expect(pvl, "PVL mutation actions").to.not.be.empty;
+        pvl.forEach((action) => {
+          expect(action.meta.arg.originalArgs.parsley).to.contain(ADDED_LINE);
+          expect(JSON.stringify(action)).not.to.contain(PASSWORD);
+        });
+      });
   });
 
   it("paints the PVL render into the canvas through the bridge", () => {
