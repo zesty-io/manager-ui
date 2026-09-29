@@ -290,8 +290,10 @@ export default function ItemEdit() {
     }
   }
 
-  function releaseLock(itemZUID) {
-    if (lockState.userZUID === user.ZUID) {
+  async function releaseLock(itemZUID) {
+    // Local lockState is stale in the unmount cleanup, so ask the server who holds the lock
+    const current = await dispatch(checkLock(itemZUID));
+    if (current?.userZUID && current.userZUID === user.ZUID) {
       dispatch(unlock(itemZUID));
     }
   }
