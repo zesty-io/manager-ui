@@ -291,6 +291,8 @@ export const StudioWrapper = () => {
       // Echoed by the bridge so a reply can be matched to its command
       // (replaceCodeRegion).
       requestId?: number;
+      // setPreviewLock: whether the canvas is view-only.
+      locked?: boolean;
     }) => {
       const iframeWindow = iframeRef.current?.contentWindow;
       if (!iframeWindow) return;
@@ -992,6 +994,8 @@ export const StudioWrapper = () => {
     (msg: CodeRegionReplaced) => aiRegionReplacedRef.current(msg),
     []
   );
+  const aiBridgeReadyRef = useRef<() => void>(() => {});
+  const handleAiBridgeReady = useCallback(() => aiBridgeReadyRef.current(), []);
   const handleLayoutRegionSaved = useCallback(
     (codeId: string) => aiRegionSavedRef.current(codeId),
     []
@@ -1752,6 +1756,7 @@ export const StudioWrapper = () => {
     onStaticEditImage: setImageEditState,
     canvasLockedRef: aiCanvasLockedRef,
     onCodeRegionReplaced: handleCodeRegionReplaced,
+    onBridgeReady: handleAiBridgeReady,
   });
 
   const handlePreviewFrameLoad = useCallback(() => {
@@ -2181,6 +2186,7 @@ export const StudioWrapper = () => {
     lastDiscard: aiLastDiscard,
     handleLayoutRegionSaved: handleAiRegionSaved,
     handleCodeRegionReplaced: handleAiRegionReplaced,
+    handleBridgeReady: handleAiCanvasReady,
   } = useStudioAiEdit({
     active: isAiPanelOpen && aiAllowed,
     webViews,
@@ -2197,6 +2203,7 @@ export const StudioWrapper = () => {
   });
   aiRegionSavedRef.current = handleAiRegionSaved;
   aiRegionReplacedRef.current = handleAiRegionReplaced;
+  aiBridgeReadyRef.current = handleAiCanvasReady;
   aiCanvasLockedRef.current = isAiPreviewing;
   const canUseAi = aiAllowed && !!aiPageView;
   const showAiPanel = isAiPanelOpen && canUseAi;
@@ -2396,8 +2403,6 @@ export const StudioWrapper = () => {
                 disabled={isAiPreviewing}
               />
             </ResizableContainer>
-            {/* The AI preview's status sits above the canvas, never over it:
-                once painted, the canvas is the preview. */}
             <Box display="flex" flexDirection="column" flex="1" minWidth={0}>
               {isAiPreviewing && aiPreview ? (
                 <StudioAIPreview preview={aiPreview} />

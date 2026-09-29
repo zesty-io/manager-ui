@@ -119,6 +119,8 @@ type Args = {
   canvasLockedRef?: MutableRefObject<boolean>;
   /** The bridge's answer to a replaceCodeRegion command. */
   onCodeRegionReplaced?: (msg: CodeRegionReplaced) => void;
+  /** A freshly loaded canvas is ready, after the host's own setup posts. */
+  onBridgeReady?: () => void;
 };
 
 // Canvas gestures and the edits they stage. While an AI preview is showing,
@@ -155,6 +157,7 @@ export const useStudioBridge = ({
   onStaticEditImage,
   canvasLockedRef,
   onCodeRegionReplaced,
+  onBridgeReady,
 }: Args) => {
   const { t } = useTranslation();
   const handleBridgeReady = useCallback(() => {
@@ -164,7 +167,13 @@ export const useStudioBridge = ({
     });
     syncBridgeInteractionMode(interactionMode);
     postCommandToBridge({ action: "requestLayersTree" });
-  }, [interactionMode, postCommandToBridge, syncBridgeInteractionMode]);
+    onBridgeReady?.();
+  }, [
+    interactionMode,
+    onBridgeReady,
+    postCommandToBridge,
+    syncBridgeInteractionMode,
+  ]);
 
   const handleBridgeError = useCallback(
     (msg: any) => {

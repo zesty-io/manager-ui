@@ -633,7 +633,7 @@
   "studioAiButton": "AI",
   "studioAiChangesDiscarded": "Changes discarded",
   "studioAiEmptyFile": "The assistant returned an empty file, so nothing was changed.",
-  "studioAiPaintNoReply": "The canvas did not respond. The page may not have Studio's bridge loaded.",
+  "studioAiPaintNoReply": "The canvas did not respond. The page may be running an older Studio bridge, or none.",
   "studioAiPaintNotFound": "The canvas does not show this page's view, so the preview could not be painted.",
   "studioAiPlaceholder": "Ask for page-level edits",
   "studioAiPreviewRejected": "The preview service rejected the file or could not be reached. Its content filter refuses some markup; a Parsley error or an unknown field in the generated file can also cause this.",

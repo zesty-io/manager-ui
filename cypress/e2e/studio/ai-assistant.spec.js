@@ -117,6 +117,7 @@ describe("Studio AI Assistant", () => {
   // commands the host sends it are echoed back to the parent to be read. The
   // bridge's replies are posted from the parent, as the bridge would.
   const HOST_COMMAND = "E2E_HOST_COMMAND";
+  const CANVAS_LOADED = "E2E_CANVAS_LOADED";
   const serveEchoCanvas = () =>
     cy.intercept(
       // PVL is a POST, so only the canvas document matches.
@@ -125,6 +126,9 @@ describe("Studio AI Assistant", () => {
         headers: { "content-type": "text/html" },
         body:
           "<!doctype html><html><body><p>canvas</p><script>" +
+          "parent.postMessage({source:'studio-bridge',message:{type:'" +
+          CANVAS_LOADED +
+          "'}},'*');" +
           "window.addEventListener('message',function(e){" +
           "var d=e.data;if(!d||d.source!=='zesty-studio-host')return;" +
           "parent.postMessage({source:'studio-bridge',message:{type:'" +
@@ -136,10 +140,12 @@ describe("Studio AI Assistant", () => {
   const recordHostCommands = () =>
     cy.window().then((win) => {
       win.__hostCommands = [];
+      win.__canvasLoads = 0;
       win.addEventListener("message", (evt) => {
         if (evt.data?.message?.type === HOST_COMMAND) {
           win.__hostCommands.push(evt.data.message.payload);
         }
+        if (evt.data?.message?.type === CANVAS_LOADED) win.__canvasLoads++;
       });
     });
   // The canvas document may still be loading when a test starts, and a
@@ -290,6 +296,119 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("StudioAIPreviewError").should("not.exist");
     expectPreviewing(true);
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
+
+    // The canvas is locked as soon as the change is staged, before the paint,
+    // and unlocked when it is dropped.
+    const locks = (commands) =>
+      commands
+        .filter((c) => c.action === "setPreviewLock")
+        .map((c) => c.locked);
+    cy.window()
+      .its("__hostCommands")
+      .then((commands) => {
+        const actions = commands.map((c) => c.action);
+        expect(locks(commands)).to.deep.eq([true]);
+        expect(actions.indexOf("setPreviewLock")).to.be.lessThan(
+          actions.indexOf("replaceCodeRegion")
+        );
+      });
+    cy.getBySelector("StudioLayoutCancelButton").click();
+    cy.window()
+      .its("__hostCommands")
+      .should((commands) => expect(locks(commands)).to.deep.eq([true, false]));
+  });
+
+  it("repaints and relocks the canvas when it reloads under a staged change", () => {
+    serveEchoCanvas();
+    stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
+    stubPvl({ statusCode: 200, body: '<p class="studio-e2e-ai">Painted</p>' });
+    visitStudio();
+    recordHostCommands();
+    awaitEchoCanvas();
+    openAiPanel();
+    sendPrompt("Add a line under the heading");
+    paintCommand().then((command) =>
+      replyFromBridge({
+        type: "CODE_REGION_REPLACED",
+        codeId: viewZUID,
+        ok: true,
+        count: 1,
+        requestId: command.requestId,
+      })
+    );
+    cy.getBySelector("StudioAIPreviewStatus").should("not.exist");
+
+    // Discarding content through a mode switch reloads the canvas and leaves
+    // the AI change staged.
+    cy.window().then((win) => {
+      win.zestyStore.dispatch({ type: "MARK_ITEM_DIRTY", itemZUID });
+      win.__canvasLoads = 0;
+    });
+    cy.getBySelector("StudioModeToggleOption-layout").click();
+    cy.getBySelector("PendingEditsModalDiscard").click();
+    cy.window().its("__canvasLoads", { timeout: 30000 }).should("be.gte", 1);
+    expectPreviewing(true);
+
+    // The reloaded canvas announces itself as the bridge would.
+    cy.window().then((win) => {
+      win.__hostCommands = [];
+    });
+    awaitEchoCanvas();
+    cy.window()
+      .its("__hostCommands")
+      .should((commands) => {
+        expect(
+          commands.some((c) => c.action === "setPreviewLock" && c.locked)
+        ).to.eq(true);
+        const repaints = commands.filter(
+          (c) => c.action === "replaceCodeRegion"
+        );
+        expect(repaints).to.have.length.of.at.least(1);
+        repaints.forEach((c) => {
+          expect(c.codeId).to.eq(viewZUID);
+          expect(c.html).to.eq('<p class="studio-e2e-ai">Painted</p>');
+        });
+      });
+    cy.getBySelector("StudioAIPreviewStatus").should(
+      "contain.text",
+      "Rendering the preview"
+    );
+  });
+
+  it("ignores a reply for an earlier paint, and still takes a late one", () => {
+    serveEchoCanvas();
+    stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
+    stubPvl({ statusCode: 200, body: "<p>preview</p>" });
+    visitStudio();
+    recordHostCommands();
+    awaitEchoCanvas();
+    openAiPanel();
+    sendPrompt("Add a line under the heading");
+
+    paintCommand().then((command) => {
+      replyFromBridge({
+        type: "CODE_REGION_REPLACED",
+        codeId: viewZUID,
+        ok: true,
+        count: 1,
+        requestId: command.requestId + 100,
+      });
+      // Not taken as this paint's answer: the canvas still times out.
+      cy.getBySelector("StudioAIPreviewError").should(
+        "contain.text",
+        "did not respond"
+      );
+      // The real answer, arriving after the timeout, still counts.
+      replyFromBridge({
+        type: "CODE_REGION_REPLACED",
+        codeId: viewZUID,
+        ok: true,
+        count: 1,
+        requestId: command.requestId,
+      });
+    });
+    cy.getBySelector("StudioAIPreviewError").should("not.exist");
+    cy.getBySelector("StudioAIPreviewStatus").should("not.exist");
   });
 
   it("says so when the canvas cannot paint the preview", () => {
@@ -733,6 +852,68 @@ describe("Studio AI Assistant", () => {
   });
 
   // Last: it writes the seeded view.
+  // Writes the seeded view.
+  it("keeps canvas edits sent during a preview out of the saved view", () => {
+    // A staged file with elements that carry layout ids, so a canvas edit or
+    // reorder would have something to act on. Appended rather than found:
+    // earlier tests save their own versions of this view.
+    stubMcp((body) =>
+      mcpReply([
+        setValue(
+          `${body.code}\n<div class="e2e-canvas-one" data-layout-id="5">One</div>\n<div class="e2e-canvas-two" data-layout-id="6">Two</div>\n`
+        ),
+      ])
+    );
+    stubPvl({ statusCode: 200, body: "<p>preview</p>" });
+    cy.intercept("PUT", `/v1/web/views/${viewZUID}`).as("updateWebView");
+    openAiPanel();
+    sendPrompt("Add a line under the heading");
+    cy.wait("@pvl");
+    expectPreviewing(true);
+
+    cy.window().then((win) => {
+      const fromCanvas = (message) =>
+        win.dispatchEvent(
+          new win.MessageEvent("message", {
+            data: { source: "studio-bridge", message },
+          })
+        );
+      fromCanvas({
+        type: "LAYOUT_CONTENT_UPDATE",
+        codeId: viewZUID,
+        layoutId: "5",
+        innerHtml: "Typed on the canvas",
+      });
+      fromCanvas({
+        type: "REORDER_OUTPUT",
+        regions: [
+          {
+            codeId: viewZUID,
+            orderedLayoutIds: ["6", "5"],
+            layoutStructure: [
+              { layoutId: "6", parentLayoutId: null },
+              { layoutId: "5", parentLayoutId: null },
+            ],
+          },
+        ],
+        primaryCodeId: viewZUID,
+      });
+    });
+
+    cy.getBySelector("StudioLayoutSaveChangesButton").click();
+    cy.getBySelector("StudioSaveAllButton").click();
+    cy.wait("@updateWebView").then(({ request }) => {
+      // The ids make the save re-serialize the file, so it is compared by
+      // what the canvas edits would have changed rather than byte for byte.
+      const code = request.body.code;
+      expect(code).to.contain('<div class="e2e-canvas-one">One</div>');
+      expect(code).not.to.contain("Typed on the canvas");
+      expect(code.indexOf("e2e-canvas-two")).to.be.greaterThan(
+        code.indexOf("e2e-canvas-one")
+      );
+    });
+  });
+
   it("saves every accumulated turn in one write of the exact staged source", () => {
     let firstTurn = "";
     let secondTurnInput = "";

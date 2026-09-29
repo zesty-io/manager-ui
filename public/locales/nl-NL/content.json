@@ -633,7 +633,7 @@
   "studioAiButton": "AI",
   "studioAiChangesDiscarded": "Wijzigingen verworpen",
   "studioAiEmptyFile": "De assistent gaf een leeg bestand terug, dus er is niets gewijzigd.",
-  "studioAiPaintNoReply": "Het canvas reageerde niet. Mogelijk is de bridge van Studio niet geladen op de pagina.",
+  "studioAiPaintNoReply": "Het canvas reageerde niet. Mogelijk draait de pagina een oudere Studio-bridge, of helemaal geen.",
   "studioAiPaintNotFound": "Het canvas toont de weergave van deze pagina niet, dus het voorbeeld kon niet worden getoond.",
   "studioAiPlaceholder": "Vraag om wijzigingen op paginaniveau",
   "studioAiPreviewRejected": "De voorbeeldservice heeft het bestand geweigerd of kon niet worden bereikt. Het inhoudsfilter weigert sommige markup; een Parsley-fout of een onbekend veld in het gegenereerde bestand kan ook de oorzaak zijn.",

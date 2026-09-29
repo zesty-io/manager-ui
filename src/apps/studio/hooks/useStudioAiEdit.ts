@@ -68,6 +68,7 @@ type Args = {
     codeId?: string;
     html?: string;
     requestId?: number;
+    locked?: boolean;
   }) => void;
 };
 
@@ -106,10 +107,15 @@ export const useStudioAiEdit = ({
   const savedRef = useRef(false);
   const stagedPageRef = useRef("");
   // The paint the canvas has yet to acknowledge.
+  // Kept past its timeout, so a late reply still counts.
   const pendingPaintRef = useRef<{
     request: number;
-    timer: ReturnType<typeof setTimeout>;
+    timer: ReturnType<typeof setTimeout> | null;
   } | null>(null);
+  const paintSeqRef = useRef(0);
+  // The last render PVL returned, painted again if the canvas reloads while
+  // the change is staged.
+  const lastPaintRef = useRef<{ codeId: string; html: string } | null>(null);
 
   // Freestyle layouts live in a per-item `/z/pvl/` view the model does not
   // render through, so they are never the target.
@@ -156,15 +162,45 @@ export const useStudioAiEdit = ({
     [t]
   );
 
-  const clearPendingPaint = () => {
-    if (pendingPaintRef.current) clearTimeout(pendingPaintRef.current.timer);
+  const clearPendingPaint = useCallback(() => {
+    const timer = pendingPaintRef.current?.timer;
+    if (timer) clearTimeout(timer);
     pendingPaintRef.current = null;
-  };
+  }, []);
+
+  const paint = useCallback(
+    (codeId: string, html: string) => {
+      clearPendingPaint();
+      lastPaintRef.current = { codeId, html };
+      setPreview({ status: "loading" });
+      const pending: NonNullable<typeof pendingPaintRef.current> = {
+        request: ++paintSeqRef.current,
+        timer: null,
+      };
+      pending.timer = setTimeout(() => {
+        pending.timer = null;
+        if (pendingPaintRef.current !== pending) return;
+        setPreview({
+          status: "error",
+          message: t("content.studioAiPaintNoReply"),
+        });
+      }, PAINT_TIMEOUT_MS);
+      pendingPaintRef.current = pending;
+      postCommandToBridge({
+        action: "replaceCodeRegion",
+        codeId,
+        html,
+        requestId: pending.request,
+      });
+    },
+    [clearPendingPaint, postCommandToBridge, t]
+  );
 
   const renderPreview = useCallback(
     async (view: string, codeId: string) => {
       const request = ++previewRequestRef.current;
       clearPendingPaint();
+      lastPaintRef.current = null;
       // Multipart encoding sends every line ending as CRLF.
       const bytes = new TextEncoder().encode(
         view.replace(/\r\n|\r|\n/g, "\r\n")
@@ -197,28 +233,13 @@ export const useStudioAiEdit = ({
         return;
       }
       if (request !== previewRequestRef.current) return;
-      pendingPaintRef.current = {
-        request,
-        timer: setTimeout(() => {
-          if (pendingPaintRef.current?.request !== request) return;
-          pendingPaintRef.current = null;
-          setPreview({
-            status: "error",
-            message: t("content.studioAiPaintNoReply"),
-          });
-        }, PAINT_TIMEOUT_MS),
-      };
-      postCommandToBridge({
-        action: "replaceCodeRegion",
-        codeId,
-        html,
-        requestId: request,
-      });
+      paint(codeId, html);
     },
     [
+      clearPendingPaint,
       describePreviewError,
       pageItemZUID,
-      postCommandToBridge,
+      paint,
       previewOrigin,
       previewPassword,
       renderParsleyPreview,
@@ -230,18 +251,26 @@ export const useStudioAiEdit = ({
     (msg: CodeRegionReplaced) => {
       const pending = pendingPaintRef.current;
       if (!pending || msg.requestId !== pending.request) return;
-      clearTimeout(pending.timer);
-      pendingPaintRef.current = null;
+      clearPendingPaint();
       setPreview(
         msg.ok
           ? { status: "painted" }
           : { status: "error", message: t("content.studioAiPaintNotFound") }
       );
     },
-    [t]
+    [clearPendingPaint, t]
   );
 
-  useEffect(() => () => clearPendingPaint(), []);
+  // The canvas reloaded under a staged change (a save of other edits, a
+  // discard, a permission clamp): lock it again and repaint the last render.
+  const handleBridgeReady = useCallback(() => {
+    if (!stagedCodeIdRef.current) return;
+    postCommandToBridge({ action: "setPreviewLock", locked: true });
+    const last = lastPaintRef.current;
+    if (last) paint(last.codeId, last.html);
+  }, [paint, postCommandToBridge]);
+
+  useEffect(() => () => clearPendingPaint(), [clearPendingPaint]);
 
   const stage = (next: string) => {
     if (!pageView || typeof next !== "string") return;
@@ -252,6 +281,7 @@ export const useStudioAiEdit = ({
       return;
     }
     onBeforeStage();
+    postCommandToBridge({ action: "setPreviewLock", locked: true });
     stageLayoutSourceUpdate(pageView.ZUID, next, { replacesSource: true });
     stagedCodeIdRef.current = pageView.ZUID;
     stagedPageRef.current = pageItemZUID;
@@ -290,6 +320,8 @@ export const useStudioAiEdit = ({
     if (!stagedCodeId || pendingLayoutCodeIds.includes(stagedCodeId)) return;
     previewRequestRef.current++;
     clearPendingPaint();
+    lastPaintRef.current = null;
+    postCommandToBridge({ action: "setPreviewLock", locked: false });
     stagedCodeIdRef.current = null;
     setStagedCodeId(null);
     setPreview(null);
@@ -346,5 +378,6 @@ export const useStudioAiEdit = ({
     lastDiscard,
     handleLayoutRegionSaved,
     handleCodeRegionReplaced,
+    handleBridgeReady,
   };
 };
