@@ -368,14 +368,31 @@ describe("Studio AI Assistant", () => {
     const repainted = (commands) =>
       commands.some((c) => c.action === "replaceCodeRegion");
 
+    // Answered with a reload, not a paint. Checked once the reload is seen:
+    // a repaint would have been posted, and echoed, long before it.
+    const reloadedNotPainted = () => {
+      cy.window().its("__canvasLoads", { timeout: 30000 }).should("be.gte", 1);
+      cy.window()
+        .its("__hostCommands")
+        .then((commands) => expect(repainted(commands)).to.eq(false));
+    };
+
     // Back moved only the iframe: this page's render is not painted into it,
-    // and the canvas is sent back.
-    bridgeReady("/some-other-page/");
-    answered().then((commands) => expect(repainted(commands)).to.eq(false));
-    cy.window().its("__canvasLoads", { timeout: 30000 }).should("be.gte", 1);
+    // and the canvas is sent back, again for each different page it reports.
+    bridgeReady("/a/");
+    reloadedNotPainted();
+    bridgeReady("/c/");
+    reloadedNotPainted();
 
     // Back on this page, with query and without its trailing slash: repainted.
     cy.then(() => bridgeReady(`${studioPath.replace(/\/$/, "")}?x=1`));
+    answered().should((commands) => expect(repainted(commands)).to.eq(true));
+
+    // A page that answers under the same other path twice is redirected
+    // there: reloaded once, then painted.
+    bridgeReady("/redirected/");
+    reloadedNotPainted();
+    bridgeReady("/redirected/");
     answered().should((commands) => expect(repainted(commands)).to.eq(true));
   });
 

@@ -29,7 +29,7 @@ const comparablePath = (path: string) => {
 
 // How long the canvas has to acknowledge a paint. A page without Studio's
 // bridge never answers.
-const PAINT_TIMEOUT_MS = 5000;
+const PAINT_TIMEOUT_MS = 15000;
 
 const loadsExternalStylesheet = (source: string) =>
   (source.match(/<link\b[^>]*>/gi) || []).some(
@@ -276,9 +276,10 @@ export const useStudioAiEdit = ({
     [clearPendingPaint, t]
   );
 
-  // Set after reloading a canvas that reported another page, so a page that
-  // always answers under a different path cannot reload forever.
-  const reloadedElsewhereRef = useRef(false);
+  // The other page a canvas last reported, after reloading it once. A page
+  // that answers under the same other path again is redirected there and is
+  // painted; a different path is reloaded again.
+  const reloadedFromRef = useRef<string | null>(null);
 
   // The canvas reloaded under a staged change (a save of other edits, a
   // discard, a permission clamp): lock it again and repaint the last render.
@@ -288,15 +289,17 @@ export const useStudioAiEdit = ({
   const handleBridgeReady = useCallback(
     (path?: string) => {
       if (!stagedCodeIdRef.current) return;
-      const elsewhere =
-        path !== undefined &&
-        comparablePath(path) !== comparablePath(loadedPath);
-      if (elsewhere && !reloadedElsewhereRef.current) {
-        reloadedElsewhereRef.current = true;
+      const reported = path === undefined ? null : comparablePath(path);
+      if (
+        reported !== null &&
+        reported !== comparablePath(loadedPath) &&
+        reported !== reloadedFromRef.current
+      ) {
+        reloadedFromRef.current = reported;
         reloadCanvas();
         return;
       }
-      reloadedElsewhereRef.current = false;
+      reloadedFromRef.current = null;
       postCommandToBridge({ action: "setPreviewLock", locked: true });
       const last = lastPaintRef.current;
       if (last) paint(last.codeId, last.html);
@@ -355,7 +358,7 @@ export const useStudioAiEdit = ({
     previewRequestRef.current++;
     clearPendingPaint();
     lastPaintRef.current = null;
-    reloadedElsewhereRef.current = false;
+    reloadedFromRef.current = null;
     // No unlock: every way out reloads the frame, and the reloaded bridge
     // starts unlocked. Unlocking first would let the painted page post.
     stagedCodeIdRef.current = null;
