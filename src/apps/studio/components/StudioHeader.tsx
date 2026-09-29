@@ -40,6 +40,7 @@ type StudioHeaderProps = {
   isAiPanelOpen: boolean;
   onToggleAiPanel: () => void;
   saveStatus: StudioSaveStatus;
+  onFeedbackClick: () => void;
 };
 
 const MODE_OPTIONS: {
@@ -80,6 +81,7 @@ export const StudioHeader = ({
   isAiPanelOpen,
   onToggleAiPanel,
   saveStatus,
+  onFeedbackClick,
 }: StudioHeaderProps) => {
   const { t } = useTranslation();
   const [codeIdSegment, ...pathSegments] = selectedLayoutBreadcrumb;
@@ -183,6 +185,15 @@ export const StudioHeader = ({
         ) : null}
       </Box>
       <Box display="flex" alignItems="center" gap={1.5}>
+        <Button
+          data-cy="StudioFeedbackButton"
+          color="inherit"
+          size="small"
+          onClick={onFeedbackClick}
+          sx={{ fontWeight: 500 }}
+        >
+          {t("content.feedbackButtonLabel")}
+        </Button>
         <Box minWidth={96}>
           <LanguageSelector
             modelZUIDOverride={pageModelZUID}
