@@ -17,6 +17,16 @@ const PVL_TIMEOUT_MS = 20000;
 // which discard it last showed for the rest of the session.
 let discardSeq = 0;
 
+// A page path compared loosely: no query, hash or trailing slash.
+const comparablePath = (path: string) => {
+  const bare = path.split(/[?#]/)[0].replace(/\/+$/, "") || "/";
+  try {
+    return decodeURI(bare);
+  } catch {
+    return bare;
+  }
+};
+
 // How long the canvas has to acknowledge a paint. A page without Studio's
 // bridge never answers.
 const PAINT_TIMEOUT_MS = 5000;
@@ -63,6 +73,9 @@ type Args = {
   readStagedLayoutSource: (codeId: string) => string | null;
   // Runs before a change is staged; the live canvas is about to change.
   onBeforeStage: () => void;
+  // The page the canvas was loaded with, and how to load it again.
+  loadedPath: string;
+  reloadCanvas: () => void;
   postCommandToBridge: (cmd: {
     action: string;
     codeId?: string;
@@ -89,6 +102,8 @@ export const useStudioAiEdit = ({
   readStagedLayoutSource,
   onBeforeStage,
   postCommandToBridge,
+  loadedPath,
+  reloadCanvas,
 }: Args) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -261,14 +276,33 @@ export const useStudioAiEdit = ({
     [clearPendingPaint, t]
   );
 
+  // Set after reloading a canvas that reported another page, so a page that
+  // always answers under a different path cannot reload forever.
+  const reloadedElsewhereRef = useRef(false);
+
   // The canvas reloaded under a staged change (a save of other edits, a
   // discard, a permission clamp): lock it again and repaint the last render.
-  const handleBridgeReady = useCallback(() => {
-    if (!stagedCodeIdRef.current) return;
-    postCommandToBridge({ action: "setPreviewLock", locked: true });
-    const last = lastPaintRef.current;
-    if (last) paint(last.codeId, last.html);
-  }, [paint, postCommandToBridge]);
+  // Back moves only the iframe, so a canvas now on another page is sent back
+  // instead: this page's render does not belong in it. An older bridge
+  // reports no path.
+  const handleBridgeReady = useCallback(
+    (path?: string) => {
+      if (!stagedCodeIdRef.current) return;
+      const elsewhere =
+        path !== undefined &&
+        comparablePath(path) !== comparablePath(loadedPath);
+      if (elsewhere && !reloadedElsewhereRef.current) {
+        reloadedElsewhereRef.current = true;
+        reloadCanvas();
+        return;
+      }
+      reloadedElsewhereRef.current = false;
+      postCommandToBridge({ action: "setPreviewLock", locked: true });
+      const last = lastPaintRef.current;
+      if (last) paint(last.codeId, last.html);
+    },
+    [loadedPath, paint, postCommandToBridge, reloadCanvas]
+  );
 
   useEffect(() => () => clearPendingPaint(), [clearPendingPaint]);
 
@@ -321,7 +355,9 @@ export const useStudioAiEdit = ({
     previewRequestRef.current++;
     clearPendingPaint();
     lastPaintRef.current = null;
-    postCommandToBridge({ action: "setPreviewLock", locked: false });
+    reloadedElsewhereRef.current = false;
+    // No unlock: every way out reloads the frame, and the reloaded bridge
+    // starts unlocked. Unlocking first would let the painted page post.
     stagedCodeIdRef.current = null;
     setStagedCodeId(null);
     setPreview(null);

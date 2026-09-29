@@ -571,15 +571,19 @@ export const useLayoutReorderState = ({
       for (const codeId of codeIds) {
         const latestSource = templateSourceByCodeIdRef.current[codeId];
         if (typeof latestSource !== "string") {
-          throw new Error(
-            `Unable to resolve cached template for code file ${codeId}.`
+          throw Object.assign(
+            new Error(
+              `Unable to resolve cached template for code file ${codeId}.`
+            ),
+            { savedCount: savedResults.length }
           );
         }
 
         const webView = webViews.find((view) => view.ZUID === codeId);
         if (!webView) {
-          throw new Error(
-            `Unable to resolve code file ${codeId} for layout save.`
+          throw Object.assign(
+            new Error(`Unable to resolve code file ${codeId} for layout save.`),
+            { savedCount: savedResults.length }
           );
         }
 
@@ -614,6 +618,8 @@ export const useLayoutReorderState = ({
           });
         } catch (err) {
           (err as any).failedCodeId = codeId;
+          // The regions written before this one stay written.
+          (err as any).savedCount = savedResults.length;
           throw err;
         }
       }
@@ -683,6 +689,9 @@ export const useLayoutReorderState = ({
                 : t("content.studioLayoutSaveFailed")),
           })
         );
+        // Saved regions left the pending set, an AI preview among them, so
+        // the canvas must reload to show what was written.
+        if (error?.savedCount) refreshPreviewFrame();
         return { failed: true };
       } finally {
         setIsSavingLayout(false);

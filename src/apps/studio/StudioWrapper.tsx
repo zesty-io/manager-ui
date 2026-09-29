@@ -994,8 +994,11 @@ export const StudioWrapper = () => {
     (msg: CodeRegionReplaced) => aiRegionReplacedRef.current(msg),
     []
   );
-  const aiBridgeReadyRef = useRef<() => void>(() => {});
-  const handleAiBridgeReady = useCallback(() => aiBridgeReadyRef.current(), []);
+  const aiBridgeReadyRef = useRef<(path?: string) => void>(() => {});
+  const handleAiBridgeReady = useCallback(
+    (path?: string) => aiBridgeReadyRef.current(path),
+    []
+  );
   const handleLayoutRegionSaved = useCallback(
     (codeId: string) => aiRegionSavedRef.current(codeId),
     []
@@ -2200,6 +2203,8 @@ export const StudioWrapper = () => {
     readStagedLayoutSource,
     onBeforeStage: deselectForPreviewReload,
     postCommandToBridge,
+    loadedPath: previewPath,
+    reloadCanvas: refreshPreviewFrame,
   });
   aiRegionSavedRef.current = handleAiRegionSaved;
   aiRegionReplacedRef.current = handleAiRegionReplaced;

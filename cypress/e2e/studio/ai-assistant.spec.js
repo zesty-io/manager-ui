@@ -297,8 +297,9 @@ describe("Studio AI Assistant", () => {
     expectPreviewing(true);
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
 
-    // The canvas is locked as soon as the change is staged, before the paint,
-    // and unlocked when it is dropped.
+    // The canvas is locked as soon as the change is staged, before the paint.
+    // Dropping it does not unlock: the frame reloads, and the reloaded bridge
+    // starts unlocked.
     const locks = (commands) =>
       commands
         .filter((c) => c.action === "setPreviewLock")
@@ -312,10 +313,70 @@ describe("Studio AI Assistant", () => {
           actions.indexOf("replaceCodeRegion")
         );
       });
+    cy.window().then((win) => {
+      win.__canvasLoads = 0;
+    });
     cy.getBySelector("StudioLayoutCancelButton").click();
+    cy.window().its("__canvasLoads", { timeout: 30000 }).should("be.gte", 1);
     cy.window()
       .its("__hostCommands")
-      .should((commands) => expect(locks(commands)).to.deep.eq([true, false]));
+      .then((commands) => expect(locks(commands)).to.deep.eq([true]));
+  });
+
+  it("sends a canvas that reports another page back instead of repainting it", () => {
+    serveEchoCanvas();
+    stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
+    stubPvl({ statusCode: 200, body: '<p class="studio-e2e-ai">Painted</p>' });
+    visitStudio();
+    recordHostCommands();
+    awaitEchoCanvas();
+    openAiPanel();
+    sendPrompt("Add a line under the heading");
+    paintCommand().then((command) =>
+      replyFromBridge({
+        type: "CODE_REGION_REPLACED",
+        codeId: viewZUID,
+        ok: true,
+        count: 1,
+        requestId: command.requestId,
+      })
+    );
+    cy.getBySelector("StudioAIPreviewStatus").should("not.exist");
+
+    const bridgeReady = (path) =>
+      cy.window().then((win) => {
+        win.__hostCommands = [];
+        win.__canvasLoads = 0;
+        win.dispatchEvent(
+          new win.MessageEvent("message", {
+            data: {
+              source: "studio-bridge",
+              message: { type: "BRIDGE_READY", path },
+            },
+          })
+        );
+      });
+    // The echo of requestLayersTree, which the host posts before deciding,
+    // shows the answer to this BRIDGE_READY is complete.
+    const answered = () =>
+      cy
+        .window()
+        .its("__hostCommands")
+        .should((commands) =>
+          expect(commands.map((c) => c.action)).to.include("requestLayersTree")
+        );
+    const repainted = (commands) =>
+      commands.some((c) => c.action === "replaceCodeRegion");
+
+    // Back moved only the iframe: this page's render is not painted into it,
+    // and the canvas is sent back.
+    bridgeReady("/some-other-page/");
+    answered().then((commands) => expect(repainted(commands)).to.eq(false));
+    cy.window().its("__canvasLoads", { timeout: 30000 }).should("be.gte", 1);
+
+    // Back on this page, with query and without its trailing slash: repainted.
+    cy.then(() => bridgeReady(`${studioPath.replace(/\/$/, "")}?x=1`));
+    answered().should((commands) => expect(repainted(commands)).to.eq(true));
   });
 
   it("repaints and relocks the canvas when it reloads under a staged change", () => {
@@ -375,7 +436,7 @@ describe("Studio AI Assistant", () => {
     );
   });
 
-  it("ignores a reply for an earlier paint, and still takes a late one", () => {
+  it("ignores a reply for another paint, and still takes a late one", () => {
     serveEchoCanvas();
     stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
     stubPvl({ statusCode: 200, body: "<p>preview</p>" });
@@ -851,7 +912,6 @@ describe("Studio AI Assistant", () => {
     cy.location("pathname").should("eq", "/launchpad");
   });
 
-  // Last: it writes the seeded view.
   // Writes the seeded view.
   it("keeps canvas edits sent during a preview out of the saved view", () => {
     // A staged file with elements that carry layout ids, so a canvas edit or
@@ -914,6 +974,7 @@ describe("Studio AI Assistant", () => {
     });
   });
 
+  // Last: it writes the seeded view.
   it("saves every accumulated turn in one write of the exact staged source", () => {
     let firstTurn = "";
     let secondTurnInput = "";

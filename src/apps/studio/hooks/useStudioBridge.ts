@@ -120,7 +120,7 @@ type Args = {
   /** The bridge's answer to a replaceCodeRegion command. */
   onCodeRegionReplaced?: (msg: CodeRegionReplaced) => void;
   /** A freshly loaded canvas is ready, after the host's own setup posts. */
-  onBridgeReady?: () => void;
+  onBridgeReady?: (path?: string) => void;
 };
 
 // Canvas gestures and the edits they stage. While an AI preview is showing,
@@ -160,20 +160,23 @@ export const useStudioBridge = ({
   onBridgeReady,
 }: Args) => {
   const { t } = useTranslation();
-  const handleBridgeReady = useCallback(() => {
-    postCommandToBridge({
-      action: "injectCss",
-      css: bridgeInjectedCss,
-    });
-    syncBridgeInteractionMode(interactionMode);
-    postCommandToBridge({ action: "requestLayersTree" });
-    onBridgeReady?.();
-  }, [
-    interactionMode,
-    onBridgeReady,
-    postCommandToBridge,
-    syncBridgeInteractionMode,
-  ]);
+  const handleBridgeReady = useCallback(
+    (path?: string) => {
+      postCommandToBridge({
+        action: "injectCss",
+        css: bridgeInjectedCss,
+      });
+      syncBridgeInteractionMode(interactionMode);
+      postCommandToBridge({ action: "requestLayersTree" });
+      onBridgeReady?.(path);
+    },
+    [
+      interactionMode,
+      onBridgeReady,
+      postCommandToBridge,
+      syncBridgeInteractionMode,
+    ]
+  );
 
   const handleBridgeError = useCallback(
     (msg: any) => {
@@ -343,7 +346,7 @@ export const useStudioBridge = ({
       }
 
       if (msg.type === "BRIDGE_READY") {
-        handleBridgeReady();
+        handleBridgeReady(typeof msg.path === "string" ? msg.path : undefined);
         return;
       }
 
