@@ -45,9 +45,11 @@ export const ChatHistory = ({
     if (!normalizedSearchTerm) return sessions;
 
     return sessions.filter((session) =>
-      session.title?.toLowerCase().includes(normalizedSearchTerm)
+      (session.title || t("shell.untitledChat"))
+        .toLowerCase()
+        .includes(normalizedSearchTerm)
     );
-  }, [sessions, searchTerm]);
+  }, [sessions, searchTerm, t]);
 
   const handleSearch = useMemo(
     () => debounce((term: string) => setSearchTerm(term), 300),
