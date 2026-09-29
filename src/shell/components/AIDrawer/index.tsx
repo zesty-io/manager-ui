@@ -356,8 +356,20 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
   // failed request would otherwise leak "awaiting live response" state into
   // whatever session the user switches to next.
   useEffect(() => {
-    if (aiError) isAwaitingLiveResponseRef.current = false;
-  }, [aiError]);
+    if (!aiError) return;
+
+    isAwaitingLiveResponseRef.current = false;
+    setResponses((prev) => ({
+      ...prev,
+      pendingPrompt: [
+        ...(prev.pendingPrompt || []),
+        {
+          type: "ERROR",
+          payload: { value: t("shell.errorGeneratingAiResponse") },
+        },
+      ],
+    }));
+  }, [aiError, t]);
 
   // Once a real chat is active, the "force new chat" override is no longer relevant
   useEffect(() => {

@@ -162,6 +162,7 @@
   "emailCommaSeparated": "Email, comma or space separated",
   "enterTwoFactorOtp": "Enter Your 2FA OTP",
   "enterValidEmail": "Please enter a valid email address.",
+  "errorGeneratingAiResponse": "Error generating AI response. Please try again.",
   "errorParsingAiResponse": "Error parsing AI response. Please try again.",
   "expandSidebar": "Expand Sidebar",
   "failedAuthenticateAccount": "Failed to authenticate your account",

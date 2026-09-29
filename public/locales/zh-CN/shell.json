@@ -162,6 +162,7 @@
   "emailCommaSeparated": "电子邮件，以逗号或空格分隔",
   "enterTwoFactorOtp": "输入你的 2FA OTP",
   "enterValidEmail": "请输入有效的电子邮件地址。",
+  "errorGeneratingAiResponse": "生成 AI 响应时出错。请重试。",
   "errorParsingAiResponse": "解析 AI 响应时出错。请重试。",
   "expandSidebar": "展开侧边栏",
   "failedAuthenticateAccount": "无法验证你的账户",

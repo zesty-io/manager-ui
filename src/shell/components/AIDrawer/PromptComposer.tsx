@@ -23,6 +23,7 @@ type PromptComposerProps = {
 
 export type PromptComposerHandle = {
   submit: () => void;
+  getDraft: () => string;
 };
 
 export const PromptComposer = memo(
@@ -59,7 +60,11 @@ export const PromptComposer = memo(
         }
       }, [draft, onSubmit]);
 
-      useImperativeHandle(ref, () => ({ submit: submitDraft }), [submitDraft]);
+      useImperativeHandle(
+        ref,
+        () => ({ submit: submitDraft, getDraft: () => draft }),
+        [submitDraft, draft]
+      );
 
       return (
         <TextField

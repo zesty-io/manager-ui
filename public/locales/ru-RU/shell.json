@@ -162,6 +162,7 @@
   "emailCommaSeparated": "Эл. почта, через запятую или пробел",
   "enterTwoFactorOtp": "Введите OTP для 2FA",
   "enterValidEmail": "Введите действительный адрес электронной почты.",
+  "errorGeneratingAiResponse": "Ошибка при генерации ответа ИИ. Попробуйте ещё раз.",
   "errorParsingAiResponse": "Ошибка при разборе ответа ИИ. Попробуйте ещё раз.",
   "expandSidebar": "Развернуть боковую панель",
   "failedAuthenticateAccount": "Не удалось аутентифицировать вашу учетную запись",

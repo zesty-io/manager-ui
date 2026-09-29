@@ -162,6 +162,7 @@
   "emailCommaSeparated": "ईमेल, कॉमा या स्पेस से अलग",
   "enterTwoFactorOtp": "अपना 2FA OTP दर्ज करें",
   "enterValidEmail": "कृपया एक मान्य ईमेल पता दर्ज करें।",
+  "errorGeneratingAiResponse": "AI प्रतिक्रिया जनरेट करने में त्रुटि। कृपया पुनः प्रयास करें।",
   "errorParsingAiResponse": "AI प्रतिक्रिया पार्स करने में त्रुटि। कृपया फिर से प्रयास करें।",
   "expandSidebar": "साइडबार का विस्तार करें",
   "failedAuthenticateAccount": "आपके खाते को प्रमाणित नहीं किया जा सका",

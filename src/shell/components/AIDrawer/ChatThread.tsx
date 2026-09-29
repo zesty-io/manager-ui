@@ -412,7 +412,9 @@ export const ChatThread = ({
             size="large"
             variant="outlined"
             fullWidth
-            onClick={() => handleGenerateSuggestions(composerSeed)}
+            onClick={() =>
+              handleGenerateSuggestions(composerRef.current?.getDraft() ?? "")
+            }
           >
             {t("shell.generateSuggestions")}
           </Button>

@@ -162,6 +162,7 @@
   "emailCommaSeparated": "E-mail, gescheiden door komma's of spaties",
   "enterTwoFactorOtp": "Voer je 2FA-OTP in",
   "enterValidEmail": "Voer een geldig e-mailadres in.",
+  "errorGeneratingAiResponse": "Fout bij het genereren van het AI-antwoord. Probeer het opnieuw.",
   "errorParsingAiResponse": "Fout bij het verwerken van het AI-antwoord. Probeer het opnieuw.",
   "expandSidebar": "Zijbalk uitklappen",
   "failedAuthenticateAccount": "Kan je account niet verifiëren",

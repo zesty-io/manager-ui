@@ -162,6 +162,7 @@
   "emailCommaSeparated": "Correo electrónico, separado por comas o espacios",
   "enterTwoFactorOtp": "Introduce tu código OTP de 2FA",
   "enterValidEmail": "Introduce una dirección de correo electrónico válida.",
+  "errorGeneratingAiResponse": "Error al generar la respuesta de la IA. Inténtalo de nuevo.",
   "errorParsingAiResponse": "Error al analizar la respuesta de la IA. Inténtalo de nuevo.",
   "expandSidebar": "Expandir barra lateral",
   "failedAuthenticateAccount": "No se pudo autenticar tu cuenta",
