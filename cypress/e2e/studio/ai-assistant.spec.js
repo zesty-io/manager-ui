@@ -54,8 +54,8 @@ describe("Studio AI Assistant", () => {
 
   // The search index is eventually consistent, and Studio resolves its page
   // with one path search. A page seeded moments ago can be missing from it, and
-  // opens as "Preview only" with no AI button. Adds only a seeded page the
-  // index has not returned yet; the rest of the response is real.
+  // opens as "Preview only" with no AI button. Fills in a seeded page only when
+  // the search came back empty; a wrong hit is left to fail.
   const indexSeededPages = () =>
     cy.intercept(
       { method: "GET", url: "**/search/items**", query: { field: "path" } },
@@ -65,8 +65,7 @@ describe("Studio AI Assistant", () => {
           const page = seededPages.find(
             (item) => req.query.q.replace(/^\/|\/$/g, "") === item.web.pathPart
           );
-          if (!page || !Array.isArray(data)) return;
-          if (!data.some((item) => item.meta?.ZUID === page.meta.ZUID)) {
+          if (page && Array.isArray(data) && data.length === 0) {
             data.push(page);
           }
         })
@@ -332,9 +331,19 @@ describe("Studio AI Assistant", () => {
       .its("request.url")
       .should("match", new RegExp(`[?&]zpw=${PASSWORD}$`));
     // The Sentry middleware reports the last action with every error, and a
-    // mutation's actions carry its arguments.
+    // mutation's actions carry its arguments. Waits for the settled action too.
     cy.window()
       .its("__storeActions")
+      .should((actions) => {
+        expect(
+          actions.some(
+            (action) =>
+              action.meta?.arg?.endpointName === "renderParsleyPreview" &&
+              action.meta?.requestStatus !== "pending"
+          ),
+          "the PVL mutation has settled"
+        ).to.eq(true);
+      })
       .then((actions) => {
         const serialized = actions.map((action) => JSON.stringify(action));
         expect(
