@@ -884,20 +884,31 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
         }
       })
       .then(() => {
-        const message = data.publishAt
-          ? i18n.t("content.scheduledPublish", {
-              title,
-              time: meta.localTime,
-              timezone: meta.localTimezone,
-            })
-          : i18n.t("content.publishedNow", { title });
+        let message;
 
-        return dispatch(
-          notify({
-            message,
-            kind: "save",
-          })
-        );
+        if (data.publishAt !== "now" && !!data.publishAt) {
+          message = i18n.t("content.scheduledPublish", {
+            title,
+            time: meta.localTime,
+            timezone: meta.localTimezone,
+          });
+        } else if (
+          data.publishAt === "now" &&
+          !!data?.unpublishAt &&
+          data?.unpublishAt !== "never"
+        ) {
+          message = i18n.t("content.scheduledUnpublish", {
+            title,
+            time: meta.localTime,
+            timezone: meta.localTimezone,
+          });
+        } else if (data.publishAt === "now" && data?.unpublishAt === "never") {
+          message = i18n.t("content.cancelledScheduledUnpublish", { title });
+        } else {
+          message = i18n.t("content.publishedNow", { title });
+        }
+
+        return dispatch(notify({ message, kind: "success" }));
       })
       .then(() => {
         dispatch(
@@ -907,17 +918,25 @@ export function publish(modelZUID, itemZUID, data, meta = {}) {
         );
         return dispatch(fetchItemPublishing(modelZUID, itemZUID));
       })
-      .catch((err) => {
-        const message = data.publishAt
-          ? i18n.t("content.errorScheduling", { title })
-          : i18n.t("content.errorPublishing", { title });
-        dispatch(
-          notify({
-            message,
-            kind: "error",
-          })
-        );
-        throw err;
+      .catch(() => {
+        let message;
+        if (data.publishAt === "now" && data?.unpublishAt === "never") {
+          message = i18n.t("content.errorCancellingScheduledUnpublish", {
+            title,
+          });
+        } else if (data.publishAt !== "now" && !!data.publishAt) {
+          message = i18n.t("content.errorScheduling", { title });
+        } else if (
+          data.publishAt === "now" &&
+          !!data.unpublishAt &&
+          data.unpublishAt !== "never"
+        ) {
+          message = i18n.t("content.errorSchedulingUnpublish", { title });
+        } else {
+          message = i18n.t("content.errorPublishing", { title });
+        }
+        dispatch(notify({ message, kind: "error" }));
+        return { error: message };
       });
   };
 }
@@ -942,7 +961,7 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
     )
       .then((res) => {
         if (res.error) {
-          throw res.error;
+          return Promise.reject(new Error(res.error));
         }
 
         const message = options.version
@@ -952,7 +971,7 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
         return dispatch(
           notify({
             message,
-            kind: "save",
+            kind: "success",
           })
         );
       })
@@ -964,18 +983,14 @@ export function unpublish(modelZUID, itemZUID, publishZUID, options = {}) {
         );
         return dispatch(fetchItemPublishing(modelZUID, itemZUID));
       })
-      .catch((err) => {
+      .catch(() => {
         const message = options.version
           ? i18n.t("content.errorUnschedulingVersion", {
               version: options.version,
             })
           : i18n.t("content.errorUnpublishing", { title });
-        return dispatch(
-          notify({
-            message,
-            kind: "error",
-          })
-        );
+        dispatch(notify({ message, kind: "error" }));
+        return { error: message };
       });
   };
 }
