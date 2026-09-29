@@ -325,8 +325,12 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
 
   // Sync the active chat ZUID from the latest generation response only when that
   // response changes. This prevents restoring a cleared chat from stale mutation data.
+  const handledAiResponseRef = useRef<typeof aiResponse>(undefined);
   useEffect(() => {
     if (!aiResponse?.chatZuid) return;
+    // Handle each response once; re-runs from other deps would re-open a chat the user has since left.
+    if (handledAiResponseRef.current === aiResponse) return;
+    handledAiResponseRef.current = aiResponse;
     // Don't snap back if the user has since navigated away from the session this response was for.
     if (urlChatZUID !== requestedChatZUIDRef.current) return;
 
@@ -597,6 +601,13 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     setIsStartingNewChat(true);
   }, []);
 
+  const handleClearChat = useCallback(() => {
+    // Prevent the auto-select effect from immediately reopening this session.
+    hasAutoSelectedLatestSessionRef.current = true;
+    removeUrlChatZUID();
+    setResponses({});
+  }, [removeUrlChatZUID]);
+
   const handleBackToHistory = useCallback(() => {
     // Prevent the auto-select effect from immediately reopening this session.
     hasAutoSelectedLatestSessionRef.current = true;
@@ -691,7 +702,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
           isLoading={isLoading}
           isLoadingChatSessionLog={isLoadingChatSessionLog}
           urlChatZUID={urlChatZUID}
-          removeUrlChatZUID={removeUrlChatZUID}
+          onClearChat={handleClearChat}
           updatePromptApprovalStatus={updatePromptApprovalStatus}
           composerSeed={composerSeed}
           setComposerSeed={setComposerSeed}

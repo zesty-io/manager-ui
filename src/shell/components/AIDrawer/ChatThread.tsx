@@ -90,7 +90,7 @@ export type ChatThreadProps = {
   isLoading: boolean;
   isLoadingChatSessionLog: boolean;
   urlChatZUID: string | undefined;
-  removeUrlChatZUID: () => void;
+  onClearChat: () => void;
   updatePromptApprovalStatus: ReturnType<
     typeof useUpdatePromptApprovalStatusMutation
   >[0];
@@ -115,7 +115,7 @@ export const ChatThread = ({
   isLoading,
   isLoadingChatSessionLog,
   urlChatZUID,
-  removeUrlChatZUID,
+  onClearChat,
   updatePromptApprovalStatus,
   composerSeed,
   setComposerSeed,
@@ -439,10 +439,7 @@ export const ChatThread = ({
           data-cy="AIDrawerClearChat"
           variant="text"
           color="inherit"
-          onClick={() => {
-            removeUrlChatZUID();
-            setResponses({});
-          }}
+          onClick={onClearChat}
         >
           {t("shell.clearChat")}
         </Button>
