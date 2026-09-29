@@ -103,6 +103,78 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("StudioAIPanel").should("exist");
   };
 
+  // A staged AI change locks layout editing for as long as its preview shows.
+  const expectPreviewing = (previewing) =>
+    previewing
+      ? cy
+          .getBySelector("StudioLayersPanel")
+          .should("have.attr", "aria-disabled", "true")
+      : cy
+          .getBySelector("StudioLayersPanel")
+          .should("not.have.attr", "aria-disabled");
+
+  // Stands in for the preview document: the real preview is cross-origin, so
+  // commands the host sends it are echoed back to the parent to be read. The
+  // bridge's replies are posted from the parent, as the bridge would.
+  const HOST_COMMAND = "E2E_HOST_COMMAND";
+  const serveEchoCanvas = () =>
+    cy.intercept(
+      // PVL is a POST, so only the canvas document matches.
+      { method: "GET", url: /[?&]studio=bridge/ },
+      {
+        headers: { "content-type": "text/html" },
+        body:
+          "<!doctype html><html><body><p>canvas</p><script>" +
+          "window.addEventListener('message',function(e){" +
+          "var d=e.data;if(!d||d.source!=='zesty-studio-host')return;" +
+          "parent.postMessage({source:'studio-bridge',message:{type:'" +
+          HOST_COMMAND +
+          "',payload:d.message.payload}},'*');});" +
+          "</script></body></html>",
+      }
+    );
+  const recordHostCommands = () =>
+    cy.window().then((win) => {
+      win.__hostCommands = [];
+      win.addEventListener("message", (evt) => {
+        if (evt.data?.message?.type === HOST_COMMAND) {
+          win.__hostCommands.push(evt.data.message.payload);
+        }
+      });
+    });
+  // The canvas document may still be loading when a test starts, and a
+  // command posted before its listener exists is lost. Each retry has the
+  // host post again (its answer to BRIDGE_READY) until one is echoed.
+  const awaitEchoCanvas = () =>
+    cy.window().should((win) => {
+      win.dispatchEvent(
+        new win.MessageEvent("message", {
+          data: { source: "studio-bridge", message: { type: "BRIDGE_READY" } },
+        })
+      );
+      expect(win.__hostCommands.map((c) => c.action)).to.include(
+        "requestLayersTree"
+      );
+    });
+  const paintCommand = () =>
+    cy
+      .window()
+      .its("__hostCommands")
+      .should((commands) => {
+        expect(
+          commands.filter((c) => c.action === "replaceCodeRegion")
+        ).to.have.length(1);
+      })
+      .then((commands) =>
+        commands.find((c) => c.action === "replaceCodeRegion")
+      );
+  const replyFromBridge = (message) =>
+    cy
+      .window()
+      .then((win) =>
+        win.postMessage({ source: "studio-bridge", message }, "*")
+      );
+
   const sendPrompt = (prompt) => {
     cy.get('[data-cy="AIChatPrompt"] textarea:not([aria-hidden])').type(prompt);
     cy.getBySelector("AIChatSend").click();
@@ -165,20 +237,15 @@ describe("Studio AI Assistant", () => {
     sendPrompt("Add a line under the heading");
 
     cy.wait("@pvl").then(({ request }) => {
-      expect(request.url).to.match(/^https:\/\/[^/]+\/-\/pvl\//);
+      expect(request.url).to.match(
+        /^https:\/\/[^/]+\/-\/pvl\/\?studio=bridge$/
+      );
       expect(request.headers.authorization).to.match(/^Bearer \S+/);
       expect(request.body).to.contain('name="parsley"');
       expect(request.body).to.contain(ADDED_LINE);
       expect(request.body).to.contain('name="zuid"');
       expect(request.body).to.contain(itemZUID);
     });
-
-    cy.getBySelector("StudioAIPreviewFrame")
-      .should("have.attr", "sandbox", "allow-scripts")
-      .and("have.attr", "srcdoc")
-      .and("contain", "Rendered by PVL")
-      .and("contain", "/site.css")
-      .and("contain", "/site.js");
 
     cy.getBySelector("AIChatCodeEdit")
       .should("contain.text", viewFileName)
@@ -193,154 +260,148 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
   });
 
-  it("previews the page inside the loader, with the instance's head tags", () => {
-    const instanceZUID = new URL(Cypress.config("baseUrl")).host.split(".")[0];
-    const loader = [
-      "(** loader comment **)",
-      '<script src="https://example.test/a.js"></script>',
-      '<link rel="preconnect" href="https://fonts.preconnect.test">',
-      '<link href="https://fonts.loader.test/a.css?x=1&amp;y=2" rel="stylesheet">',
-      '<nav class="e2e-loader">loader</nav>',
-      "{{current_view}}",
-      "<script>window.e2eLoader = 1;</script>",
-    ].join("\n");
-    cy.intercept("GET", "**/v1/web/views?status=dev", (req) =>
-      req.continue((res) => {
-        const views = res.body.data.filter((v) => v.fileName !== "loader");
-        views.push({
-          ...views[0],
-          ZUID: "11-e2e-loader",
-          fileName: "loader",
-          code: loader,
-          contentModelZUID: null,
-        });
-        res.body.data = views;
-      })
-    );
-    cy.intercept("GET", "**/v1/web/headtags", {
-      data: [
-        {
-          ZUID: "21-e2e-1",
-          type: "link",
-          resourceZUID: instanceZUID,
-          sort: 1,
-          attributes: {
-            rel: "stylesheet",
-            href: 'https://fonts.test/css?a=1&b="2"',
-          },
-        },
-        {
-          ZUID: "21-e2e-2",
-          type: "meta",
-          resourceZUID: "7-not-this-page",
-          sort: 2,
-          attributes: { name: "e2e-other-item" },
-        },
-        {
-          ZUID: "21-e2e-3",
-          type: "script",
-          resourceZUID: instanceZUID,
-          sort: 3,
-          attributes: { src: "https://gtm.test/gtm.js" },
-        },
-        {
-          ZUID: "21-e2e-4",
-          type: "link",
-          resourceZUID: instanceZUID,
-          sort: 4,
-          attributes: { rel: "icon", href: "/i.png", onload: "alert(1)" },
-        },
-        {
-          ZUID: "21-e2e-5",
-          type: "meta",
-          resourceZUID: instanceZUID,
-          sort: 5,
-          attributes: { "http-equiv": "refresh", content: "0;url=/away" },
-        },
-      ],
-    });
+  it("paints the PVL render into the canvas through the bridge", () => {
+    serveEchoCanvas();
     stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
-    stubPvl({ statusCode: 200, body: "<p>Rendered by PVL</p>" });
+    stubPvl({ statusCode: 200, body: '<p class="studio-e2e-ai">Painted</p>' });
     visitStudio();
+    recordHostCommands();
+    awaitEchoCanvas();
     openAiPanel();
     sendPrompt("Add a line under the heading");
 
-    cy.wait("@pvl").then(({ request }) => {
-      expect(request.body).to.contain('<nav class="e2e-loader">loader</nav>');
-      expect(request.body).to.contain(ADDED_LINE);
-      expect(request.body).not.to.contain("current_view");
-      expect(request.body).not.to.contain("<script");
-      expect(request.body).not.to.contain("loader comment");
-      expect(request.body).not.to.contain("fonts.loader.test");
-      expect(request.body).not.to.contain("fonts.preconnect.test");
-    });
-    cy.getBySelector("StudioAIPreviewFrame")
-      .should("have.attr", "srcdoc")
-      .and(
-        "contain",
-        '<link rel="stylesheet" href="https://fonts.test/css?a=1&amp;b=&quot;2&quot;">'
-      )
-      .and(
-        "contain",
-        '<link rel="stylesheet" href="https://fonts.loader.test/a.css?x=1&amp;y=2">'
-      )
-      .and("not.contain", "&amp;amp;")
-      .and("not.contain", "fonts.preconnect.test")
-      .and("not.contain", "http-equiv")
-      .and("contain", '<link rel="icon" href="/i.png">')
-      .and("not.contain", "e2e-other-item")
-      .and("not.contain", "gtm.test")
-      .and("not.contain", "onload")
-      .and("contain", "/site.css");
-  });
-
-  it("falls back to the page alone when the loader-wrapped preview is refused", () => {
-    cy.intercept("GET", "**/v1/web/views?status=dev", (req) =>
-      req.continue((res) => {
-        const views = res.body.data.filter((v) => v.fileName !== "loader");
-        views.push({
-          ...views[0],
-          ZUID: "11-e2e-loader",
-          fileName: "loader",
-          code: '<nav class="e2e-loader">loader</nav>\n{{current_view}}',
-          contentModelZUID: null,
-        });
-        res.body.data = views;
-      })
+    cy.wait("@pvl");
+    cy.getBySelector("StudioAIPreviewStatus").should(
+      "contain.text",
+      "Rendering the preview"
     );
-    stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
-    stubPvl({ statusCode: 200, body: "<p>Rendered alone</p>" });
-    // A refused wrapped request reaches the app as a failed fetch: the
-    // edge's 403 carries no CORS headers. Chromium may retry it, so the
-    // requests are collected rather than counted.
-    const bodies = [];
-    cy.intercept({ method: "POST", url: PVL }, (req) => {
-      bodies.push(String(req.body));
-      if (String(req.body).includes("e2e-loader")) {
-        req.reply({ forceNetworkError: true });
-        return;
-      }
-      req.reply({
-        headers: { "access-control-allow-origin": "*" },
-        body: "<p>Rendered alone</p>",
+    paintCommand().then((command) => {
+      expect(command.codeId).to.eq(viewZUID);
+      expect(command.html).to.eq('<p class="studio-e2e-ai">Painted</p>');
+      replyFromBridge({
+        type: "CODE_REGION_REPLACED",
+        codeId: viewZUID,
+        ok: true,
+        count: 1,
+        requestId: command.requestId,
       });
     });
-    visitStudio();
-    openAiPanel();
-    sendPrompt("Add a line under the heading");
-
-    cy.wrap(bodies).should((sent) => {
-      expect(sent[0]).to.contain("e2e-loader");
-      const alone = sent.filter((body) => !body.includes("e2e-loader"));
-      expect(alone).to.have.length(1);
-      expect(alone[0]).to.contain(ADDED_LINE);
-    });
-    cy.getBySelector("StudioAIPreviewWithoutLayout").should("exist");
-    cy.getBySelector("StudioAIPreviewFrame")
-      .should("have.attr", "srcdoc")
-      .and("contain", "Rendered alone");
+    cy.getBySelector("StudioAIPreviewStatus").should("not.exist");
+    cy.getBySelector("StudioAIPreviewError").should("not.exist");
+    expectPreviewing(true);
+    cy.getBySelector("StudioLayoutSaveBar").should("exist");
   });
 
+  it("says so when the canvas cannot paint the preview", () => {
+    serveEchoCanvas();
+    stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
+    stubPvl({ statusCode: 200, body: "<p>preview</p>" });
+    visitStudio();
+    recordHostCommands();
+    awaitEchoCanvas();
+    openAiPanel();
+
+    // The bridge answers that the view's region is not on the page.
+    sendPrompt("Add a line under the heading");
+    paintCommand().then((command) =>
+      replyFromBridge({
+        type: "CODE_REGION_REPLACED",
+        codeId: viewZUID,
+        ok: false,
+        count: 0,
+        reason: "region-not-found",
+        requestId: command.requestId,
+      })
+    );
+    cy.getBySelector("StudioAIPreviewError")
+      .should("contain.text", "does not show this page's view")
+      .and("contain.text", "still staged");
+    cy.getBySelector("StudioLayoutSaveBar").should("exist");
+
+    // A canvas without the bridge never answers.
+    sendPrompt("Add another line");
+    cy.getBySelector("StudioAIPreviewStatus").should("exist");
+    cy.getBySelector("StudioAIPreviewError").should(
+      "contain.text",
+      "did not respond"
+    );
+    expectPreviewing(true);
+  });
+
+  it("ignores canvas gestures while a preview is showing", () => {
+    serveEchoCanvas();
+    stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
+    stubPvl({ statusCode: 200, body: "<p>preview</p>" });
+    visitStudio();
+    recordHostCommands();
+    awaitEchoCanvas();
+    const bridgeMessage = (win, message) =>
+      new win.MessageEvent("message", {
+        data: { source: "studio-bridge", message },
+      });
+    // A canvas mousedown, then a BRIDGE_READY probe the host answers with
+    // requestLayersTree. Both are handled synchronously and the canvas echoes
+    // commands in order, so once the probe's answer is back, a selection the
+    // mousedown caused would already have been posted.
+    const selectThenProbe = () =>
+      cy.window().then((win) => {
+        win.__hostCommands = [];
+        win.dispatchEvent(
+          bridgeMessage(win, {
+            type: "DOM_EVENT",
+            eventType: "mousedown",
+            element: { dataset: { codeId: viewZUID, layoutId: "2" } },
+            breadcrumb: [{ layoutId: "2", label: "h1" }],
+          })
+        );
+        win.dispatchEvent(bridgeMessage(win, { type: "BRIDGE_READY" }));
+      });
+    const selectionPosted = () =>
+      cy
+        .window()
+        .its("__hostCommands")
+        .should((commands) =>
+          expect(commands.map((c) => c.action)).to.include("requestLayersTree")
+        )
+        .then((commands) =>
+          commands.some(
+            (c) =>
+              c.action === "addClassByLayoutId" &&
+              c.className === "studio-selected"
+          )
+        );
+
+    // Control: with nothing staged the mousedown selects. Retried, because
+    // the listener picks up layout mode in an effect after the render that
+    // shows it, and a mousedown in content mode selects nothing.
+    cy.getBySelector("StudioAIButton").should("exist");
+    cy.window().then((win) => {
+      win.__hostCommands = [];
+    });
+    cy.window().should((win) => {
+      win.dispatchEvent(
+        bridgeMessage(win, {
+          type: "DOM_EVENT",
+          eventType: "mousedown",
+          element: { dataset: { codeId: viewZUID, layoutId: "2" } },
+          breadcrumb: [{ layoutId: "2", label: "h1" }],
+        })
+      );
+      expect(
+        win.__hostCommands.some(
+          (c) =>
+            c.action === "addClassByLayoutId" &&
+            c.className === "studio-selected"
+        )
+      ).to.eq(true);
+    });
+
+    openAiPanel();
+    sendPrompt("Add a line under the heading");
+    expectPreviewing(true);
+    selectThenProbe();
+    selectionPosted().should("eq", false);
+  });
   it("stages a reply that lands in the same render as a fields update", () => {
     stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
     stubPvl({ statusCode: 200, body: "<p>preview</p>" });
@@ -365,7 +426,7 @@ describe("Studio AI Assistant", () => {
     sendPrompt("Add a line under the heading");
 
     cy.getBySelector("AIChatCodeEdit").should("exist");
-    cy.getBySelector("StudioAIPreview").should("exist");
+    expectPreviewing(true);
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
   });
 
@@ -396,7 +457,7 @@ describe("Studio AI Assistant", () => {
     sendPrompt("Change the heading text");
     cy.getBySelector("AIChatMessage").should("have.length", 2);
     cy.getBySelector("AIChatNavigate").should("exist");
-    cy.getBySelector("StudioAIPreview").should("not.exist");
+    expectPreviewing(false);
   });
 
   it("survives replies it cannot render", () => {
@@ -423,7 +484,7 @@ describe("Studio AI Assistant", () => {
     sendPrompt("Third");
     cy.getBySelector("AIChatUserInput").should("have.length", 3);
     cy.getBySelector("StudioHeader").should("exist");
-    cy.getBySelector("StudioAIPreview").should("not.exist");
+    expectPreviewing(false);
 
     // A blank file is refused, and no line counts are shown for it.
     sendPrompt("Fourth");
@@ -459,8 +520,9 @@ describe("Studio AI Assistant", () => {
 
     cy.getBySelector("StudioAIPreviewError")
       .should("contain.text", "rejected the file or could not be reached")
+      .and("contain.text", "content filter")
       .and("contain.text", "external stylesheet")
-      .and("contain.text", "Review the change before saving");
+      .and("contain.text", "still staged");
   });
 
   it("leaves a staged AI change alone when a mode switch discards content", () => {
@@ -501,42 +563,12 @@ describe("Studio AI Assistant", () => {
       "aria-pressed",
       "true"
     );
-    cy.getBySelector("StudioAIPreview").should("exist");
+    expectPreviewing(true);
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
 
     cy.window().its("__templateMaps", { timeout: 30000 }).should("be.gte", 1);
     sendPrompt("Anything else?");
     cy.then(() => expect(nextTurnInput).to.eq(staged));
-  });
-
-  it("previews the page alone when the loader pushes it past the size limit", () => {
-    cy.intercept("GET", "**/v1/web/views?status=dev", (req) =>
-      req.continue((res) => {
-        const views = res.body.data.filter((v) => v.fileName !== "loader");
-        views.push({
-          ...views[0],
-          ZUID: "11-e2e-loader",
-          fileName: "loader",
-          code: `<div class="e2e-loader">${"x".repeat(
-            1100 * 1024
-          )}</div>\n{{current_view}}`,
-          contentModelZUID: null,
-        });
-        res.body.data = views;
-      })
-    );
-    stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
-    stubPvl({ statusCode: 200, body: "<p>Rendered alone</p>" });
-    visitStudio();
-    openAiPanel();
-    sendPrompt("Add a line under the heading");
-
-    cy.wait("@pvl").then(({ request }) => {
-      expect(request.body).not.to.contain("e2e-loader");
-      expect(request.body).to.contain(ADDED_LINE);
-    });
-    cy.getBySelector("StudioAIPreviewWithoutLayout").should("exist");
-    cy.getBySelector("StudioAIPreviewError").should("not.exist");
   });
 
   it("notes a discard only in the transcript of the page it happened on", () => {
@@ -556,7 +588,7 @@ describe("Studio AI Assistant", () => {
 
     // Page A: stage, then cancel.
     sendPrompt("Add a line under the heading");
-    cy.getBySelector("StudioAIPreview").should("exist");
+    expectPreviewing(true);
     cy.getBySelector("StudioLayoutCancelButton").click();
     cy.getBySelector("AIChatNotice").should("have.length", 1);
 
@@ -566,7 +598,7 @@ describe("Studio AI Assistant", () => {
     cy.location("search").should("eq", `?path=${otherPath}`);
     cy.getBySelector("AIChatNotice").should("not.exist");
     sendPrompt("Add a line under the heading");
-    cy.getBySelector("StudioAIPreview").should("exist");
+    expectPreviewing(true);
     cy.getBySelector("StudioLayoutCancelButton").click();
     cy.getBySelector("AIChatNotice").should("have.length", 1);
 
@@ -583,11 +615,11 @@ describe("Studio AI Assistant", () => {
     stubPvl({ statusCode: 200, body: "<p>preview</p>" });
     openAiPanel();
     sendPrompt("Add a line under the heading");
-    cy.getBySelector("StudioAIPreview").should("exist");
+    expectPreviewing(true);
 
     cy.getBySelector("AIChatClose").click();
     cy.getBySelector("StudioLayoutCancelButton").click();
-    cy.getBySelector("StudioAIPreview").should("not.exist");
+    expectPreviewing(false);
     openAiPanel();
     cy.getBySelector("AIChatNotice").should("have.length", 1);
   });
@@ -606,11 +638,11 @@ describe("Studio AI Assistant", () => {
     holdsUnload(false);
     openAiPanel();
     sendPrompt("Add a line under the heading");
-    cy.getBySelector("StudioAIPreview").should("exist");
+    expectPreviewing(true);
     holdsUnload(true);
 
     cy.getBySelector("StudioLayoutCancelButton").click();
-    cy.getBySelector("StudioAIPreview").should("not.exist");
+    expectPreviewing(false);
     holdsUnload(false);
     cy.getBySelector("AIChatNotice").should("have.text", "Changes discarded");
     cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
@@ -657,14 +689,14 @@ describe("Studio AI Assistant", () => {
     stubPvl({ statusCode: 200, body: "<p>preview</p>" });
     openAiPanel();
     sendPrompt("Add a line under the heading");
-    cy.getBySelector("StudioAIPreview").should("exist");
+    expectPreviewing(true);
     sendPrompt("Take me to the content item");
 
     cy.getBySelector("AIChatNavigate").click();
     cy.getBySelector("PendingEditsModal").should("exist");
     cy.getBySelector("PendingEditsModalCancel").click();
     cy.location("pathname").should("eq", "/studio");
-    cy.getBySelector("StudioAIPreview").should("exist");
+    expectPreviewing(true);
 
     cy.getBySelector("AIChatNavigate").click();
     cy.getBySelector("PendingEditsModalDiscard").click();
@@ -739,7 +771,7 @@ describe("Studio AI Assistant", () => {
       expect(request.body.code).to.eq(staged);
     });
     cy.getBySelector("StudioSaveStatus").should("have.text", "Saved");
-    cy.getBySelector("StudioAIPreview").should("not.exist");
+    expectPreviewing(false);
     cy.get("@updateWebView.all").should("have.length", 1);
 
     // A later, non-AI layout edit is not "Saved".

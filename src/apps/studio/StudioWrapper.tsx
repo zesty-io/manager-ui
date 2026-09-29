@@ -76,7 +76,7 @@ import {
 } from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
 import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
-import { useStudioAiEdit } from "./hooks/useStudioAiEdit";
+import { CodeRegionReplaced, useStudioAiEdit } from "./hooks/useStudioAiEdit";
 import { getRefRegistry } from "../../engine/refRegistry";
 import { useMultiPermission } from "shell/hooks/use-permissions";
 import { MediaApp } from "../media/src/app";
@@ -288,6 +288,9 @@ export const StudioWrapper = () => {
       // `previewValue` is markup and should be parsed rather than written as
       // text (a wysiwyg/markdown field). Text slots only.
       previewAsHtml?: boolean;
+      // Echoed by the bridge so a reply can be matched to its command
+      // (replaceCodeRegion).
+      requestId?: number;
     }) => {
       const iframeWindow = iframeRef.current?.contentWindow;
       if (!iframeWindow) return;
@@ -980,6 +983,15 @@ export const StudioWrapper = () => {
 
   // The layout hook is built before the AI hook that needs to hear its saves.
   const aiRegionSavedRef = useRef<(codeId: string) => void>(() => {});
+  // Likewise for the bridge listener, built before the AI hook.
+  const aiCanvasLockedRef = useRef(false);
+  const aiRegionReplacedRef = useRef<(msg: CodeRegionReplaced) => void>(
+    () => {}
+  );
+  const handleCodeRegionReplaced = useCallback(
+    (msg: CodeRegionReplaced) => aiRegionReplacedRef.current(msg),
+    []
+  );
   const handleLayoutRegionSaved = useCallback(
     (codeId: string) => aiRegionSavedRef.current(codeId),
     []
@@ -1738,6 +1750,8 @@ export const StudioWrapper = () => {
     setIsNavigating,
     onBridgeFieldInput: handleBridgeFieldInput,
     onStaticEditImage: setImageEditState,
+    canvasLockedRef: aiCanvasLockedRef,
+    onCodeRegionReplaced: handleCodeRegionReplaced,
   });
 
   const handlePreviewFrameLoad = useCallback(() => {
@@ -2161,12 +2175,12 @@ export const StudioWrapper = () => {
     usesLayoutGrammar(interactionMode) && canEditLayout && !isFreestyleLayout;
   const {
     pageView: aiPageView,
-    previewOrigin: aiPreviewOrigin,
     isPreviewing: isAiPreviewing,
     preview: aiPreview,
     saveStatus: aiSaveStatus,
     lastDiscard: aiLastDiscard,
     handleLayoutRegionSaved: handleAiRegionSaved,
+    handleCodeRegionReplaced: handleAiRegionReplaced,
   } = useStudioAiEdit({
     active: isAiPanelOpen && aiAllowed,
     webViews,
@@ -2179,8 +2193,11 @@ export const StudioWrapper = () => {
     stageLayoutSourceUpdate,
     readStagedLayoutSource,
     onBeforeStage: deselectForPreviewReload,
+    postCommandToBridge,
   });
   aiRegionSavedRef.current = handleAiRegionSaved;
+  aiRegionReplacedRef.current = handleAiRegionReplaced;
+  aiCanvasLockedRef.current = isAiPreviewing;
   const canUseAi = aiAllowed && !!aiPageView;
   const showAiPanel = isAiPanelOpen && canUseAi;
 
@@ -2379,32 +2396,29 @@ export const StudioWrapper = () => {
                 disabled={isAiPreviewing}
               />
             </ResizableContainer>
-            <StudioPreview
-              iframeRef={iframeRef}
-              iframeSrc={iframeSrc}
-              isNavigating={isNavigating}
-              isBusy={isRefreshing || studioSaving || isSavingLayout}
-              onLoad={handlePreviewFrameLoad}
-              previewSlot={
-                isAiPreviewing ? (
-                  <StudioAIPreview
-                    preview={aiPreview ?? { status: "loading" }}
-                    previewOrigin={aiPreviewOrigin}
-                    previewPassword={previewLock?.value}
-                    pageItemZUID={pageItemZUID}
-                  />
-                ) : null
-              }
-              overlaySlot={
-                usesLayoutGrammar(interactionMode) && showFreestyleAlert ? (
-                  <StudioFreestyleAlert
-                    showEditAction
-                    onEditInFreestyle={handleEditInFreestyle}
-                    onDismiss={dismissFreestyleAlert}
-                  />
-                ) : null
-              }
-            />
+            {/* The AI preview's status sits above the canvas, never over it:
+                once painted, the canvas is the preview. */}
+            <Box display="flex" flexDirection="column" flex="1" minWidth={0}>
+              {isAiPreviewing && aiPreview ? (
+                <StudioAIPreview preview={aiPreview} />
+              ) : null}
+              <StudioPreview
+                iframeRef={iframeRef}
+                iframeSrc={iframeSrc}
+                isNavigating={isNavigating}
+                isBusy={isRefreshing || studioSaving || isSavingLayout}
+                onLoad={handlePreviewFrameLoad}
+                overlaySlot={
+                  usesLayoutGrammar(interactionMode) && showFreestyleAlert ? (
+                    <StudioFreestyleAlert
+                      showEditAction
+                      onEditInFreestyle={handleEditInFreestyle}
+                      onDismiss={dismissFreestyleAlert}
+                    />
+                  ) : null
+                }
+              />
+            </Box>
             {showAiPanel ? (
               <StudioAIPanel
                 onClose={() => setIsAiPanelOpen(false)}

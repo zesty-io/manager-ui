@@ -7,8 +7,6 @@ type StudioPreviewProps = {
   isNavigating: boolean;
   isBusy: boolean;
   onLoad: () => void;
-  // Replaces the live canvas, beneath the refresh overlay.
-  previewSlot?: ReactNode;
   // Floats over the top of the canvas, above the refresh overlay.
   overlaySlot?: ReactNode;
 };
@@ -19,7 +17,6 @@ export const StudioPreview = ({
   isNavigating,
   isBusy,
   onLoad,
-  previewSlot,
   overlaySlot,
 }: StudioPreviewProps) => (
   <Box position="relative" flex="1" minWidth={0}>
@@ -38,7 +35,6 @@ export const StudioPreview = ({
         bgcolor: "common.white",
       }}
     />
-    {previewSlot}
     {isNavigating ? (
       <Box
         component="div"

@@ -17,59 +17,29 @@ const PVL_TIMEOUT_MS = 20000;
 // which discard it last showed for the rest of the session.
 let discardSeq = 0;
 
-const isExternalStylesheet = (tag: string) =>
-  /stylesheet/i.test(tag) && /\bhref\s*=\s*["']?(?:https?:)?\/\//i.test(tag);
+// How long the canvas has to acknowledge a paint. A page without Studio's
+// bridge never answers.
+const PAINT_TIMEOUT_MS = 5000;
 
 const loadsExternalStylesheet = (source: string) =>
-  (source.match(/<link\b[^>]*>/gi) || []).some(isExternalStylesheet);
+  (source.match(/<link\b[^>]*>/gi) || []).some(
+    (tag) =>
+      /stylesheet/i.test(tag) && /\bhref\s*=\s*["']?(?:https?:)?\/\//i.test(tag)
+  );
 
-const CURRENT_VIEW = /\{\{\s*current_view\s*\}\}/;
-
-// A loader <link>'s href, when its rel is exactly "stylesheet". Read by the
-// browser, so entities, quoting and data-* attributes are handled; an href
-// holding Parsley cannot resolve here and is skipped.
-const readStylesheetHref = (tag: string) => {
-  const link = new DOMParser()
-    .parseFromString(tag, "text/html")
-    .querySelector("link");
-  const rel = (link?.getAttribute("rel") || "").trim().toLowerCase();
-  const href = link?.getAttribute("href");
-  return rel === "stylesheet" && href && !href.includes("{{") ? href : null;
-};
-
-// The loader around the staged view, minus what the preview only needs as
-// markup: scripts, Parsley comments and links. Stylesheet hrefs are returned
-// for the preview's <head>. Null when the loader has no {{current_view}} left.
-const wrapInLoader = (loader: string | null, view: string) => {
-  if (!loader) return null;
-  const stylesheets: string[] = [];
-  const stripped = loader
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, "")
-    .replace(/<script\b[^>]*\/>/gi, "")
-    .replace(/\(\*\*[\s\S]*?\*\*\)/g, "")
-    .replace(/<link\b[^>]*>/gi, (tag) => {
-      const href = readStylesheetHref(tag);
-      if (href) stylesheets.push(href);
-      return "";
-    });
-  if (!CURRENT_VIEW.test(stripped)) return null;
-  return {
-    payload: stripped.replace(new RegExp(CURRENT_VIEW.source, "g"), () => view),
-    stylesheets,
-  };
-};
-
+// What the preview is doing. Once painted, the live canvas shows it.
 export type StudioAiPreview =
   | { status: "loading" }
-  | {
-      status: "ready";
-      html: string;
-      // External stylesheets taken out of the loader.
-      stylesheets: string[];
-      // The loader-wrapped request failed; this is the view alone.
-      withoutLayout: boolean;
-    }
+  | { status: "painted" }
   | { status: "error"; message: string };
+
+export type CodeRegionReplaced = {
+  codeId?: string;
+  ok?: boolean;
+  count?: number;
+  reason?: string;
+  requestId?: number;
+};
 
 export type StudioSaveStatus = "unsaved" | "saved" | null;
 
@@ -91,13 +61,20 @@ type Args = {
     options?: { replacesSource?: boolean }
   ) => void;
   readStagedLayoutSource: (codeId: string) => string | null;
-  // Runs before a change is staged; the live canvas is about to be covered.
+  // Runs before a change is staged; the live canvas is about to change.
   onBeforeStage: () => void;
+  postCommandToBridge: (cmd: {
+    action: string;
+    codeId?: string;
+    html?: string;
+    requestId?: number;
+  }) => void;
 };
 
 // AI edits to the page's own view. The model's whole-file replacement is
-// staged through the layout save funnel and previewed by rendering it with
-// WebEngine's PVL endpoint, so nothing reaches the instance until Save.
+// staged through the layout save funnel, rendered by WebEngine's PVL
+// endpoint, and painted by the bridge into the view's region of the live
+// canvas, so nothing reaches the instance until Save.
 export const useStudioAiEdit = ({
   active,
   webViews,
@@ -110,6 +87,7 @@ export const useStudioAiEdit = ({
   stageLayoutSourceUpdate,
   readStagedLayoutSource,
   onBeforeStage,
+  postCommandToBridge,
 }: Args) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -127,6 +105,11 @@ export const useStudioAiEdit = ({
   } | null>(null);
   const savedRef = useRef(false);
   const stagedPageRef = useRef("");
+  // The paint the canvas has yet to acknowledge.
+  const pendingPaintRef = useRef<{
+    request: number;
+    timer: ReturnType<typeof setTimeout>;
+  } | null>(null);
 
   // Freestyle layouts live in a per-item `/z/pvl/` view the model does not
   // render through, so they are never the target.
@@ -144,11 +127,6 @@ export const useStudioAiEdit = ({
   // Always https: the dev config's http:// preview host redirects, and a
   // preflighted request cannot follow a redirect.
   const previewOrigin = `https://${randomHashID ?? ""}${CONFIG.URL_PREVIEW}`;
-
-  const loaderView = useMemo(
-    () => webViews.find((view) => view?.fileName === "loader") || null,
-    [webViews]
-  );
 
   const readSource = useCallback(() => {
     if (!pageView) return "";
@@ -168,8 +146,8 @@ export const useStudioAiEdit = ({
           : t("content.studioAiPreviewTimeout", { seconds });
       }
       // Only a 200 carries CORS headers, so every error PVL answers (a Parsley
-      // 400, the edge's 403, the load balancer's 413) reaches the browser as
-      // a failed fetch with no status to read.
+      // 400, the edge's content-filter 403, the load balancer's 413) reaches
+      // the browser as a failed fetch with no status to read.
       const failed = t("content.studioAiPreviewRejected");
       return loadsExternalStylesheet(source)
         ? `${failed} ${t("content.studioAiPreviewStylesheet")}`
@@ -178,84 +156,92 @@ export const useStudioAiEdit = ({
     [t]
   );
 
+  const clearPendingPaint = () => {
+    if (pendingPaintRef.current) clearTimeout(pendingPaintRef.current.timer);
+    pendingPaintRef.current = null;
+  };
+
   const renderPreview = useCallback(
-    async (view: string) => {
+    async (view: string, codeId: string) => {
       const request = ++previewRequestRef.current;
-      const loader = loaderView
-        ? readStagedLayoutSource(loaderView.ZUID) ?? loaderView.code
-        : null;
+      clearPendingPaint();
       // Multipart encoding sends every line ending as CRLF.
-      const fits = (parsley: string) =>
-        new TextEncoder().encode(parsley.replace(/\r\n|\r|\n/g, "\r\n"))
-          .length <= PVL_MAX_PARSLEY_BYTES;
-      if (!fits(view)) {
+      const bytes = new TextEncoder().encode(
+        view.replace(/\r\n|\r|\n/g, "\r\n")
+      ).length;
+      if (bytes > PVL_MAX_PARSLEY_BYTES) {
         setPreview({
           status: "error",
           message: t("content.studioAiPreviewTooLarge"),
         });
         return;
       }
-      const wrapped = wrapInLoader(loader, view);
-      const stylesheets = wrapped?.stylesheets ?? [];
-      // The loader is extra: past the size limit the page goes alone.
-      const wrappedPayload =
-        wrapped && fits(wrapped.payload) ? wrapped.payload : null;
       setPreview({ status: "loading" });
-      const query = previewPassword
-        ? `?zpw=${encodeURIComponent(previewPassword)}`
-        : "";
-      const render = (parsley: string) =>
-        renderParsleyPreview({
-          url: `${previewOrigin}/-/pvl/${query}`,
-          parsley,
+      // The bridge paints the result between the canvas's own region markers.
+      const query = new URLSearchParams({ studio: "bridge" });
+      if (previewPassword) query.set("zpw", previewPassword);
+      let html: string;
+      try {
+        html = await renderParsleyPreview({
+          url: `${previewOrigin}/-/pvl/?${query}`,
+          parsley: view,
           itemZUID: pageItemZUID,
           timeout: PVL_TIMEOUT_MS,
         }).unwrap();
-      const show = (html: string, withoutLayout: boolean) => {
-        if (request !== previewRequestRef.current) return;
-        setPreview({ status: "ready", html, stylesheets, withoutLayout });
-      };
-      const fail = (error: unknown) => {
+      } catch (error) {
         if (request !== previewRequestRef.current) return;
         setPreview({
           status: "error",
           message: describePreviewError(error, view),
         });
-      };
-      const renderAlone = async () => {
-        try {
-          show(await render(view), !!wrapped);
-        } catch (error) {
-          fail(error);
-        }
-      };
-      if (!wrappedPayload) {
-        await renderAlone();
         return;
       }
-      try {
-        show(await render(wrappedPayload), false);
-      } catch (error) {
-        // Refused inside the loader: try the page alone.
-        if ((error as FetchBaseQueryError)?.status !== "FETCH_ERROR") {
-          fail(error);
-          return;
-        }
-        if (request !== previewRequestRef.current) return;
-        await renderAlone();
-      }
+      if (request !== previewRequestRef.current) return;
+      pendingPaintRef.current = {
+        request,
+        timer: setTimeout(() => {
+          if (pendingPaintRef.current?.request !== request) return;
+          pendingPaintRef.current = null;
+          setPreview({
+            status: "error",
+            message: t("content.studioAiPaintNoReply"),
+          });
+        }, PAINT_TIMEOUT_MS),
+      };
+      postCommandToBridge({
+        action: "replaceCodeRegion",
+        codeId,
+        html,
+        requestId: request,
+      });
     },
     [
       describePreviewError,
-      loaderView,
       pageItemZUID,
+      postCommandToBridge,
       previewOrigin,
       previewPassword,
-      readStagedLayoutSource,
       renderParsleyPreview,
       t,
     ]
   );
+
+  const handleCodeRegionReplaced = useCallback(
+    (msg: CodeRegionReplaced) => {
+      const pending = pendingPaintRef.current;
+      if (!pending || msg.requestId !== pending.request) return;
+      clearTimeout(pending.timer);
+      pendingPaintRef.current = null;
+      setPreview(
+        msg.ok
+          ? { status: "painted" }
+          : { status: "error", message: t("content.studioAiPaintNotFound") }
+      );
+    },
+    [t]
+  );
+
+  useEffect(() => () => clearPendingPaint(), []);
 
   const stage = (next: string) => {
     if (!pageView || typeof next !== "string") return;
@@ -271,7 +257,7 @@ export const useStudioAiEdit = ({
     stagedPageRef.current = pageItemZUID;
     setStagedCodeId(pageView.ZUID);
     setSaveStatus("unsaved");
-    void renderPreview(next);
+    void renderPreview(next, pageView.ZUID);
   };
   const stageRef = useRef(stage);
   stageRef.current = stage;
@@ -303,6 +289,7 @@ export const useStudioAiEdit = ({
   useEffect(() => {
     if (!stagedCodeId || pendingLayoutCodeIds.includes(stagedCodeId)) return;
     previewRequestRef.current++;
+    clearPendingPaint();
     stagedCodeIdRef.current = null;
     setStagedCodeId(null);
     setPreview(null);
@@ -353,11 +340,11 @@ export const useStudioAiEdit = ({
 
   return {
     pageView,
-    previewOrigin,
     isPreviewing: !!stagedCodeId,
     preview,
     saveStatus,
     lastDiscard,
     handleLayoutRegionSaved,
+    handleCodeRegionReplaced,
   };
 };
