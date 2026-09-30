@@ -1,7 +1,7 @@
 export const meta = {
   name: "localize",
   description:
-    "Localization pipeline for any target — file, folder, or sub-app: Scout → Extract+Wire → Composer → Verifier",
+    "Localization pipeline for any target — file, folder, or sub-app: Scout → Extract+Wire → Composer → Translate → Verifier",
   phases: [
     {
       title: "Discovery",
@@ -15,7 +15,13 @@ export const meta = {
     },
     {
       title: "Locale Files",
-      detail: "Write en-US JSON + copy to 5 locales for manual translation",
+      detail:
+        "Write en-US JSON + scaffold keys and CLDR plural forms in 5 locales with English placeholders",
+    },
+    {
+      title: "Translate",
+      detail:
+        "Replace the new English placeholders in the 5 locales with translations (one agent per locale)",
     },
     {
       title: "Verify",
@@ -58,6 +64,13 @@ const targetDisplay = targetPaths.join(", ");
 const lazyLoadRoot = resolvedArgs.lazyLoadRoot || null;
 const NON_EN_LOCALES = ["es-ES", "hi-IN", "zh-CN", "ru-RU", "nl-NL"];
 const ALL_LOCALES = ["en-US", "es-ES", "hi-IN", "zh-CN", "ru-RU", "nl-NL"];
+
+// Worktrees have two roots for the same relative path; pin every agent to the one it runs in
+const PATH_RULE = `## Repository root (read first)
+Run \`git rev-parse --show-toplevel\` before touching any file and call the result REPO_ROOT. Every relative path in these instructions (public/locales/..., src/...) is relative to REPO_ROOT. Read and write files only through absolute paths under REPO_ROOT. Never use any other checkout of this repository, even if another path appears in your context.
+
+`;
+const repoAgent = (prompt, opts) => agent(PATH_RULE + prompt, opts);
 
 // Maps each non-EN locale to its required CLDR plural forms.
 // Value is the en-US form to use as the English placeholder for that form.
@@ -225,6 +238,8 @@ const VERIFY_SCHEMA = {
     "jsonValid",
     "keyParityPassed",
     "brokenKeys",
+    "placeholdersPreserved",
+    "translationsComplete",
     "lazyLoadConfirmed",
     "issues",
   ],
@@ -236,6 +251,10 @@ const VERIFY_SCHEMA = {
     keyParityPassed: { type: "boolean" },
     keyParityIssues: { type: "array", items: { type: "string" } },
     brokenKeys: { type: "array", items: { type: "string" } },
+    placeholdersPreserved: { type: "boolean" },
+    placeholderIssues: { type: "array", items: { type: "string" } },
+    translationsComplete: { type: "boolean" },
+    untranslatedKeys: { type: "array", items: { type: "string" } },
     lazyLoadConfirmed: { type: "boolean" },
     issues: { type: "array", items: { type: "string" } },
   },
@@ -246,7 +265,7 @@ const VERIFY_SCHEMA = {
 // ─────────────────────────────────────────────────────────────────────────────
 phase("Discovery");
 
-const scout = await agent(
+const scout = await repoAgent(
   `
 You are the Scout for a localization workflow. Your job is full discovery: build a complete, batched file list from the target path(s), including transitive imports.
 
@@ -414,7 +433,7 @@ const dedupMapJSON = JSON.stringify(scout.existingKeyMap);
 const extractionResults = await parallel(
   scout.batches.map(
     (batch) => () =>
-      agent(
+      repoAgent(
         `
 You are an Extract-and-Wire agent for a localization pass on namespace "${ns}".
 In a single pass per file: identify all user-facing strings, assign keys, then replace hardcoded strings with t() calls.
@@ -638,7 +657,7 @@ log(
 // ─────────────────────────────────────────────────────────────────────────────
 const effectiveLazyLoadRoot = lazyLoadRoot || scout.discoveredLazyLoadRoot;
 if (effectiveLazyLoadRoot && scout.needsLazyLoadPlumbing) {
-  await agent(
+  await repoAgent(
     `
 Add lazy-load plumbing to ${effectiveLazyLoadRoot} for the "${ns}" namespace.
 
@@ -724,7 +743,7 @@ const affectedNamespaces = Object.keys(keysByNs);
 const nsKeysJSON = JSON.stringify(keysByNs, null, 2);
 
 // Composer: write en-US files + copy new keys to non-EN locale files
-await agent(
+await repoAgent(
   `
 You are the Composer. Write or update locale JSON files with newly extracted strings.
 
@@ -753,7 +772,7 @@ Action: ${
 
 ## Part 2 — Copy new keys to non-EN locale files
 
-For each of the following files, copy any key that exists in the corresponding en-US file but is missing from the locale file, using the en-US value as a placeholder (the user will translate manually).
+For each of the following files, copy any key that exists in the corresponding en-US file but is missing from the locale file, using the en-US value as a placeholder (the Translate phase replaces them afterwards).
 Do NOT overwrite or remove keys that already exist in the locale file.
 If a locale file does not exist yet, create it with the same content as the en-US file.
 
@@ -787,13 +806,102 @@ After all writes, read back each en-US file you touched and confirm it parses as
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
+// PHASE 3b — TRANSLATE (1 agent per locale, parallel)
+// ─────────────────────────────────────────────────────────────────────────────
+phase("Translate");
+
+const TRANSLATE_SCHEMA = {
+  type: "object",
+  required: ["translated", "skipped"],
+  properties: {
+    translated: {
+      type: "array",
+      items: {
+        type: "object",
+        required: ["file", "key"],
+        properties: {
+          file: { type: "string" },
+          key: { type: "string" },
+        },
+      },
+    },
+    skipped: { type: "array", items: { type: "string" } },
+  },
+};
+
+const runTranslator = (locale, retryNote = "") =>
+  repoAgent(
+    `
+You are the Translator for locale "${locale}". The Composer just scaffolded new keys in public/locales/${locale}/<namespace>.json using English placeholder values. Replace those placeholders with real ${locale} translations.
+
+## Newly added keys by namespace (bareKey → English value; pluralizable keys appear as _one/_other)
+${nsKeysJSON}
+
+## Files to update
+${affectedNamespaces
+  .map((keyNs) => `- public/locales/${locale}/${keyNs}.json`)
+  .join("\n")}
+
+## Rules
+- Source of truth is public/locales/en-US/<namespace>.json. Only touch keys listed above (for plurals, every ${locale} form of a listed base key, e.g. base "x" → x_one, x_few, x_many, x_other as they exist in the locale file).
+- Replace a value that still equals the English placeholder. If a listed key (or a required plural form) is missing from the ${locale} file, add it with its translation, keeping the file's alphabetical key order. Never change or remove any other existing key or value.
+- Keep every {{var}} interpolation placeholder exactly as written (same name, same braces).
+- Keys ending in "Rich" contain angle-bracket component placeholders (<strong>, <1>, </1>, <0/>, ...). Keep those tags exactly as written and in place; translate only the natural-language text around them.
+- Leave brand and technical tokens untranslated: Zesty, Zesty Manager, Content One, Bynder, Google Analytics, ZUID, HTML element names, code snippets, URLs.
+- Plural keys: give each form a distinct, correctly inflected translation for ${locale}. Required forms: ${JSON.stringify(
+      Object.keys(PLURAL_SCAFFOLD[locale])
+    )}. For the listed keys, remove any plural form outside that set (e.g. _one on zh-CN). Do not copy one string into several forms unless the language genuinely inflects identically (e.g. Spanish _many may equal _other).
+- Formatting: no decorative leading/trailing characters (colons, em-dashes, wrapping parentheses), no ALL CAPS values, no HTML in values. Keep the same punctuation style as the English value.
+- "skipped" is ONLY for values that are entirely a brand name, code token or URL and must stay identical to English. Never put a key in "skipped" just because you did not get to it; ordinary UI copy must always be translated.
+- Write valid JSON (2-space indent, same formatting as the existing file) and read each file back to confirm it parses.
+- Return every key you translated as { file, key } and any deliberately unchanged keys in "skipped".
+${retryNote}
+`,
+    {
+      label: `translate:${locale}${retryNote ? ":retry" : ""}`,
+      phase: "Translate",
+      model: "haiku",
+      schema: TRANSLATE_SCHEMA,
+    }
+  );
+
+const translationResults =
+  affectedNamespaces.length === 0
+    ? NON_EN_LOCALES.map(() => null)
+    : await parallel(
+        NON_EN_LOCALES.map((locale) => async () => {
+          const first = await runTranslator(locale);
+          if (first?.translated?.length) return first;
+          // One retry when a locale comes back with nothing translated
+          return runTranslator(
+            locale,
+            `\n## Retry\nYour previous attempt translated nothing and marked these keys as skipped: ${JSON.stringify(
+              first?.skipped || []
+            )}. These are ordinary UI strings, not brand or code tokens. Translate every listed key into ${locale} now.`
+          );
+        })
+      );
+
+const autoTranslated = NON_EN_LOCALES.map((locale, i) => ({
+  locale,
+  keys: (translationResults[i]?.translated || []).map(
+    (t) => `${t.file}#${t.key}`
+  ),
+  skipped: translationResults[i]?.skipped || [],
+}));
+log(
+  "Auto-translated (haiku) — needs human/native QA: " +
+    autoTranslated.map((t) => `${t.locale}=${t.keys.length}`).join(" · ")
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
 // PHASE 4 — VERIFIER
 // ─────────────────────────────────────────────────────────────────────────────
 phase("Verify");
 
 const affectedNsJSON = JSON.stringify(affectedNamespaces);
 
-const verify = await agent(
+const verify = await repoAgent(
   `
 Run all verification checks for the "${ns}" localization pass and return structured results.
 
@@ -834,7 +942,16 @@ Search for all t() and i18n.t() calls using the "${ns}" namespace:
 For each key found (e.g. "${ns}.someKey"), check that "someKey" exists in public/locales/en-US/${ns}.json.
 List any broken references (key used in code but not in JSON). Add to brokenKeys array.
 
-## Check 5: Lazy-load plumbing
+## Check 5: Translation placeholder integrity
+For every key in the newly added set below, compare each non-English locale value against the en-US value in public/locales/<locale>/<namespace>.json (for plural keys, compare every form against the en-US _other value):
+${nsKeysJSON}
+- The set of {{var}} interpolations must be identical (same names, none missing or added).
+- For keys ending in "Rich", the set of angle-bracket tags (<strong>, <1>, </1>, <0/>, ...) must be identical to en-US.
+List each mismatch as "<locale>/<namespace>#<key>: <what differs>" in placeholderIssues and set placeholdersPreserved: false if there are any.
+
+Also check that translation actually happened: for each non-English locale and each of those keys (every plural form), the value must differ from the en-US value. A value identical to en-US is acceptable only when the whole string is a brand/technical token (Zesty, ZUID, a URL, a code snippet, ...) with no translatable words; the {{var}} placeholders alone do not count as translated. List every other identical value as "<locale>/<namespace>#<key>" in untranslatedKeys and set translationsComplete: false if there are any.
+
+## Check 6: Lazy-load plumbing
 ${
   effectiveLazyLoadRoot
     ? `Read ${effectiveLazyLoadRoot} and confirm it has both a <Suspense> boundary AND a useTranslation("${ns}") call. Set lazyLoadConfirmed accordingly.`
@@ -850,11 +967,15 @@ const verifyPassed =
   verify.tscPassed &&
   verify.jsonValid &&
   verify.keyParityPassed &&
+  verify.placeholdersPreserved &&
+  verify.translationsComplete &&
   verify.brokenKeys.length === 0;
 log(
   `Verify: tsc=${verify.tscPassed ? "✓" : "✗"} · JSON=${
     verify.jsonValid ? "✓" : "✗"
-  } · parity=${verify.keyParityPassed ? "✓" : "✗"} · brokenKeys=${
+  } · parity=${verify.keyParityPassed ? "✓" : "✗"} · placeholders=${
+    verify.placeholdersPreserved ? "✓" : "✗"
+  } · translated=${verify.translationsComplete ? "✓" : "✗"} · brokenKeys=${
     verify.brokenKeys.length
   } · overall=${verifyPassed ? "PASS" : "FAIL"}`
 );
@@ -917,4 +1038,5 @@ return {
   verify,
   crossNamespaceGaps,
   inaccessibleThirdParty,
+  autoTranslated,
 };
