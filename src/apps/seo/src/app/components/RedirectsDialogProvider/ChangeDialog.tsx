@@ -54,7 +54,7 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
     const requestData = {
       targetType: "page" as RedirectsTargetType,
       target: redirect?.target,
-      paths: [newPath],
+      paths: [redirect?.path],
       code: redirect?.code as RedirectsCodes,
     };
 
