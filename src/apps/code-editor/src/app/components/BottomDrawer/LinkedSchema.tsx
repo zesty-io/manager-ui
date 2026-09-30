@@ -41,12 +41,10 @@ export default function LinkedSchema({ file, fields }: LinkedSchemaProps) {
             ...theme.typography.body2,
           }),
           "& span.brackets": {
-            // eslint-disable-next-line no-restricted-syntax -- syntax-highlight color for distinguishing code token types (design-system.md §3: chart/series-style palette picked for distinguishability, not a semantic token)
-            color: "#95c65c",
+            color: "success.main",
           },
           "& span.keywords": {
-            // eslint-disable-next-line no-restricted-syntax -- syntax-highlight color for distinguishing code token types (design-system.md §3: chart/series-style palette picked for distinguishability, not a semantic token)
-            color: "#91ace8",
+            color: "deepPurple.300",
           },
           "& span.fields": {
             color: "grey.300",
