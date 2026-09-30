@@ -124,7 +124,7 @@ export default connect((state) => {
         return (
           <div>
             <FormControl fullWidth size="small">
-              <FormLabel sx={{ color: "#c3cddf" }}>
+              <FormLabel sx={{ color: "text.mutedFormLabel" }}>
                 {t("shell.dateRange")}
               </FormLabel>
               <Select
