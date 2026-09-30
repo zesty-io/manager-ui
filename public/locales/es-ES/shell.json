@@ -13,6 +13,7 @@
   "advancedSearch": "Búsqueda avanzada",
   "advancedSearchDescription": "A medida que tú y tu equipo trabajan juntos en Zesty, crearán un archivo de contenido, modelos y archivos de código que se puede buscar. Usa el formulario de abajo para encontrar lo que buscas.",
   "aiAssistantBeta": "Asistente de IA Beta",
+  "aiCodeEditSummary": "{{fileName}} — líneas: +{{added}} / −{{removed}}",
   "aiDrawerPlaceholder": "Pregunta lo que quieras, por ejemplo \"Adapta mi contenido a una audiencia específica\"",
   "aiGeneratingContentStatus": "Nuestro asistente de IA está generando tu contenido según tus parámetros",
   "aiMistakesWarning": "Nuestro asistente de IA puede cometer errores. Comprueba la información importante.",

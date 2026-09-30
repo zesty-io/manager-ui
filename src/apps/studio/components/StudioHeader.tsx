@@ -11,6 +11,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "../../content-editor/src/app/views/ItemEdit/components/ItemEditHeader/LanguageSelector";
 import { InteractionMode, usesLayoutGrammar } from "../hooks/studioTypes";
+import { StudioSaveStatus } from "../hooks/useStudioAiEdit";
 
 type LayoutBreadcrumbItem = {
   layoutId?: string;
@@ -35,6 +36,10 @@ type StudioHeaderProps = {
   pageItemZUID: string;
   unresolvedPath: boolean;
   logoSrc: string;
+  showAiButton: boolean;
+  isAiPanelOpen: boolean;
+  onToggleAiPanel: () => void;
+  saveStatus: StudioSaveStatus;
   onFeedbackClick: () => void;
 };
 
@@ -72,6 +77,10 @@ export const StudioHeader = ({
   pageItemZUID,
   unresolvedPath,
   logoSrc,
+  showAiButton,
+  isAiPanelOpen,
+  onToggleAiPanel,
+  saveStatus,
   onFeedbackClick,
 }: StudioHeaderProps) => {
   const { t } = useTranslation();
@@ -223,6 +232,30 @@ export const StudioHeader = ({
               </ToggleButton>
             ))}
           </ToggleButtonGroup>
+        ) : null}
+        {showAiButton ? (
+          <Button
+            data-cy="StudioAIButton"
+            size="small"
+            variant={isAiPanelOpen ? "contained" : "outlined"}
+            aria-pressed={isAiPanelOpen}
+            endIcon={<AutoAwesomeRoundedIcon fontSize="small" />}
+            onClick={onToggleAiPanel}
+          >
+            {t("content.studioAiButton")}
+          </Button>
+        ) : null}
+        {saveStatus ? (
+          <Chip
+            data-cy="StudioSaveStatus"
+            size="small"
+            color={saveStatus === "saved" ? "success" : "warning"}
+            label={
+              saveStatus === "saved"
+                ? t("content.studioSaved")
+                : t("content.studioNotSaved")
+            }
+          />
         ) : null}
       </Box>
     </Box>
