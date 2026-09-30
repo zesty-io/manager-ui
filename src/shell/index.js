@@ -91,6 +91,8 @@ const themeOverrides = {
     },
     background: {
       editor: "#0F0F0F",
+      shimmer: "#EFF1F3",
+      shimmerSweep: "#E2E2E2",
     },
   },
 
