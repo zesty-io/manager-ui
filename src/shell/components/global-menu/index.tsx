@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -26,6 +27,7 @@ import { AppState } from "../../store/types";
 import { Products } from "../../services/types";
 
 export default memo(function GlobalMenu() {
+  const { t } = useTranslation();
   const location = useLocation();
   const openNav = useSelector((state: AppState) => state.ui.openNav);
   const {
@@ -36,6 +38,23 @@ export default memo(function GlobalMenu() {
   );
 
   const slug = location.pathname.split("/")[1];
+
+  const productLabels: Partial<Record<Products, string>> = {
+    launchpad: t("shell.navLaunchpad"),
+    content: t("common.content"),
+    blocks: t("shell.navBlocks"),
+    studio: t("shell.navStudio"),
+    media: t("common.media"),
+    schema: t("shell.navSchema"),
+    code: t("common.code"),
+    leads: t("shell.navLeads"),
+    reports: t("shell.navReports"),
+    redirects: t("shell.navRedirects"),
+    settings: t("shell.navSettings"),
+    release: t("shell.navRelease"),
+    apps: t("shell.navApps"),
+  };
+
   const icons = {
     launchpad: RocketLaunchIcon,
     content: EditIcon,
@@ -105,12 +124,11 @@ export default memo(function GlobalMenu() {
   return (
     <Box component="menu" width="100%" boxSizing="border-box">
       {products.map((product) => {
-        // Covert dashes to spaces
-        // Uppercase first letter of word
-        let name = product
+        const name = productLabels[product] ?? product;
+        const dataCyName = product
           .split("-")
           .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-          .join(" ");
+          .join("");
         const isActive = slug === product;
         const linkTo = product === "studio" ? "/studio?path=/" : `/${product}`;
 
@@ -121,8 +139,8 @@ export default memo(function GlobalMenu() {
               textDecoration: "none",
             }}
             to={linkTo}
-            title={`${name} App`}
-            data-cy={`${name}App`}
+            title={t("shell.navAppTooltip", { name })}
+            data-cy={`${dataCyName}App`}
           >
             <ListItem
               sx={{

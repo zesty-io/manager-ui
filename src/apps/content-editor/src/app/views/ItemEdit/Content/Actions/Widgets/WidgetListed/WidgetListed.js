@@ -1,3 +1,4 @@
+import { alpha } from "@mui/material/styles";
 import { memo } from "react";
 
 import Stack from "@mui/material/Stack";
@@ -8,13 +9,15 @@ import Skeleton from "@mui/material/Skeleton";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
-import { FieldTypeSort } from "@zesty-io/material";
+import { FieldTypeSort, theme } from "@zesty-io/material";
 
 import Tooltip from "@mui/material/Tooltip";
 import InfoIcon from "@mui/icons-material/InfoOutlined";
 
 import styles from "./WidgetListed.less";
+import { useTranslation } from "react-i18next";
 export const WidgetListed = memo(function WidgetListed(props) {
+  const { t } = useTranslation();
   const toggleHandler = (value) => {
     if (value === null) return;
     props.dispatch({
@@ -34,20 +37,19 @@ export const WidgetListed = memo(function WidgetListed(props) {
         sx={{
           p: 0,
           backgroundColor: "transparent",
-          fontSize: "16px",
-          color: "#10182866",
+          color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
         }}
         titleTypographyProps={{
+          variant: "overline",
           sx: {
             fontWeight: 400,
-            fontSize: "12px",
-            lineHeight: "32px",
-            color: "#101828",
+            color: "text.primary",
+            textTransform: "uppercase",
           },
         }}
-        title="PARSLEY BEHAVIORS"
+        title={t("content.itemEditParsleyBehaviorsTitle")}
       ></CardHeader>
       <CardContent
         sx={{
@@ -81,13 +83,13 @@ export const WidgetListed = memo(function WidgetListed(props) {
                 }}
               >
                 <Tooltip
-                  title="Determines if this item will be available in Parsley loops. A common example of this is listing a blog post as an entry on an article listing page."
+                  title={t("content.itemEditAvailableInLoopsTooltip")}
                   arrow
                   placement="top-start"
                 >
                   <InfoIcon fontSize="small" />
                 </Tooltip>
-                &nbsp;Available in Loops
+                &nbsp;{t("content.itemEditAvailableInLoops")}
               </Stack>
             </FormLabel>
             <ToggleButtonGroup
@@ -98,23 +100,28 @@ export const WidgetListed = memo(function WidgetListed(props) {
               onChange={(evt, value) => toggleHandler(value)}
               sx={{ mb: 1 }}
             >
-              <ToggleButton value={false}>No </ToggleButton>
-              <ToggleButton value={true}>Yes </ToggleButton>
+              <ToggleButton value={false}>{t("common.no")} </ToggleButton>
+              <ToggleButton value={true}>{t("common.yes")} </ToggleButton>
             </ToggleButtonGroup>
 
             <FieldTypeSort
               sx={{ maxWidth: "200px" }}
               name="sort"
               label={
-                <span style={{ color: "#101828", marginBottom: "8px" }}>
+                <span
+                  style={{
+                    color: theme.palette.text.primary,
+                    marginBottom: "8px",
+                  }}
+                >
                   <Tooltip
-                    title="Automated Navigation Order controls the output of the automated parsley {{navigation}} and {{sectionlinks}}. It can also be used in an each loop like: {{each items as items sort by z.sort}} calls."
+                    title={t("content.itemEditAutomatedNavigationOrderTooltip")}
                     arrow
                     placement="top-start"
                   >
                     <InfoIcon fontSize="small" />
                   </Tooltip>
-                  &nbsp;Automated Navigation Order
+                  &nbsp;{t("content.itemEditAutomatedNavigationOrder")}
                 </span>
               }
               value={props.sort ? props.sort.toString() : "0"}

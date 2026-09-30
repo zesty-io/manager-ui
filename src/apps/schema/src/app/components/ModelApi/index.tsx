@@ -21,16 +21,19 @@ export const apiTypeDocsMap: Record<ApiType, string> = {
   "visual-layout": "https://zesty.org/?q=Visual%20Layout",
 };
 
-export const apiTypeLabelMap: Partial<Record<ApiType, string>> = {
-  "quick-access": "Quick Access",
-  "backend-coding": "Back-End Coding",
-  graphql: "GraphQL",
-  "site-generators": "Site Generators",
-  "custom-endpoints": "Custom Endpoints",
-  "visual-layout": "Visual Layout",
-};
+type TranslateFn = (key: string) => string;
+export const getApiTypeLabelMap = (
+  t: TranslateFn
+): Record<ApiType, string> => ({
+  "quick-access": t("schema.apiLabelQuickAccess"),
+  "backend-coding": t("schema.apiLabelBackendCoding"),
+  graphql: t("schema.apiLabelGraphql"),
+  "site-generators": t("schema.apiLabelSiteGenerators"),
+  "custom-endpoints": t("schema.apiLabelCustomEndpoints"),
+  "visual-layout": t("schema.apiLabelVisualLayout"),
+});
 
-export type ApiType = typeof apiTypes[number];
+export type ApiType = (typeof apiTypes)[number];
 
 export const ModelApi = () => {
   return (

@@ -7,6 +7,7 @@ import {
   DialogActions,
 } from "@mui/material";
 import { UnpublishedRounded } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 type UnpublishDialogProps = {
   onClose: () => void;
@@ -21,6 +22,7 @@ export const UnpublishDialog = ({
   itemName,
   loading,
 }: UnpublishDialogProps) => {
+  const { t } = useTranslation();
   return (
     <Dialog
       open
@@ -45,29 +47,28 @@ export const UnpublishDialog = ({
         </Box>
         <Typography variant="h5" sx={{ mt: 1.5 }}>
           <Typography variant="inherit" display="inline" fontWeight={600}>
-            Unpublish Content Item:
+            {t("content.itemEditUnpublishContentItemTitle")}
+            {":"}
           </Typography>{" "}
           {itemName}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          This will make the it immediately unavailable on all of your
-          platforms. You can always republish this item by clicking on the
-          publish button.
+          {t("content.itemEditUnpublishDescription")}
         </Typography>
       </DialogTitle>
       <DialogActions>
         <Button color="inherit" onClick={onClose}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           data-cy="ConfirmUnpublishButton"
           variant="contained"
           color="error"
-          aria-label="Delete Button"
+          aria-label={t("content.itemEditUnpublishItem")}
           onClick={onConfirm}
           loading={loading}
         >
-          Unpublish Item
+          {t("content.itemEditUnpublishItem")}
         </Button>
       </DialogActions>
     </Dialog>

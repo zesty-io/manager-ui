@@ -7,7 +7,6 @@ import { IntegrationRequestHeaders } from "./types";
 export const cloudFunctionsApi = createApi({
   reducerPath: "cloudFunctionsApi",
   baseQuery: fetchBaseQuery({
-    // @ts-ignore
     baseUrl: `${__CONFIG__.CLOUD_FUNCTIONS_DOMAIN}`,
     prepareHeaders,
   }),
@@ -35,7 +34,6 @@ export const cloudFunctionsApi = createApi({
           url: `createScreenshot`,
           method: "GET",
           params: {
-            // @ts-ignore
             bucket: `${__CONFIG__.INSTANCE_SCREENSHOTS_BUCKET}`,
             url: url,
             w: 1280,
@@ -83,6 +81,26 @@ export const cloudFunctionsApi = createApi({
         };
       },
     }),
+    sendEmail: builder.mutation<
+      // On success (200) the cloud function echoes mailgun-js's send() callback
+      // body verbatim under `msg`. Non-2xx responses are handled as RTK Query
+      // errors by fetchBaseQuery, so this type only describes the 200 shape.
+      { msg: { id: string; message: string } },
+      {
+        to: string;
+        subject: string;
+        body: string;
+        template?: string;
+      }
+    >({
+      query: (body) => {
+        return {
+          url: `sendEmail`,
+          method: "POST",
+          body,
+        };
+      },
+    }),
   }),
 });
 
@@ -95,4 +113,5 @@ export const {
   useDownloadCsvQuery,
   useLazyDownloadCsvQuery,
   useGetExternalApiMutation,
+  useSendEmailMutation,
 } = cloudFunctionsApi;

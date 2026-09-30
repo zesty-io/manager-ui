@@ -2,6 +2,7 @@ import { createSlice, current, Dispatch } from "@reduxjs/toolkit";
 import { File as FileBase, Bin } from "../services/types";
 import { AppState } from "./types";
 import { notify } from "../../shell/store/notifications";
+import i18n from "../i18n";
 import { v4 as uuidv4 } from "uuid";
 import { request } from "../../utility/request";
 import { mediaManagerApi } from "../services/mediaManager";
@@ -229,6 +230,7 @@ const mediaSlice = createSlice({
             ...rest,
             loading: false,
             filename: action.payload.filename,
+            title: action.payload.title,
             filenameDirty: false,
             url: action.payload.url,
             status: "success" as const,
@@ -330,14 +332,13 @@ type FileAugmentation = {
 async function getSignedUrl(filename: string, storageName: string) {
   try {
     return request(
-      //@ts-expect-error
       `${CONFIG.SERVICE_MEDIA_STORAGE}/signed-url/${storageName}/${filename}`
     ).then((res) => res.data.url);
   } catch (err) {
     console.error(err);
     notify({
       kind: "warn",
-      message: "Failed getting signed url for large file upload",
+      message: i18n.t("media.notifyFailedSignedUrl"),
     });
   }
 }
@@ -378,7 +379,7 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
       dispatch(fileUploadError(file));
       dispatch(
         notify({
-          message: "Failed uploading file",
+          message: i18n.t("media.notifyUploadFailed"),
           kind: "error",
         })
       );
@@ -390,7 +391,9 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
       if (req.status === 200) {
         dispatch(
           notify({
-            message: `File Replaced: ${originalFile.filename}`,
+            message: i18n.t("media.notifyFileReplaced", {
+              filename: originalFile.filename,
+            }),
             kind: "success",
           })
         );
@@ -405,7 +408,7 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
       } else {
         dispatch(
           notify({
-            message: "Failed uploading file",
+            message: i18n.t("media.notifyUploadFailed"),
             kind: "error",
           })
         );
@@ -433,7 +436,6 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
       req.addEventListener("load", () => {
         if (req.status === 200) {
           return request(
-            //@ts-expect-error
             `${CONFIG.SERVICE_MEDIA_MANAGER}/file/${originalFile?.id}/purge?triggerUpdate=true`,
             {
               method: "POST",
@@ -453,7 +455,7 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
                 } else {
                   dispatch(
                     notify({
-                      message: `Successfully uploaded file`,
+                      message: i18n.t("media.notifyUploadSuccess"),
                       kind: "success",
                     })
                   );
@@ -466,8 +468,7 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
               dispatch(fileUploadError(file));
               dispatch(
                 notify({
-                  message:
-                    "Failed creating file record after signed url upload",
+                  message: i18n.t("media.notifyFailedCreateRecord"),
                   kind: "error",
                 })
               );
@@ -476,7 +477,7 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
           dispatch(fileUploadError(file));
           dispatch(
             notify({
-              message: "Failed uploading file to signed url",
+              message: i18n.t("media.notifyFailedUploadSignedUrl"),
               kind: "error",
             })
           );
@@ -489,7 +490,6 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
     } else {
       req.open(
         "PUT",
-        //@ts-expect-error
         `${CONFIG.SERVICE_MEDIA_STORAGE}/replace/${originalFile?.storage_driver}/${originalFile?.storage_name}`
       );
 
@@ -550,7 +550,7 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
       dispatch(fileUploadError(file));
       dispatch(
         notify({
-          message: "Failed uploading file",
+          message: i18n.t("media.notifyUploadFailed"),
           kind: "error",
         })
       );
@@ -564,7 +564,7 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
       if (!state.uploads.length) {
         dispatch(
           notify({
-            message: `Successfully uploaded file`,
+            message: i18n.t("media.notifyUploadSuccess"),
             kind: "success",
           })
         );
@@ -593,7 +593,6 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
 
       req.addEventListener("load", () => {
         if (req.status === 200) {
-          //@ts-expect-error
           return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file`, {
             method: "POST",
             json: true,
@@ -619,7 +618,7 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
                 } else {
                   dispatch(
                     notify({
-                      message: `Successfully uploaded file`,
+                      message: i18n.t("media.notifyUploadSuccess"),
                       kind: "success",
                     })
                   );
@@ -639,8 +638,7 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
               dispatch(fileUploadError(file));
               dispatch(
                 notify({
-                  message:
-                    "Failed creating file record after signed url upload",
+                  message: i18n.t("media.notifyFailedCreateRecord"),
                   kind: "error",
                 })
               );
@@ -649,7 +647,7 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
           dispatch(fileUploadError(file));
           dispatch(
             notify({
-              message: "Failed uploading file to signed url",
+              message: i18n.t("media.notifyFailedUploadSignedUrl"),
               kind: "error",
             })
           );
@@ -665,7 +663,6 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
 
       req.open(
         "POST",
-        //@ts-expect-error
         `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${bin.storage_driver}/${bin.storage_name}`
       );
 
@@ -684,7 +681,7 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
         } else {
           dispatch(
             notify({
-              message: "Failed uploading file",
+              message: i18n.t("media.notifyUploadFailed"),
               kind: "error",
             })
           );
@@ -699,13 +696,9 @@ export function uploadFile(fileArg: UploadFile, bin: Bin) {
 export function deleteUpload(upload: SuccessfulUpload) {
   console.log({ upload });
   return async (dispatch: Dispatch) => {
-    const res = request(
-      //@ts-expect-error
-      `${CONFIG.SERVICE_MEDIA_MANAGER}/file/${upload.id}`,
-      {
-        method: "DELETE",
-      }
-    );
+    const res = request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${upload.id}`, {
+      method: "DELETE",
+    });
     dispatch(fileUploadDelete(upload));
     // if (res.status === 200) {
     //   dispatch(fileUploadDelete(upload));
@@ -720,7 +713,7 @@ export function dismissFileUploads() {
     const state: State = getState().mediaRevamp;
     const inProgressUploads = state.uploads.filter(
       (upload) => upload.status === "inProgress"
-    ) as StagedUpload[];
+    ) as InProgressUpload[];
     const failedUploads = state.uploads.filter(
       (upload) => upload.status === "failed"
     ) as FailedUpload[];
@@ -740,26 +733,24 @@ export function dismissFileUploads() {
     const reqs = successfulUploads
       .filter((upload) => upload.status === "success" && upload.filenameDirty)
       .map((upload) => {
-        return request(
-          //@ts-expect-error
-          `${CONFIG.SERVICE_MEDIA_MANAGER}/file/${upload.id}`,
-          {
-            method: "PATCH",
-            body: {
-              id: upload.id,
-              group_id: upload.group_id,
-              filename: upload.filename,
-              ...(upload?.title ? { title: upload.title } : {}),
-            },
-          }
-        );
+        return request(`${CONFIG.SERVICE_MEDIA_MANAGER}/file/${upload.id}`, {
+          method: "PATCH",
+          body: {
+            id: upload.id,
+            group_id: upload.group_id,
+            filename: upload.filename,
+            ...(upload?.title ? { title: upload.title } : {}),
+          },
+        });
       });
     const res = await Promise.all(reqs);
     const failedTitleUpdates = res.filter((r) => r.status !== 200).length;
     if (inProgressUploads.length) {
       dispatch(
         notify({
-          message: `${inProgressUploads.length} files still in progress`,
+          message: i18n.t("media.notifyFilesInProgress", {
+            count: inProgressUploads.length,
+          }),
           kind: "success",
         })
       );
@@ -768,11 +759,14 @@ export function dismissFileUploads() {
       if (!successfulUploads[0].replacementFile) {
         dispatch(
           notify({
-            message: `Successfully uploaded ${successfulUploads.length} files${
-              inProgressUploads.length
-                ? `...${inProgressUploads.length} files still in progress`
-                : ""
-            }`,
+            message: inProgressUploads.length
+              ? i18n.t("media.notifyUploadedMultipleWithProgress", {
+                  count: successfulUploads.length,
+                  inProgress: inProgressUploads.length,
+                })
+              : i18n.t("media.notifyUploadedMultiple", {
+                  count: successfulUploads.length,
+                }),
             kind: "success",
           })
         );
@@ -781,7 +775,9 @@ export function dismissFileUploads() {
     if (failedUploads.length) {
       dispatch(
         notify({
-          message: `Failed to upload ${failedUploads.length} files`,
+          message: i18n.t("media.notifyUploadFailedMultiple", {
+            count: failedUploads.length,
+          }),
           kind: "warn",
         })
       );
@@ -789,7 +785,9 @@ export function dismissFileUploads() {
     if (failedTitleUpdates) {
       dispatch(
         notify({
-          message: `Failed to update metadata of ${failedTitleUpdates} files`,
+          message: i18n.t("media.notifyMetadataFailedMultiple", {
+            count: failedTitleUpdates,
+          }),
           kind: "warn",
         })
       );

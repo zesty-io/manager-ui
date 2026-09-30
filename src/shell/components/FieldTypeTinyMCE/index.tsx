@@ -2,6 +2,7 @@ import React, { useMemo, useRef, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Box, alpha } from "@mui/material";
 import { theme } from "@zesty-io/material";
+import { useTranslation } from "react-i18next";
 
 import openBynder from "../../../utility/openBynder";
 
@@ -114,6 +115,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   onCharacterCountChange,
   compact = false,
 }: FieldTypeTinyMCEProps) {
+  const { t } = useTranslation();
   // NOTE: controlled component
   const [initialValue, setInitialValue] = useState(value);
   const [isSkinLoaded, setIsSkinLoaded] = useState(false);
@@ -382,11 +384,11 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
             content_style: `
             html { justify-content: center }\
-            body { font-family: 'Mulish', Arial, sans-serif; color: #101828; font-size: 16px; }\
+            body { font-family: 'Mulish', Arial, sans-serif; color: ${theme.palette.text.primary}; font-size: 16px; }\
             img { max-width: 100%; height: auto}\
             h1, h2, h3, h4, h5, h6, strong { font-weight: 700; }\
             h1, h2, h3, h4, h5, h6 { margin-top: 0px; margin-bottom: 16px; }\
-            p, pre, blockquote, ol, ul { color: #475467; margin-top: 0px; margin-bottom: 16px; }\
+            p, pre, blockquote, ol, ul { color: ${theme.palette.text.secondary}; margin-top: 0px; margin-bottom: 16px; }\
             h1 { font-size: 36px; line-height: 44px }\
             h2 { font-size: 32px; line-height: 40px }\
             h3 { font-size: 28px; line-height: 36px }\
@@ -445,7 +447,11 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                * Handle save key command
                */
               if (onSave) {
-                editor.shortcuts.add("meta+s", "Save item", onSave);
+                editor.shortcuts.add(
+                  "meta+s",
+                  t("shell.tinymceSaveItem"),
+                  onSave
+                );
               }
 
               /**
@@ -497,7 +503,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               };
               editor.ui.registry.addButton("zestyMediaApp", {
                 icon: "image",
-                tooltip: "Select media from your uploaded assets",
+                tooltip: t("shell.tinymceSelectUploadedMedia"),
                 onAction: mediaBrowserDialog,
               });
               editor.addCommand("mceZestyMediaApp", mediaBrowserDialog);
@@ -549,7 +555,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               if (isBynderSessionValid) {
                 editor.ui.registry.addButton("bynder", {
                   icon: "bynder",
-                  tooltip: "Select media from your Bynder assets",
+                  tooltip: t("shell.tinymceSelectBynderMedia"),
                   onAction: handleOpenBynder,
                 });
               }

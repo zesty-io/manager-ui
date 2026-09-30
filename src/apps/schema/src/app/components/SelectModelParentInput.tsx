@@ -6,6 +6,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { useGetContentNavItemsQuery } from "../../../../../shell/services/instance";
@@ -23,9 +24,11 @@ export const SelectModelParentInput = ({
   value,
   onChange,
   modelType,
-  label = "Model Parent",
+  label,
   tooltip = "",
 }: SelectModelParentInputProps) => {
+  const { t } = useTranslation();
+  const resolvedLabel = label ?? t("schema.modelParent");
   const { id } = useParams<{ id: string }>();
   const { data: navItems } = useGetContentNavItemsQuery();
 
@@ -71,7 +74,7 @@ export const SelectModelParentInput = ({
   return (
     <Box>
       <InputLabel>
-        {label}
+        {resolvedLabel}
         {tooltip && (
           <Tooltip placement="top" title={tooltip}>
             <InfoRoundedIcon
@@ -84,7 +87,9 @@ export const SelectModelParentInput = ({
       <Autocomplete
         data-cy="ModelParentSelector"
         fullWidth
-        renderInput={(params) => <TextField {...params} placeholder="Select" />}
+        renderInput={(params) => (
+          <TextField {...params} placeholder={t("schema.selectPlaceholder")} />
+        )}
         value={navItems?.find((m) => m.ZUID === value) || null}
         options={parents}
         onChange={(event, value: ContentNavItem) =>

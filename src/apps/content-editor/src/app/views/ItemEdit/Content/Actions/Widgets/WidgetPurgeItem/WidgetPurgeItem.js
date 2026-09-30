@@ -1,3 +1,5 @@
+import { alpha } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
 import { memo, useState } from "react";
 
 import SyncIcon from "@mui/icons-material/Sync";
@@ -12,8 +14,10 @@ import Box from "@mui/material/Box";
 
 import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
+import { useTranslation } from "react-i18next";
 
 export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   return (
@@ -27,20 +31,18 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
         sx={{
           p: 0,
           backgroundColor: "transparent",
-          fontSize: "16px",
-          color: "#10182866",
+          color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
         }}
         titleTypographyProps={{
+          variant: "overline",
           sx: {
             fontWeight: 400,
-            fontSize: "12px",
-            lineHeight: "32px",
-            color: "#101828",
+            color: "text.primary",
           },
         }}
-        title="CDN"
+        title={t("content.itemEditCdnTitle")}
       ></CardHeader>
       <CardContent
         className="setting-field"
@@ -67,14 +69,10 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
               variant="body2"
               color="text.secondary"
               sx={{
-                fontSize: "14px",
-                lineHeight: "20px",
                 maxWidth: "595px",
               }}
             >
-              Force the CDN to refresh the cache for this item. CDN caching can
-              take from a few seconds to minutes to occur as this re-caches the
-              item across the entire global network.
+              {t("content.itemEditCdnDescription")}
             </Typography>
             <Button
               variant="contained"
@@ -89,7 +87,7 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
                     setLoading(false);
                     props.dispatch(
                       notify({
-                        message: "The item has been purged from the CDN cache",
+                        message: t("content.itemEditCdnPurgeSuccess"),
                         kind: "save",
                       })
                     );
@@ -98,8 +96,7 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
                     setLoading(false);
                     props.dispatch(
                       notify({
-                        message:
-                          "There was an issue trying to purge the CDN cache",
+                        message: t("content.itemEditCdnPurgeError"),
                         kind: "warn",
                       })
                     );
@@ -110,17 +107,19 @@ export const WidgetPurgeItem = memo(function WidgetPurgeItem(props) {
               startIcon={<SyncIcon />}
               disableElevation
               sx={{
-                backgroundColor: "#F2F4F7",
+                backgroundColor: "grey.100",
                 color: "text.secondary",
                 mt: 1.5,
 
                 "&:hover": {
-                  backgroundColor: "#E4E7EC",
+                  backgroundColor: "grey.200",
                   color: "text.secondary",
                 },
               }}
             >
-              {loading ? "Refreshing Cached Item" : "Refresh Cached Item"}
+              {loading
+                ? t("content.itemEditRefreshingCachedItem")
+                : t("content.itemEditRefreshCachedItem")}
             </Button>
           </>
         )}

@@ -1,5 +1,6 @@
 import { readFileSync } from "fs";
 import { join } from "path";
+import { v4 as uuidv4 } from "uuid";
 
 import { WebView, Stylesheet, Script } from "../../../src/shell/services/types";
 
@@ -17,7 +18,7 @@ module.exports = function code(config) {
     const json = JSON.parse(jsonString);
 
     const sdk = await getSDK(config);
-    const timeStamp = Date.now();
+    const timeStamp = uuidv4();
     const filename = `/__e2e__/${config.env.COMMIT_ID}/${timeStamp} | ${json.filename}`;
     const payload = { ...json, filename };
 
@@ -68,8 +69,47 @@ module.exports = function code(config) {
     return res.data;
   }
 
+  async function deleteCodeFile(zuid: string, type: string): Promise<void> {
+    const sdk = await getSDK(config);
+
+    if (STYLESHEET_TYPES.includes(type)) {
+      await sdk.instance.deleteStylesheet(zuid);
+      return;
+    }
+
+    // Views and scripts have no delete method in the SDK, so fall back to
+    // native fetch (same gap that forces script creation to use fetch too).
+    const pathPart = type === "text/javascript" ? "scripts" : "views";
+    const res = await fetch(
+      `${config.env.API_INSTANCE_URL}/web/${pathPart}/${zuid}`,
+      {
+        method: "DELETE",
+        headers: {
+          authorization: `Bearer ${sdk.token}`,
+        },
+      }
+    );
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(
+        `cleanup:code failed to delete ${pathPart} "${zuid}" (${res.status}): ${text}`
+      );
+    }
+  }
+
+  async function deleteFiles(
+    files: Array<{ zuid: string; type: string }>
+  ): Promise<null> {
+    await Promise.all(
+      files.map((file) => deleteCodeFile(file.zuid, file.type))
+    );
+    return null;
+  }
+
   // CODE TASK MAPPING
   return {
     "seed:code": (fixturePath: string) => seedCode(fixturePath),
+    "cleanup:code": (files: Array<{ zuid: string; type: string }>) =>
+      deleteFiles(files),
   };
 };

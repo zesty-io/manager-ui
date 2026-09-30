@@ -22,7 +22,7 @@ describe("Code App - Editor", () => {
   });
 
   it("Show correct file content", () => {
-    cy.getBySelector("code-app-editor-container")
+    cy.getBySelector("CodeEditorContainer")
       .find("textarea")
       .first()
       .should("have.value", EDITOR_FILE.code);
@@ -37,26 +37,25 @@ describe("Code App - Editor", () => {
   });
 
   it("Show saved and published indicators", () => {
-    cy.getBySelector("code-app-saved-indicator").should("contain", "Saved");
-    cy.getBySelector("code-app-published-indicator").should(
-      "contain",
-      "Published"
-    );
+    cy.getBySelector("SaveCodeButton").should("contain", "saved");
+    cy.getBySelector("PublishCodeButton").should("contain", "published");
   });
 
   it("Show unsaved state when editing contents", () => {
-    cy.getBySelector("code-app-editor-container")
+    cy.getBySelector("CodeEditorContainer")
       .find("textarea")
       .first()
       .type(" more text", { parseSpecialCharSequences: false });
 
-    cy.getBySelector("code-app-save-button").should("be.visible");
-    cy.getBySelector("code-app-saved-indicator").should("not.exist");
+    cy.getBySelector("SaveCodeButton")
+      .should("be.visible")
+      .and("contain", "Save")
+      .and("not.contain", "saved");
   });
 
   it("Save", () => {
     cy.waitOn(`**/web/views/${Cypress.env("fileZUID")}`, () => {
-      cy.getBySelector("code-app-save-button").click();
+      cy.getBySelector("SaveCodeButton").click();
     });
 
     cy.getBySelector("toast")
@@ -64,20 +63,22 @@ describe("Code App - Editor", () => {
       .and("contain.text", FILE_NAME);
 
     // Saved but not yet published against this new version
-    cy.getBySelector("code-app-saved-indicator").should("be.visible");
-    cy.getBySelector("code-app-publish-button").should("be.visible");
+    cy.getBySelector("SaveCodeButton").should("contain", "saved");
+    cy.getBySelector("PublishCodeButton")
+      .should("be.visible")
+      .and("contain", "Publish");
   });
 
   it("Publish", () => {
     cy.waitOn(`**/web/views/${Cypress.env("fileZUID")}/versions/**`, () => {
-      cy.getBySelector("code-app-publish-button").click();
+      cy.getBySelector("PublishCodeButton").click();
     });
 
     cy.getBySelector("toast")
       .should("contain.text", "Published")
       .and("contain.text", FILE_NAME);
 
-    cy.getBySelector("code-app-published-indicator").should("be.visible");
+    cy.getBySelector("PublishCodeButton").should("contain", "published");
   });
 
   it("Show Diff", () => {
@@ -104,12 +105,12 @@ describe("Code App - Editor", () => {
   });
 
   it("Show confirmation dialog when exiting without saving changes", () => {
-    cy.getBySelector("code-app-editor-container")
+    cy.getBySelector("CodeEditorContainer")
       .find("textarea")
       .first()
       .type(" dirty again", { parseSpecialCharSequences: false });
 
-    cy.getBySelector("code-app-save-button").should("be.visible");
+    cy.getBySelector("SaveCodeButton").should("be.visible");
 
     // Trigger an in-app React Router navigation (not a full page
     // reload/cy.visit) - the Prompt in LocalDirtyCodeModal only intercepts
@@ -128,7 +129,7 @@ describe("Code App - Editor", () => {
       "eq",
       `/code/file/views/${Cypress.env("fileZUID")}`
     );
-    cy.getBySelector("code-app-save-button").should("be.visible");
+    cy.getBySelector("SaveCodeButton").should("be.visible");
 
     // NOTE: a native `beforeunload` guard also exists in CodeEditor.js for
     // browser tab close/refresh, but that path isn't testable in Cypress.
@@ -220,7 +221,7 @@ describe("Code App - Editor - Show suggestions", () => {
   });
 
   it("Show suggestions", () => {
-    cy.getBySelector("code-app-editor-container")
+    cy.getBySelector("CodeEditorContainer")
       .find("textarea")
       .first()
       .click()

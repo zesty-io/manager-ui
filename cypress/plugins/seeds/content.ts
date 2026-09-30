@@ -7,6 +7,7 @@ import {
   ContentModel,
   ContentModelField,
   CreateStatusLabel,
+  RedirectRequest,
   WorkflowStatusLabel,
 } from "../../../src/shell/services/types";
 
@@ -14,6 +15,10 @@ export type SeedContentTask = {
   model: ContentModel;
   fields?: ContentModelField[];
   items: ContentItem[];
+  // Present only when the fixture declares a `view`. `ZUID` is what the page
+  // renders as `data-code-id`, so a spec can address the seeded code region
+  // instead of hardcoding one.
+  view?: { ZUID: string; fileName: string; version: number } | null;
 };
 
 module.exports = function content(config) {
@@ -21,7 +26,16 @@ module.exports = function content(config) {
   const { formatName } = require("../../../src/utility/formatName");
   const { getSDK } = require("./utils");
 
-  async function seedContent(path: string): Promise<SeedContentTask> {
+  // Accepts a fixture path, or `{ path, skipView }` for a spec that must NOT
+  // have a live bridge. A spec that builds its own LAYERS_TREE is racing the
+  // preview's: whichever lands last wins, and the preview keeps emitting on
+  // every DOM mutation, so its rows vanish mid-click at unpredictable moments.
+  // Opting out is the fix for those; it is not a general escape hatch.
+  async function seedContent(
+    arg: string | { path: string; skipView?: boolean }
+  ): Promise<SeedContentTask> {
+    const path = typeof arg === "string" ? arg : arg.path;
+    const skipView = typeof arg === "string" ? false : !!arg.skipView;
     const jsonString = readFileSync(join(__dirname, "../../", path), "utf8");
     const json = JSON.parse(jsonString);
 
@@ -99,11 +113,58 @@ module.exports = function content(config) {
         });
       })
     );
-    // Return model, fields, and items for testing
+    // 4) Give the model a real view, when the fixture ships one.
+    //
+    // Creating a pageset model auto-creates a view whose code is
+    // `{{this.autolayout()}}`. On this instance that view answers 504 after
+    // 60s, so a seeded page renders NOTHING, the studio bridge never loads,
+    // and every studio spec ends up driving a bridge it fabricated itself.
+    // Replacing the code with an explicit template renders in well under a
+    // second and produces real markers, a real bridge, and a real canvas.
+    let view = null;
+    if (json.view && !skipView) {
+      const code = readFileSync(join(__dirname, "../../", json.view), "utf8");
+
+      // The auto-created view can lag the model by a moment under API load.
+      let target = null;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        const all = (await sdk.instance.getViews())?.data || [];
+        target = all.find((v) => v.contentModelZUID === model.ZUID) || null;
+        if (target) break;
+        await new Promise((r) => setTimeout(r, 1500 * attempt));
+      }
+      if (!target?.ZUID) {
+        throw new Error(
+          `seed:content created no view for model "${modelPayload.label}" (${model.ZUID})`
+        );
+      }
+
+      await sdk.instance.updateView(target.ZUID, {
+        code,
+        fileName: target.fileName,
+        filename: target.fileName,
+        type: target.type,
+        contentModelZUID: target.contentModelZUID,
+      });
+
+      // Publish the version that the update just produced, not the one read
+      // before it — updateView increments, so the pre-read number is stale.
+      const saved = (await sdk.instance.getView(target.ZUID))?.data;
+      await sdk.instance.publishView(target.ZUID, saved?.version);
+
+      view = {
+        ZUID: target.ZUID,
+        fileName: saved?.fileName || target.fileName,
+        version: saved?.version,
+      };
+    }
+
+    // Return model, fields, items, and the seeded view for testing
     return {
       model,
       fields,
       items,
+      view,
     };
   }
 
@@ -136,10 +197,27 @@ module.exports = function content(config) {
     });
   }
 
+  async function publishItem(modelZUID: string, itemZUID: string) {
+    const sdk = await getSDK(config);
+    // Version 1: safe because callers only pass items just created by seedContent.
+    const res = await sdk.instance.publishItem(modelZUID, itemZUID, 1);
+    return res.data;
+  }
+
+  async function createRedirect(payload: RedirectRequest) {
+    const sdk = await getSDK(config);
+    const res = await sdk.instance.createRedirect(payload);
+    return res.data;
+  }
+
   // CONTENT TASK MAPPING
   return {
-    "seed:content": (path: string) => seedContent(path),
+    "seed:content": (arg: string | { path: string; skipView?: boolean }) =>
+      seedContent(arg),
     "api:createLabel": (data: CreateStatusLabel) => createLabel(data),
     "cleanup:labels": () => deleteAllLabels(),
+    "api:publishItem": (data: { modelZUID: string; itemZUID: string }) =>
+      publishItem(data.modelZUID, data.itemZUID),
+    "api:createRedirect": (payload: RedirectRequest) => createRedirect(payload),
   };
 };

@@ -3,6 +3,7 @@ import { Box, Button } from "@mui/material";
 import { ApiDataProps } from "../types";
 import { IntegrationFieldConfig } from "../../../services/types";
 import AddIcon from "@mui/icons-material/Add";
+import { useTranslation } from "react-i18next";
 import ItemSelectionDialog from "./ItemSelectionDialog";
 import SelectedListItems from "./SelectedListItems";
 import { get } from "lodash";
@@ -26,6 +27,7 @@ const IntegrationFieldSelect = ({
   config,
   onChange,
 }: IntegrationFieldSelectProps) => {
+  const { t } = useTranslation();
   const { data: apiData, status, fetchApiData } = useIntegrationField();
 
   const [open, setOpen] = useState(false);
@@ -109,7 +111,7 @@ const IntegrationFieldSelect = ({
         startIcon={<AddIcon />}
         onClick={launchSelector}
       >
-        Select Remote Items
+        {t("shell.integrationSelectRemoteItems")}
       </Button>
       {open && (
         <ItemSelectionDialog

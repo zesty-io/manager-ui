@@ -5,6 +5,7 @@
     "type": "pageset",
     "listed": true
   },
+  "view": "fixtures/studio.html",
   "fields": [
     {
       "contentModelZUID": "",

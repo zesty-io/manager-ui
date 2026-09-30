@@ -1,6 +1,7 @@
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import { Grid, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface RedirectImportTableRowProps {
   path: string;
@@ -19,6 +20,7 @@ const ImportTableRowDisabled = ({
   query_string,
   created,
 }: RedirectImportTableRowProps) => {
+  const { t } = useTranslation();
   return (
     <Grid
       container
@@ -79,7 +81,7 @@ const ImportTableRowDisabled = ({
           color="action.active"
           textAlign="center"
         >
-          {created ? "Created" : "Pre-Existing"}
+          {created ? t("seo.importRowCreated") : t("seo.importRowPreExisting")}
         </Typography>
       </Grid>
     </Grid>

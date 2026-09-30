@@ -5,11 +5,14 @@ import { useSelector } from "react-redux";
 
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
+import { useTranslation } from "react-i18next";
+import { asRenderableText } from "../../../../../../../../utility/asRenderableText";
 
 type FacebookPreviewProps = {
   imageURL: string;
 };
 export const FacebookPreview = ({ imageURL }: FacebookPreviewProps) => {
+  const { t } = useTranslation();
   const { itemZUID, modelZUID } = useParams<{
     itemZUID: string;
     modelZUID: string;
@@ -71,7 +74,9 @@ export const FacebookPreview = ({ imageURL }: FacebookPreviewProps) => {
             textOverflow: "ellipsis",
           }}
         >
-          {item?.data?.og_title || item?.web?.metaTitle || "Meta Title"}
+          {asRenderableText(item?.data?.og_title) ||
+            item?.web?.metaTitle ||
+            t("content.itemEditMetaTitle")}
         </Typography>
       </Stack>
     </Stack>

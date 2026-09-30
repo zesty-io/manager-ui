@@ -16,6 +16,7 @@ import {
   Alert,
 } from "@mui/material";
 import { useEffect, useReducer, useMemo } from "react";
+import { useTranslation, Trans } from "react-i18next";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useSelector } from "react-redux";
 import { cloneDeep } from "lodash";
@@ -46,6 +47,7 @@ interface Props {
 }
 
 export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const history = useHistory();
   const [newModel, updateNewModel] = useReducer(
@@ -142,7 +144,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
       dispatch(
         notify({
           // @ts-ignore
-          message: error?.data?.error || "Failed to duplicate model",
+          message: error?.data?.error || t("schema.duplicateModelFailed"),
           kind: "warn",
         })
       );
@@ -228,10 +230,12 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
             />
             <Stack>
               <Typography variant="h5" fontWeight={700}>
-                Duplicate {model.label} Model
+                {t("schema.duplicateModelTitle", { label: model.label })}
               </Typography>
               <Typography variant="body3" color="text.secondary">
-                As a {modelNameMap[model.type]} Model
+                {t("schema.duplicateModelSubtitle", {
+                  type: t(modelNameMap[model.type]),
+                })}
               </Typography>
             </Stack>
           </Box>
@@ -243,17 +247,23 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
       <DialogContent dividers sx={{ pt: 2.5, backgroundColor: "grey.50" }}>
         <Box display="flex" flexDirection="column" gap={2.5}>
           <Alert severity="info">
-            You&apos;re about to duplicate the <strong>{model.label}</strong>{" "}
-            model with all of it&apos;s existing fields. No content items will
-            be duplicated.
+            <Trans
+              i18nKey="schema.duplicateModelAlertBodyRich"
+              values={{ label: model.label }}
+              components={{ strong: <strong /> }}
+            />
           </Alert>
           <Box>
-            <InputLabel>Display Name</InputLabel>
+            <InputLabel>
+              {t("schema.duplicateModelDisplayNameLabel")}
+            </InputLabel>
             <TextField
               inputProps={{
                 maxLength: 100,
               }}
-              placeholder={`Duplicate of "${model.label}"`}
+              placeholder={t("schema.duplicateModelDisplayNamePlaceholder", {
+                label: model.label,
+              })}
               value={newModel.label}
               onChange={(event) =>
                 updateNewModel({ label: event.target.value })
@@ -263,23 +273,28 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
             />
           </Box>
           <Box>
-            <InputLabel>Reference ID</InputLabel>
+            <InputLabel>
+              {t("schema.duplicateModelReferenceIdLabel")}
+            </InputLabel>
             <TextField
               inputProps={{
                 maxLength: 100,
               }}
-              placeholder="Auto-Generated from Display Name"
+              placeholder={t("schema.duplicateModelReferenceIdPlaceholder")}
               value={newModel.name}
               onChange={(event) => updateNewModel({ name: event.target.value })}
               fullWidth
             />
           </Box>
           <Box>
-            <InputLabel>Model Parent</InputLabel>
+            <InputLabel>{t("schema.duplicateModelParentLabel")}</InputLabel>
             <Autocomplete
               fullWidth
               renderInput={(params) => (
-                <TextField {...params} placeholder="Select" />
+                <TextField
+                  {...params}
+                  placeholder={t("schema.duplicateModelParentPlaceholder")}
+                />
               )}
               options={parents}
               onChange={(event, value: ContentNavItem) =>
@@ -304,13 +319,15 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
             />
           )} */}
           <Box>
-            <InputLabel>Description</InputLabel>
+            <InputLabel>
+              {t("schema.duplicateModelDescriptionLabel")}
+            </InputLabel>
             <TextField
               inputProps={{
                 maxLength: 500,
               }}
               value={newModel.description}
-              placeholder="What is this model going to be used for"
+              placeholder={t("schema.duplicateModelDescriptionPlaceholder")}
               onChange={(event) =>
                 updateNewModel({ description: event.target.value })
               }
@@ -328,15 +345,16 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
               }
             />
             <Box>
-              <Typography variant="body2">List this model</Typography>
+              <Typography variant="body2">
+                {t("schema.duplicateModelListedLabel")}
+              </Typography>
               <Typography
                 component="p"
                 variant="body3"
                 color="text.secondary"
                 fontWeight={600}
               >
-                Listed models have their content items available to programmatic
-                navigation calls.
+                {t("schema.duplicateModelListedDescription")}
               </Typography>
             </Box>
           </Box>
@@ -344,7 +362,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
       </DialogContent>
       <DialogActions sx={{ pt: 2.5 }}>
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button
           variant="contained"
@@ -360,7 +378,7 @@ export const DuplicateModelDialogue = ({ onClose, model }: Props) => {
             })
           }
         >
-          Duplicate
+          {t("schema.duplicate")}
         </Button>
       </DialogActions>
     </Dialog>

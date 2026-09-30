@@ -1,5 +1,6 @@
 import { memo, useState } from "react";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import MenuList from "@mui/material/MenuList";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemText from "@mui/material/ListItemText";
@@ -57,6 +58,7 @@ interface TopBarProps {
   icon?: any;
 }
 const TopBar = memo(function TopBar(props: TopBarProps) {
+  const { t } = useTranslation();
   const history = useHistory();
   const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
   return (
@@ -106,10 +108,9 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
               <Link
                 underline="none"
                 color="secondary"
-                //@ts-expect-error
                 href={`${CONFIG.URL_PREVIEW_FULL}/-/instant/${props.contentModelZUID}.json`}
                 target="_blank"
-                title="Preview JSON"
+                title={t("code.previewJson")}
                 sx={{ m: 0, pr: 2, pl: 3.25, py: 0 }}
               >
                 <FlashOnRoundedIcon />
@@ -129,19 +130,19 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
           >
             {`/${props.fileName?.trim()?.replace(/^\/+/, "")}`}
           </Typography>
-          <Typography
-            data-cy="code-editor-file-version"
-            variant="h6"
-            color="grey.400"
-            fontWeight={600}
-          >{`(v${props?.version})`}</Typography>
+          {props?.version && (
+            <Typography
+              data-cy="code-editor-file-version"
+              variant="h6"
+              color="grey.400"
+              fontWeight={600}
+            >
+              {`(v${props?.version})`}
+            </Typography>
+          )}
         </Box>
 
-        {!props.synced && (
-          <Notice>
-            There is a new remote version ahead of your local changes
-          </Notice>
-        )}
+        {!props.synced && <Notice>{t("code.newRemoteVersionNotice")}</Notice>}
         <Box
           display="flex"
           flexDirection="row"
@@ -184,7 +185,7 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
                     <Tooltip
                       enterDelay={500}
                       enterNextDelay={500}
-                      title="Edit Related Content"
+                      title={t("code.editRelatedContent")}
                       placement="bottom"
                     >
                       <IconButton
@@ -204,7 +205,7 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
                     <Tooltip
                       enterDelay={500}
                       enterNextDelay={500}
-                      title="Edit Related Model"
+                      title={t("code.editRelatedModel")}
                       placement="bottom"
                     >
                       <IconButton
@@ -223,7 +224,7 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
                   <Tooltip
                     enterDelay={500}
                     enterNextDelay={500}
-                    title="Diff Versions"
+                    title={t("code.diffVersions")}
                     placement="bottom"
                   >
                     <IconButton
@@ -292,6 +293,7 @@ interface MoreOptionsProps {
 }
 
 const MoreOptions = (props: MoreOptionsProps) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
 
@@ -349,7 +351,7 @@ const MoreOptions = (props: MoreOptionsProps) => {
         slotProps={{
           paper: {
             sx: {
-              width: 200,
+              // minWidth: 200,
               borderRadius: 1,
             },
           },
@@ -366,7 +368,9 @@ const MoreOptions = (props: MoreOptionsProps) => {
             <ListItemIcon color="inherit">
               <DeleteIcon />
             </ListItemIcon>
-            <ListItemText color="text.primary">Delete File</ListItemText>
+            <ListItemText color="text.primary">
+              {t("code.deleteFile")}
+            </ListItemText>
           </MenuItem>
           <MenuItem onClick={handleCopyClick(props.fileZUID)}>
             <ListItemIcon color="inherit">
@@ -376,13 +380,12 @@ const MoreOptions = (props: MoreOptionsProps) => {
                 <WidgetsRoundedIcon />
               )}
             </ListItemIcon>
-            <ListItemText>Copy ZUID</ListItemText>
+            <ListItemText>{t("shell.relationalCopyZuid")}</ListItemText>
           </MenuItem>
           {props.contentModelZUID && (
             <MenuItem
               onClick={() =>
                 window.open(
-                  //@ts-expect-error
                   `${CONFIG.URL_PREVIEW_FULL}/-/instant/${props?.contentModelZUID}.json`,
                   "_blank"
                 )
@@ -391,7 +394,7 @@ const MoreOptions = (props: MoreOptionsProps) => {
               <ListItemIcon color="inherit">
                 <ElectricBoltOutlinedIcon />
               </ListItemIcon>
-              <ListItemText>Preview JSON</ListItemText>
+              <ListItemText>{t("code.previewJson")}</ListItemText>
             </MenuItem>
           )}
         </MenuList>

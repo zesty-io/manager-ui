@@ -6,6 +6,7 @@ import {
   Stylesheet,
   Script,
   CreateStatusLabel,
+  RedirectRequest,
   WorkflowStatusLabel,
 } from "../src/shell/services/types";
 import "./support/commands";
@@ -15,6 +16,7 @@ declare global {
     interface Chainable {
       waitOn(path: string, cb: () => void): Chainable<void>;
       login(): Chainable<void>;
+      stubStaffUser(): Chainable<void>;
       getBySelector(
         selector: string,
         ...args: any[]
@@ -73,12 +75,24 @@ declare global {
       task(
         event: "seed:code",
         path: string
-      ): Chainable<Partial<WebView> | Partial<Script> | Partial<Stylesheet>>;
+      ): Chainable<WebView | Script | Stylesheet>;
+      task(
+        event: "cleanup:code",
+        files: Array<{ zuid: string; type: string }>
+      ): Chainable<null>;
       task(event: "cleanup:labels"): Chainable<string[]>;
       task(
         event: "api:createLabel",
         data: CreateStatusLabel
       ): Chainable<WorkflowStatusLabel>;
+      task(
+        event: "api:publishItem",
+        data: { modelZUID: string; itemZUID: string }
+      ): Chainable<any>;
+      task(
+        event: "api:createRedirect",
+        payload: RedirectRequest
+      ): Chainable<any>;
     }
   }
 }

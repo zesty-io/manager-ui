@@ -6,7 +6,6 @@ import instanceZUID from "../../utility/instanceZUID";
 export const analyticsApi = createApi({
   reducerPath: "analyticsApi",
   baseQuery: fetchBaseQuery({
-    // @ts-ignore
     baseUrl: `${__CONFIG__.API_ANALYTICS}`,
     prepareHeaders,
   }),

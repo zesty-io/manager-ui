@@ -1,5 +1,14 @@
 import * as Sentry from "@sentry/react";
+import { spanToJSON } from "@sentry/core";
 import history from "utility/history";
+
+// Endpoints confirmed as non-issues — required for UI rendering
+const N1_IGNORED_ENDPOINTS = [
+  /\/v1\/search\/items/,
+  // This endpoint is currently added in the allow list but should ideally be updated to a batch api call
+  /\/v1\/instances\/[^/]+\/comments/,
+  /\/v1\/content\/models\/[^/]+\/items/,
+];
 
 // window.CONFIG not available so we use the webpack injected variable
 if (["stage", "production"].includes(__CONFIG__?.ENV)) {
@@ -58,6 +67,36 @@ if (["stage", "production"].includes(__CONFIG__?.ENV)) {
 
       // Return default breadcrumb data if the event is not a click or input event
       return breadcrumb;
+    },
+    beforeSendTransaction(event) {
+      // Keep only the first span per ignored endpoint pattern to suppress N+1 noise
+      // while still preserving one span so the call is visible in Sentry.
+      // Keyed by pattern (not URL) so endpoints with variable IDs are grouped correctly.
+      const seenPatterns = new Set();
+
+      event.spans = event.spans?.filter((span) => {
+        const { op, description } = spanToJSON(span);
+
+        const matchedPattern =
+          op === "http.client"
+            ? N1_IGNORED_ENDPOINTS.find((pattern) =>
+                pattern.test(description ?? "")
+              )
+            : undefined;
+
+        if (!matchedPattern) {
+          return true;
+        }
+
+        if (seenPatterns.has(matchedPattern)) {
+          return false;
+        }
+
+        seenPatterns.add(matchedPattern);
+        return true;
+      });
+
+      return event;
     },
   });
 }

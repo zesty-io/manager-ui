@@ -1,5 +1,6 @@
 import React, { useState, FC } from "react";
 import { Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
@@ -17,6 +18,7 @@ interface Props {
   modelZUID: string;
 }
 export const ModelMenu: FC<Props> = ({ anchorEl, onClose, modelZUID }) => {
+  const { t } = useTranslation();
   const [showDialogue, setShowDialogue] = useState<
     "rename" | "duplicate" | "delete" | null
   >(null);
@@ -56,7 +58,7 @@ export const ModelMenu: FC<Props> = ({ anchorEl, onClose, modelZUID }) => {
           <ListItemIcon>
             <DriveFileRenameOutlineRoundedIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Rename Model</ListItemText>
+          <ListItemText>{t("schema.renameModel")}</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -67,7 +69,7 @@ export const ModelMenu: FC<Props> = ({ anchorEl, onClose, modelZUID }) => {
           <ListItemIcon>
             <ContentCopyRoundedIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Duplicate Model</ListItemText>
+          <ListItemText>{t("schema.duplicateModel")}</ListItemText>
         </MenuItem>
         <MenuItem onClick={() => handleCopyZUID(model.ZUID)}>
           <ListItemIcon>
@@ -77,7 +79,7 @@ export const ModelMenu: FC<Props> = ({ anchorEl, onClose, modelZUID }) => {
               <WidgetsRoundedIcon fontSize="small" />
             )}
           </ListItemIcon>
-          <ListItemText>Copy Model ZUID</ListItemText>
+          <ListItemText>{t("schema.copyModelZUID")}</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -89,7 +91,7 @@ export const ModelMenu: FC<Props> = ({ anchorEl, onClose, modelZUID }) => {
           <ListItemIcon>
             <DeleteRoundedIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Delete Model</ListItemText>
+          <ListItemText>{t("schema.deleteModel")}</ListItemText>
         </MenuItem>
       </Menu>
 

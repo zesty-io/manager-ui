@@ -11,6 +11,7 @@ import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import AddPhotoAlternateRoundedIcon from "@mui/icons-material/AddPhotoAlternateRounded";
 import VideoCallRoundedIcon from "@mui/icons-material/VideoCallRounded";
 import { IntegrationTypes } from "../../../services/types";
+import { useTranslation } from "react-i18next";
 import { validateUrl } from "utility/validateUrl";
 
 export type DisplayCardProps = {
@@ -54,6 +55,7 @@ const DisplayCard = ({
   showPlaceholders = false,
   loading,
 }: DisplayCardProps) => {
+  const { t } = useTranslation();
   const [mediaError, setMediaError] = useState(false);
   const isVideoType = ["video", "youtube", "mux"].includes(type);
   const isSpecialType = ["shopify", "youtube", "mux", "classy"].includes(type);
@@ -152,7 +154,9 @@ const DisplayCard = ({
           >
             {details?.map((item: Record<string, unknown>, index: number) => {
               const itemKey =
-                showPlaceholders && !item?.key ? "+ Add Detail" : item?.key;
+                showPlaceholders && !item?.key
+                  ? t("shell.integrationAddDetailWithPlus")
+                  : renderValue(item?.key);
               const itemValue =
                 showPlaceholders && !item?.key ? "" : renderValue(item?.value);
               return (
@@ -206,7 +210,7 @@ const DisplayCard = ({
               width: isVideoType ? "142px" : "80px",
               maxHeight: "80px",
               position: "relative",
-              bgcolor: "#F2F4F7",
+              bgcolor: "grey.100",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",

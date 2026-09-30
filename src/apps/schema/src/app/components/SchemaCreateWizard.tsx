@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
@@ -24,11 +25,10 @@ import { fetchModels } from "../../../../../shell/store/models";
 import { notify } from "../../../../../shell/store/notifications";
 import { useHistory } from "react-router";
 
-const templates = [
+const getTemplates = (t: (key: string) => string) => [
   {
-    title: "Blog",
-    description:
-      "Perfect for blogging with title, body content, feature image, and category fields.",
+    title: t("schema.templateBlogTitle"),
+    description: t("schema.templateBlogDescription"),
     repository: "https://github.com/zesty-io/module-boostrap-5.2-blog",
     // This variable is used to determine which content model should be used to create the content item
     mainName: "module_blog",
@@ -47,9 +47,8 @@ const templates = [
   //     "Perfect for writing official docs for your product or developers.",
   // },
   {
-    title: "Landing Page",
-    description:
-      "A simple landing page with fields for a hero, feature, and footer section.",
+    title: t("schema.templateLandingPageTitle"),
+    description: t("schema.templateLandingPageDescription"),
     repository: "https://github.com/zesty-io/module-bootstrap-5.2-landing-page",
     icon: <WebRoundedIcon color="action" />,
     mainName: "module_modern_business",
@@ -57,7 +56,9 @@ const templates = [
 ];
 
 export const SchemaCreateWizard = () => {
+  const { t } = useTranslation();
   const history = useHistory();
+  const templates = getTemplates(t);
   const instance = useSelector((state: AppState) => state.instance);
   const models = useSelector((state: AppState) => state.models);
   const dispatch = useDispatch();
@@ -84,7 +85,7 @@ export const SchemaCreateWizard = () => {
       <Backdrop open={isLoading} sx={{ flexDirection: "column" }}>
         <CircularProgress />
         <Typography sx={{ mt: 2 }} variant="h4" color="common.white">
-          Creating Model
+          {t("schema.wizardCreatingModel")}
         </Typography>
       </Backdrop>
       <Dialog
@@ -97,10 +98,9 @@ export const SchemaCreateWizard = () => {
         }}
       >
         <DialogTitle>
-          Select a Schema Collections
+          {t("schema.wizardSelectCollectionTitle")}
           <Typography color="text.secondary">
-            Start from one of our many schema collections to better understand
-            our product
+            {t("schema.wizardSelectCollectionSubtitle")}
           </Typography>
         </DialogTitle>
         <DialogContent dividers>
@@ -144,7 +144,7 @@ export const SchemaCreateWizard = () => {
             onClick={handleNext}
             disabled={selectedTemplateIndex === null}
           >
-            Next
+            {t("common.next")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -160,8 +160,9 @@ export const SchemaCreateWizard = () => {
         <Box height="100%" textAlign="center" sx={{ py: 4, px: 8 }}>
           <img width="240px" height="160px" src={winnerPanel} />
           <Typography variant="h1" fontWeight={600} sx={{ mt: 3 }}>
-            Your Models for Your {templates[selectedTemplateIndex]?.title} are
-            Now Built!
+            {t("schema.wizardSuccessHeading", {
+              title: templates[selectedTemplateIndex]?.title,
+            })}
           </Typography>
           <Button
             variant="contained"
@@ -179,7 +180,7 @@ export const SchemaCreateWizard = () => {
               )
             }
           >
-            Enter a Content Entry
+            {t("schema.wizardEnterContentEntry")}
           </Button>
           {/* <Box width="240px" p={2} sx={{backgroundColor: 'grey.50'}}>
             <Typography variant="h6" fontWeight={600}>

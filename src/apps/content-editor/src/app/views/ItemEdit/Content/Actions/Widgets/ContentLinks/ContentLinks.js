@@ -1,3 +1,5 @@
+import { alpha } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
 import { memo, Fragment } from "react";
 import {
   Card,
@@ -14,8 +16,10 @@ import { LiveUrl } from "./LiveUrl";
 import { InstantUrl } from "./InstantUrl";
 
 import styles from "./ContentLinks.less";
+import { useTranslation } from "react-i18next";
 
 export const ContentLinks = memo(function ContentLinks(props) {
+  const { t } = useTranslation();
   return (
     <Fragment>
       <Card
@@ -27,20 +31,19 @@ export const ContentLinks = memo(function ContentLinks(props) {
           sx={{
             p: 0,
             backgroundColor: "transparent",
-            fontSize: "16px",
-            color: "#10182866",
+            color: alpha(theme.palette.text.primary, 0.4),
             borderBottom: 1,
             borderColor: "grey.200",
           }}
           titleTypographyProps={{
+            variant: "overline",
             sx: {
               fontWeight: 400,
-              fontSize: "12px",
-              lineHeight: "32px",
-              color: "#101828",
+              color: "text.primary",
+              textTransform: "uppercase",
             },
           }}
-          title="LINKS"
+          title={t("content.itemEditLinksTitle")}
         ></CardHeader>
         <CardContent
           className={styles.Content}

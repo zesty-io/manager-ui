@@ -24,6 +24,7 @@ import {
   CheckRounded,
 } from "@mui/icons-material";
 import { useHistory } from "react-router";
+import { useTranslation } from "react-i18next";
 import { useDrag, useDrop } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import { ReplaceContentItem } from "@zesty-io/material";
@@ -41,6 +42,7 @@ import { ConfirmPublishModal } from "../../ConfirmPublishModal";
 import { fetchItem, fetchItemPublishing } from "../../../store/content";
 import { SchedulePublish } from "../../SchedulePublish";
 import { useDomain } from "../../../hooks/use-domain";
+import { asRenderableText } from "../../../../utility/asRenderableText";
 
 type ActiveItemProps = {
   itemZUID: string;
@@ -65,6 +67,7 @@ export const ActiveItem = memo(
     draggable,
     openFieldSelectorDialog,
   }: ActiveItemProps) => {
+    const { t } = useTranslation();
     const [imageError, setImageError] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
@@ -186,10 +189,7 @@ export const ActiveItem = memo(
         const value = String(contentItem.data[imageFieldName]).split(",")?.[0];
 
         if (value.startsWith("3-")) {
-          return `${
-            // @ts-ignore
-            CONFIG.SERVICE_MEDIA_RESOLVER
-          }/resolve/${value}/getimage/?w=64&h=64&type=crop`;
+          return `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${value}/getimage/?w=64&h=64&type=crop`;
         } else {
           return value;
         }
@@ -238,11 +238,19 @@ export const ActiveItem = memo(
         });
     };
 
+    // The display field is picked by a Schema admin and can be an object-shaped
+    // datatype (images, repeater, one_to_one). Drop anything non-primitive so it falls
+    // through to the meta fallbacks below instead of throwing "Objects are not valid as
+    // a React child" when rendered.
+    const relatedFieldTitle = asRenderableText(
+      contentItem?.data[relatedFieldData?.name]
+    );
+
     const itemTitle = !!contentItem
-      ? contentItem?.data[relatedFieldData?.name] ||
+      ? relatedFieldTitle ||
         contentItem?.web?.metaTitle ||
         contentItem?.web?.metaLinkText
-      : `${itemZUID} (Deleted)`;
+      : t("shell.relationalDeletedItem", { zuid: itemZUID });
     const isPublishable =
       contentItem?.meta?.version > (contentItem?.publishing?.version || 0);
 
@@ -274,7 +282,7 @@ export const ActiveItem = memo(
               <Tooltip
                 enterDelay={1000}
                 disableInteractive
-                title="Drag and Drop to Reorder"
+                title={t("shell.relationalDragToReorder")}
                 open={showTooltip}
                 onOpen={() => setShowTooltip(true)}
                 onClose={() => setShowTooltip(false)}
@@ -379,7 +387,7 @@ export const ActiveItem = memo(
               <Tooltip
                 enterDelay={1000}
                 disableInteractive
-                title="Replace Item"
+                title={t("shell.relationalReplaceItem")}
               >
                 <IconButton
                   size="xsmall"
@@ -392,7 +400,7 @@ export const ActiveItem = memo(
               <Tooltip
                 enterDelay={1000}
                 disableInteractive
-                title="Edit Content Item"
+                title={t("shell.relationalEditContentItem")}
               >
                 <IconButton
                   size="xsmall"
@@ -409,7 +417,7 @@ export const ActiveItem = memo(
               <Tooltip
                 enterDelay={1000}
                 disableInteractive
-                title="More Options"
+                title={t("shell.relationalMoreOptions")}
               >
                 <IconButton
                   data-cy="active-relational-item-more-button"
@@ -447,7 +455,7 @@ export const ActiveItem = memo(
                 <ListItemIcon>
                   <CloudUploadRounded />
                 </ListItemIcon>
-                <ListItemText primary="Publish Now" />
+                <ListItemText primary={t("shell.relationalPublishNow")} />
               </MenuItem>
             )}
             {isPublishable && (
@@ -461,13 +469,12 @@ export const ActiveItem = memo(
                 <ListItemIcon>
                   <ScheduleRounded />
                 </ListItemIcon>
-                <ListItemText primary="Schedule Publish" />
+                <ListItemText primary={t("shell.relationalSchedulePublish")} />
               </MenuItem>
             )}
             {!!contentItem?.meta?.version && (
               <MenuItem
                 onClick={() => {
-                  // @ts-expect-error Config not typed
                   let devUrl = `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}${contentItem?.web?.path}`;
 
                   if (previewLock) {
@@ -482,7 +489,9 @@ export const ActiveItem = memo(
                   <DesignServicesRounded />
                 </ListItemIcon>
                 <ListItemText
-                  primary={`Draft Preview - v${contentItem?.meta?.version}`}
+                  primary={t("shell.relationalDraftPreview", {
+                    version: contentItem?.meta?.version,
+                  })}
                 />
               </MenuItem>
             )}
@@ -502,7 +511,9 @@ export const ActiveItem = memo(
                   <LanguageRounded />
                 </ListItemIcon>
                 <ListItemText
-                  primary={`Production Preview - v${contentItem?.publishing?.version}`}
+                  primary={t("shell.relationalProductionPreview", {
+                    version: contentItem?.publishing?.version,
+                  })}
                 />
               </MenuItem>
             )}
@@ -512,7 +523,7 @@ export const ActiveItem = memo(
                 <ListItemIcon>
                   {isCopied ? <CheckRounded /> : <WidgetsRounded />}
                 </ListItemIcon>
-                <ListItemText primary="Copy ZUID" />
+                <ListItemText primary={t("shell.relationalCopyZuid")} />
               </MenuItem>
             )}
             <MenuItem
@@ -522,7 +533,7 @@ export const ActiveItem = memo(
               <ListItemIcon>
                 <CloseRounded />
               </ListItemIcon>
-              <ListItemText primary="Remove" />
+              <ListItemText primary={t("common.remove")} />
             </MenuItem>
           </Menu>
         )}

@@ -10,6 +10,7 @@ import ListItemText from "@mui/material/ListItemText";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import { ListItem } from "@mui/material";
 import { ReactNode, ElementType } from "react";
+import { useTranslation } from "react-i18next";
 
 type FileCardProps = {
   title: string;
@@ -26,12 +27,12 @@ const FileCard: React.FC<FileCardProps> = ({
   linkLabel = "",
   children,
 }) => {
+  const { t } = useTranslation();
   return (
     <Card
       sx={{
         boxSizing: "border-box",
-        // Temporary: will be updated once the design is final
-        bgcolor: "#0D1116",
+        bgcolor: "background.editor",
         color: "grey.400",
         width: "100%",
         px: 2,
@@ -95,7 +96,7 @@ const FileCard: React.FC<FileCardProps> = ({
         {!!link && (
           <Link
             to={link}
-            title="Edit Related Model"
+            title={t("code.editRelatedModel")}
             style={{
               display: "flex",
               flexDirection: "row",

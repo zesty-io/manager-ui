@@ -13,10 +13,10 @@ import {
 } from "@mui/material";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
+import { useTranslation } from "react-i18next";
 import { ContentItem } from "../../../../../../shell/services/types";
 import { FieldTypeDateTime } from "../../../../../../shell/components/FieldTypeDateTime";
 import { DialogContentItem } from "./DialogContentItem";
-import pluralizeWord from "../../../../../../utility/pluralizeWord";
 import { format as fmt } from "date-fns";
 import { formatInTimeZone, zonedTimeToUtc } from "date-fns-tz";
 
@@ -32,6 +32,7 @@ export const SchedulePublishesModal = ({
   onConfirm,
   loading,
 }: SchedulePublishesModalProps) => {
+  const { t } = useTranslation();
   // Start at next top of the hour (local)
   const now = new Date();
   const nextTopOfHour = new Date(now);
@@ -77,12 +78,11 @@ export const SchedulePublishesModal = ({
           <Box>
             <Box mb={1}>
               <Typography variant="h5" fontWeight={700}>
-                Schedule Publish of Changes to {items.length}{" "}
-                {pluralizeWord("Item", items.length)}
+                {t("content.itemListScheduleTitle", { count: items.length })}
               </Typography>
             </Box>
             <Typography variant="body2" color="text.secondary">
-              You can always cancel the scheduled publish later if needed
+              {t("content.itemListScheduleSubtitle")}
             </Typography>
           </Box>
         </Stack>
@@ -90,7 +90,7 @@ export const SchedulePublishesModal = ({
       <DialogContent data-cy="PublishScheduleModal">
         <>
           <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
-            Publish on
+            {t("content.itemListSchedulePublishOn")}
           </Typography>
           <FieldTypeDateTime
             disablePast
@@ -111,8 +111,7 @@ export const SchedulePublishesModal = ({
               icon={<WarningRoundedIcon fontSize="inherit" />}
               sx={{ mt: 2.5 }}
             >
-              Since the selected time is a current or past date, this will be
-              immediately published.
+              {t("content.itemListSchedulePastWarning")}
             </Alert>
           )}
           <List disablePadding sx={{ pt: 2.5 }}>
@@ -129,7 +128,7 @@ export const SchedulePublishesModal = ({
           color="inherit"
           onClick={onCancel}
         >
-          Cancel
+          {t("common.cancel")}
         </Button>
 
         <Button
@@ -151,7 +150,7 @@ export const SchedulePublishesModal = ({
             }
           }}
         >
-          Schedule Publish ({items.length})
+          {t("content.itemListScheduleButton", { count: items.length })}
         </Button>
       </DialogActions>
     </Dialog>

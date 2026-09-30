@@ -1,4 +1,5 @@
 import { FC, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
@@ -17,6 +18,7 @@ type VideoFilterRow = {
   onClose: () => void;
 };
 export const VideoFilterRow: FC<VideoFilterRow> = ({ onClose }) => {
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [params, setParams] = useParams();
@@ -39,7 +41,7 @@ export const VideoFilterRow: FC<VideoFilterRow> = ({ onClose }) => {
         <ListItemIcon>
           <MovieCreationRounded fontSize="small" />
         </ListItemIcon>
-        <ListItemText>Videos</ListItemText>
+        <ListItemText>{t("media.filetypeFilterVideos")}</ListItemText>
         <ListItemIcon style={{ minWidth: "0px" }}>
           <ChevronRightOutlined fontSize="small" />
         </ListItemIcon>
@@ -51,7 +53,9 @@ export const VideoFilterRow: FC<VideoFilterRow> = ({ onClose }) => {
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <MenuItem onClick={() => handleChange("Video")}>
-          <Typography variant="body1">All Video Types</Typography>
+          <Typography variant="body1">
+            {t("media.videoFilterAllTypes")}
+          </Typography>
         </MenuItem>
         <MenuItem onClick={() => handleChange("MPEG")}>
           <Typography variant="body1">MPEG</Typography>

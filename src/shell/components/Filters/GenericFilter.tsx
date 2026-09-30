@@ -1,5 +1,6 @@
 import { FC, useState } from "react";
 import { Menu, MenuItem, ListItemText } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import { FilterButton } from "./FilterButton";
 
@@ -23,6 +24,7 @@ export const GenericFilter: FC<GenericFilterProps> = ({
   filterId = "genericFilter",
   isSort = false,
 }) => {
+  const { t } = useTranslation();
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLButtonElement | null>(
     null
   );
@@ -43,7 +45,9 @@ export const GenericFilter: FC<GenericFilterProps> = ({
   return (
     <FilterButton
       isFilterActive={Boolean(value)}
-      buttonText={isSort ? `Sort: ${buttonText}` : buttonText}
+      buttonText={
+        isSort ? t("shell.sortValue", { value: buttonText }) : buttonText
+      }
       onOpenMenu={handleOpenMenuClick}
       onRemoveFilter={() => onChange("")}
       filterId={filterId}

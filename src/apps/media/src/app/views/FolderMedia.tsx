@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
 import { useParams as useSearchParams } from "../../../../../shell/hooks/useParams";
@@ -43,6 +44,7 @@ export const FolderMedia = ({
   addImagesCallback,
   setCurrentFilesCallback,
 }: Props) => {
+  const { t } = useTranslation();
   const { id } = useParams<Params>();
   const [params, setParams] = useSearchParams();
   const sortOrder = params.get("sort");
@@ -200,7 +202,7 @@ export const FolderMedia = ({
                     variant="h6"
                     sx={{ pl: 3, pt: 2, pb: 1.5 }}
                   >
-                    {groupFiles?.length} matches found
+                    {t("media.matchesFound", { count: groupFiles?.length })}
                   </Typography>
                 )}
               <DnDProvider

@@ -1,7 +1,7 @@
 import { FC, useCallback, Ref, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { TextField } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import { TARGET_ERRORS } from "../constants";
 
 type PathFieldProps = {
   id?: number;
@@ -28,6 +28,8 @@ const PathField: FC<PathFieldProps> = ({
   onChange,
   validation,
 }) => {
+  const { t } = useTranslation();
+
   const isValid = useMemo(() => {
     if (!validation || !value) return true;
     return validation(value);
@@ -40,7 +42,7 @@ const PathField: FC<PathFieldProps> = ({
 
       if (!data) return;
       data = data.replace(/ /g, "-").replace(/\s+/g, "");
-      const allowedChars = /^[a-zA-Z0-9\-_.~&=/?\$:#\*]+$/;
+      const allowedChars = /^[a-zA-Z0-9\-_.~&=/?\$:#\*%]+$/;
       if (!allowedChars.test(data)) {
         event.preventDefault();
         return;
@@ -89,7 +91,7 @@ const PathField: FC<PathFieldProps> = ({
           noWrap={false}
           sx={{ wordWrap: "normal" }}
         >
-          {TARGET_ERRORS.invalidUrl}
+          {t("seo.invalidUrlEnterValid")}
         </Typography>
       )}
     </>

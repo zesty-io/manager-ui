@@ -14,6 +14,7 @@ export type ActionButtonProps = Omit<
   isActive?: boolean;
   inActiveColor?: string;
   onClick?: () => void;
+  "data-cy"?: string;
 };
 
 export const ActionButton: FC<ActionButtonProps> = ({
@@ -24,6 +25,7 @@ export const ActionButton: FC<ActionButtonProps> = ({
   isActive,
   inActiveColor = "grey.400",
   onClick,
+  "data-cy": dataCy,
   ...props
 }) => {
   return (
@@ -47,27 +49,27 @@ export const ActionButton: FC<ActionButtonProps> = ({
         <span>
           <Button
             {...props}
-            data-cy={`code-app-${label?.toLowerCase()}-button`}
+            data-cy={dataCy}
             onClick={onClick}
             loading={isLoading}
-            sx={{ whiteSpace: "nowrap" }}
+            sx={{ whiteSpace: "nowrap", textTransform: "capitalize" }}
           >
             {label}
           </Button>
         </span>
       ) : (
         <Box
+          data-cy={dataCy}
           display="flex"
           alignItems="center"
           columnGap={1}
           px={1}
-          data-cy={`code-app-${label?.toLowerCase()}-indicator`}
         >
           <CheckCircleRounded fontSize="small" sx={{ color: inActiveColor }} />
           <Typography
             variant="body2"
             component="span"
-            sx={{ color: inActiveColor }}
+            sx={{ color: inActiveColor, textTransform: "capitalize" }}
           >
             {label}
           </Typography>

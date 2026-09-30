@@ -1,4 +1,5 @@
 import { TextField, Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 import { FieldShell } from "../../../../components/Editor/Field/FieldShell";
 import { hasErrors } from "./util";
@@ -18,6 +19,8 @@ export const OGDescription = ({
   error,
   field,
 }: OGDescriptionProps) => {
+  const { t } = useTranslation();
+
   return (
     <Box data-cy="OGDescription" id={field.ZUID}>
       <FieldShell
@@ -25,7 +28,7 @@ export const OGDescription = ({
           label: field.label,
           required: field.required,
         }}
-        customTooltip="This title appears in open graph social media previews (e.g. Facebook) below the title."
+        customTooltip={t("content.itemEditMetaOgDescriptionTooltip")}
         withInteractiveTooltip={false}
         withLengthCounter
         maxLength={MaxLengths.og_description}

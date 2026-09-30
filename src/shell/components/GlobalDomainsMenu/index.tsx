@@ -1,4 +1,5 @@
 import { FC, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { keyframes } from "@emotion/react";
 import {
@@ -39,11 +40,6 @@ const rotateAnimation = keyframes`
   }
 `;
 
-const CHIP_TITLE = {
-  live: "Prod",
-  dev: "Stage",
-};
-
 interface GlobalDomainsMenuProps {
   onCloseDropdownMenu?: () => void;
   onChangeView?: (view: string) => void;
@@ -54,20 +50,20 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
   onChangeView,
   withBackButton = true,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { data: domains, isLoading: isLoadingDomains } = useGetDomainsQuery();
   const { data: instance } = useGetInstanceQuery();
   const [refreshCache, { isSuccess, isLoading, isError }] =
     useRefreshCacheMutation();
 
-  // @ts-ignore
   const stageDomainText = `${instance?.randomHashID}${CONFIG.URL_PREVIEW}`;
 
   useEffect(() => {
     if (isError) {
       dispatch(
         notify({
-          message: "Failed to refresh the CDN cache",
+          message: t("shell.failedRefreshCdnCache"),
           kind: "error",
         })
       );
@@ -88,7 +84,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
           </IconButton>
         )}
         <Typography variant="h5" fontWeight={600}>
-          Domains
+          {t("common.domains")}
         </Typography>
       </Stack>
       <Divider />
@@ -105,7 +101,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
               )
             }
           >
-            Manage
+            {t("common.manage")}
           </Button>
           <Button
             data-cy="RefreshCache"
@@ -127,7 +123,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
             }
             onClick={() => refreshCache()}
           >
-            Refresh CDN Cache
+            {t("shell.refreshCdnCache")}
           </Button>
         </Stack>
       </MenuList>
@@ -141,7 +137,6 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
         <MenuItem
           onClick={() =>
             handleOpenUrl(
-              // @ts-ignore
               `${CONFIG.URL_PREVIEW_PROTOCOL}${instance.randomHashID}${CONFIG.URL_PREVIEW}`
             )
           }
@@ -159,7 +154,7 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
               {stageDomainText}
             </ListItemText>
           </Tooltip>
-          <Chip size="small" label="Stage" />
+          <Chip size="small" label={t("common.stage")} sx={{ ml: 1 }} />
         </MenuItem>
         {isLoadingDomains
           ? [...Array(5)].map((_, index) => (
@@ -187,8 +182,11 @@ export const GlobalDomainsMenu: FC<GlobalDomainsMenuProps> = ({
                 <Chip
                   size="small"
                   label={
-                    CHIP_TITLE[domain.branch as keyof typeof CHIP_TITLE] || ""
+                    domain.branch === "live"
+                      ? t("common.prod")
+                      : t("common.stage")
                   }
+                  sx={{ ml: 1 }}
                 />
               </MenuItem>
             ))}

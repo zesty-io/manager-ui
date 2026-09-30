@@ -1,3 +1,5 @@
+import { alpha } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
 import { memo, useState } from "react";
 
 import Button from "@mui/material/Button";
@@ -11,8 +13,10 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 
 import { useHistory, useLocation } from "react-router";
+import { useTranslation } from "react-i18next";
 
 export const Unpublish = memo(function Unpublish(props) {
+  const { t } = useTranslation();
   const isPublished = props.publishing && props.publishing.isPublished;
 
   const [loading, setLoading] = useState(false);
@@ -37,20 +41,19 @@ export const Unpublish = memo(function Unpublish(props) {
         sx={{
           p: 0,
           backgroundColor: "transparent",
-          fontSize: "16px",
-          color: "#10182866",
+          color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
         }}
         titleTypographyProps={{
+          variant: "overline",
           sx: {
             fontWeight: 400,
-            fontSize: "12px",
-            lineHeight: "32px",
-            color: "#101828",
+            color: "text.primary",
+            textTransform: "uppercase",
           },
         }}
-        title="UNPUBLISH"
+        title={t("content.itemEditUnpublishTitle")}
       ></CardHeader>
       <CardContent
         sx={{
@@ -77,13 +80,10 @@ export const Unpublish = memo(function Unpublish(props) {
               variant="body2"
               color="text.secondary"
               sx={{
-                fontSize: "14px",
-                lineHeight: "20px",
                 maxWidth: "595px",
               }}
             >
-              By unpublishing this content it will no longer be served if the
-              URL is requested. The URL will return a 404 not found response.
+              {t("content.itemEditUnpublishWidgetDescription")}
             </Typography>
             <Button
               disableElevation
@@ -95,17 +95,17 @@ export const Unpublish = memo(function Unpublish(props) {
               loadingPosition="start"
               startIcon={<ManageAccountsRoundedIcon />}
               sx={{
-                backgroundColor: "#F2F4F7",
+                backgroundColor: "grey.100",
                 color: "text.secondary",
                 mt: 1.5,
 
                 "&:hover": {
-                  backgroundColor: "#E4E7EC",
+                  backgroundColor: "grey.200",
                   color: "text.secondary",
                 },
               }}
             >
-              Manage Publish State
+              {t("content.itemEditManagePublishState")}
             </Button>
           </>
         )}

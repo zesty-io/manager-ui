@@ -8,16 +8,20 @@ import {
 import { useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router";
 
+import { BRAND_COLORS } from "utility/brandColors";
+
 import { useGetInstanceQuery } from "../../../../../../../../shell/services/accounts";
 import { InstanceAvatar } from "../../../../../../../../shell/components/global-sidebar/components/InstanceAvatar";
 import { useDomain } from "../../../../../../../../shell/hooks/use-domain";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { useGetContentModelFieldsQuery } from "../../../../../../../../shell/services/instance";
+import { useTranslation } from "react-i18next";
 
 type GooglePreviewProps = {
   imageURL: string;
 };
 export const GooglePreview = ({ imageURL }: GooglePreviewProps) => {
+  const { t } = useTranslation();
   const { modelZUID, itemZUID } = useParams<{
     modelZUID: string;
     itemZUID: string;
@@ -104,7 +108,7 @@ export const GooglePreview = ({ imageURL }: GooglePreviewProps) => {
         </Stack>
         <Typography
           variant="h5"
-          color={!!item?.web?.metaTitle ? "#131CA4" : "grey.500"}
+          color={!!item?.web?.metaTitle ? BRAND_COLORS.google : "grey.500"}
           mt={1}
           mb={1.5}
           fontWeight={600}
@@ -119,7 +123,7 @@ export const GooglePreview = ({ imageURL }: GooglePreviewProps) => {
             textOverflow: "ellipsis",
           }}
         >
-          {item?.web?.metaTitle || "Meta Title"}
+          {item?.web?.metaTitle || t("content.itemEditMetaTitle")}
         </Typography>
         <Typography
           variant="body2"
@@ -137,7 +141,7 @@ export const GooglePreview = ({ imageURL }: GooglePreviewProps) => {
             textOverflow: "ellipsis",
           }}
         >
-          {item?.web?.metaDescription || "Meta Description"}
+          {item?.web?.metaDescription || t("content.itemEditMetaDescription")}
         </Typography>
       </Box>
       {!!imageURL ? (

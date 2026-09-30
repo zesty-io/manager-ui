@@ -1,5 +1,7 @@
 import { Box } from "@mui/material";
-import { useEffect, useState } from "react";
+import { SubAppSkeleton } from "shell/components/SubAppSkeleton";
+import { Suspense, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Redirect, Route, Switch, useHistory } from "react-router";
 import {
@@ -31,7 +33,17 @@ interface Props {
   isReplace?: boolean;
 }
 
-export const MediaApp = ({
+// Local Suspense boundary so lazy-loading the "media" namespace shows a
+// fallback in the sub-app area only, instead of blanking the whole shell.
+export const MediaApp = (props: Props) => {
+  return (
+    <Suspense fallback={<SubAppSkeleton />}>
+      <MediaAppContent {...props} />
+    </Suspense>
+  );
+};
+
+const MediaAppContent = ({
   lockedToGroupId,
   showHeaderActions = true,
   isSelectDialog = false,
@@ -39,6 +51,10 @@ export const MediaApp = ({
   limitSelected,
   isReplace = false,
 }: Props) => {
+  // Requesting the namespace here triggers its lazy load and suspends this
+  // subtree until ready; child components use bare useTranslation() with
+  // qualified keys (t("media.key")) once it's in the store.
+  const { t } = useTranslation("media");
   const history = useHistory();
   const dispatch = useDispatch();
   const [isFileModalError, setIsFileModalError] = useState<boolean>(false);
@@ -133,8 +149,8 @@ export const MediaApp = ({
                     }}
                   >
                     <NotFoundState
-                      title="File Not Found"
-                      message="We’re sorry the file you requested could not be found. Please go back to the all media page."
+                      title={t("media.mediaAppFileNotFoundTitle")}
+                      message={t("media.mediaAppFileNotFoundMessage")}
                     />
                   </Box>
                 );
@@ -163,8 +179,8 @@ export const MediaApp = ({
                     }}
                   >
                     <NotFoundState
-                      title="File Not Found"
-                      message="We’re sorry the file you requested could not be found. Please go back to the all media page."
+                      title={t("media.mediaAppFileNotFoundTitle")}
+                      message={t("media.mediaAppFileNotFoundMessage")}
                     />
                   </Box>
                 );
@@ -194,8 +210,8 @@ export const MediaApp = ({
                     }}
                   >
                     <NotFoundState
-                      title="File Not Found"
-                      message="We’re sorry the file you requested could not be found. Please go back to the all media page."
+                      title={t("media.mediaAppFileNotFoundTitle")}
+                      message={t("media.mediaAppFileNotFoundMessage")}
                     />
                   </Box>
                 );

@@ -1,0 +1,15 @@
+{
+  "appNotInstalled": "La aplicación \"{{zuid}}\" no está instalada.",
+  "exploreMarketplace": "Explorar el Marketplace",
+  "googleAnalyticsLogoAlt": "Logotipo de Google Analytics",
+  "googleChromeLogoAlt": "Logotipo de Google Chrome",
+  "goToMarketplace": "Ir al Marketplace",
+  "headerTitleApps": "Aplicaciones",
+  "installAppBody": "Instala extensiones, aplicaciones y módulos de inicio rápido для acelerar tu proyecto de Zesty",
+  "microsoftLogoAlt": "Logotipo de Microsoft",
+  "nodejsLogoAlt": "Logotipo de NodeJS",
+  "npmLogoAlt": "Logotipo de NPM",
+  "sidebarMarketplace": "Marketplace",
+  "visitMarketplace": "Visitar el Marketplace",
+  "zestyRocketLogoAlt": "Logotipo de Zesty Rocket"
+}

@@ -45,6 +45,7 @@ import * as amplitude from "@amplitude/analytics-browser";
 import { sessionReplayPlugin } from "@amplitude/plugin-session-replay-browser";
 import instanceZUID from "../../../utility/instanceZUID";
 import { isZestyEmail } from "../../../utility/isZestyEmail";
+import i18n from "../../i18n";
 
 let sessionReplayAdded = false;
 function maybeEnableSessionReplay(email?: string) {
@@ -104,6 +105,7 @@ export default memo(function Shell() {
   identifyEvent.set("userEmail", user.email);
   identifyEvent.set("userFirstName", user.firstName);
   identifyEvent.set("userLastName", user.lastName);
+  identifyEvent.set("locale", i18n.language);
 
   amplitude.identify(identifyEvent);
 

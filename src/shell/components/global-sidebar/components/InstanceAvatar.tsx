@@ -1,3 +1,5 @@
+import { alpha } from "@mui/material/styles";
+import { theme } from "@zesty-io/material";
 import { FC, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Avatar, Skeleton, Box, SxProps, Theme } from "@mui/material";
@@ -78,7 +80,7 @@ export const InstanceAvatar: FC<InstanceAvatar> = ({
         <Box
           data-cy="AvatarHoverOverlay"
           sx={{
-            backgroundColor: "#10182880",
+            backgroundColor: alpha(theme.palette.text.primary, 0.5),
             borderRadius: "50%",
             position: "absolute",
             top: 0,

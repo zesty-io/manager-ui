@@ -1,4 +1,5 @@
 import { FC, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
@@ -17,6 +18,7 @@ type ImageFilterRow = {
   onClose: () => void;
 };
 export const ImageFilterRow: FC<ImageFilterRow> = ({ onClose }) => {
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [params, setParams] = useParams();
@@ -35,7 +37,7 @@ export const ImageFilterRow: FC<ImageFilterRow> = ({ onClose }) => {
         <ListItemIcon>
           <ImageRounded fontSize="small" />
         </ListItemIcon>
-        <ListItemText>Images</ListItemText>
+        <ListItemText>{t("media.filetypeFilterImages")}</ListItemText>
         <ListItemIcon style={{ minWidth: "0px" }}>
           <ChevronRightOutlined fontSize="small" />
         </ListItemIcon>
@@ -56,7 +58,9 @@ export const ImageFilterRow: FC<ImageFilterRow> = ({ onClose }) => {
         }}
       >
         <MenuItem onClick={() => handleChange("Image")}>
-          <Typography variant="body1">All Image Types</Typography>
+          <Typography variant="body1">
+            {t("media.imageFilterAllTypes")}
+          </Typography>
         </MenuItem>
         <MenuItem onClick={() => handleChange("PNG")}>
           <Typography variant="body1">PNG</Typography>

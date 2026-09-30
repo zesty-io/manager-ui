@@ -12,91 +12,93 @@ import {
 } from "../../../components/Filters/DateFilter/types";
 import { ResourceType } from "../../../services/types";
 
+// These maps live at module level, where t() can't run, so labels are stored
+// as translation keys and resolved with t() at the render site.
 interface PresetDate {
-  text: string;
+  textKey: string;
   value: PresetType;
 }
 export const PRESET_DATES: readonly PresetDate[] = [
   {
-    text: "Today",
+    textKey: "common.today",
     value: "today",
   },
   {
-    text: "Yesterday",
+    textKey: "common.yesterday",
     value: "yesterday",
   },
   {
-    text: "Last 7 days",
+    textKey: "common.last7Days",
     value: "last_7_days",
   },
   {
-    text: "Last 30 days",
+    textKey: "common.last30Days",
     value: "last_30_days",
   },
   {
-    text: "Last 3 months",
+    textKey: "common.last3Months",
     value: "last_3_months",
   },
   {
-    text: "Last 12 months",
+    textKey: "common.last12Months",
     value: "last_12_months",
   },
 ] as const;
 
 interface CustomDate {
-  text: string;
+  textKey: string;
   value: DateFilterModalType;
 }
 export const CUSTOM_DATES: readonly CustomDate[] = [
   {
-    text: "On...",
+    textKey: "shell.dateOn",
     value: "on",
   },
   {
-    text: "Before...",
+    textKey: "shell.dateBefore",
     value: "before",
   },
   {
-    text: "After...",
+    textKey: "shell.dateAfter",
     value: "after",
   },
   {
-    text: "Custom date range",
+    textKey: "shell.customDateRange",
     value: "daterange",
   },
 ] as const;
 
 export const RESOURCE_TYPES: Record<ResourceType, string> = {
-  content: "Content Items",
-  schema: "Models",
-  code: "Code Files",
-  media: "Media",
-  block: "Blocks",
+  content: "common.contentItems",
+  schema: "common.models",
+  code: "common.codeFiles",
+  media: "common.media",
+  block: "shell.navBlocks",
 } as const;
 
 interface SearchAccelerator {
   icon: SvgIconComponent;
-  text: string;
+  textKey: string;
 }
 export const SEARCH_ACCELERATORS: Record<ResourceType, SearchAccelerator> = {
   content: {
     icon: EditRounded,
-    text: "Content",
+    textKey: "common.content",
   },
   schema: {
     icon: Database as SvgIconComponent,
-    text: "Schema",
+    textKey: "shell.navSchema",
   },
   media: {
     icon: ImageRounded,
-    text: "Media",
+    textKey: "common.media",
   },
   code: {
     icon: CodeRounded,
-    text: "Code",
+    textKey: "common.code",
   },
   block: {
     icon: Block as SvgIconComponent,
-    text: "Block",
+    textKey: "shell.block",
   },
 } as const;
