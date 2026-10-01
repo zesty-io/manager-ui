@@ -210,8 +210,9 @@ export const ItemCreate = () => {
     async (action: ActionAfterSave) => {
       setSaveClicked(true);
 
-      metaRef.current?.validateMetaFields?.();
-      if (hasErrors || hasSEOErrors) {
+      const validationErrors = metaRef.current?.validateMetaFields?.();
+
+      if (hasErrors || hasSEOErrors || validationErrors) {
         fieldErrorRef.current?.scrollToErrors?.();
         return;
       }
