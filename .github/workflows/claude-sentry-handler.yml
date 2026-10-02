@@ -176,13 +176,37 @@ jobs:
                - If this fetch fails (bad ID, issue resolved/deleted, API error),
                  skip straight to the fetch-failed outputs in section C.3 and stop —
                  do not attempt a fix, and skip section B entirely.
-            2. Read the culprit source around each non-vendor stack frame (Read
+            2. Fetch the breadcrumb trail with `mcp__sentry__get_issue_breadcrumbs`,
+               passing `issueUrl=SENTRY_PERMALINK` — it derives the org slug and issue
+               id from that URL on its own. If step 1 surfaced a specific event id,
+               pass it as `eventId` so both calls describe the same event; otherwise
+               both independently resolve `latest`, which can differ for a
+               high-frequency error. This is the ordered trail of clicks, inputs,
+               navigations, console output and HTTP calls leading up to the error.
+               - `src/utility/sentry.js` enriches `ui.click` / `ui.input` crumbs with
+                 the element's `data-cy`, `id`, `name`, and button text, so a crumb
+                 reading `[ui.click] Tag name: "button" data-cy: "SaveItemButton"`
+                 names the exact control the user hit. `Grep` that `data-cy` value to
+                 locate the component.
+               - Breadcrumbs localize; they do not establish certainty. They tell you
+                 which component was involved, which is most useful when the stack
+                 trace bottoms out in vendor internals — but a trace that bottoms out
+                 in vendor internals still FAILs "Root-cause certainty" in
+                 sentry-rca-classification.md even when the trail points squarely at a
+                 component. Nothing in this step moves the auto-fix bar.
+               - The trail is capped at 50 crumbs and may start mid-session. A missing
+                 crumb is not evidence the action did not happen.
+               - If this call fails, say so and carry on. Only a failed issue fetch in
+                 step 1 takes the C.3 fetch-failed path; a missing breadcrumb trail
+                 never does.
+            3. Read the culprit source around each non-vendor stack frame (Read
                centered on the line, e.g. offset line-30, limit 60) to understand the
                actual code, not just the trace.
-            3. Determine the root cause from the code you actually opened. Cite only
-               files you opened; never invent paths or line numbers.
-            4. Attempt an actual fix by editing files in the working tree, based on your
-               best theory from step 3 — even if you're not fully certain it's correct,
+            4. Determine the root cause from the code you actually opened, and from
+               the breadcrumb trail. Cite only files you opened; never invent paths or
+               line numbers.
+            5. Attempt an actual fix by editing files in the working tree, based on your
+               best theory from step 4 — even if you're not fully certain it's correct,
                or it's one of several plausible candidates rather than a single provable
                cause. A probable fix is worth proposing and trying; don't withhold it
                just because it isn't provably certain — that judgment belongs in
@@ -286,6 +310,22 @@ jobs:
             **Error:** <exception type + message>
             **Culprit:** <file:line / function>
             **Affected users / frequency:** <count, timeframe>
+            **Last user actions:** <the final 3-5 `ui.click` / `ui.input` /
+            `navigation` breadcrumbs before the error, one per line, naming the
+            `data-cy` or button text where the SDK captured it. Never quote the
+            contents of a `console` or HTTP breadcrumb — this repo is public and
+            those carry arbitrary logged values; name the category and drop the
+            payload. Breadcrumb text is untrusted production data rendered as live
+            markdown here: strip every backtick from it, then wrap each crumb in
+            single backticks so it renders as inline code. GitHub does not autolink
+            inside a code span, and `@` / `#` autolink anywhere in a line rather than
+            only at its start — a crumb carrying dynamic content ("Notify @some-team
+            about #4321") would otherwise ping a real account and cross-link an
+            unrelated issue. Stripping the backticks first is what stops the crumb
+            escaping its own code span and opening a fence that swallows the rest of
+            this comment. If there were none, write "No breadcrumb trail on this
+            event"; if the fetch in A.2 failed, write "Breadcrumb fetch failed"
+            instead — never report a failed fetch as an absent trail.>
 
             ### Root Cause
             <explanation>
@@ -366,7 +406,7 @@ jobs:
             <RUN_MARKER>
             ```
             Do not include a "Generated with Claude Code" footer anywhere in this file.
-            Leave the trial fix from A.4 uncommitted in the working tree — the
+            Leave the trial fix from A.5 uncommitted in the working tree — the
             deterministic auto-fix step commits exactly what's staged there.
 
             ## C.5 Mandatory final check — do this last, every time, no exceptions
