@@ -705,7 +705,7 @@ export const ItemList = () => {
                         />
                         <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
                           <Trans
-                            i18nKey="content.itemListSearchNoResultsTitle"
+                            i18nKey="content.itemListSearchNoResultsTitleRich"
                             values={{ search }}
                             components={{ strong: <strong /> }}
                           />
