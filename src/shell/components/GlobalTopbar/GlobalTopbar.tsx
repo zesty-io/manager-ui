@@ -13,6 +13,8 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../store/types";
 import { User } from "../../services/types";
 import { isZestyEmail } from "../../../utility/isZestyEmail";
+import { isAIDrawerSupportedPath } from "../../../utility/isAIDrawerSupportedPath";
+import { useLocation } from "react-router";
 
 type Props = {
   onShowAiDrawerToggle: () => void;
@@ -20,6 +22,9 @@ type Props = {
 
 export const GlobalTopbar = memo(({ onShowAiDrawerToggle }: Props) => {
   const user: User = useSelector((state: AppState) => state.user);
+  const { pathname } = useLocation();
+  const hasAISupport = isAIDrawerSupportedPath(pathname);
+
   return (
     <Stack
       direction="row"
@@ -58,14 +63,17 @@ export const GlobalTopbar = memo(({ onShowAiDrawerToggle }: Props) => {
         pr={1}
         sx={{ flexShrink: 0 }}
       >
-        <IconButton
-          onClick={() => {
-            onShowAiDrawerToggle();
-          }}
-          size="small"
-        >
-          <Brain fontSize="inherit" />
-        </IconButton>
+        {hasAISupport && (
+          <IconButton
+            data-cy="AIDrawerToggle"
+            onClick={() => {
+              onShowAiDrawerToggle();
+            }}
+            size="small"
+          >
+            <Brain fontSize="inherit" />
+          </IconButton>
+        )}
         <DomainSwitcher />
         <GlobalNotifications />
       </Stack>
