@@ -105,7 +105,7 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
           <ShuffleVariant color="primary" />
         </Box>
         <Typography
-          data-cy="RedirectsDeleteDialogHeader"
+          data-cy="RedirectsChangeDialogHeader"
           variant="inherit"
           fontWeight={700}
           flexGrow={0}
@@ -117,7 +117,7 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
           {t("seo.changeDialogBody")}
         </Typography>
       </DialogTitle>
-      <DialogContent sx={{ p: 0 }} data-cy="RedirectsDeleteDialog">
+      <DialogContent sx={{ p: 0 }} data-cy="RedirectsChangeDialog">
         <Box
           display="flex"
           flexDirection="column"
@@ -142,7 +142,11 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
             >
               {t("seo.changeDialogOldPath")}
             </Typography>
-            <Typography variant="body2" color="info.dark">
+            <Typography
+              data-cy="RedirectsChangeDialogOldPath"
+              variant="body2"
+              color="info.dark"
+            >
               {redirect?.path}
             </Typography>
             <Box display="flex" flexDirection="row" width="100%" my={1}>
@@ -157,18 +161,27 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
             >
               {t("seo.changeDialogNewPath")}
             </Typography>
-            <Typography variant="body2" color="info.dark">
+            <Typography
+              data-cy="RedirectsChangeDialogNewPath"
+              variant="body2"
+              color="info.dark"
+            >
               {newPath}
             </Typography>
           </Box>
         </Box>
       </DialogContent>
       <DialogActions sx={{ p: "20px" }}>
-        <Button variant="text" color="inherit" onClick={onClose}>
+        <Button
+          data-cy="RedirectsChangeDialogCancelButton"
+          variant="text"
+          color="inherit"
+          onClick={onClose}
+        >
           {t("seo.changeDialogDontCreate")}
         </Button>
         <Button
-          data-cy="DeleteContentItemConfirmButton"
+          data-cy="RedirectsChangeDialogCreateButton"
           variant="contained"
           color="primary"
           onClick={handleCreateRedirect}
