@@ -13,7 +13,7 @@ describe("Content item redirect prompt on save", () => {
     cy.wait("@saveItem", { timeout: 30000 });
   };
 
-  const savePathPart = (pathPart) => {
+  const typePathPart = (pathPart) => {
     // The field runs a debounced (1s) uniqueness search after typing; saving
     // before it finishes is a no-op, so wait for that request first.
     cy.intercept(
@@ -33,6 +33,10 @@ describe("Content item redirect prompt on save", () => {
     cy.getBySelector("pathPart")
       .find('[role="progressbar"]')
       .should("not.exist");
+  };
+
+  const savePathPart = (pathPart) => {
+    typePathPart(pathPart);
     saveItem();
   };
 
@@ -95,6 +99,35 @@ describe("Content item redirect prompt on save", () => {
     saveItem();
 
     cy.getBySelector("SaveItemButton").should("not.exist");
+    cy.getBySelector("RedirectsChangeDialog").should("not.exist");
+  });
+
+  it("defers the prompt until the Save & Publish confirmation is cancelled", () => {
+    const newPathPart = `redirect-${uuidv4().slice(0, 8)}`;
+    typePathPart(newPathPart);
+    cy.intercept("PUT", "**/content/models/**/items/**").as("saveItem");
+    cy.getBySelector("PublishButton").first().click();
+    cy.wait("@saveItem", { timeout: 30000 });
+
+    // Only the publish confirmation is open; the redirect prompt must not
+    // stack on top of it
+    cy.getBySelector("ConfirmPublishModal", { timeout: 30000 }).should(
+      "be.visible"
+    );
+    cy.getBySelector("SaveItemButton").should("not.exist");
+    cy.getBySelector("RedirectsChangeDialog").should("not.exist");
+
+    // The saved path is already live, so cancelling the publish still prompts
+    cy.getBySelector("CancelPublishButton").click();
+    cy.getBySelector("ConfirmPublishModal").should("not.exist");
+    cy.getBySelector("RedirectsChangeDialog", { timeout: 30000 }).should(
+      "be.visible"
+    );
+    cy.getBySelector("RedirectsChangeDialogNewPath").should(
+      "contain",
+      newPathPart
+    );
+    cy.getBySelector("RedirectsChangeDialogCancelButton").click();
     cy.getBySelector("RedirectsChangeDialog").should("not.exist");
   });
 });
