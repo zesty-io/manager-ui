@@ -23,7 +23,7 @@ import {
   useGetWorkflowStatusLabelsQuery,
 } from "../../../../../../../../shell/services/instance";
 import { useHistory, useParams } from "react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -115,6 +115,15 @@ export const ItemEditHeaderActions = ({
   >([]);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isCheckingPathUpdate, setIsCheckingPathUpdate] = useState(false);
+  const [isCheckingSavedPathUpdate, setIsCheckingSavedPathUpdate] =
+    useState(false);
+  const prevSavingRef = useRef(saving);
+  // web.path is only recomputed server-side, so at the moment a save starts it
+  // still holds the previously saved path
+  const preSavePathRef = useRef<string | undefined>(undefined);
+  // Remembers the last "oldPath→newPath" pair we prompted for on save so the
+  // publish-time check does not open the same modal a second time
+  const lastPromptedPathChangeRef = useRef<string | null>(null);
   const item = useSelector(
     (state: AppState) =>
       state.content[resolvedItemZUID] as ContentItemWithDirtyAndPublishing
@@ -224,7 +233,11 @@ export const ItemEditHeaderActions = ({
       const previousVersion = publishedItemVersions[1];
       const pathHasChanged =
         activeVersion?.path?.trim() !== previousVersion?.path?.trim();
-      if (pathHasChanged) {
+      const pathChangeKey = `${previousVersion?.path?.trim()}→${activeVersion?.path?.trim()}`;
+      const alreadyPrompted =
+        lastPromptedPathChangeRef.current === pathChangeKey;
+      lastPromptedPathChangeRef.current = null;
+      if (pathHasChanged && !alreadyPrompted) {
         const redirect = {
           targetType: "page" as RedirectsTargetType,
           target: item?.meta?.ZUID,
@@ -242,6 +255,74 @@ export const ItemEditHeaderActions = ({
     isFetching,
     activePublishing,
     isCheckingPathUpdate,
+  ]);
+
+  useEffect(() => {
+    // A save finished successfully when `saving` flips true -> false and the
+    // item is not re-marked dirty (a failed save marks it dirty again)
+    if (!prevSavingRef.current && saving) {
+      preSavePathRef.current = item?.web?.path;
+    }
+    if (prevSavingRef.current && !saving && !item?.dirty && !hasError) {
+      setIsCheckingSavedPathUpdate(true);
+    }
+    prevSavingRef.current = saving;
+  }, [saving, item?.dirty, hasError]);
+
+  useEffect(() => {
+    // Opens the create redirect modal right after a save when the saved url
+    // path differs from the path of the currently published version
+    if (
+      !isLoadingVersions &&
+      !isFetchingVersions &&
+      !isFetching &&
+      isCheckingSavedPathUpdate &&
+      Array.isArray(itemVersions)
+    ) {
+      const liveVersion = activePublishing
+        ? itemVersions.find(
+            (ver) =>
+              (!!activePublishing.versionZUID &&
+                ver?.web?.versionZUID === activePublishing.versionZUID) ||
+              (activePublishing.version !== undefined &&
+                activePublishing.version !== null &&
+                ver?.web?.version === activePublishing.version)
+          )
+        : undefined;
+      const livePath = liveVersion?.web?.path;
+      const savedPath = item?.web?.path;
+
+      // Only prompt when THIS save changed the path
+      const pathChangedBySave =
+        !!savedPath && preSavePathRef.current?.trim() !== savedPath.trim();
+
+      if (
+        pathChangedBySave &&
+        livePath &&
+        savedPath &&
+        livePath.trim() !== savedPath.trim()
+      ) {
+        lastPromptedPathChangeRef.current = `${livePath.trim()}→${savedPath.trim()}`;
+        openChangeDialog(
+          {
+            targetType: "page" as RedirectsTargetType,
+            target: item?.meta?.ZUID,
+            path: livePath,
+            code: 301 as RedirectsCodes,
+          },
+          savedPath
+        );
+      }
+      setIsCheckingSavedPathUpdate(false);
+    }
+  }, [
+    itemVersions,
+    isLoadingVersions,
+    isFetchingVersions,
+    isFetching,
+    activePublishing,
+    isCheckingSavedPathUpdate,
+    item?.web?.path,
   ]);
 
   const saveShortcut = useMetaKey("s", () => {
