@@ -1,0 +1,5 @@
+{
+  "filename": "script.js",
+  "code": "console.log('e2e script');",
+  "type": "text/javascript"
+}

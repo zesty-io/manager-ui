@@ -64,6 +64,7 @@ const ActionsButton = ({
   const [isLoading, setIsLoading] = useState(false);
   return (
     <IconButton
+      data-cy="PublishIconButton"
       key="publish"
       color="inherit"
       size="xxsmall"
