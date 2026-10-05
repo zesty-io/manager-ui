@@ -271,7 +271,18 @@ export const ItemEditHeaderActions = ({
 
   useEffect(() => {
     // Opens the create redirect modal right after a save when the saved url
-    // path differs from the path of the currently published version
+    // path differs from the path of the currently published version.
+    // While a save-and-publish/schedule dialog is queued or open the check is
+    // deferred: a successful publish hands off to the publish-time check, and
+    // a cancel lets this check run once the dialog closes
+    if (
+      publishAfterSave ||
+      scheduleAfterSave ||
+      isConfirmPublishModalOpen ||
+      scheduledPublishDialogOpen
+    ) {
+      return;
+    }
     if (
       !isLoadingVersions &&
       !isFetchingVersions &&
@@ -323,6 +334,10 @@ export const ItemEditHeaderActions = ({
     activePublishing,
     isCheckingSavedPathUpdate,
     item?.web?.path,
+    publishAfterSave,
+    scheduleAfterSave,
+    isConfirmPublishModalOpen,
+    scheduledPublishDialogOpen,
   ]);
 
   const saveShortcut = useMetaKey("s", () => {
@@ -456,6 +471,7 @@ export const ItemEditHeaderActions = ({
   const handlePublish = async () => {
     if (allowPublish) {
       setIsPublishing(true);
+      let publishedMainItem = false;
       try {
         // Delete scheduled publishings first
         const deleteScheduledPromises = [
@@ -503,6 +519,9 @@ export const ItemEditHeaderActions = ({
             })
           ),
         ]);
+        publishedMainItem =
+          publishPromises[0]?.status === "fulfilled" &&
+          !("error" in publishPromises[0].value);
 
         // Loop through all publish results and dispatch error notification if any failed
         publishPromises.forEach((promise: any) => {
@@ -523,6 +542,11 @@ export const ItemEditHeaderActions = ({
         );
         refetchVersions();
       } finally {
+        // The publish-time check now covers a deferred save-time check; if the
+        // publish failed the path is still un-redirected, so keep it pending
+        if (publishedMainItem) {
+          setIsCheckingSavedPathUpdate(false);
+        }
         setIsCheckingPathUpdate(true);
         setIsPublishing(false);
         setIsConfirmPublishModalOpen(false);
