@@ -1673,10 +1673,11 @@ export const StudioWrapper = () => {
   // Order is the whole point. `applySelection` keeps an open Inspector only
   // when its slots carry the field being edited, and clears it otherwise —
   // so selecting straight from the canvas closes the Inspector and takes
-  // "Back to Element" with it. `openInspectorForLayoutElement` resolves the
-  // element to its lone bound text child, whose slots DO carry the fieldZuid,
-  // which is exactly why the layers-row route keeps the button and this one
-  // did not.
+  // "Back to Element" with it. `openInspectorForLayoutElement` opens the
+  // element's panel with its lone bound text child's Value slot on it (or,
+  // for an element with no panel of its own, that child's panel), so the
+  // selection's slots DO carry the fieldZuid — which is exactly why the
+  // layers-row route keeps the button and this one did not.
   const handleDynamicEditRequest = useCallback(
     (msg: {
       codeId?: string;
