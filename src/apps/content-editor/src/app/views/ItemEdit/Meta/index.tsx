@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { Brain } from "@zesty-io/material";
 import { useParams, useLocation } from "react-router";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, useStore } from "react-redux";
 import { keyframes } from "@emotion/react";
 import { EditRounded } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
@@ -130,6 +130,7 @@ export const Meta = forwardRef(
   ) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
+    const store = useStore<AppState>();
     const location = useLocation();
     const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
     const { modelZUID, itemZUID } = useParams<{
@@ -274,6 +275,15 @@ export const Meta = forwardRef(
       () => {
         return {
           validateMetaFields() {
+            // Read the item from the store rather than this render's props: a
+            // field can flush its debounced value in the same task as the
+            // Save click, before React has re-rendered with it.
+            const latestItem =
+              store.getState().content[
+                isCreateItemPage ? `new:${modelZUID}` : itemZUID
+              ];
+            const web: Web = latestItem?.web ?? ({} as Web);
+            const data: Data = latestItem?.data ?? ({} as Data);
             const currentErrors = cloneDeep(errors);
 
             REQUIRED_FIELDS.forEach((fieldName) => {
@@ -352,7 +362,15 @@ export const Meta = forwardRef(
           },
         };
       },
-      [errors, web, model, metaFields, data, isHomepage]
+      [
+        errors,
+        model,
+        metaFields,
+        isHomepage,
+        isCreateItemPage,
+        modelZUID,
+        itemZUID,
+      ]
     );
 
     useEffect(() => {

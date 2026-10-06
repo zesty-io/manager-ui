@@ -6,7 +6,7 @@ import {
   useContext,
   useCallback,
 } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, useStore } from "react-redux";
 import { useTranslation } from "react-i18next";
 import useIsMounted from "ismounted";
 import { useHistory, useParams } from "react-router-dom";
@@ -91,6 +91,7 @@ export const ItemCreate = () => {
   const itemZUID = `new:${modelZUID}`;
   const model = useSelector((state: AppState) => state.models[modelZUID]);
   const item = useSelector((state: AppState) => state.content[itemZUID]);
+  const store = useStore<AppState>();
   const instance = useSelector((state: AppState) => state.instance);
   const content = useSelector((state: AppState) => state.content);
   const fields = useSelector((state) =>
@@ -208,6 +209,10 @@ export const ItemCreate = () => {
 
   const save = useCallback(
     async (action: ActionAfterSave) => {
+      // Read the item from the store rather than this render's closure: a
+      // field can flush its debounced value in the same task as the Save
+      // click, before React has re-rendered with it.
+      const item = store.getState().content[itemZUID];
       setSaveClicked(true);
 
       const validationErrors = metaRef.current?.validateMetaFields?.();
