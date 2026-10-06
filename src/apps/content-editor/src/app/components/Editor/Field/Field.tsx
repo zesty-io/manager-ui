@@ -82,7 +82,6 @@ type FieldProps = {
   maxLength: number;
   minLength: number;
   compact?: boolean;
-  isAutoPopulateSource?: boolean;
 };
 
 export const Field = memo(
@@ -105,7 +104,6 @@ export const Field = memo(
     minLength,
     version,
     compact = false,
-    isAutoPopulateSource = false,
   }: FieldProps) => {
     const dispatch = useDispatch();
     const { t } = useTranslation("content");
@@ -119,18 +117,9 @@ export const Field = memo(
     const fieldData = fields?.find((field) => field.ZUID === ZUID);
     const [rerenderKey, setRerenderKey] = useState(0);
 
-    // Editor.js's first-text-field auto-population of
-    // Meta Title/Meta Link Text/pathPart runs inside this field's onChange
-    // commit. Skipping the debounce for that one field means the commit (and
-    // the auto-population it triggers) lands on the next tick instead of up
-    // to 500ms later, so a Save click always sees it already in the store.
-    const { local, onLocalChange } = useDebouncedInput(
-      value,
-      (v) => {
-        onChange(v, name);
-      },
-      isAutoPopulateSource ? 0 : undefined
-    );
+    const { local, onLocalChange, flush } = useDebouncedInput(value, (v) => {
+      onChange(v, name);
+    });
 
     const handle = useMemo<any>(
       () => ({
@@ -293,6 +282,10 @@ export const Field = memo(
             <TextField
               value={local}
               onChange={(e) => onLocalChange(e.target.value)}
+              // Clicking Save blurs this input first, so flushing here lands
+              // the pending value (and Editor.js's Meta Title/Meta Link
+              // Text/pathPart auto-population) before the save handler runs.
+              onBlur={flush}
               fullWidth
               inputProps={{
                 name: fieldData?.name || name,

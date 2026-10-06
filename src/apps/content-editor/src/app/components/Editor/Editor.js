@@ -493,11 +493,6 @@ export default memo(function Editor({
                   field.settings?.maxCharLimit ?? MaxLengths[field.datatype]
                 }
                 minLength={field.settings?.minCharLimit ?? 0}
-                isAutoPopulateSource={
-                  isNewItem &&
-                  model?.type !== "block" &&
-                  field.ZUID === firstTextField?.ZUID
-                }
                 compact={compact}
               />
             </Box>

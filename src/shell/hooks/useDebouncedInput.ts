@@ -1,5 +1,5 @@
 import { debounce } from "lodash";
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useDebouncedInput(
   externalValue: string | number | null | undefined,
@@ -33,22 +33,15 @@ export function useDebouncedInput(
     return () => d.cancel();
   }, []);
 
-  // A "debounced" commit still defers to a timer even with delay=0 (lodash
-  // schedules it via setTimeout), so it can still lose a race against a
-  // click handled in the same tick. A delay of 0 (or less) means "don't
-  // debounce at all" — commit synchronously, so there's never a pending
-  // commit to race against.
-  const onLocalChange = useCallback(
-    (v: string) => {
-      setLocal(v);
-      if (delay <= 0) {
-        commitRef.current(v);
-      } else {
-        debouncedRef.current!(v);
-      }
-    },
-    [delay]
-  );
+  const onLocalChange = useCallback((v: string) => {
+    setLocal(v);
+    debouncedRef.current!(v);
+  }, []);
 
-  return { local, onLocalChange };
+  // Synchronously commits any pending debounced value (no-op if none).
+  const flush = useCallback(() => {
+    debouncedRef.current?.flush();
+  }, []);
+
+  return { local, onLocalChange, flush };
 }
