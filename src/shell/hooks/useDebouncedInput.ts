@@ -1,5 +1,5 @@
 import { debounce } from "lodash";
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useDebouncedInput(
   externalValue: string | number | null | undefined,
@@ -38,5 +38,10 @@ export function useDebouncedInput(
     debouncedRef.current!(v);
   }, []);
 
-  return { local, onLocalChange };
+  // Synchronously commits any pending debounced value (no-op if none).
+  const flush = useCallback(() => {
+    debouncedRef.current?.flush();
+  }, []);
+
+  return { local, onLocalChange, flush };
 }
