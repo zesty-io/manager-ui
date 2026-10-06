@@ -51,10 +51,15 @@ export const ChangeDialog: FC<ChangeDialogProps> = ({
   } = useRedirectsDialog();
 
   const handleCreateRedirect = async () => {
+    if (!redirect?.path) {
+      closeChangeDialog();
+      return;
+    }
+
     const requestData = {
       targetType: "page" as RedirectsTargetType,
       target: redirect?.target,
-      paths: [newPath],
+      paths: [redirect?.path],
       code: redirect?.code as RedirectsCodes,
     };
 
