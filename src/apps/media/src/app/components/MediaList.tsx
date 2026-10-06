@@ -327,7 +327,7 @@ const NameColumn = ({ params }: any) => {
             sx={{
               height: "52px",
               width: "52px",
-              backgroundColor: "#000",
+              backgroundColor: "common.black",
               position: "relative",
               boxSizing: "border-box",
               display: "flex",
@@ -339,7 +339,7 @@ const NameColumn = ({ params }: any) => {
               controls={false}
               src={params.row.thumbnail}
               sx={{
-                backgroundColor: "#000",
+                backgroundColor: "common.black",
                 display: "flex",
                 alignItems: "center",
                 flexWrap: "wrap",
@@ -354,7 +354,7 @@ const NameColumn = ({ params }: any) => {
                 right: 0,
                 left: 0,
                 m: "auto",
-                color: "#FFF",
+                color: "common.white",
                 position: "absolute",
                 textAlign: "center",
               }}
