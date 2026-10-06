@@ -1972,6 +1972,36 @@ describe("Studio Inspector Panel", () => {
     });
   });
 
+  it("keeps the combined panel's Value input when it is cleared and the tree re-emits", () => {
+    withViewForSingleText((codeId) => {
+      seedLayoutElement(
+        codeId,
+        `<h1 data-layout-id="1">{{this.title}}</h1>`,
+        headingWithContent(codeId, [
+          fieldNode(codeId, "{{this.title}}", "My Real Title"),
+        ])
+      );
+
+      cy.getBySelector("StudioDisconnect-text").click();
+      cy.getBySelector("StudioSlotInput-text").should("have.value", "");
+
+      // An empty leaf has no content row, so the bridge re-emits the heading
+      // with no children. The Value input must stay so it can be refilled.
+      feedTree(headingWithContent(codeId, []));
+      cy.getBySelector("StudioSlotInput-text")
+        .should("exist")
+        .type("{{this.content}}", { parseSpecialCharSequences: false });
+
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+      saveAllViaModal("layout");
+
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain("{{this.content}}");
+        expect(request.body.code).not.to.contain("{{this.title}}");
+      });
+    });
+  });
+
   it("connects a field from the combined element panel", () => {
     withViewForSingleText((codeId) => {
       seedLayoutElement(
