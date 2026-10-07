@@ -113,6 +113,8 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Allow Sentry Handler auto-fix PRs (opened by github-actions[bot])
+          allowed_bots: "github-actions"
           prompt: |
             You are a senior QA engineer doing NEGATIVE testing on a pull request. The app is
             already running and your browser is already signed in — just navigate.
