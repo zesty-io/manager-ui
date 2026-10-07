@@ -192,14 +192,28 @@ describe("Studio Full Mode", () => {
     });
   });
 
-  it("tells the user why an inline edit was refused, without naming a mode that does not exist here", () => {
-    // The bridge rejects a leaf that is neither statically editable nor bound
-    // to one field. Full mode IS content plus layout, so the old copy sent the
-    // user to a "Content mode" that full mode already contains.
+  // The bridge rejects a leaf that is neither bound to a field nor identical to
+  // its template — static content a page script mutates included — so the copy
+  // must not blame a connected field or send the user to another mode.
+  it("tells the user why an inline edit was refused, in full mode", () => {
     postBridgeMessage({ type: "STATIC_EDIT_REJECTED", layoutId: "2" });
 
     cy.getBySelector("toast")
-      .should("contain.text", "not a single connected field")
+      .should("contain.text", "doesn't match its template")
+      .and("contain.text", "Layers")
+      .and("not.contain.text", "connected field")
+      .and("not.contain.text", "Switch to Content mode");
+  });
+
+  it("gives the same refusal reason in layout mode", () => {
+    reloadAsStaff();
+    cy.getBySelector("StudioModeToggleOption-layout").click();
+
+    postBridgeMessage({ type: "STATIC_EDIT_REJECTED", layoutId: "2" });
+
+    cy.getBySelector("toast")
+      .should("contain.text", "doesn't match its template")
+      .and("not.contain.text", "dynamic content")
       .and("not.contain.text", "Switch to Content mode");
   });
 

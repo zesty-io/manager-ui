@@ -377,15 +377,15 @@ export const useStudioBridge = ({
       }
 
       if (msg.type === "STATIC_EDIT_REJECTED") {
-        // Layout mode genuinely has a Content mode to send the user to.
-        // Studio's full mode does not — it IS both — so the same rejection
-        // needs different words.
+        // The bridge refuses a leaf that is neither bound to a field nor
+        // byte-identical to its template — e.g. a loop's output, or markup a
+        // page script mutates (a carousel toggling classes). Neither is a
+        // "connected field", and no mode switch helps, so one message fits
+        // every mode.
         dispatch(
           notify({
             kind: "warn",
-            message: usesContentEditing(interactionMode)
-              ? t("content.studioStaticEditNotSingleField")
-              : t("content.studioStaticEditRejected"),
+            message: t("content.studioStaticEditTemplateMismatch"),
           })
         );
         return;
