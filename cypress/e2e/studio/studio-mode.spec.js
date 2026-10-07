@@ -258,10 +258,7 @@ describe("Studio Full Mode", () => {
       .and("not.contain.text", "Switch to Content mode");
   });
 
-  // This case used to be "deliberately not covered": the layout-mode guard on
-  // DYNAMIC_EDIT_REQUEST had no observable consequence, because layout renders
-  // no right panel whether or not the message is handled. It has one now — the
-  // guard tells the user instead of dropping the gesture — so it is testable.
+  // The layout-mode guard on DYNAMIC_EDIT_REQUEST is observable as its toast.
   it("tells a layout-mode user that a bound leaf needs content editing", () => {
     reloadAsStaff();
     cy.getBySelector("StudioModeToggleOption-layout").click();

@@ -369,6 +369,12 @@ describe("Studio Inspector Panel", () => {
 
   beforeEach(() => {
     cy.stubStaffUser();
+    // The page's path lookup; its response triggers clearSelection.
+    cy.intercept({
+      method: "GET",
+      pathname: "**/search/items",
+      query: { field: "path" },
+    }).as("resolveItemByPath");
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/studio?path=${studioPath}`);
     });
@@ -2136,6 +2142,8 @@ describe("Studio Inspector Panel", () => {
       });
 
     beforeEach(() => {
+      // Otherwise its clearSelection can land after the first selection.
+      cy.wait("@resolveItemByPath");
       setStudioMode("layout");
     });
 
