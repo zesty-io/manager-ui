@@ -108,6 +108,12 @@ describe("Studio Full Mode", () => {
   });
 
   beforeEach(() => {
+    // The page's path lookup; its response triggers clearSelection.
+    cy.intercept({
+      method: "GET",
+      pathname: "**/search/items",
+      query: { field: "path" },
+    }).as("resolveItemByPath");
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/studio?path=${studioPath}`);
     });
@@ -150,6 +156,7 @@ describe("Studio Full Mode", () => {
   it("shows the neutral empty panel after the content editor closes on a selected element", () => {
     // An <h1> the Inspector can edit, selected on the canvas, then its bound
     // field opened in the content editor.
+    cy.wait("@resolveItemByPath");
     postBridgeMessage({
       type: "LAYERS_TREE",
       tree: [
