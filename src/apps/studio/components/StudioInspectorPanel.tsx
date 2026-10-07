@@ -33,7 +33,7 @@ import { useCrossModelConnectField } from "../hooks/useCrossModelConnectField";
 import { StudioLinkItemDialog } from "./StudioLinkItemDialog";
 
 // Title shown for a supported element tag.
-const getTagTitles = (t: TFunction): Record<string, string> => ({
+export const getTagTitles = (t: TFunction): Record<string, string> => ({
   img: t("shell.tinymceSlashImage"),
   video: t("shell.tinymceSlashVideo"),
   // Intentionally absent from TAG_FAMILIES: swapping a link to a div/span would

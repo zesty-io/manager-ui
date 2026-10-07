@@ -2092,4 +2092,129 @@ describe("Studio Inspector Panel", () => {
       cy.getBySelector("StudioOpenInNewTab").should("exist");
     });
   });
+
+  // #4374 — the layout grammar keeps a right panel mounted whatever is selected.
+  // Unmounting it handed its width to the preview, so a responsive site
+  // reflowed every time the selection moved between an element the Inspector
+  // can edit and one it cannot.
+  describe("empty panel in layout mode", () => {
+    // Two siblings: a <p> the Inspector edits (it has `slots`), and a <small>
+    // it does not — the bridge emits no `slots` for an element missing from its
+    // SUPPORTED_ELEMENTS, which is what makes it an unsupported selection.
+    const siblingNode = (codeId, layoutId, tagName, slots) => ({
+      id: `${codeId}:${layoutId}`,
+      kind: "element",
+      tagName,
+      codeId,
+      layoutId,
+      ...(slots
+        ? {
+            layoutPatch: {
+              codeId,
+              layoutId,
+              isSelf: true,
+              tagName,
+              elementIndex: 0,
+            },
+            slots,
+          }
+        : {}),
+      children: [],
+    });
+    const paragraph = siblingNode("code-1", "1", "p", []);
+    const small = siblingNode("code-1", "2", "small");
+
+    const feedSiblings = () =>
+      postBridgeMessage({ type: "LAYERS_TREE", tree: [paragraph, small] });
+
+    const selectRow = (node) =>
+      cy.get(`[data-cy="StudioLayersRow"][data-node-id="${node.id}"]`).click();
+
+    const previewWidth = () =>
+      cy
+        .getBySelector("StudioPreviewFrame")
+        .then(($frame) => $frame[0].getBoundingClientRect().width);
+
+    const assertPreviewWidth = (expected) =>
+      cy.getBySelector("StudioPreviewFrame").should(($frame) => {
+        expect($frame[0].getBoundingClientRect().width).to.eq(expected);
+      });
+
+    beforeEach(() => {
+      setStudioMode("layout");
+    });
+
+    it("shows the select-an-element empty state with nothing selected", () => {
+      cy.getBySelector("StudioEmptyPanel").should("exist");
+      cy.getBySelector("StudioEmptyPanelTitle").should(
+        "have.text",
+        "Inspector"
+      );
+      cy.getBySelector("StudioEmptyPanelMessage").should(
+        "have.text",
+        "Select an element on the canvas or in Layers to edit it."
+      );
+      cy.getBySelector("StudioInspectorPanel").should("not.exist");
+    });
+
+    it("names an element with no editable properties instead of closing", () => {
+      feedSiblings();
+      selectRow(small);
+
+      // Positive anchor first: the selection landed, independent of the panel.
+      cy.getBySelector("StudioBreadcrumbChip")
+        .last()
+        .should("have.text", "small");
+      cy.getBySelector("StudioEmptyPanelTitle").should("have.text", "small");
+      cy.getBySelector("StudioEmptyPanelMessage").should(
+        "have.text",
+        "This element has no editable properties."
+      );
+      cy.getBySelector("StudioInspectorPanel").should("not.exist");
+    });
+
+    it("keeps the canvas width constant as the selection moves", () => {
+      cy.getBySelector("StudioHeader").should("exist");
+      previewWidth().then((unselected) => {
+        expect(unselected, "preview has laid out").to.be.greaterThan(0);
+        feedSiblings();
+
+        selectRow(paragraph);
+        cy.getBySelector("StudioInspectorPanel").should("exist");
+        assertPreviewWidth(unselected);
+
+        // Anchored on the breadcrumb and the Inspector closing — not on the
+        // empty panel — so this fails on the width alone if the panel unmounts.
+        selectRow(small);
+        cy.getBySelector("StudioBreadcrumbChip")
+          .last()
+          .should("have.text", "small");
+        cy.getBySelector("StudioInspectorPanel").should("not.exist");
+        assertPreviewWidth(unselected);
+
+        selectRow(paragraph);
+        cy.getBySelector("StudioInspectorPanel").should("exist");
+        assertPreviewWidth(unselected);
+      });
+    });
+
+    it("drops the layout selection when the Inspector is closed", () => {
+      feedSiblings();
+      selectRow(paragraph);
+      cy.getBySelector("StudioInspectorPanel").should("exist");
+
+      cy.getBySelector("StudioInspectorPanelClose").click();
+
+      // Not "Paragraph … no editable properties": closing deselects entirely.
+      cy.getBySelector("StudioInspectorPanel").should("not.exist");
+      cy.getBySelector("StudioEmptyPanelTitle").should(
+        "have.text",
+        "Inspector"
+      );
+      cy.getBySelector("StudioEmptyPanelMessage").should(
+        "have.text",
+        "Select an element on the canvas or in Layers to edit it."
+      );
+    });
+  });
 });

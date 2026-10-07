@@ -125,10 +125,12 @@ describe("Studio Full Mode", () => {
     cy.getBySelector("StudioModeToggleOption-layout").should("exist");
   });
 
-  it("shows no right panel until something is selected, matching layout", () => {
+  it("shows the empty panel, not the content editor, until something is selected", () => {
     cy.getBySelector("StudioPreviewFrame").should("exist");
-    // The positive assertion above is what stops this from passing on a page
-    // that simply failed to render.
+    // The layout grammar always reserves the right panel so the canvas width
+    // never changes with the selection (#4374) — the empty panel, not the
+    // content editor's info panel.
+    cy.getBySelector("StudioEmptyPanel").should("exist");
     cy.getBySelector("StudioSidePanel").should("not.exist");
   });
 

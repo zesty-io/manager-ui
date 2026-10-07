@@ -47,7 +47,11 @@ import { StudioHeader } from "./components/StudioHeader";
 import { StudioFeedbackModal } from "./components/StudioFeedbackModal";
 import { StudioPreview } from "./components/StudioPreview";
 import { StudioSidePanel } from "./components/StudioSidePanel";
-import { StudioInspectorPanel } from "./components/StudioInspectorPanel";
+import {
+  StudioInspectorPanel,
+  getTagTitles,
+} from "./components/StudioInspectorPanel";
+import { StudioEmptyPanel } from "./components/StudioEmptyPanel";
 import {
   isMediaSlotDatatype,
   isTextReferenceableDatatype,
@@ -1445,6 +1449,15 @@ export const StudioWrapper = () => {
     clearSelection();
   }, [clearSelection]);
 
+  // The layout grammar keeps a right panel mounted after the Inspector closes
+  // (StudioEmptyPanel), so closing it has to drop the layout selection too —
+  // otherwise that panel would name the element just closed as having no
+  // editable properties.
+  const handleInspectorClose = useCallback(() => {
+    requestClearSelection();
+    if (usesLayoutGrammar(interactionMode)) clearLayoutSelection();
+  }, [clearLayoutSelection, interactionMode, requestClearSelection]);
+
   useEffect(() => {
     if (!usesContentEditing(interactionMode)) return;
     if (
@@ -2263,6 +2276,9 @@ export const StudioWrapper = () => {
   );
 
   const isResolved = !!pageItemZUID && !!pageModelZUID;
+  // The bridge labels each breadcrumb segment with its element's tag, so the
+  // last one names the selected element.
+  const selectedLayoutTag = selectedLayout?.breadcrumb.at(-1)?.label || "";
 
   return (
     <>
@@ -2348,7 +2364,7 @@ export const StudioWrapper = () => {
                   !!inspectorSelection.layoutPatch?.isSelf
                 }
                 onChangeTag={handleTagChange}
-                onClose={requestClearSelection}
+                onClose={handleInspectorClose}
                 onEditDynamicSlot={handleEditDynamicSlot}
                 onChangeSlot={handleSlotChange}
                 onBrowseMedia={handleBrowseMedia}
@@ -2365,11 +2381,11 @@ export const StudioWrapper = () => {
               />
             ) : interactionMode === "content" ||
               (interactionMode === "full" && panelMode === "edit") ? (
-              // Studio renders the content editor when a field is being
-              // edited, but otherwise shows nothing — matching layout, which
-              // has no right panel at all. Falling through to `panelMode`'s
-              // "info" default here would put an info panel where layout mode
-              // deliberately shows empty canvas.
+              // Full mode renders the content editor when a field is being
+              // edited. Otherwise it falls through to the layout grammar's
+              // empty panel below rather than to `panelMode`'s "info" default,
+              // which would put the content info panel where layout mode
+              // shows the empty one.
               <StudioSidePanel
                 headerTitle={headerTitle}
                 selectedItemLabel={selectedItemLabel}
@@ -2399,6 +2415,26 @@ export const StudioWrapper = () => {
                     />
                   ) : null
                 }
+              />
+            ) : usesLayoutGrammar(interactionMode) ? (
+              // The layout grammar always reserves the right panel, so the
+              // canvas width never changes as the selection moves between
+              // elements with and without editable properties. Unmounting it
+              // handed its width to the preview and reflowed responsive sites
+              // on every selection (#4374).
+              <StudioEmptyPanel
+                title={
+                  selectedLayoutTag
+                    ? getTagTitles(t)[selectedLayoutTag] || selectedLayoutTag
+                    : t("content.studioEmptyPanelTitle")
+                }
+                message={
+                  selectedLayoutTag
+                    ? t("content.studioEmptyPanelNoProperties")
+                    : t("content.studioEmptyPanelNoSelection")
+                }
+                drawerWidth={drawerWidth}
+                logoSrc={contentOneLogo}
               />
             ) : null}
           </Box>
