@@ -2094,13 +2094,8 @@ describe("Studio Inspector Panel", () => {
   });
 
   // #4374 — the layout grammar keeps a right panel mounted whatever is selected.
-  // Unmounting it handed its width to the preview, so a responsive site
-  // reflowed every time the selection moved between an element the Inspector
-  // can edit and one it cannot.
   describe("empty panel in layout mode", () => {
-    // Two siblings: a <p> the Inspector edits (it has `slots`), and a <small>
-    // it does not — the bridge emits no `slots` for an element missing from its
-    // SUPPORTED_ELEMENTS, which is what makes it an unsupported selection.
+    // The bridge emits no `slots` for a tag outside its SUPPORTED_ELEMENTS.
     const siblingNode = (codeId, layoutId, tagName, slots) => ({
       id: `${codeId}:${layoutId}`,
       kind: "element",
@@ -2183,8 +2178,7 @@ describe("Studio Inspector Panel", () => {
         cy.getBySelector("StudioInspectorPanel").should("exist");
         assertPreviewWidth(unselected);
 
-        // Anchored on the breadcrumb and the Inspector closing — not on the
-        // empty panel — so this fails on the width alone if the panel unmounts.
+        // Not anchored on the empty panel, so this fails on width alone.
         selectRow(small);
         cy.getBySelector("StudioBreadcrumbChip")
           .last()
@@ -2198,15 +2192,16 @@ describe("Studio Inspector Panel", () => {
       });
     });
 
-    it("drops the layout selection when the Inspector is closed", () => {
+    it("shows the neutral copy, not 'no editable properties', when the Inspector is closed", () => {
       feedSiblings();
       selectRow(paragraph);
       cy.getBySelector("StudioInspectorPanel").should("exist");
 
       cy.getBySelector("StudioInspectorPanelClose").click();
 
-      // Not "Paragraph … no editable properties": closing deselects entirely.
+      // The layout selection outlives the close; the <p> is still editable.
       cy.getBySelector("StudioInspectorPanel").should("not.exist");
+      cy.getBySelector("StudioBreadcrumbChip").last().should("have.text", "p");
       cy.getBySelector("StudioEmptyPanelTitle").should(
         "have.text",
         "Inspector"

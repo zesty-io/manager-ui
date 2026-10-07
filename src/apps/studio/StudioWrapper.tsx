@@ -1449,15 +1449,6 @@ export const StudioWrapper = () => {
     clearSelection();
   }, [clearSelection]);
 
-  // The layout grammar keeps a right panel mounted after the Inspector closes
-  // (StudioEmptyPanel), so closing it has to drop the layout selection too —
-  // otherwise that panel would name the element just closed as having no
-  // editable properties.
-  const handleInspectorClose = useCallback(() => {
-    requestClearSelection();
-    if (usesLayoutGrammar(interactionMode)) clearLayoutSelection();
-  }, [clearLayoutSelection, interactionMode, requestClearSelection]);
-
   useEffect(() => {
     if (!usesContentEditing(interactionMode)) return;
     if (
@@ -1633,6 +1624,7 @@ export const StudioWrapper = () => {
     hasTree: hasLayersTree,
     flatRows: layersFlatRows,
     selectedNodeId: selectedLayersNodeId,
+    selectedLayoutHasNoPanel,
     handleLayersTree,
     resetTree: resetLayersTree,
     toggleNode: toggleLayersNode,
@@ -2276,9 +2268,10 @@ export const StudioWrapper = () => {
   );
 
   const isResolved = !!pageItemZUID && !!pageModelZUID;
-  // The bridge labels each breadcrumb segment with its element's tag, so the
-  // last one names the selected element.
-  const selectedLayoutTag = selectedLayout?.breadcrumb.at(-1)?.label || "";
+  // The bridge labels each breadcrumb segment with its element's tag.
+  const selectedLayoutTag = selectedLayoutHasNoPanel
+    ? selectedLayout?.breadcrumb.at(-1)?.label || ""
+    : "";
 
   return (
     <>
@@ -2364,7 +2357,7 @@ export const StudioWrapper = () => {
                   !!inspectorSelection.layoutPatch?.isSelf
                 }
                 onChangeTag={handleTagChange}
-                onClose={handleInspectorClose}
+                onClose={requestClearSelection}
                 onEditDynamicSlot={handleEditDynamicSlot}
                 onChangeSlot={handleSlotChange}
                 onBrowseMedia={handleBrowseMedia}
@@ -2381,11 +2374,8 @@ export const StudioWrapper = () => {
               />
             ) : interactionMode === "content" ||
               (interactionMode === "full" && panelMode === "edit") ? (
-              // Full mode renders the content editor when a field is being
-              // edited. Otherwise it falls through to the layout grammar's
-              // empty panel below rather than to `panelMode`'s "info" default,
-              // which would put the content info panel where layout mode
-              // shows the empty one.
+              // Full mode: the content editor only while a field is edited,
+              // else the empty panel below — never panelMode's "info" default.
               <StudioSidePanel
                 headerTitle={headerTitle}
                 selectedItemLabel={selectedItemLabel}
@@ -2417,11 +2407,7 @@ export const StudioWrapper = () => {
                 }
               />
             ) : usesLayoutGrammar(interactionMode) ? (
-              // The layout grammar always reserves the right panel, so the
-              // canvas width never changes as the selection moves between
-              // elements with and without editable properties. Unmounting it
-              // handed its width to the preview and reflowed responsive sites
-              // on every selection (#4374).
+              // Layout grammar always reserves the right panel; see #4374.
               <StudioEmptyPanel
                 title={
                   selectedLayoutTag

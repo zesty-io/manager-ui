@@ -127,9 +127,7 @@ describe("Studio Full Mode", () => {
 
   it("shows the empty panel, not the content editor, until something is selected", () => {
     cy.getBySelector("StudioPreviewFrame").should("exist");
-    // The layout grammar always reserves the right panel so the canvas width
-    // never changes with the selection (#4374) — the empty panel, not the
-    // content editor's info panel.
+    // Layout grammar always reserves the right panel (#4374).
     cy.getBySelector("StudioEmptyPanel").should("exist");
     cy.getBySelector("StudioSidePanel").should("not.exist");
   });
@@ -147,6 +145,61 @@ describe("Studio Full Mode", () => {
     // Selection is what the message drives; the panel switching to "edit" is
     // the observable consequence.
     cy.getBySelector("StudioSidePanel").should("exist");
+  });
+
+  it("shows the neutral empty panel after the content editor closes on a selected element", () => {
+    // An <h1> the Inspector can edit, selected on the canvas, then its bound
+    // field opened in the content editor.
+    postBridgeMessage({
+      type: "LAYERS_TREE",
+      tree: [
+        {
+          id: `${codeId}:2`,
+          kind: "element",
+          tagName: "h1",
+          codeId,
+          layoutId: "2",
+          layoutPatch: {
+            codeId,
+            layoutId: "2",
+            isSelf: true,
+            tagName: "h1",
+            elementIndex: 0,
+          },
+          slots: [],
+          children: [],
+        },
+      ],
+    });
+    postBridgeMessage({
+      type: "DOM_EVENT",
+      eventType: "mousedown",
+      element: { dataset: { codeId, layoutId: "2" } },
+      breadcrumb: [{ layoutId: "2", label: "h1" }],
+    });
+    postBridgeMessage({
+      type: "DYNAMIC_EDIT_REQUEST",
+      studioId: `${itemZUID}:title`,
+      fieldZuid: "fake-field-zuid",
+      fieldType: "text",
+      itemZuid: itemZUID,
+      modelZuid: "fake-model-zuid",
+    });
+    cy.getBySelector("StudioSidePanel").should("exist");
+
+    cy.getBySelector("StudioSidePanel")
+      .find('button[aria-label="Close Studio preview"]')
+      .click();
+
+    // The side panel's close clears only the field selection; the layout
+    // selection stays, so the empty panel must not call the <h1> uneditable.
+    cy.getBySelector("StudioSidePanel").should("not.exist");
+    cy.getBySelector("StudioBreadcrumbChip").last().should("have.text", "h1");
+    cy.getBySelector("StudioEmptyPanelTitle").should("have.text", "Inspector");
+    cy.getBySelector("StudioEmptyPanelMessage").should(
+      "have.text",
+      "Select an element on the canvas or in Layers to edit it."
+    );
   });
 
   it("writes an inline canvas edit back to the item in full mode", () => {

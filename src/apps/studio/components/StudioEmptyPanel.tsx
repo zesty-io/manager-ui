@@ -1,4 +1,4 @@
-import { Box, Drawer, Typography } from "@mui/material";
+import { Box, Drawer, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 type StudioEmptyPanelProps = {
@@ -8,11 +8,8 @@ type StudioEmptyPanelProps = {
   logoSrc: string;
 };
 
-// The right panel the layout grammar shows when the Inspector has nothing to
-// edit — no selection, or an element with no editable properties. It exists so
-// the panel is always mounted there: unmounting it hands its width to the
-// preview, and a responsive site reflows on every selection change (#4374).
-// Deliberately no close button, since closing would bring that back.
+// Right panel shown when the Inspector has nothing to edit. Deliberately no
+// close button: unmounting it would hand its width to the preview (#4374).
 export const StudioEmptyPanel = ({
   title,
   message,
@@ -38,13 +35,17 @@ export const StudioEmptyPanel = ({
       }}
     >
       <Box height="100%" display="flex" flexDirection="column" p={3} gap={2}>
-        <Typography
-          data-cy="StudioEmptyPanelTitle"
-          variant="subtitle1"
-          fontWeight="600"
-        >
-          {title}
-        </Typography>
+        {/* Height of the Inspector's title row with its small close button, so
+            the body does not shift when the panels swap. */}
+        <Stack direction="row" alignItems="center" minHeight={36}>
+          <Typography
+            data-cy="StudioEmptyPanelTitle"
+            variant="subtitle1"
+            fontWeight="600"
+          >
+            {title}
+          </Typography>
+        </Stack>
         <Typography
           data-cy="StudioEmptyPanelMessage"
           variant="body2"

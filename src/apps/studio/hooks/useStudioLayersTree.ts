@@ -187,6 +187,19 @@ const findLoneTextSlotChild = (node: LayersTreeNode): LayersTreeNode | null => {
   return matches.length === 1 ? matches[0] : null;
 };
 
+// The row whose panel a canvas click on a layout element opens: the element
+// itself, or — for a bare text leaf — its lone text run / bound field. Null
+// when neither is panel-worthy, i.e. the Inspector has nothing to edit.
+const findLayoutPanelTarget = (
+  node: LayersTreeNode,
+  interactionMode: InteractionMode
+): LayersTreeNode | null => {
+  const textChild = node.slots?.length ? null : findLoneTextSlotChild(node);
+  const target =
+    textChild && isPanelNode(textChild, interactionMode) ? textChild : node;
+  return isPanelNode(target, interactionMode) ? target : null;
+};
+
 // Whether the Inspector's Link controls belong on THIS row.
 //
 // An element row owns them outright. A text or field row owns them only when it
@@ -329,6 +342,25 @@ export const useStudioLayersTree = ({
     selectedElement,
     selectedLayout,
   ]);
+
+  // Whether the selected layout element is in the tree and has nothing the
+  // Inspector can edit. False before the tree arrives or for a panel-worthy
+  // element, so a closed panel never reads as "no editable properties".
+  const selectedLayoutHasNoPanel = useMemo(() => {
+    if (!usesLayoutGrammar(interactionMode) || !selectedLayout?.layoutId) {
+      return false;
+    }
+    for (const node of nodeById.values()) {
+      if (
+        node.kind === "element" &&
+        node.layoutId === selectedLayout.layoutId &&
+        node.codeId === selectedLayout.codeId
+      ) {
+        return !findLayoutPanelTarget(node, interactionMode);
+      }
+    }
+    return false;
+  }, [interactionMode, nodeById, selectedLayout]);
 
   // A selection (canvas click, drill-down, inspector open) can land on a row
   // whose ancestors are collapsed — expand them so the selected row actually
@@ -556,14 +588,8 @@ export const useStudioLayersTree = ({
           node.layoutId === layoutId &&
           node.codeId === codeId
         ) {
-          const textChild = node.slots?.length
-            ? null
-            : findLoneTextSlotChild(node);
-          const target =
-            textChild && isPanelNode(textChild, interactionMode)
-              ? textChild
-              : node;
-          if (!isPanelNode(target, interactionMode)) return;
+          const target = findLayoutPanelTarget(node, interactionMode);
+          if (!target) return;
           applyInspectorSelection({
             nodeId: target.id,
             tagName: target.tagName || "",
@@ -757,6 +783,7 @@ export const useStudioLayersTree = ({
     hasTree: tree !== null,
     flatRows,
     selectedNodeId,
+    selectedLayoutHasNoPanel,
     handleLayersTree,
     resetTree,
     toggleNode,
