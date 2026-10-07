@@ -100,7 +100,8 @@ export const StudioSidePanel = ({
               pageItemVersion !== null &&
               !unresolvedPath ? (
                 <Typography variant="body2" color="text.secondary">
-                  v{pageItemVersion}
+                  {/* eslint-disable-next-line i18next/no-literal-string -- version number format, not prose */}
+                  <>v{pageItemVersion}</>
                 </Typography>
               ) : null}
             </Stack>
@@ -212,7 +213,8 @@ export const StudioSidePanel = ({
               color="text.secondary"
               textAlign="center"
             >
-              {t("content.studioAgenticStudioBy")} Content.One
+              {/* eslint-disable-next-line i18next/no-literal-string -- brand name */}
+              {t("content.studioAgenticStudioBy")} <>Content.One</>
             </Typography>
           </Box>
         </Box>
