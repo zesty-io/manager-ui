@@ -169,7 +169,8 @@ export const VersionItem = memo(
           >
             <Stack direction="row" gap={1}>
               <Typography variant="body1" color="text.primary" fontWeight={700}>
-                v{data?.itemVersion}
+                {/* eslint-disable-next-line i18next/no-literal-string -- version number format, not prose */}
+                <>v{data?.itemVersion}</>
               </Typography>
               {data?.isPublished && (
                 <Stack direction="row" gap={0.25} alignItems="center">

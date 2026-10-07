@@ -356,7 +356,8 @@ export const UsersDoughnutChart = ({
               {topSources?.[tooltipModel?.dataIndex]}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {dateRange0Label} vs {dateRange1Label}
+              {dateRange0Label} {t("content.analyticsVsLabel")}{" "}
+              {dateRange1Label}
             </Typography>
             <Typography variant="h3" fontWeight="600" sx={{ mb: 1 }}>
               {dataset[tooltipModel?.dataIndex]?.toLocaleString()}
