@@ -18,7 +18,7 @@
   "deleteFileModalWarningMultiple": "U kunt deze bestanden niet meer herstellen.",
   "deleteFileModalWarningSingle": "{{filename}} zal permanent worden verwijderd",
   "deleteFolderDialogConfirmButton": "Map verwijderen",
-  "deleteFolderDialogMessage": "Als u de map verwijdert, worden de bestanden daarin NIET verwijderd. Deze bestanden zijn nog steeds te vinden in Alle Media.",
+  "deleteFolderDialogMessage": "Als u de map verwijdert, worden de bestanden daarin niet verwijderd. Deze bestanden zijn nog steeds te vinden in Alle Media.",
   "deleteFolderDialogTitle": "Map verwijderen?",
   "dropAreaAllMedia": "Alle Media",
   "dropAreaUploadPrompt": "Upload bestanden naar {{location}}",
