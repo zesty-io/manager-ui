@@ -224,7 +224,7 @@ export const ByDayLineChart = ({
               addDays(startDate, tooltipModel?.dataIndex ?? 0),
               "eee d MMM"
             )}{" "}
-            vs{" "}
+            {t("content.analyticsVsLabel")}{" "}
             {formatLocalized(
               addDays(
                 addDays(startDate, -daysSpan),
