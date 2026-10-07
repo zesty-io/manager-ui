@@ -1088,7 +1088,6 @@ export const StudioInspectorPanel = ({
     setValues(Object.fromEntries(slots.map((s) => [s.key, s.value])));
     setTag(tagName);
     // Keyed on the element id only so in-progress typing isn't clobbered.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [elementKey]);
 
   // Reflect external changes to media-URL slots (src, poster) — e.g. from the
@@ -1105,7 +1104,6 @@ export const StudioInspectorPanel = ({
       });
       return next;
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaSeed]);
 
   // Seed values for slots that newly appear (e.g. after a tag swap) without

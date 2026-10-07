@@ -267,7 +267,7 @@ const OrderFiles = (props: OrderFilesProps) => {
       >
         <Typography variant="body2" mt={2} mb={3}>
           <Trans
-            i18nKey="code.orderFilesBody"
+            i18nKey="code.orderFilesBodyRich"
             values={{
               siteFile:
                 props.typePathPart === "stylesheets" ? "site.css" : "site.js",
