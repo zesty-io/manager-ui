@@ -725,7 +725,7 @@
   "studioSaveChangeTypeCode": "Code",
   "studioSaveChangeTypeContent": "Inhoud",
   "studioStaticEditRejected": "Dit blok bevat dynamische inhoud en kan niet inline worden bewerkt. Schakel naar de modus Content om te bewerken.",
-  "studioStaticEditTemplateMismatch": "Dit blok kan niet inline worden bewerkt omdat wat op de pagina staat niet overeenkomt met de template. Selecteer een element in Lagen om het te bewerken, of wijzig de template in Code.",
+  "studioStaticEditTemplateMismatch": "Dit blok kan niet inline worden bewerkt omdat wat op de pagina staat niet overeenkomt met het sjabloon. Selecteer een element in Lagen om het te bewerken, of wijzig het sjabloon in Code.",
   "studioUnsavedLayoutBody": "Je hebt niet-opgeslagen lay-outwijzigingen. Wil je ze opslaan voordat je doorgaat?",
   "studioUnsavedLayoutTitle": "Niet-opgeslagen lay-outwijzigingen",
   "studioUntitledItem": "Naamloos",

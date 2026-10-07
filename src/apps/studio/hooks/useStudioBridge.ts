@@ -377,11 +377,8 @@ export const useStudioBridge = ({
       }
 
       if (msg.type === "STATIC_EDIT_REJECTED") {
-        // The bridge refuses a leaf that is neither bound to a field nor
-        // byte-identical to its template — e.g. a loop's output, or markup a
-        // page script mutates (a carousel toggling classes). Neither is a
-        // "connected field", and no mode switch helps, so one message fits
-        // every mode.
+        // The bridge refuses a leaf that is neither field-bound nor matching its
+        // template; no mode switch helps, so one message fits every mode.
         dispatch(
           notify({
             kind: "warn",
