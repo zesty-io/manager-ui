@@ -282,13 +282,13 @@ export const Meta = forwardRef(
               store.getState().content[
                 isCreateItemPage ? `new:${modelZUID}` : itemZUID
               ];
-            const web: Web = latestItem?.web ?? ({} as Web);
-            const data: Data = latestItem?.data ?? ({} as Data);
+            const latestWeb: Web = latestItem?.web ?? ({} as Web);
+            const latestData: Data = latestItem?.data ?? ({} as Data);
             const currentErrors = cloneDeep(errors);
 
             REQUIRED_FIELDS.forEach((fieldName) => {
               // @ts-expect-error
-              const value = web[fieldName];
+              const value = latestWeb[fieldName];
 
               currentErrors[fieldName] = {
                 ...currentErrors?.[fieldName],
@@ -298,9 +298,9 @@ export const Meta = forwardRef(
 
             Object.keys(MaxLengths).forEach((fieldName) => {
               const value = DYNAMIC_META_FIELD_NAMES.includes(fieldName)
-                ? data[fieldName]
+                ? latestData[fieldName]
                 : // @ts-expect-error
-                  web[fieldName];
+                  latestWeb[fieldName];
 
               currentErrors[fieldName] = {
                 ...currentErrors?.[fieldName],
@@ -313,7 +313,7 @@ export const Meta = forwardRef(
 
             Object.entries(metaFields).forEach(([name, settings]) => {
               const isRequired = settings.required;
-              const value = data[name] as string;
+              const value = latestData[name] as string;
 
               currentErrors[name] = {
                 ...currentErrors?.[name],
@@ -323,7 +323,7 @@ export const Meta = forwardRef(
 
             // Validate meta description value
             const metaDescriptionError = validateMetaDescription(
-              web.metaDescription || ""
+              latestWeb.metaDescription || ""
             );
 
             currentErrors.metaDescription = {
