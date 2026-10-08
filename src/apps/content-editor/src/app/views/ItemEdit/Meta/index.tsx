@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { Brain } from "@zesty-io/material";
 import { useParams, useLocation } from "react-router";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, useStore } from "react-redux";
 import { keyframes } from "@emotion/react";
 import { EditRounded } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
@@ -109,6 +109,12 @@ export const DYNAMIC_META_FIELD_NAMES = [
   "tc_image",
 ];
 
+// A required field's value of "" or whitespace-only is not meaningful
+// content, so treat it the same as missing rather than letting `!value`
+// pass whitespace through as satisfying the requirement.
+const isBlank = (value: unknown) =>
+  typeof value === "string" ? !value.trim() : !value;
+
 type Errors = Record<string, Error>;
 type MetaProps = {
   isSaving: boolean;
@@ -124,6 +130,7 @@ export const Meta = forwardRef(
   ) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
+    const store = useStore<AppState>();
     const location = useLocation();
     const isCreateItemPage = location?.pathname?.split("/")?.pop() === "new";
     const { modelZUID, itemZUID } = useParams<{
@@ -182,7 +189,11 @@ export const Meta = forwardRef(
     }, [fields]);
 
     const REQUIRED_FIELDS = useMemo(() => {
-      const fields = ["metaTitle", "parentZUID", "pathPart"];
+      const fields = ["parentZUID", "pathPart"];
+
+      if (model?.type !== "dataset") {
+        fields.push("metaTitle");
+      }
 
       return fields;
     }, [model]);
@@ -208,7 +219,7 @@ export const Meta = forwardRef(
         if (REQUIRED_FIELDS.includes(name)) {
           currentErrors[name] = {
             ...currentErrors?.[name],
-            MISSING_REQUIRED: !value,
+            MISSING_REQUIRED: isBlank(value),
           };
         }
 
@@ -229,7 +240,7 @@ export const Meta = forwardRef(
 
           currentErrors[name] = {
             ...currentErrors[name],
-            MISSING_REQUIRED: isRequired ? !value : false,
+            MISSING_REQUIRED: isRequired ? isBlank(value) : false,
           };
         }
 
@@ -256,7 +267,7 @@ export const Meta = forwardRef(
           value: value,
         });
       },
-      [meta?.ZUID, errors]
+      [meta?.ZUID, errors, REQUIRED_FIELDS, metaFields]
     );
 
     useImperativeHandle(
@@ -264,23 +275,32 @@ export const Meta = forwardRef(
       () => {
         return {
           validateMetaFields() {
+            // Read the item from the store rather than this render's props: a
+            // field can flush its debounced value in the same task as the
+            // Save click, before React has re-rendered with it.
+            const latestItem =
+              store.getState().content[
+                isCreateItemPage ? `new:${modelZUID}` : itemZUID
+              ];
+            const latestWeb: Web = latestItem?.web ?? ({} as Web);
+            const latestData: Data = latestItem?.data ?? ({} as Data);
             const currentErrors = cloneDeep(errors);
 
             REQUIRED_FIELDS.forEach((fieldName) => {
               // @ts-expect-error
-              const value = web[fieldName];
+              const value = latestWeb[fieldName];
 
               currentErrors[fieldName] = {
                 ...currentErrors?.[fieldName],
-                MISSING_REQUIRED: !value,
+                MISSING_REQUIRED: isBlank(value),
               };
             });
 
             Object.keys(MaxLengths).forEach((fieldName) => {
               const value = DYNAMIC_META_FIELD_NAMES.includes(fieldName)
-                ? data[fieldName]
+                ? latestData[fieldName]
                 : // @ts-expect-error
-                  web[fieldName];
+                  latestWeb[fieldName];
 
               currentErrors[fieldName] = {
                 ...currentErrors?.[fieldName],
@@ -293,17 +313,17 @@ export const Meta = forwardRef(
 
             Object.entries(metaFields).forEach(([name, settings]) => {
               const isRequired = settings.required;
-              const value = data[name] as string;
+              const value = latestData[name] as string;
 
               currentErrors[name] = {
                 ...currentErrors?.[name],
-                MISSING_REQUIRED: isRequired ? !value : false,
+                MISSING_REQUIRED: isRequired ? isBlank(value) : false,
               };
             });
 
             // Validate meta description value
             const metaDescriptionError = validateMetaDescription(
-              web.metaDescription || ""
+              latestWeb.metaDescription || ""
             );
 
             currentErrors.metaDescription = {
@@ -342,7 +362,15 @@ export const Meta = forwardRef(
           },
         };
       },
-      [errors, web, model, metaFields, data, isHomepage]
+      [
+        errors,
+        model,
+        metaFields,
+        isHomepage,
+        isCreateItemPage,
+        modelZUID,
+        itemZUID,
+      ]
     );
 
     useEffect(() => {
@@ -594,6 +622,7 @@ export const Meta = forwardRef(
                   metaDescriptionButtonRef.current?.triggerAIButton?.();
                 }
               }}
+              required={REQUIRED_FIELDS.includes("metaTitle")}
             />
             <MetaDescription
               aiButtonRef={metaDescriptionButtonRef}
