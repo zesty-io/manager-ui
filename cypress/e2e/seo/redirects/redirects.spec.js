@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { API_ENDPOINTS } from "../../../support/api";
 
 const options = { timeout: 15000 };
@@ -45,6 +46,32 @@ const TEST_REDIRECTS_DATA = [
     code: 301,
     targetType: "path",
     target: "/test/*/*",
+  },
+];
+
+const TYPE_FILTER_TEST_ID = uuidv4();
+// NOTE: the search box does a substring match against the redirect path, so
+// the shared ID must appear immediately after the "typefilter-" prefix (not
+// after a per-type infix) for `typefilter-${TYPE_FILTER_TEST_ID}` to match
+// all three rows below.
+const TYPE_FILTER_TEST_DATA = [
+  {
+    path: `typefilter-${TYPE_FILTER_TEST_ID}-internal---test`,
+    code: 301,
+    targetType: "page",
+    target: "7-b939a4-457q19",
+  },
+  {
+    path: `typefilter-${TYPE_FILTER_TEST_ID}-external---test`,
+    code: 301,
+    targetType: "external",
+    target: "https://www.zesty.io",
+  },
+  {
+    path: `typefilter-${TYPE_FILTER_TEST_ID}-wildcard---test`,
+    code: 301,
+    targetType: "path",
+    target: `/typefilter-${TYPE_FILTER_TEST_ID}-wildcard/*`,
   },
 ];
 
@@ -423,6 +450,89 @@ describe("Redirects", () => {
     });
   });
 
+  describe("Type Filter", () => {
+    before(() => {
+      createTypeFilterTestData();
+    });
+
+    after(() => {
+      deleteTypeFilterTestData();
+    });
+
+    beforeEach(() => {
+      cy.visit("/redirects");
+      cy.getElement('input[placeholder="Filter Redirects"]')
+        .clear()
+        .type(`typefilter-${TYPE_FILTER_TEST_ID}`);
+    });
+
+    it("Internal shows page-type redirects (regression for #4318)", () => {
+      cy.getElement('[data-cy="targetType_default"]').click();
+      cy.getElement('[data-cy="typeFilterOption_page"]').click();
+
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TYPE_FILTER_TEST_DATA[0]?.path}`, { matchCase: false })
+        .should("exist");
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TYPE_FILTER_TEST_DATA[1]?.path}`, { matchCase: false })
+        .should("not.exist");
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TYPE_FILTER_TEST_DATA[2]?.path}`, { matchCase: false })
+        .should("not.exist");
+
+      cy.getElement('[data-cy="targetType_selected"]').should(
+        "contain",
+        "Internal - linked to an item in this instance",
+        { matchCase: false }
+      );
+    });
+
+    it("External still returns only external-type redirects", () => {
+      cy.getElement('[data-cy="targetType_default"]').click();
+      cy.getElement('[data-cy="typeFilterOption_external"]').click();
+
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TYPE_FILTER_TEST_DATA[1]?.path}`, { matchCase: false })
+        .should("exist");
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TYPE_FILTER_TEST_DATA[0]?.path}`, { matchCase: false })
+        .should("not.exist");
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TYPE_FILTER_TEST_DATA[2]?.path}`, { matchCase: false })
+        .should("not.exist");
+    });
+
+    it("Wildcard still returns only path-type redirects", () => {
+      cy.getElement('[data-cy="targetType_default"]').click();
+      cy.getElement('[data-cy="typeFilterOption_path"]').click();
+
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TYPE_FILTER_TEST_DATA[2]?.path}`, { matchCase: false })
+        .should("exist");
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TYPE_FILTER_TEST_DATA[0]?.path}`, { matchCase: false })
+        .should("not.exist");
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TYPE_FILTER_TEST_DATA[1]?.path}`, { matchCase: false })
+        .should("not.exist");
+    });
+
+    it("Clearing the filter restores the full list", () => {
+      cy.getElement('[data-cy="targetType_default"]').click();
+      cy.getElement('[data-cy="typeFilterOption_page"]').click();
+      cy.getElement('[data-cy="targetType_selected"]').should("exist");
+
+      cy.getElement('[data-cy="targetType_clearFilter"]').click();
+      cy.getElement('[data-cy="targetType_default"]').should("exist");
+
+      TYPE_FILTER_TEST_DATA.forEach((redirect) => {
+        cy.getElement(".MuiDataGrid-cell")
+          .contains(`/${redirect.path}`, { matchCase: false })
+          .should("exist");
+      });
+    });
+  });
+
   describe("Delete Redirect/s", () => {
     before(() => {
       createDeleteRedirectsTestData();
@@ -541,6 +651,39 @@ function deleteRedirectsTestData() {
     url: `${API_ENDPOINTS.devInstance}/web/redirects`,
   }).then(({ status, data }) => {
     const testRedirects = [...TEST_REDIRECTS_DATA, ...TEST_DELETE_DATA]?.map(
+      (item) => `/${item?.path}`
+    );
+    const forDeleteZuids = data
+      ?.filter((item) => testRedirects?.includes(item?.path))
+      .map((del) => del?.ZUID);
+
+    forDeleteZuids?.forEach((zuid) => {
+      cy.apiRequest({
+        url: `${API_ENDPOINTS.devInstance}/web/redirects/${zuid}`,
+        method: "DELETE",
+      });
+    });
+  });
+}
+
+function createTypeFilterTestData() {
+  TYPE_FILTER_TEST_DATA.forEach((reqPath) => {
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/redirects`,
+      method: "POST",
+      body: {
+        ...reqPath,
+        path: `/${reqPath.path}`,
+      },
+    });
+  });
+}
+
+function deleteTypeFilterTestData() {
+  cy.apiRequest({
+    url: `${API_ENDPOINTS.devInstance}/web/redirects`,
+  }).then(({ data }) => {
+    const testRedirects = TYPE_FILTER_TEST_DATA?.map(
       (item) => `/${item?.path}`
     );
     const forDeleteZuids = data
