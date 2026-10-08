@@ -50,16 +50,14 @@ export const ContentInfo = (props) => {
         sx={{
           p: 0,
           backgroundColor: "transparent",
-          fontSize: "16px",
           color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
         }}
         titleTypographyProps={{
+          variant: "overline",
           sx: {
             fontWeight: 400,
-            fontSize: "12px",
-            lineHeight: "32px",
             color: "text.primary",
             textTransform: "uppercase",
           },
@@ -92,10 +90,9 @@ export const ContentInfo = (props) => {
             <Box>
               <Stack direction="row" alignItems="center" gap={1} pb={0.5}>
                 <Typography
+                  variant="body2"
                   sx={{
                     fontWeight: 600,
-                    fontSize: "14px",
-                    lineHeight: "20px",
                   }}
                 >
                   ZUID

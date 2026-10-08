@@ -175,7 +175,8 @@ export const VersionSelector = memo(
               isLoadingItemWorkflowStatus
             }
           >
-            v{activeVersion}
+            {/* eslint-disable-next-line i18next/no-literal-string -- version number format, not prose */}
+            <>v{activeVersion}</>
             {!!activeVersionLabels?.length && (
               <>
                 <Chip
