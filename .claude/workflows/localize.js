@@ -943,7 +943,8 @@ For each key found (e.g. "${ns}.someKey"), check that "someKey" exists in public
 List any broken references (key used in code but not in JSON). Add to brokenKeys array.
 
 ## Check 5: Translation placeholder integrity
-For every key in the newly added set below, compare each non-English locale value against the en-US value in public/locales/<locale>/<namespace>.json (for plural keys, compare every form against the en-US _other value):
+For every key in the newly added set below, compare each non-English locale value against the en-US value in public/locales/<locale>/<namespace>.json (for plural keys, compare each form against the en-US form it was scaffolded from, per the map below: locale -> { localeSuffix: en-US suffix }, e.g. es-ES "x_many" is compared with en-US "x_other"):
+${JSON.stringify(PLURAL_SCAFFOLD, null, 2)}
 ${nsKeysJSON}
 - The set of {{var}} interpolations must be identical (same names, none missing or added).
 - For keys ending in "Rich", the set of angle-bracket tags (<strong>, <1>, </1>, <0/>, ...) must be identical to en-US.
