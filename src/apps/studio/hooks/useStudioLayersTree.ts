@@ -187,6 +187,26 @@ const findLoneTextSlotChild = (node: LayersTreeNode): LayersTreeNode | null => {
   return matches.length === 1 ? matches[0] : null;
 };
 
+// The slots an Inspector panel shows for a node: its own, plus — in layout mode,
+// for an element whose content is a lone text run or bound field — that row's
+// Value slot, so Tag and Value share one panel. Mixed content is unchanged.
+const getPanelSlots = (
+  node: LayersTreeNode,
+  interactionMode: InteractionMode
+): ElementSlot[] | undefined => {
+  if (
+    !usesLayoutGrammar(interactionMode) ||
+    node.kind !== "element" ||
+    !isPanelNode(node, interactionMode) ||
+    !node.layoutPatch?.isSelf
+  ) {
+    return node.slots;
+  }
+  const loneChild = findLoneTextSlotChild(node);
+  if (!loneChild || !isPanelNode(loneChild, interactionMode)) return node.slots;
+  return [...(node.slots || []), ...(loneChild.slots || [])];
+};
+
 // Whether the Inspector's Link controls belong on THIS row.
 //
 // An element row owns them outright. A text or field row owns them only when it
@@ -197,9 +217,8 @@ const findLoneTextSlotChild = (node: LayersTreeNode): LayersTreeNode | null => {
 // </span> now</p>`, the panel shows a single Value input holding `now` while
 // the wrap would swallow the paragraph and the span with it.
 //
-// This is the same predicate the canvas already uses to decide which panel to
-// open (findLoneTextSlotChild in openInspectorForLayoutElement), so the two
-// entry points agree by construction.
+// "Lone" is findLoneTextSlotChild, the same test getPanelSlots uses to pull a
+// run's Value onto its element's panel.
 const ownsElementLinkControls = (
   node: LayersTreeNode,
   parentById: Map<string, LayersTreeNode | null>
@@ -538,12 +557,15 @@ export const useStudioLayersTree = ({
   // Open the Inspector for a canvas-selected layout element, mirroring the
   // layers tree (layout mode only — content-mode canvas clicks route straight
   // to the field editor). Which panel opens depends on the element:
-  //   - An element with its own attribute slots (an <img>'s src, an <a>'s
-  //     href) opens ITS panel, like clicking its tree row.
-  //   - A bare text leaf (an <h1>, a <p> — no attribute slots) opens its lone
-  //     text run's / bound field's panel — titled "Text", holding the Value
-  //     input — like clicking that child's tree row. The canvas can't select
-  //     the child directly, so the element click stands in for it.
+  //   - A supported element (an <img>, an <a>, an <h1>) opens ITS panel, like
+  //     clicking its tree row. When its content is a lone text run or bound
+  //     field, that row's Value slot is on the panel too (getPanelSlots), so
+  //     an <h1> shows Tag and Value together.
+  //   - An element the bridge offers no panel for (no layoutPatch of its own)
+  //     falls back to its lone text run's / bound field's panel — titled
+  //     "Text", holding the Value input — like clicking that child's tree row.
+  //     The canvas can't select the child directly, so the element click
+  //     stands in for it.
   // No-op when the tree hasn't arrived yet or nothing is panel-worthy; the
   // selection stands and any open Inspector was already closed by
   // applyLayoutSelection.
@@ -556,9 +578,13 @@ export const useStudioLayersTree = ({
           node.layoutId === layoutId &&
           node.codeId === codeId
         ) {
-          const textChild = node.slots?.length
-            ? null
-            : findLoneTextSlotChild(node);
+          // Fall back to the run's panel only for a bare element (no panel, no slots).
+          const ownsPanel =
+            isPanelNode(node, interactionMode) && !!node.layoutPatch?.isSelf;
+          const textChild =
+            ownsPanel || node.slots?.length
+              ? null
+              : findLoneTextSlotChild(node);
           const target =
             textChild && isPanelNode(textChild, interactionMode)
               ? textChild
@@ -567,7 +593,7 @@ export const useStudioLayersTree = ({
           applyInspectorSelection({
             nodeId: target.id,
             tagName: target.tagName || "",
-            slots: resolveSlotValues(target.slots),
+            slots: resolveSlotValues(getPanelSlots(target, interactionMode)),
             layoutPatch: target.layoutPatch ?? null,
             // Always true on this path — `target` is either the element or the
             // lone content row findLoneTextSlotChild just returned — but it is
@@ -591,9 +617,12 @@ export const useStudioLayersTree = ({
     (node: LayersTreeNode) => {
       // Elements (Tag selector + attributes) and editable text nodes (Text
       // input) open the Inspector panel in both modes. In layout mode an
-      // element also selects on the canvas so the breadcrumb + outline follow;
-      // a text node has no layoutId so it skips that. An empty tagName marks a
-      // text node — the panel titles it "Text" and hides the Tag selector.
+      // element also selects on the canvas so the breadcrumb + outline follow,
+      // and carries its lone text run's Value slot (getPanelSlots) — the same
+      // panel a canvas click opens; a text node has no layoutId so it skips
+      // that, and still opens its own panel so each run of mixed content stays
+      // editable. An empty tagName marks a text node — the panel titles it
+      // "Text" and hides the Tag selector.
       if (isPanelNode(node, interactionMode)) {
         if (
           usesLayoutGrammar(interactionMode) &&
@@ -605,7 +634,7 @@ export const useStudioLayersTree = ({
         applyInspectorSelection({
           nodeId: node.id,
           tagName: node.tagName || "",
-          slots: resolveSlotValues(node.slots),
+          slots: resolveSlotValues(getPanelSlots(node, interactionMode)),
           layoutPatch: node.layoutPatch ?? null,
           ownsLinkControls: ownsElementLinkControls(node, parentById),
         });
@@ -664,18 +693,31 @@ export const useStudioLayersTree = ({
   );
 
   // When the tree re-emits (e.g. after a tag swap changes which slots exist),
-  // refresh the open panel's element so it shows the new type's slots.
+  // refresh the open panel's element so it shows the new type's slots. Built
+  // with the same getPanelSlots as the selection, or an element panel would
+  // drop its lone text run's Value on the first re-emit.
   useEffect(() => {
     const nodeId = inspectorSelection?.nodeId;
     if (!nodeId) return;
     const node = nodeById.get(nodeId);
     if (!node || !isPanelNode(node, interactionMode)) return;
+    const slots = resolveSlotValues(getPanelSlots(node, interactionMode));
+    // Clearing the Value makes the bridge re-emit the element with no content
+    // row, so keep the panel's Value slot or the input unmounts mid-edit.
+    const prevText = inspectorSelection?.slots.find((s) => s.key === "text");
+    if (
+      node.kind === "element" &&
+      prevText &&
+      !slots.some((s) => s.key === "text")
+    ) {
+      slots.push(prevText);
+    }
     refreshInspectorSlots(
       nodeId,
       // Empty tagName marks a text/field row — the panel titles it "Text" and
       // hides the Tag selector.
       node.tagName || "",
-      resolveSlotValues(node.slots),
+      slots,
       node.layoutPatch ?? null,
       // A re-emit can add or remove sibling runs, so which row owns the Link
       // controls is re-derived rather than carried over.
