@@ -1,0 +1,25 @@
+name: Install Dependencies
+description: Set up Node and restore node_modules + the Cypress binary from cache, installing only on a cache miss.
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Node
+      uses: actions/setup-node@v4.1.0
+      with:
+        node-version: "22.19.0"
+        cache: "npm"
+        cache-dependency-path: package-lock.json
+    # node_modules and the Cypress binary are cached together so they hit or miss as one.
+    - name: Cache Dependencies
+      id: deps-cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          node_modules
+          ~/.cache/Cypress
+        key: deps-${{ runner.os }}-node22.19.0-${{ hashFiles('package-lock.json') }}
+    - name: Install Dependencies
+      if: steps.deps-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: npm ci --legacy-peer-deps
