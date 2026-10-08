@@ -22,6 +22,7 @@ import { useGetUsersQuery } from "../../services/accounts";
 import { FieldTypeDateTime } from "../FieldTypeDateTime";
 import { TIMEZONES } from "../FieldTypeDateTime/util";
 import { publish, unpublish } from "../../store/content";
+import { AppDispatch } from "../../store/types";
 import {
   formatDistanceToNowLocalized,
   getDateFnsLocale,
@@ -46,7 +47,7 @@ export const SchedulePublish = ({
   onUnscheduleSuccess,
 }: SchedulePublishProps) => {
   const { t, i18n } = useTranslation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { data: users } = useGetUsersQuery();
 
   // Next top of the hour (local)
@@ -108,7 +109,6 @@ export const SchedulePublish = ({
           localTimezone: publishTimezone,
         }
       )
-      // @ts-expect-error untyped action
     )
       .then(() => {
         onScheduleSuccess?.();
@@ -132,7 +132,6 @@ export const SchedulePublish = ({
         item?.scheduling?.ZUID,
         { version: item?.scheduling?.version }
       )
-      // @ts-expect-error untyped action
     ).finally(() => {
       setIsLoading(false);
       onClose();

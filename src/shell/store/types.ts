@@ -1,3 +1,5 @@
+import { AnyAction } from "redux";
+import { ThunkDispatch } from "redux-thunk";
 import { UIState } from "./ui";
 import { State as MediaRevampState } from "./media-revamp";
 import {
@@ -74,3 +76,5 @@ export type AppState = {
   settings: any;
   navContent: any;
 };
+
+export type AppDispatch = ThunkDispatch<AppState, unknown, AnyAction>;
