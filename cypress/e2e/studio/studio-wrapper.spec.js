@@ -344,6 +344,28 @@ describe("Studio Wrapper", () => {
     });
   });
 
+  it("keeps a pending reorder when the preview re-sends its template map", () => {
+    setStudioMode("layout");
+    withSeededView((webView) => {
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+
+      createPendingLayoutSave(webView.ZUID);
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+
+      // A preview reload re-sends the as-rendered, pre-reorder template.
+      postBridgeMessage({
+        type: "TEMPLATE_SOURCE_MAP",
+        templateSourceByCodeId: { [webView.ZUID]: templateSource },
+      });
+
+      saveAllViaModal("layout");
+
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.match(/<div>Two<\/div>\s*<div>One<\/div>/);
+      });
+    });
+  });
+
   it("keeps nested code-region layout nodes out of outer mapped source", () => {
     setStudioMode("layout");
     withSeededView((webView) => {

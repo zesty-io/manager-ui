@@ -7,6 +7,7 @@ import {
   usesContentEditing,
   usesLayoutGrammar,
 } from "./studioTypes";
+import { CodeRegionReplaced } from "./useStudioAiEdit";
 
 const bridgeInjectedCss = `
   .studio-hover {
@@ -114,7 +115,24 @@ type Args = {
     imgIndex: number;
     currentSrc: string;
   }) => void;
+  /** True while an AI change is staged: the canvas is then its preview. */
+  canvasLockedRef?: MutableRefObject<boolean>;
+  /** The bridge's answer to a replaceCodeRegion command. */
+  onCodeRegionReplaced?: (msg: CodeRegionReplaced) => void;
+  /** A freshly loaded canvas is ready, after the host's own setup posts. */
+  onBridgeReady?: (path?: string) => void;
 };
+
+// Canvas gestures and the edits they stage. While an AI preview is showing,
+// they would act on markup that is not the page's, so they are dropped.
+const CANVAS_INPUT_MESSAGES = new Set([
+  "DOM_EVENT",
+  "REORDER_OUTPUT",
+  "LAYOUT_CONTENT_UPDATE",
+  "DYNAMIC_EDIT_REQUEST",
+  "STATIC_EDIT_REJECTED",
+  "STATIC_EDIT_IMAGE",
+]);
 
 export const useStudioBridge = ({
   dispatch,
@@ -137,16 +155,28 @@ export const useStudioBridge = ({
   setIsNavigating,
   onBridgeFieldInput,
   onStaticEditImage,
+  canvasLockedRef,
+  onCodeRegionReplaced,
+  onBridgeReady,
 }: Args) => {
   const { t } = useTranslation();
-  const handleBridgeReady = useCallback(() => {
-    postCommandToBridge({
-      action: "injectCss",
-      css: bridgeInjectedCss,
-    });
-    syncBridgeInteractionMode(interactionMode);
-    postCommandToBridge({ action: "requestLayersTree" });
-  }, [interactionMode, postCommandToBridge, syncBridgeInteractionMode]);
+  const handleBridgeReady = useCallback(
+    (path?: string) => {
+      postCommandToBridge({
+        action: "injectCss",
+        css: bridgeInjectedCss,
+      });
+      syncBridgeInteractionMode(interactionMode);
+      postCommandToBridge({ action: "requestLayersTree" });
+      onBridgeReady?.(path);
+    },
+    [
+      interactionMode,
+      onBridgeReady,
+      postCommandToBridge,
+      syncBridgeInteractionMode,
+    ]
+  );
 
   const handleBridgeError = useCallback(
     (msg: any) => {
@@ -301,13 +331,22 @@ export const useStudioBridge = ({
       const msg = data.message;
       if (!msg) return;
 
+      if (msg.type === "CODE_REGION_REPLACED") {
+        onCodeRegionReplaced?.(msg);
+        return;
+      }
+
+      if (canvasLockedRef?.current && CANVAS_INPUT_MESSAGES.has(msg.type)) {
+        return;
+      }
+
       if (msg.type === "TEMPLATE_SOURCE_MAP") {
         handleTemplateSourceMap(msg);
         return;
       }
 
       if (msg.type === "BRIDGE_READY") {
-        handleBridgeReady();
+        handleBridgeReady(typeof msg.path === "string" ? msg.path : undefined);
         return;
       }
 
@@ -414,7 +453,9 @@ export const useStudioBridge = ({
     handleReorderOutput,
     handleTemplateSourceMap,
     interactionMode,
+    onCodeRegionReplaced,
     onStaticEditImage,
+    canvasLockedRef,
     t,
   ]);
 
