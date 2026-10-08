@@ -369,6 +369,12 @@ describe("Studio Inspector Panel", () => {
 
   beforeEach(() => {
     cy.stubStaffUser();
+    // The page's path lookup; its response triggers clearSelection.
+    cy.intercept({
+      method: "GET",
+      pathname: "**/search/items",
+      query: { field: "path" },
+    }).as("resolveItemByPath");
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/studio?path=${studioPath}`);
     });
@@ -1772,8 +1778,8 @@ describe("Studio Inspector Panel", () => {
       expect(webView?.ZUID).to.exist;
       cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
 
-      // A canvas click on an <h1> opens its lone text row, not the element row,
-      // so the control has to live there too or it is unreachable from the page.
+      // The lone text row speaks for its <h1>, so the control lives there too,
+      // not only on the element's own panel.
       const hello = textNode(webView.ZUID, "Hello");
       seedLayoutElement(
         webView.ZUID,
@@ -1839,6 +1845,227 @@ describe("Studio Inspector Panel", () => {
       openPanelFor(now);
       cy.getBySelector("StudioSlotInput-text").should("have.value", "now");
       cy.getBySelector("StudioAddLink").should("not.exist");
+    });
+  });
+
+  // A single-text element puts its Tag and its Value on ONE panel (#4370): the
+  // element row carries its lone content row's Value slot, so neither the tree
+  // nor the canvas needs a second click to reach the text.
+  const withViewForSingleText = (cb) => {
+    setStudioMode("layout");
+    cy.apiRequest({
+      url: `${API_ENDPOINTS.devInstance}/web/views?status=dev`,
+    }).then(({ data }) => {
+      const webView = data?.[0];
+      expect(webView?.ZUID).to.exist;
+      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
+      cb(webView.ZUID);
+    });
+  };
+
+  it("shows Tag and Value together on a single-text element's row panel", () => {
+    withViewForSingleText((codeId) => {
+      seedLayoutElement(
+        codeId,
+        `<h1 data-layout-id="1">Hello</h1>`,
+        headingWithContent(codeId, [textNode(codeId, "Hello")])
+      );
+
+      cy.getBySelector("StudioTagSelect").should("exist");
+      cy.getBySelector("StudioSlotInput-text").should("have.value", "Hello");
+    });
+  });
+
+  it("saves a Value edited on the combined element panel", () => {
+    withViewForSingleText((codeId) => {
+      seedLayoutElement(
+        codeId,
+        `<h1 data-layout-id="1">Hello</h1>`,
+        headingWithContent(codeId, [textNode(codeId, "Hello")])
+      );
+
+      cy.getBySelector("StudioTagSelect").should("exist");
+      cy.getBySelector("StudioSlotInput-text").clear().type("Goodbye");
+
+      // The run is written by the (cross-origin) bridge, which echoes the
+      // leaf's innerHTML — stand in for that echo, as the text-row test does.
+      postBridgeMessage({
+        type: "LAYOUT_CONTENT_UPDATE",
+        codeId,
+        layoutId: "1",
+        innerHtml: "Goodbye",
+      });
+
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+      saveAllViaModal("layout");
+
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain("<h1");
+        expect(request.body.code).to.contain("Goodbye");
+        expect(request.body.code).not.to.contain("Hello");
+      });
+    });
+  });
+
+  it("keeps the Value on the combined panel across a tag swap and its re-emit", () => {
+    withViewForSingleText((codeId) => {
+      seedLayoutElement(
+        codeId,
+        `<h1 data-layout-id="1">Hello</h1>`,
+        headingWithContent(codeId, [textNode(codeId, "Hello")])
+      );
+
+      selectMuiOption("StudioTagSelect", "h2");
+
+      // The bridge re-emits the tree after the swap. The panel's slots are
+      // rebuilt from it, and must still include the lone run's Value.
+      const swapped = headingWithContent(codeId, [textNode(codeId, "Hello")]);
+      feedTree({
+        ...swapped,
+        tagName: "h2",
+        layoutPatch: { ...swapped.layoutPatch, tagName: "h2" },
+      });
+      cy.getBySelector("StudioSlotInput-text").should("have.value", "Hello");
+
+      // ...and still usable.
+      cy.getBySelector("StudioSlotInput-text").clear().type("Goodbye");
+      postBridgeMessage({
+        type: "LAYOUT_CONTENT_UPDATE",
+        codeId,
+        layoutId: "1",
+        innerHtml: "Goodbye",
+      });
+
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+      saveAllViaModal("layout");
+
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain("<h2");
+        expect(request.body.code).to.contain("Goodbye");
+        expect(request.body.code).not.to.contain("<h1");
+      });
+    });
+  });
+
+  it("shows a single bound field on the combined panel, and disconnects it", () => {
+    withViewForSingleText((codeId) => {
+      seedLayoutElement(
+        codeId,
+        `<h1 data-layout-id="1">{{this.title}}</h1>`,
+        headingWithContent(codeId, [
+          fieldNode(codeId, "{{this.title}}", "My Real Title"),
+        ])
+      );
+
+      cy.getBySelector("StudioTagSelect").should("exist");
+      cy.getBySelector("StudioConnectedField").should("contain.text", "title");
+      cy.getBySelector("StudioSlotInput-text").should("not.exist");
+
+      cy.getBySelector("StudioDisconnect-text").click();
+      cy.getBySelector("StudioSlotInput-text")
+        .should("exist")
+        .and("have.value", "")
+        .type("{{this.content}}", { parseSpecialCharSequences: false });
+
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+      saveAllViaModal("layout");
+
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain("<h1");
+        expect(request.body.code).to.contain("{{this.content}}");
+        expect(request.body.code).not.to.contain("{{this.title}}");
+      });
+    });
+  });
+
+  it("keeps the combined panel's Value input when it is cleared and the tree re-emits", () => {
+    withViewForSingleText((codeId) => {
+      seedLayoutElement(
+        codeId,
+        `<h1 data-layout-id="1">{{this.title}}</h1>`,
+        headingWithContent(codeId, [
+          fieldNode(codeId, "{{this.title}}", "My Real Title"),
+        ])
+      );
+
+      cy.getBySelector("StudioDisconnect-text").click();
+      cy.getBySelector("StudioSlotInput-text").should("have.value", "");
+
+      // An empty leaf has no content row, so the bridge re-emits the heading
+      // with no children. The Value input must stay so it can be refilled.
+      feedTree(headingWithContent(codeId, []));
+      cy.getBySelector("StudioSlotInput-text")
+        .should("exist")
+        .type("{{this.content}}", { parseSpecialCharSequences: false });
+
+      cy.getBySelector("StudioLayoutSaveBar").should("exist");
+      saveAllViaModal("layout");
+
+      cy.wait("@updateWebView").then(({ request }) => {
+        expect(request.body.code).to.contain("{{this.content}}");
+        expect(request.body.code).not.to.contain("{{this.title}}");
+      });
+    });
+  });
+
+  it("connects a field from the combined element panel", () => {
+    withViewForSingleText((codeId) => {
+      seedLayoutElement(
+        codeId,
+        `<h1 data-layout-id="1">Hello</h1>`,
+        headingWithContent(codeId, [textNode(codeId, "Hello")])
+      );
+
+      cy.getBySelector("StudioTagSelect").should("exist");
+      cy.getBySelector("StudioConnectContent-text").click();
+      cy.getBySelector("StudioConnectField-title").click();
+      cy.getBySelector("StudioConnectedField").should("contain.text", "title");
+      cy.getBySelector("StudioSlotInput-text").should("not.exist");
+    });
+  });
+
+  it("keeps a mixed-content element's panel to its Tag", () => {
+    withViewForSingleText((codeId) => {
+      // Several runs: no lone row speaks for the element, so each run stays on
+      // its own row and the element panel carries no Value.
+      seedLayoutElement(
+        codeId,
+        `<h1 data-layout-id="1">Read <span data-layout-id="2">this</span> now</h1>`,
+        headingWithContent(codeId, [
+          textNode(codeId, "Read", 0),
+          textNode(codeId, "now", 1),
+        ])
+      );
+
+      cy.getBySelector("StudioTagSelect").should("exist");
+      cy.getBySelector("StudioSlotInput-text").should("not.exist");
+    });
+  });
+
+  it("opens the combined panel from a canvas click on a single-text element", () => {
+    withViewForSingleText((codeId) => {
+      postBridgeMessage({
+        type: "TEMPLATE_SOURCE_MAP",
+        templateSourceByCodeId: {
+          [codeId]: `<h1 data-layout-id="1">Hello</h1>`,
+        },
+      });
+      feedTree(headingWithContent(codeId, [textNode(codeId, "Hello")]));
+      cy.get(`[data-cy="StudioLayersRow"][data-node-id="${codeId}:1"]`).should(
+        "exist"
+      );
+
+      // What the bridge posts when an element is clicked on the canvas.
+      postBridgeMessage({
+        type: "DOM_EVENT",
+        eventType: "mousedown",
+        element: { dataset: { codeId, layoutId: "1" } },
+        breadcrumb: [{ layoutId: "1", label: "h1" }],
+      });
+
+      cy.getBySelector("StudioInspectorPanel").should("exist");
+      cy.getBySelector("StudioTagSelect").should("exist");
+      cy.getBySelector("StudioSlotInput-text").should("have.value", "Hello");
     });
   });
 
@@ -2090,6 +2317,128 @@ describe("Studio Inspector Panel", () => {
       // row would keep saving a value the user can neither see nor clear.
       cy.getBySelector("StudioLinkToInput").clear().type("#section-two");
       cy.getBySelector("StudioOpenInNewTab").should("exist");
+    });
+  });
+
+  // #4374 — the layout grammar keeps a right panel mounted whatever is selected.
+  describe("empty panel in layout mode", () => {
+    // The bridge emits no `slots` for a tag outside its SUPPORTED_ELEMENTS.
+    const siblingNode = (codeId, layoutId, tagName, slots) => ({
+      id: `${codeId}:${layoutId}`,
+      kind: "element",
+      tagName,
+      codeId,
+      layoutId,
+      ...(slots
+        ? {
+            layoutPatch: {
+              codeId,
+              layoutId,
+              isSelf: true,
+              tagName,
+              elementIndex: 0,
+            },
+            slots,
+          }
+        : {}),
+      children: [],
+    });
+    const paragraph = siblingNode("code-1", "1", "p", []);
+    const small = siblingNode("code-1", "2", "small");
+
+    const feedSiblings = () =>
+      postBridgeMessage({ type: "LAYERS_TREE", tree: [paragraph, small] });
+
+    const selectRow = (node) =>
+      cy.get(`[data-cy="StudioLayersRow"][data-node-id="${node.id}"]`).click();
+
+    const previewWidth = () =>
+      cy
+        .getBySelector("StudioPreviewFrame")
+        .then(($frame) => $frame[0].getBoundingClientRect().width);
+
+    const assertPreviewWidth = (expected) =>
+      cy.getBySelector("StudioPreviewFrame").should(($frame) => {
+        expect($frame[0].getBoundingClientRect().width).to.eq(expected);
+      });
+
+    beforeEach(() => {
+      // Otherwise its clearSelection can land after the first selection.
+      cy.wait("@resolveItemByPath");
+      setStudioMode("layout");
+    });
+
+    it("shows the select-an-element empty state with nothing selected", () => {
+      cy.getBySelector("StudioEmptyPanel").should("exist");
+      cy.getBySelector("StudioEmptyPanelTitle").should(
+        "have.text",
+        "Inspector"
+      );
+      cy.getBySelector("StudioEmptyPanelMessage").should(
+        "have.text",
+        "Select an element on the canvas or in Layers to edit it."
+      );
+      cy.getBySelector("StudioInspectorPanel").should("not.exist");
+    });
+
+    it("names an element with no editable properties instead of closing", () => {
+      feedSiblings();
+      selectRow(small);
+
+      // Positive anchor first: the selection landed, independent of the panel.
+      cy.getBySelector("StudioBreadcrumbChip")
+        .last()
+        .should("have.text", "small");
+      cy.getBySelector("StudioEmptyPanelTitle").should("have.text", "small");
+      cy.getBySelector("StudioEmptyPanelMessage").should(
+        "have.text",
+        "This element has no editable properties."
+      );
+      cy.getBySelector("StudioInspectorPanel").should("not.exist");
+    });
+
+    it("keeps the canvas width constant as the selection moves", () => {
+      cy.getBySelector("StudioHeader").should("exist");
+      previewWidth().then((unselected) => {
+        expect(unselected, "preview has laid out").to.be.greaterThan(0);
+        feedSiblings();
+
+        selectRow(paragraph);
+        cy.getBySelector("StudioInspectorPanel").should("exist");
+        assertPreviewWidth(unselected);
+
+        // Not anchored on the empty panel, so this fails on width alone.
+        selectRow(small);
+        cy.getBySelector("StudioBreadcrumbChip")
+          .last()
+          .should("have.text", "small");
+        cy.getBySelector("StudioInspectorPanel").should("not.exist");
+        assertPreviewWidth(unselected);
+
+        selectRow(paragraph);
+        cy.getBySelector("StudioInspectorPanel").should("exist");
+        assertPreviewWidth(unselected);
+      });
+    });
+
+    it("shows the neutral copy, not 'no editable properties', when the Inspector is closed", () => {
+      feedSiblings();
+      selectRow(paragraph);
+      cy.getBySelector("StudioInspectorPanel").should("exist");
+
+      cy.getBySelector("StudioInspectorPanelClose").click();
+
+      // The layout selection outlives the close; the <p> is still editable.
+      cy.getBySelector("StudioInspectorPanel").should("not.exist");
+      cy.getBySelector("StudioBreadcrumbChip").last().should("have.text", "p");
+      cy.getBySelector("StudioEmptyPanelTitle").should(
+        "have.text",
+        "Inspector"
+      );
+      cy.getBySelector("StudioEmptyPanelMessage").should(
+        "have.text",
+        "Select an element on the canvas or in Layers to edit it."
+      );
     });
   });
 });
