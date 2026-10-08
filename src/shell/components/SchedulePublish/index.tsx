@@ -183,13 +183,11 @@ export const SchedulePublish = ({
             item?.scheduling?.ZUID,
             { version: item?.scheduling?.version }
           )
-        )
-          // @ts-expect-error untyped action
-          .then((response) => {
-            if (response?.error) {
-              throw new Error(response?.error);
-            }
-          });
+        ).then((response) => {
+          if (response?.error) {
+            throw new Error(response?.error);
+          }
+        });
       }
 
       await dispatch(
@@ -203,13 +201,11 @@ export const SchedulePublish = ({
           },
           { localTime: localPretty, localTimezone: publishTimezone }
         )
-      )
-        // @ts-expect-error untyped action
-        .then((response) => {
-          if (response?.error) {
-            throw new Error(response?.error);
-          }
-        });
+      ).then((response) => {
+        if (response?.error) {
+          throw new Error(response?.error);
+        }
+      });
 
       onScheduleSuccess?.();
     } catch {
@@ -237,13 +233,11 @@ export const SchedulePublish = ({
             item?.scheduling?.ZUID,
             { version: item?.scheduling?.version }
           )
-        )
-          // @ts-expect-error untyped action
-          .then((response) => {
-            if (response?.error) {
-              throw new Error(response?.error);
-            }
-          });
+        ).then((response) => {
+          if (response?.error) {
+            throw new Error(response?.error);
+          }
+        });
       }
       await dispatch(
         publish(
@@ -256,13 +250,11 @@ export const SchedulePublish = ({
           },
           { localTime: "", localTimezone: publishTimezone }
         )
-      )
-        // @ts-expect-error untyped action
-        .then((response) => {
-          if (response?.error) {
-            throw new Error(response?.error);
-          }
-        });
+      ).then((response) => {
+        if (response?.error) {
+          throw new Error(response?.error);
+        }
+      });
 
       onUnscheduleSuccess?.();
     } catch {
