@@ -9,6 +9,10 @@ concurrency:
   group: manager-ui-e2e-dev-instance
   cancel-in-progress: false
 
+# Job flow:
+#   setup -> typecheck -> run_tests -> run_global_tests
+#   localization_lint runs independently
+#   all_tests_passed / backend_health / merge_timings / coverage aggregate at the end
 jobs:
   localization_lint:
     name: "Lint: Localization"
@@ -20,14 +24,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Set up Node
-        uses: actions/setup-node@v4.1.0
-        with:
-          node-version: "22.19.0"
-          cache: "npm"
-          cache-dependency-path: package-lock.json
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        uses: ./.github/actions/install-deps
       - name: Run Lint
         run: npm run lint
 
@@ -42,6 +40,11 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         if: "github.ref != 'refs/heads/master'"
+      # Installs and caches node_modules so every downstream job restores instead of installing.
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Install Dependencies
+        uses: ./.github/actions/install-deps
       - name: Auth with Gcloud
         uses: google-github-actions/auth@v0
         with:
@@ -53,11 +56,23 @@ jobs:
       - name: Delete Old Screenshots
         run: gsutil rm gs://cypress_screenshots/* || true
 
+  # Repo-wide TypeScript check. Gates all e2e jobs below.
+  typecheck:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Install Dependencies
+        uses: ./.github/actions/install-deps
+      - name: Run TypeScript check
+        run: npx tsc --noEmit
+
   # Non-global specs, split 4 ways and run concurrently. The heavy global-state
   # specs run separately (run_global_tests) AFTER these, alone, so they never run
   # alongside other state mutators — which was the remaining source of flakiness.
   run_tests:
-    needs: setup
+    needs: [setup, typecheck]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -68,14 +83,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Set up Node
-        uses: actions/setup-node@v4.1.0
-        with:
-          node-version: "22.19.0"
-          cache: "npm"
-          cache-dependency-path: package-lock.json
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        uses: ./.github/actions/install-deps
       - name: Auth with Gcloud
         uses: google-github-actions/auth@v0
         with:
@@ -140,20 +149,15 @@ jobs:
   # concurrently with another state mutator. Artifacts use index 4 so the existing
   # backend-markers-*/coverage-*/timings-partial-* globs pick them up.
   run_global_tests:
-    needs: run_tests
+    needs: [run_tests, typecheck]
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    # Still run after run_tests failures, but never when typecheck failed.
+    if: ${{ !cancelled() && needs.typecheck.result == 'success' }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Set up Node
-        uses: actions/setup-node@v4.1.0
-        with:
-          node-version: "22.19.0"
-          cache: "npm"
-          cache-dependency-path: package-lock.json
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        uses: ./.github/actions/install-deps
       - name: Auth with Gcloud
         uses: google-github-actions/auth@v0
         with:
@@ -206,13 +210,13 @@ jobs:
   # Branch protection should require this job, not run_tests, because matrix jobs
   # produce individual checks (run_tests (0), run_tests (1), …) — never a single run_tests check.
   all_tests_passed:
-    needs: [localization_lint, run_tests, run_global_tests]
+    needs: [localization_lint, run_tests, run_global_tests, typecheck]
     runs-on: ubuntu-latest
     if: always()
     steps:
       - name: Check results
         run: |
-          if [ "${{ needs.localization_lint.result }}" != "success" ] || [ "${{ needs.run_tests.result }}" != "success" ] || [ "${{ needs.run_global_tests.result }}" != "success" ]; then
+          if [ "${{ needs.localization_lint.result }}" != "success" ] || [ "${{ needs.run_tests.result }}" != "success" ] || [ "${{ needs.run_global_tests.result }}" != "success" ] || [ "${{ needs.typecheck.result }}" != "success" ]; then
             echo "One or more test runners failed or were cancelled"
             exit 1
           fi
@@ -256,14 +260,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Set up Node
-        uses: actions/setup-node@v4.1.0
-        with:
-          node-version: "22.19.0"
-          cache: "npm"
-          cache-dependency-path: package-lock.json
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        uses: ./.github/actions/install-deps
       # Each artifact is downloaded into its own subdirectory: partials/timings-partial-N/timings.json
       # cypress-split-merge looks for timings.json in each subdirectory of --parent-folder.
       - name: Download Timings Artifacts
@@ -290,14 +288,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Set up Node
-        uses: actions/setup-node@v4.1.0
-        with:
-          node-version: "22.19.0"
-          cache: "npm"
-          cache-dependency-path: package-lock.json
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        uses: ./.github/actions/install-deps
       - name: Download Coverage Artifacts
         uses: actions/download-artifact@v4
         with:
