@@ -117,7 +117,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 }: FieldTypeTinyMCEProps) {
   const { t } = useTranslation();
   // NOTE: controlled component
-  const [initialValue, setInitialValue] = useState(value);
   const [isSkinLoaded, setIsSkinLoaded] = useState(false);
   const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
 
@@ -132,6 +131,20 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   // item.
   const editorKey = `${effectiveCompact}-${version}`;
   const baselineRef = useRef<{ key: string; content: string } | null>(null);
+
+  // Value the editor instance is created with. Captured once per editor
+  // instance (editorKey) and deliberately NOT refreshed afterwards: changing
+  // the <Editor initialValue> prop after init makes tinymce-react call
+  // editor.setContent(), which fires `setcontent` and dirties the item.
+  const initialValue = useMemo(
+    () => value,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [editorKey]
+  );
+
+  // Latest value prop, readable from the (stale-closure) onInit callback.
+  const latestValueRef = useRef(value);
+  latestValueRef.current = value;
 
   const EDITOR_HEIGHT = effectiveCompact
     ? COMPACT_EDITOR_HEIGHT
@@ -217,14 +230,20 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             onCharacterCountChange && onCharacterCountChange(charCount);
           }}
           onInit={(_, editor) => {
+            // If the value changed between mount and init, apply it before
+            // seeding the baseline so it never registers as a user edit.
+            const latest = latestValueRef.current ?? "";
+            if (latest !== (initialValue ?? "")) {
+              baselineRef.current = null;
+              editor.setContent(latest);
+            }
+
             // Seed the baseline with the loaded (post-normalization) content,
             // tagged with this instance's key so a remount starts fresh.
             baselineRef.current = {
               key: editorKey,
               content: editor.getContent(),
             };
-
-            setInitialValue(value ?? "");
 
             const charCount =
               editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
