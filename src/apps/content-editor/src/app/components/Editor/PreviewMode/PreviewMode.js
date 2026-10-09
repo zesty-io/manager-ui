@@ -19,7 +19,7 @@ export default function PreviewMode(props) {
   // Sends message to preview window to update route
   const route = useCallback(
     (itemZUID, version, dirty, hasErrors, model, extraPayload = {}) => {
-      if (!preview.current) return;
+      if (!preview.current?.contentWindow) return;
       // if not a string or a string that is not a content item zuid
       // then see if location contains a routable content item
       // only 7- resources are capable of having a path
@@ -177,7 +177,7 @@ export default function PreviewMode(props) {
   // Push locale changes to the iframe while it is open
   useEffect(() => {
     function onLanguageChanged(lang) {
-      preview.current?.contentWindow.postMessage(
+      preview.current?.contentWindow?.postMessage(
         { source: "zesty", locale: lang },
         origin
       );
