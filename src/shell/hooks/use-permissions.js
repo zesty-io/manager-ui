@@ -70,6 +70,5 @@ export function useMultiPermission(action, zuids) {
   return useMemo(() => {
     if (!zuids?.length) return true;
     return zuids.every((zuid) => hasPermission(user, role, action, zuid));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, role, action, key]);
 }

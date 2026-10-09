@@ -364,8 +364,9 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                           </React.Fragment>
                         }
                         secondaryTypographyProps={{
-                          fontSize: "12px",
-                          lineHeight: "18px",
+                          variant: "body3",
+                          // MUI's own .MuiListItemText-secondary display:block is same-specificity; pin so insertion order doesn't decide.
+                          sx: { display: "block" },
                         }}
                       />
                       <ListItemIcon

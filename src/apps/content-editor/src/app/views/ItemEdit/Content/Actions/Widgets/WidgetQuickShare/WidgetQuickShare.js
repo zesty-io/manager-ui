@@ -39,16 +39,14 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
         sx={{
           p: 0,
           backgroundColor: "transparent",
-          fontSize: "16px",
           color: alpha(theme.palette.text.primary, 0.4),
           borderBottom: 1,
           borderColor: "grey.200",
         }}
         titleTypographyProps={{
+          variant: "overline",
           sx: {
             fontWeight: 400,
-            fontSize: "12px",
-            lineHeight: "32px",
             color: "text.primary",
             textTransform: "uppercase",
           },
@@ -78,10 +76,8 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
           <Stack
             gap={1.5}
             sx={{
-              fontSize: "14px",
+              typography: "body2",
               fontWeight: 500,
-              lineHeight: "20px",
-              letteSpacing: "0px",
             }}
           >
             <Link
@@ -109,7 +105,8 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
                   height: "16px",
                 }}
               />
-              Twitter
+              {/* eslint-disable-next-line i18next/no-literal-string -- brand name */}
+              <>Twitter</>
             </Link>
             <Link
               onClick={(evt) =>
@@ -136,7 +133,8 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
                   height: "16px",
                 }}
               />
-              Facebook
+              {/* eslint-disable-next-line i18next/no-literal-string -- brand name */}
+              <>Facebook</>
             </Link>
             <Link
               onClick={(evt) =>
@@ -163,7 +161,8 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
                   height: "16px",
                 }}
               />
-              Linkedin
+              {/* eslint-disable-next-line i18next/no-literal-string -- brand name */}
+              <>Linkedin</>
             </Link>
             <Link
               onClick={(evt) =>
@@ -190,7 +189,8 @@ export const WidgetQuickShare = memo(function WidgetQuickShare(props) {
                   height: "16px",
                 }}
               />
-              Reddit
+              {/* eslint-disable-next-line i18next/no-literal-string -- brand name */}
+              <>Reddit</>
             </Link>
           </Stack>
         )}
