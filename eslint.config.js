@@ -1,24 +1,28 @@
 // ESLint 9 flat config.
 //
-// Deliberately narrow: exactly one rule, enforcing the hex-color-literal
-// convention documented in docs/design-system.md. Do NOT add
-// eslint:recommended, plugins (React/hooks/a11y/import), type-aware rules,
-// or formatting rules here — pretty-quick remains the only formatter, and
-// broader linting was previously attempted and closed for being too large
-// a blast radius (see #4262/#4279). See issue #4288 for the full rationale.
+// Deliberately narrow: the design-system hex-color-literal rule (see
+// docs/design-system.md and issue #4288) plus the i18n rules (see CLAUDE.md's
+// Localization section). Do NOT add eslint:recommended, other plugins
+// (React/hooks/a11y/import), type-aware rules, or formatting rules here —
+// pretty-quick remains the only formatter, and broader linting was previously
+// attempted and closed for being too large a blast radius (see #4262/#4279).
 const tsParser = require("@typescript-eslint/parser");
+const i18next = require("eslint-plugin-i18next");
+const zestyI18n = require("./eslint-rules");
 
 module.exports = [
+  {
+    ignores: ["build/**", "node_modules/**", "coverage/**", ".nyc_output/**"],
+  },
   {
     files: ["src/**/*.{ts,tsx,js,jsx}"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
-        },
+        ecmaFeatures: { jsx: true },
       },
     },
+    plugins: { i18next, "zesty-i18n": zestyI18n },
     rules: {
       "no-restricted-syntax": [
         "error",
@@ -31,6 +35,13 @@ module.exports = [
             "design-system.md §3, disable this line with a one-line reason.",
         },
       ],
+
+      // Default "jsx-text-only" mode; see CLAUDE.md's Localization section
+      // for the suppression pattern for legitimate non-UI-copy literals.
+      "i18next/no-literal-string": [2],
+
+      // This repo's key-format convention — see eslint-rules/zestyI18n/key-format.js.
+      "zesty-i18n/key-format": "error",
     },
   },
   {
