@@ -71,19 +71,19 @@ const VARIANTS: Record<
 };
 
 /**
- * Reads a message off the rejection shapes this app produces: an `Error`, an
- * RTK `.unwrap()` rejection (`{ status, data }`, where the instance API puts
- * the text in `data.error` and the media API in `data.message`), or an RTK
- * `FETCH_ERROR` (`{ status, error }`).
+ * Reads a message off the rejection shapes this app produces: an `Error`
+ * (callers throw these with translated text), or an RTK `.unwrap()` rejection
+ * (`{ status, data }`, where the instance API puts the text in `data.error`
+ * and the media API in `data.message`). RTK transport failures
+ * (`FETCH_ERROR`, `TIMEOUT_ERROR`, `PARSING_ERROR`) carry a raw English JS
+ * string in `.error`, so they are deliberately not read and fall through to
+ * the generic message.
  */
 const getDefaultErrorMessage = (error: unknown): string | undefined => {
   if (error instanceof Error) return error.message || undefined;
   if (typeof error !== "object" || error === null) return undefined;
 
-  const { data, error: fetchError } = error as {
-    data?: unknown;
-    error?: unknown;
-  };
+  const { data } = error as { data?: unknown };
   if (typeof data === "object" && data !== null) {
     const { error: dataError, message } = data as {
       error?: unknown;
@@ -92,7 +92,6 @@ const getDefaultErrorMessage = (error: unknown): string | undefined => {
     if (typeof dataError === "string" && dataError) return dataError;
     if (typeof message === "string" && message) return message;
   }
-  if (typeof fetchError === "string" && fetchError) return fetchError;
 
   return undefined;
 };
