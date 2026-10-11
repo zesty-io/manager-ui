@@ -156,6 +156,9 @@ export const ConfirmDialog = ({
   // Paper's element rather than HTMLFormElement.
   const handleSubmit = async (event: FormEvent<HTMLElement>) => {
     event.preventDefault();
+    // React events bubble through portals: keep this submit from reaching a
+    // <form> the caller happens to be rendered inside.
+    event.stopPropagation();
     if (pendingRef.current || !canConfirm) return;
 
     pendingRef.current = true;
