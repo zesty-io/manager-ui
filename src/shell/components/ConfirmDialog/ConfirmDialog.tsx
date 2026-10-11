@@ -47,6 +47,8 @@ export type ConfirmDialogProps = {
   confirmDataCy?: string;
   dialogDataCy?: string;
   maxWidth?: DialogProps["maxWidth"];
+  /** Fixed paper width; `maxWidth` still caps it. */
+  width?: number | string;
 };
 
 const VARIANTS: Record<
@@ -116,6 +118,7 @@ export const ConfirmDialog = ({
   confirmDataCy = "ConfirmDialogConfirmButton",
   dialogDataCy = "ConfirmDialog",
   maxWidth = "xs",
+  width,
 }: ConfirmDialogProps) => {
   const { t } = useTranslation();
   const requireTextId = useId();
@@ -125,6 +128,7 @@ export const ConfirmDialog = ({
   const pendingRef = useRef(false);
   const mountedRef = useRef(true);
   const confirmActionRef = useRef<ButtonBaseActions | null>(null);
+  const requireTextInputRef = useRef<HTMLInputElement | null>(null);
 
   const { color, circle, icon: defaultIcon } = VARIANTS[variant];
   const resolvedIcon = icon === undefined ? defaultIcon : icon;
@@ -145,6 +149,17 @@ export const ConfirmDialog = ({
       setTypedText("");
     }
   }, [open]);
+
+  // The loading confirm button (or the disabled input) dropped focus while
+  // pending; put it back so Enter retries.
+  useEffect(() => {
+    if (!error || pending) return;
+    if (hasRequireText) {
+      requireTextInputRef.current?.focus();
+    } else {
+      confirmActionRef.current?.focusVisible();
+    }
+  }, [error, pending, hasRequireText]);
 
   const handleClose = () => {
     if (pendingRef.current) return;
@@ -200,6 +215,7 @@ export const ConfirmDialog = ({
         paper: {
           component: "form",
           onSubmit: handleSubmit,
+          sx: width !== undefined ? { width } : undefined,
         },
         transition: {
           onEntered: () => {
@@ -249,6 +265,7 @@ export const ConfirmDialog = ({
                 value={typedText}
                 onChange={(event) => setTypedText(event.target.value)}
                 disabled={pending}
+                inputRef={requireTextInputRef}
                 slotProps={{
                   htmlInput: { "data-cy": requireTextDataCy },
                 }}
