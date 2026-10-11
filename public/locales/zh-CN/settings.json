@@ -90,7 +90,6 @@
   "fontInstallSuccess": "字体“{{family}} ({{variants}})”已成功安装",
   "fontPreviewText": "这是一段示例文字",
   "fontUninstalled": "字体“{{fontLabel}}”已成功卸载",
-  "fontUninstallFailed": "卸载 {{fontLabel}} 失败: {{error}}",
   "FriendlyPagination": "友好分页",
   "GoogleAutoLinker": "Google Auto Linker",
   "GoogleUrchinId": "Google Analytics ID",

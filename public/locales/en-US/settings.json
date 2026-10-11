@@ -90,7 +90,6 @@
   "fontInstallSuccess": "Font \"{{family}} ({{variants}})\" has been installed",
   "fontPreviewText": "This is a text example",
   "fontUninstalled": "Font \"{{fontLabel}}\" has been uninstalled",
-  "fontUninstallFailed": "Failed to uninstall {{fontLabel}}: {{error}}",
   "FriendlyPagination": "Friendly Pagination",
   "GoogleAutoLinker": "Google Auto Linker",
   "GoogleUrchinId": "Google Analytics ID",
