@@ -1,16 +1,5 @@
-import { FC, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Dialog,
-  DialogTitle,
-  Typography,
-  DialogContent,
-  DialogActions,
-  Button,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import LoadingButton from "@mui/lab/LoadingButton";
-import { Stack } from "@mui/material";
+import { Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { fetchFontsInstalled } from "../../../../../../../shell/store/settings";
 import {
@@ -20,6 +9,7 @@ import {
 import { useInstalledFonts } from ".";
 import { notify } from "../../../../../../../shell/store/notifications";
 import { getFontDataFromHref } from "../Browse";
+import { ConfirmDialog } from "../../../../../../../shell/components/ConfirmDialog";
 
 export type DeleteFontDialogProps = {
   open: boolean;
@@ -40,12 +30,12 @@ const DeleteFontDialog = ({
   const dispatch = useDispatch();
   const fontLabel = `${family} (${variant})`;
 
-  const [deleteFont, { isLoading: isDeleting }] = useDeleteHeadTagMutation();
-  const [updateFont, { isLoading: isUpdating }] = useUpdateHeadTagsMutation();
+  const [deleteFont] = useDeleteHeadTagMutation();
+  const [updateFont] = useUpdateHeadTagsMutation();
 
   const { fonts: installedFonts } = useInstalledFonts();
 
-  const handleFontDelete = useCallback(async () => {
+  const handleFontDelete = async () => {
     const thisFont = installedFonts?.find((font) => font?.ZUID === ZUID);
     const { family, variants } = getFontDataFromHref(thisFont?.href);
     const fontLabel = `${family} (${variant})`;
@@ -53,118 +43,54 @@ const DeleteFontDialog = ({
       (itemVariant) => itemVariant !== variant
     );
 
-    try {
-      let response: any = null;
-      if (!remainingVariants?.length) {
-        response = await deleteFont(ZUID);
-      } else {
-        const updatedHref = `https://fonts.googleapis.com/css?family=${family.replace(
-          /\s/g,
-          "+"
-        )}:${remainingVariants.join(",")}`;
+    if (!remainingVariants?.length) {
+      await deleteFont(ZUID).unwrap();
+    } else {
+      const updatedHref = `https://fonts.googleapis.com/css?family=${family.replace(
+        /\s/g,
+        "+"
+      )}:${remainingVariants.join(",")}`;
 
-        response = await updateFont({
-          ZUID,
-          href: updatedHref,
-        });
-      }
-
-      if (!response?.error) {
-        dispatch(
-          notify({
-            kind: "success",
-            message: t("settings.fontUninstalled", { fontLabel }),
-          })
-        );
-      } else {
-        throw new Error(`${response?.error?.data?.error}`);
-      }
-    } catch (error) {
-      dispatch(
-        notify({
-          kind: "error",
-          message: t("settings.fontUninstallFailed", { fontLabel, error }),
-        })
-      );
-    } finally {
-      dispatch(fetchFontsInstalled());
-      onClose();
+      await updateFont({
+        ZUID,
+        href: updatedHref,
+      }).unwrap();
     }
-  }, [ZUID, variant, t]);
+
+    dispatch(fetchFontsInstalled());
+    dispatch(
+      notify({
+        kind: "success",
+        message: t("settings.fontUninstalled", { fontLabel }),
+      })
+    );
+  };
 
   return (
-    <>
-      <Dialog
-        data-cy="DeleteFontDialog"
-        open={open}
-        onClose={onClose}
-        fullWidth
-        maxWidth={"xs"}
-      >
-        <DialogTitle>
-          <DeleteIcon
-            color="error"
-            sx={{
-              padding: 1,
-              borderRadius: "50%",
-              backgroundColor: "red.100",
-              display: "block",
-              mb: 1.5,
-              width: "40px",
-              height: "40px",
-            }}
-          />
-          <Stack
-            display="flex"
-            flexDirection="row"
-            justifyContent="flex-start"
-            alignItems="center"
-            columnGap={1}
-            overflow="hidden"
-            textOverflow="ellipsis"
+    <ConfirmDialog
+      open={open}
+      onClose={onClose}
+      onConfirm={handleFontDelete}
+      dialogDataCy="DeleteFontDialog"
+      confirmDataCy="DeleteFontDialogConfirmButton"
+      confirmLabel={t("common.remove")}
+      title={
+        <>
+          {t("settings.removeFontLabel")}
+          {":"}{" "}
+          <Typography
+            data-cy="DeleteFontDialogLabel"
+            component="span"
+            variant="inherit"
+            fontWeight={500}
+            textTransform="capitalize"
           >
-            <Typography
-              variant="h5"
-              color="text.primary"
-              fontWeight={700}
-              mb={1}
-            >
-              {t("settings.removeFontLabel")}
-              {":"}
-            </Typography>
-
-            <Typography
-              data-cy="DeleteFontDialogLabel"
-              variant="h5"
-              color="text.primary"
-              fontWeight={500}
-              mb={1}
-              textTransform="capitalize"
-            >
-              {fontLabel}
-            </Typography>
-          </Stack>
-          <Typography variant="body2" color="text.secondary">
-            {t("settings.deleteFontConfirm")}
+            {fontLabel}
           </Typography>
-        </DialogTitle>
-        <DialogContent></DialogContent>
-        <DialogActions>
-          <Button onClick={onClose} color="inherit">
-            {t("common.cancel")}
-          </Button>
-          <LoadingButton
-            data-cy="DeleteFontDialogConfirmButton"
-            variant="contained"
-            color="error"
-            onClick={handleFontDelete}
-            loading={isDeleting || isUpdating}
-          >
-            {t("common.remove")}
-          </LoadingButton>
-        </DialogActions>
-      </Dialog>
-    </>
+        </>
+      }
+      description={t("settings.deleteFontConfirm")}
+    />
   );
 };
 
