@@ -5,7 +5,6 @@ import { ConfirmDialog } from "../../../../../../shell/components/ConfirmDialog"
 
 interface Props {
   onClose: () => void;
-  /** Must reject on failure; the dialog stays open and shows the error. */
   onDeleteFile: () => Promise<unknown>;
   filename?: string;
   fileCount?: number;

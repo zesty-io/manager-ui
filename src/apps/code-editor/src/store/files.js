@@ -615,8 +615,6 @@ export function deleteFile(fileZUID, fileStatus) {
     const file = resolveFile(dispatch, getState().files, fileZUID, fileStatus);
     const pathPart = resolvePathPart(file.type);
 
-    // Rejects with a translated Error on failure so the caller (the delete
-    // ConfirmDialog) can show it and stay open.
     return request(`${CONFIG.API_INSTANCE}/web/${pathPart}/${fileZUID}`, {
       method: "DELETE",
       json: true,

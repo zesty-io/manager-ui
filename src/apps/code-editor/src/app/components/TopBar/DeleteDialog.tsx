@@ -28,8 +28,6 @@ export const DeleteDialog = memo(function DeleteDialog(
     // than closing as if the delete had succeeded.
     if (!fileZUID || !status) throw new Error();
 
-    // deleteFile rejects with a translated Error on failure, which the
-    // dialog shows inline.
     await dispatch(deleteFile(fileZUID, status));
     history.push("/code");
   };
