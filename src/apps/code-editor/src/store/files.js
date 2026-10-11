@@ -615,43 +615,39 @@ export function deleteFile(fileZUID, fileStatus) {
     const file = resolveFile(dispatch, getState().files, fileZUID, fileStatus);
     const pathPart = resolvePathPart(file.type);
 
+    // Rejects with a translated Error on failure so the caller (the delete
+    // ConfirmDialog) can show it and stay open.
     return request(`${CONFIG.API_INSTANCE}/web/${pathPart}/${fileZUID}`, {
       method: "DELETE",
       json: true,
     })
+      .catch((err) => {
+        console.error(err);
+        throw new Error(
+          i18n.t("code.apiErrorDeletingFile", {
+            fileName: file.fileName,
+          })
+        );
+      })
       .then((res) => {
-        if (res.status === 200) {
-          dispatch({
-            type: "DELETE_FILE_SUCCESS",
-            payload: {
-              fileZUID,
-              instanceZUID: getState().instance.ZUID,
-            },
-          });
-        } else {
-          dispatch(
-            notify({
-              kind: "warn",
-              message: i18n.t("code.deleteFileError", {
-                fileName: file.fileName,
-                error: res.error,
-              }),
+        if (res.status !== 200) {
+          throw new Error(
+            i18n.t("code.deleteFileError", {
+              fileName: file.fileName,
+              error: res.error,
             })
           );
         }
 
+        dispatch({
+          type: "DELETE_FILE_SUCCESS",
+          payload: {
+            fileZUID,
+            instanceZUID: getState().instance.ZUID,
+          },
+        });
+
         return res;
-      })
-      .catch((err) => {
-        console.log(err);
-        dispatch(
-          notify({
-            kind: "warn",
-            message: i18n.t("code.apiErrorDeletingFile", {
-              fileName: file.fileName,
-            }),
-          })
-        );
       });
   };
 }
