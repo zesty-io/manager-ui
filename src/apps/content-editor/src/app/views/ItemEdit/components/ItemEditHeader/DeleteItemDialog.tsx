@@ -1,13 +1,5 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  Typography,
-  Stack,
-  Box,
-} from "@mui/material";
-import { DeleteRounded } from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { Typography } from "@mui/material";
 import { useHistory, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
@@ -16,6 +8,7 @@ import {
   useDeleteContentItemMutation,
   useGetContentModelItemsQuery,
 } from "../../../../../../../../shell/services/instance";
+import { ConfirmDialog } from "../../../../../../../../shell/components/ConfirmDialog";
 import { useTranslation } from "react-i18next";
 
 type DuplicateItemProps = {
@@ -38,77 +31,58 @@ export const DeleteItemDialog = ({ onClose }: DuplicateItemProps) => {
     { skip: !modelZUID }
   );
 
-  const [deleteContentItem, { isLoading }] = useDeleteContentItemMutation();
+  const [deleteContentItem] = useDeleteContentItemMutation();
 
-  const handleRedirectBlockItem = () => {
-    if (modelItems?.length - 1 <= 0) {
-      history.push("/blocks");
-    } else {
-      history.push(`/blocks/${modelZUID}`);
+  // Keep the last known title: REMOVE_ITEM drops the item from the store
+  // before the dialog has unmounted.
+  const currentTitle = item?.web?.metaTitle || item?.web?.metaLinkText;
+  const [title, setTitle] = useState(currentTitle);
+  useEffect(() => {
+    if (currentTitle) setTitle(currentTitle);
+  }, [currentTitle]);
+
+  const getRedirectTarget = () => {
+    if (history.location.pathname.includes("blocks")) {
+      return modelItems?.length - 1 <= 0 ? "/blocks" : `/blocks/${modelZUID}`;
     }
+    return `/content/${modelZUID}`;
+  };
+
+  const handleDelete = async () => {
+    // Resolve before the request: the delete invalidates modelItems.
+    const target = getRedirectTarget();
+
+    await deleteContentItem({
+      modelZUID: modelZUID,
+      itemZUID: itemZUID,
+    }).unwrap();
+
+    /**
+     * Remove the item from the store before redirecting
+     */
+    dispatch({
+      type: "REMOVE_ITEM",
+      itemZUID,
+    });
+    history.push(target);
   };
 
   return (
-    <Dialog open fullWidth maxWidth={"xs"} onClose={onClose}>
-      <DialogTitle>
-        <Box
-          sx={{
-            backgroundColor: "red.100",
-            borderRadius: "100%",
-            width: "40px",
-            height: "40px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            mb: 1.5,
-          }}
-        >
-          <DeleteRounded color="error" />
-        </Box>
-        <Stack>
+    <ConfirmDialog
+      onClose={onClose}
+      onConfirm={handleDelete}
+      confirmDataCy="DeleteContentItemConfirmButton"
+      confirmLabel={t("content.itemEditDeleteItem")}
+      title={
+        <>
           {t("content.itemEditDeleteContentItemTitle")}
           {":"}
-          <Typography variant="inherit" fontWeight={600}>
-            {item?.web?.metaTitle || item?.web?.metaLinkText}
+          <Typography variant="inherit" fontWeight={600} display="block">
+            {title}
           </Typography>
-        </Stack>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          {t("content.itemEditDeleteContentItemDescription")}
-        </Typography>
-      </DialogTitle>
-      <DialogActions>
-        <Button color="inherit" onClick={onClose}>
-          {t("common.cancel")}
-        </Button>
-        <Button
-          data-cy="DeleteContentItemConfirmButton"
-          variant="contained"
-          color="error"
-          onClick={() => {
-            deleteContentItem({
-              modelZUID: modelZUID,
-              itemZUID: itemZUID,
-            }).then(() => {
-              /**
-               * Remove the item from the store before redirecting
-               */
-              dispatch({
-                type: "REMOVE_ITEM",
-                itemZUID,
-              });
-
-              if (history.location.pathname.includes("blocks")) {
-                handleRedirectBlockItem();
-              } else {
-                history.push(`/content/${modelZUID}`);
-              }
-            });
-          }}
-          loading={isLoading}
-        >
-          {t("content.itemEditDeleteItem")}
-        </Button>
-      </DialogActions>
-    </Dialog>
+        </>
+      }
+      description={t("content.itemEditDeleteContentItemDescription")}
+    />
   );
 };
