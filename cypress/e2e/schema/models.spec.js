@@ -87,6 +87,8 @@ describe("Schema: Models", () => {
     cy.contains(`${CYPRESS_TEST_MODEL} Updated`, options).should("exist");
   });
   it("Deletes model", () => {
+    cy.intercept("DELETE", "**/v1/content/models/*").as("deleteModel");
+
     cy.getBySelector(`model-header-menu`, options).click(forceClick);
     cy.contains("Delete Model", options).click(forceClick);
     cy.get(".MuiDialog-container", options).within(() => {
@@ -95,6 +97,10 @@ describe("Schema: Models", () => {
       );
     });
     cy.contains("Delete Forever", options).click();
+
+    cy.wait("@deleteModel").its("response.statusCode").should("eq", 200);
+    cy.location("pathname").should("eq", "/schema");
+    cy.contains(`${CYPRESS_TEST_MODEL} Updated`, options).should("not.exist");
   });
   it("Can navigate via breadcrumbs", () => {
     cy.waitOn(
