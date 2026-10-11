@@ -47,8 +47,6 @@ export type ConfirmDialogProps = {
   confirmDataCy?: string;
   dialogDataCy?: string;
   maxWidth?: DialogProps["maxWidth"];
-  /** Fixed paper width; `maxWidth` still caps it. */
-  width?: number | string;
 };
 
 const VARIANTS: Record<
@@ -118,7 +116,6 @@ export const ConfirmDialog = ({
   confirmDataCy = "ConfirmDialogConfirmButton",
   dialogDataCy = "ConfirmDialog",
   maxWidth = "xs",
-  width,
 }: ConfirmDialogProps) => {
   const { t } = useTranslation();
   const requireTextId = useId();
@@ -215,7 +212,6 @@ export const ConfirmDialog = ({
         paper: {
           component: "form",
           onSubmit: handleSubmit,
-          sx: width !== undefined ? { width } : undefined,
         },
         transition: {
           onEntered: () => {

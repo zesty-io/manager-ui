@@ -23,7 +23,6 @@ export const ConfirmDeletesDialog = ({
   return (
     <ConfirmDialog
       dialogDataCy="ConfirmDeletesDialog"
-      width={480}
       confirmDataCy="ConfirmMultiPageTableDelete"
       onConfirm={() => onConfirm(snapshot)}
       onClose={onCancel}
