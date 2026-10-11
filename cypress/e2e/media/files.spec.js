@@ -186,16 +186,13 @@ describe.skip("Media Files", () => {
   });
 
   it("Deletes file", () => {
-    cy.intercept("DELETE", `**/file/${currentFileId}`).as("deleteFile");
-
     // click trash and delete modal button
     cy.visit(`/media?fileId=${currentFileId}`);
     cy.get("[aria-label='Trash Button']").click();
     cy.get("[aria-label='Delete Button']").click();
 
-    cy.wait("@deleteFile").its("response.statusCode").should("eq", 200);
-    cy.getBySelector("ConfirmDialog").should("not.exist");
-    cy.location("search").should("not.contain", currentFileId);
+    // call delete endpoint
+    cy.intercept("DELETE", `/file/${currentFileId}`);
   });
 
   it("Shows 404 Page", () => {

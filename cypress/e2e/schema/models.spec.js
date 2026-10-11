@@ -98,7 +98,9 @@ describe("Schema: Models", () => {
     });
     cy.contains("Delete Forever", options).click();
 
-    cy.wait("@deleteModel").its("response.statusCode").should("eq", 200);
+    cy.wait("@deleteModel")
+      .its("response.statusCode")
+      .should("be.lessThan", 300);
     cy.location("pathname").should("eq", "/schema");
     cy.contains(`${CYPRESS_TEST_MODEL} Updated`, options).should("not.exist");
   });

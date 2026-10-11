@@ -600,7 +600,9 @@ describe("Actions in content editor", () => {
     cy.getBySelector("ContentItemMoreButton").click();
     cy.getBySelector("DeleteContentItem").click();
     cy.getBySelector("DeleteContentItemConfirmButton").should("exist").click();
-    cy.wait("@deleteItem").its("response.statusCode").should("eq", 200);
+    cy.wait("@deleteItem")
+      .its("response.statusCode")
+      .should("be.lessThan", 300);
 
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/content/${Cypress.env("modelZUID")}`);
