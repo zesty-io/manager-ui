@@ -15,6 +15,7 @@
   "deleteFileModalTitleSingle": "删除文件",
   "deleteFileModalWarningMultiple": "删除后您将无法恢复这些文件。",
   "deleteFileModalWarningSingle": "{{filename}} 将被永久删除",
+  "deleteFilesPartialFailure": "{{total}} 个文件中有 {{failed}} 个无法删除。",
   "deleteFolderDialogConfirmButton": "删除文件夹",
   "deleteFolderDialogMessage": "删除文件夹不会删除其中的文件。这些文件仍然可以在“所有媒体”中找到。",
   "deleteFolderDialogTitle": "删除文件夹？",
