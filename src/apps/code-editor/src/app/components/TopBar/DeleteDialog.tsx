@@ -24,7 +24,9 @@ export const DeleteDialog = memo(function DeleteDialog(
   const dispatch = useDispatch();
 
   const handleDeleteFile = async () => {
-    if (!fileZUID || !status) return;
+    // No message: the dialog then shows its translated generic error rather
+    // than closing as if the delete had succeeded.
+    if (!fileZUID || !status) throw new Error();
 
     // deleteFile rejects with a translated Error on failure, which the
     // dialog shows inline.
