@@ -199,7 +199,6 @@
   "generateMetaTitle": "Создать мета-заголовок",
   "generateMetaTitleHelp": "Наш ИИ проанализирует ваш контент и создаст мета-заголовок на основе заданных ниже параметров",
   "generateSuggestions": "Сгенерировать предложения",
-  "generateSuggestionsForContentFields": "Сгенерируй предложения для полей моего контента",
   "generateSuggestionsForPrompt": "Сгенерировать предложения: {{prompt}}",
   "generatingContent": "Генерация контента",
   "generatingMetaDescription": "Генерация мета-описания",

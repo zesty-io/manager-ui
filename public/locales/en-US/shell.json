@@ -199,7 +199,6 @@
   "generateMetaTitle": "Generate Meta Title",
   "generateMetaTitleHelp": "Our AI will scan your content and generate your meta title for you based on your parameters set below",
   "generateSuggestions": "Generate Suggestions",
-  "generateSuggestionsForContentFields": "Generate suggestions for my content fields",
   "generateSuggestionsForPrompt": "Generate Suggestions: {{prompt}}",
   "generatingContent": "Generating Content",
   "generatingMetaDescription": "Generating Meta Description",

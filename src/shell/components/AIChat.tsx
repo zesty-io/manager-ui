@@ -672,8 +672,9 @@ export const AIChat = ({
             fullWidth
             onClick={() => {
               geminiGenerate({
-                prompt:
-                  prompt || t("shell.generateSuggestionsForContentFields"),
+                // Sent to the model, not shown: stays English, like the
+                // tone values.
+                prompt: prompt || "Generate suggestions for my content fields",
                 systemInstruction: suggestionSystemInstruction(
                   Object.keys(getRefRegistry() || {}),
                   getRefRegistry()

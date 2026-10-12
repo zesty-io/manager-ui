@@ -199,7 +199,6 @@
   "generateMetaTitle": "Metatitel genereren",
   "generateMetaTitleHelp": "Onze AI scant je inhoud en genereert je metatitel op basis van de onderstaande parameters",
   "generateSuggestions": "Suggesties genereren",
-  "generateSuggestionsForContentFields": "Genereer suggesties voor mijn contentvelden",
   "generateSuggestionsForPrompt": "Suggesties genereren: {{prompt}}",
   "generatingContent": "Inhoud genereren",
   "generatingMetaDescription": "Metabeschrijving genereren",

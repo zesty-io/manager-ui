@@ -199,7 +199,6 @@
   "generateMetaTitle": "मेटा शीर्षक जनरेट करें",
   "generateMetaTitleHelp": "हमारी AI आपके कंटेंट को स्कैन करेगी और नीचे सेट किए गए आपके पैरामीटर के आधार पर आपका मेटा शीर्षक जनरेट करेगी",
   "generateSuggestions": "सुझाव जनरेट करें",
-  "generateSuggestionsForContentFields": "मेरे कंटेंट फ़ील्ड के लिए सुझाव जनरेट करें",
   "generateSuggestionsForPrompt": "सुझाव जनरेट करें: {{prompt}}",
   "generatingContent": "कंटेंट जनरेट हो रहा है",
   "generatingMetaDescription": "मेटा विवरण जनरेट हो रहा है",

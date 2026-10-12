@@ -199,7 +199,6 @@
   "generateMetaTitle": "Generar meta título",
   "generateMetaTitleHelp": "Nuestra IA analizará tu contenido y generará tu meta título según los parámetros que establezcas a continuación",
   "generateSuggestions": "Generar sugerencias",
-  "generateSuggestionsForContentFields": "Generar sugerencias para mis campos de contenido",
   "generateSuggestionsForPrompt": "Generar sugerencias: {{prompt}}",
   "generatingContent": "Generando contenido",
   "generatingMetaDescription": "Generando meta descripción",

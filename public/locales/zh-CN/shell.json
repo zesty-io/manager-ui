@@ -199,7 +199,6 @@
   "generateMetaTitle": "生成元标题",
   "generateMetaTitleHelp": "我们的 AI 将扫描您的内容，并根据您在下方设置的参数为您生成元标题",
   "generateSuggestions": "生成建议",
-  "generateSuggestionsForContentFields": "为我的内容字段生成建议",
   "generateSuggestionsForPrompt": "生成建议：{{prompt}}",
   "generatingContent": "正在生成内容",
   "generatingMetaDescription": "正在生成元描述",
