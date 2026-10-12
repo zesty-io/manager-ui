@@ -681,6 +681,7 @@ const SlotField = ({
             fullWidth
             disabled
             inputProps={{ "data-cy": dataCy }}
+            SelectProps={{ displayEmpty: isNewTabAttr }}
           >
             {selectOptions.map((option) => (
               <MenuItem key={option.value} value={option.value}>
