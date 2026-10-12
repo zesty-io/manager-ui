@@ -111,11 +111,11 @@ export const SchedulePublish = ({
       .then((response) => {
         if (!response?.error) {
           onScheduleSuccess?.();
+          onClose();
         }
       })
       .finally(() => {
         setIsLoading(false);
-        onClose();
       });
   };
 
@@ -132,11 +132,11 @@ export const SchedulePublish = ({
       .then((response) => {
         if (!response?.error) {
           onUnscheduleSuccess?.();
+          onClose();
         }
       })
       .finally(() => {
         setIsLoading(false);
-        onClose();
       });
   };
 
@@ -211,12 +211,13 @@ export const SchedulePublish = ({
         });
 
       onScheduleSuccess?.();
+      onClose();
     } catch {
       // Error notification is handled by the thunk; swallow here so the
-      // finally block always closes the dialog cleanly.
+      // dialog stays open for the user to retry instead of closing as if
+      // it had succeeded.
     } finally {
       setIsLoading(false);
-      onClose();
     }
   };
 
@@ -264,12 +265,13 @@ export const SchedulePublish = ({
         });
 
       onUnscheduleSuccess?.();
+      onClose();
     } catch {
       // Error notification is handled by the thunk; swallow here so the
-      // finally block always closes the dialog cleanly.
+      // dialog stays open for the user to retry instead of closing as if
+      // it had succeeded.
     } finally {
       setIsLoading(false);
-      onClose();
     }
   };
 
