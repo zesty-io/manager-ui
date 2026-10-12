@@ -163,13 +163,11 @@ const isPanelNode = (node: LayersTreeNode, interactionMode: InteractionMode) =>
     node.kind === "text" ||
     (node.kind === "field" && usesLayoutGrammar(interactionMode)));
 
-// A leaf element's single addressable content row — the text run or bound
-// field carrying its Text ("Value") slot. Recognized by its layoutPatch
-// addressing the leaf element (that's how the bridge marks a leaf's own runs),
-// so a nested element's text never matches. Returns null when the element has
-// no such row, or has several — each run is then reachable only through its
-// own tree row.
-const findLoneTextSlotChild = (node: LayersTreeNode): LayersTreeNode | null => {
+// A leaf element's addressable content rows — the text runs and bound fields
+// carrying its Text ("Value") slot. Recognized by their layoutPatch addressing
+// the leaf element (that's how the bridge marks a leaf's own runs), so a nested
+// element's text never matches.
+const findTextSlotChildren = (node: LayersTreeNode): LayersTreeNode[] => {
   const matches: LayersTreeNode[] = [];
   const visit = (children: LayersTreeNode[]) => {
     children.forEach((child) => {
@@ -184,8 +182,21 @@ const findLoneTextSlotChild = (node: LayersTreeNode): LayersTreeNode | null => {
     });
   };
   visit(node.children);
+  return matches;
+};
+
+// A leaf element's single content row (see findTextSlotChildren). Returns null
+// when the element has no such row, or has several — each run is then
+// reachable only through its own tree row.
+const findLoneTextSlotChild = (node: LayersTreeNode): LayersTreeNode | null => {
+  const matches = findTextSlotChildren(node);
   return matches.length === 1 ? matches[0] : null;
 };
+
+// How many content rows a leaf element has (see findTextSlotChildren). Zero
+// means it is empty; two or more means mixed content.
+const countTextSlotChildren = (node: LayersTreeNode): number =>
+  findTextSlotChildren(node).length;
 
 // The row whose panel a canvas click on a layout element opens: the element
 // itself when it owns a panel, or — for a bare element (no panel, no slots) —
@@ -729,12 +740,16 @@ export const useStudioLayersTree = ({
     if (!node || !isPanelNode(node, interactionMode)) return;
     const slots = resolveSlotValues(getPanelSlots(node, interactionMode));
     // Clearing the Value makes the bridge re-emit the element with no content
-    // row, so keep the panel's Value slot or the input unmounts mid-edit.
+    // row, so keep the panel's Value slot or the input unmounts mid-edit. Only
+    // for an element left with NO content rows: one that now has several runs
+    // is mixed content, edited run by run on its own rows, and a carried Value
+    // would be a stale copy of the single run it used to have.
     const prevText = inspectorSelection?.slots.find((s) => s.key === "text");
     if (
       node.kind === "element" &&
       prevText &&
-      !slots.some((s) => s.key === "text")
+      !slots.some((s) => s.key === "text") &&
+      countTextSlotChildren(node) === 0
     ) {
       slots.push(prevText);
     }

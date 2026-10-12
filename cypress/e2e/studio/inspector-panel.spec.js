@@ -2008,6 +2008,30 @@ describe("Studio Inspector Panel", () => {
     });
   });
 
+  it("drops the combined panel's Value when the element re-emits as mixed content", () => {
+    withViewForSingleText((codeId) => {
+      seedLayoutElement(
+        codeId,
+        `<h1 data-layout-id="1">Hello</h1>`,
+        headingWithContent(codeId, [textNode(codeId, "Hello")])
+      );
+
+      cy.getBySelector("StudioSlotInput-text").should("have.value", "Hello");
+
+      // The heading now has two runs: no lone row speaks for it, so the
+      // element panel goes back to its Tag and the old single run's Value
+      // must not be carried over.
+      feedTree(
+        headingWithContent(codeId, [
+          textNode(codeId, "Read", 0),
+          textNode(codeId, "now", 1),
+        ])
+      );
+      cy.getBySelector("StudioTagSelect").should("exist");
+      cy.getBySelector("StudioSlotInput-text").should("not.exist");
+    });
+  });
+
   it("connects a field from the combined element panel", () => {
     withViewForSingleText((codeId) => {
       seedLayoutElement(
