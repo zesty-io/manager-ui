@@ -19,6 +19,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
 import { useGeminiGenerationMutation } from "../services/mcp";
 import { enqueueAction } from "../../engine/queue";
 import {
@@ -37,6 +38,7 @@ import geminiLogo from "../../../public/images/geminiLogo.svg";
 import geminiIcon from "../../../public/images/geminiIcon.svg";
 import { isEmpty } from "lodash";
 import { countLineChanges } from "../../utility/countLineChanges";
+import { notify } from "../store/notifications";
 
 // `value` is the tone instruction sent to the model (do not translate);
 // `labelKey` is the short UI label, resolved with t() at the render site.
@@ -249,6 +251,7 @@ export const AIChat = ({
   notice,
 }: AIChatProps) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const { data: langMappings } = useGetLangsMappingQuery();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isInitialMount, setIsInitialMount] = useState(true);
@@ -290,7 +293,7 @@ export const AIChat = ({
   const autoApply = forceAutoApply || autoApplySetting;
 
   const [selectedLanguage, setSelectedLanguage] = useState({
-    label: "English (United States)",
+    label: t("shell.languageEnglishUnitedStates"),
     value: "en-US",
   });
   const [selectedTone, setSelectedTone] = useState({
@@ -309,6 +312,23 @@ export const AIChat = ({
     useGeminiGenerationMutation();
 
   const responsesEndRef = useRef(null);
+
+  // The model can name a ref that is not mounted on this route, such as
+  // `code-editor` in the content app. Skip it and say so: the handler would
+  // have nothing to call, and the suggestion should stay applicable.
+  const applySetValue = (refKey: string, value: string) => {
+    if (!getRefRegistry()[refKey]?.handle) {
+      dispatch(
+        notify({
+          kind: "warn",
+          message: t("shell.aiApplyTargetMissing", { refKey }),
+        })
+      );
+      return false;
+    }
+    enqueueAction({ type: "SET_VALUE", payload: { refKey, value } });
+    return true;
+  };
 
   useEffect(() => {
     if (isInitialMount) {
@@ -335,6 +355,9 @@ export const AIChat = ({
 
     try {
       const responsesArray = parseAiResponse(aiResponse.data);
+      // Written once below: one write per entry would each spread the same
+      // render's list, and only the last index would persist.
+      const appliedIndices: number[] = [];
 
       const transcript = responsesArray.map((response, index) => {
         if (!response) return parseError;
@@ -346,21 +369,10 @@ export const AIChat = ({
             ? getRefRegistry()["code-editor"]?.context?.()
             : null;
 
-        enqueueAction({
-          type: "SET_VALUE",
-          payload: {
-            refKey: response.payload.refKey,
-            value: response.payload.value,
-          },
-        });
-
-        setAppliedResponsesLS({
-          ...appliedResponsesLS,
-          [historyKey]: [
-            ...(appliedResponsesLS?.[historyKey] || []),
-            responses?.length + index,
-          ],
-        });
+        if (!applySetValue(response.payload.refKey, response.payload.value)) {
+          return response;
+        }
+        appliedIndices.push(responses?.length + index);
 
         if (!codeEditor) return response;
         // Refused by the handle: nothing changed, so nothing to count.
@@ -377,6 +389,15 @@ export const AIChat = ({
         };
       });
 
+      if (appliedIndices.length) {
+        setAppliedResponsesLS({
+          ...appliedResponsesLS,
+          [historyKey]: [
+            ...(appliedResponsesLS?.[historyKey] || []),
+            ...appliedIndices,
+          ],
+        });
+      }
       setResponses((prev) => [...prev, ...transcript.filter(Boolean)]);
     } catch (error) {
       console.error("Error parsing AI response", error);
@@ -467,7 +488,7 @@ export const AIChat = ({
                         wordBreak: "break-word",
                         fontStyle:
                           response.payload.value.startsWith(
-                            "Generate suggestions"
+                            t("shell.generateSuggestions")
                           ) && "italic",
                       }}
                     >
@@ -590,13 +611,14 @@ export const AIChat = ({
                           index
                         )}
                         onClick={() => {
-                          enqueueAction({
-                            type: "SET_VALUE",
-                            payload: {
-                              refKey: response.payload.refKey,
-                              value: response.payload.value,
-                            },
-                          });
+                          if (
+                            !applySetValue(
+                              response.payload.refKey,
+                              response.payload.value
+                            )
+                          ) {
+                            return;
+                          }
                           setAppliedResponsesLS({
                             ...appliedResponsesLS,
                             [historyKey]: [
@@ -650,7 +672,8 @@ export const AIChat = ({
             fullWidth
             onClick={() => {
               geminiGenerate({
-                prompt: prompt || "Generate suggestions for my content fields",
+                prompt:
+                  prompt || t("shell.generateSuggestionsForContentFields"),
                 systemInstruction: suggestionSystemInstruction(
                   Object.keys(getRefRegistry() || {}),
                   getRefRegistry()
@@ -663,8 +686,8 @@ export const AIChat = ({
                   type: "USER_INPUT",
                   payload: {
                     value: prompt
-                      ? `Generate suggestions: ${prompt}`
-                      : "Generate suggestions",
+                      ? t("shell.generateSuggestionsForPrompt", { prompt })
+                      : t("shell.generateSuggestions"),
                   },
                 },
               ]);
