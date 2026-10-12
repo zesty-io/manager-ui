@@ -705,6 +705,21 @@ export const useStudioLayersTree = ({
 
       if (usesLayoutGrammar(interactionMode)) {
         selectLayoutElement(node);
+        // An element with no panel of its own (`<small>fine print</small>`)
+        // opens its lone text run's panel, as a canvas click on it does.
+        const target =
+          node.kind === "element"
+            ? findLayoutPanelTarget(node, interactionMode)
+            : null;
+        if (target) {
+          applyInspectorSelection({
+            nodeId: target.id,
+            tagName: target.tagName || "",
+            slots: resolveSlotValues(getPanelSlots(target, interactionMode)),
+            layoutPatch: target.layoutPatch ?? null,
+            ownsLinkControls: ownsElementLinkControls(target, parentById),
+          });
+        }
         return;
       }
 

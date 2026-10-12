@@ -2421,6 +2421,61 @@ describe("Studio Inspector Panel", () => {
       cy.getBySelector("StudioInspectorPanel").should("not.exist");
     });
 
+    it("opens the Text panel from the Layers row of a bare element with a lone run", () => {
+      // `<small>fine print</small>`: no panel of its own, one text run — the
+      // row opens the run's panel, as a canvas click on the element does.
+      const smallWithText = {
+        ...small,
+        children: [
+          {
+            id: "code-1:textOf:2:0",
+            kind: "text",
+            tagName: null,
+            codeId: "code-1",
+            layoutId: null,
+            label: "fine print",
+            layoutPatch: {
+              codeId: "code-1",
+              layoutId: "2",
+              isSelf: true,
+              tagName: "small",
+              elementIndex: 0,
+            },
+            slots: [
+              {
+                kind: "text",
+                key: "text",
+                control: "text",
+                isDynamic: false,
+                value: "fine print",
+                sourceValue: "fine print",
+                layoutEditable: true,
+                textIndex: 0,
+              },
+            ],
+            children: [],
+          },
+        ],
+      };
+      postBridgeMessage({
+        type: "LAYERS_TREE",
+        tree: [paragraph, smallWithText],
+      });
+      selectRow(smallWithText);
+
+      cy.getBySelector("StudioBreadcrumbChip")
+        .last()
+        .should("have.text", "small");
+      cy.getBySelector("StudioInspectorPanel").should("exist");
+      cy.getBySelector("StudioSlotInput-text").should(
+        "have.value",
+        "fine print"
+      );
+      // A text panel: no Tag selector.
+      cy.getBySelector("StudioTagSelect").should("not.exist");
+      cy.getBySelector("StudioEmptyPanel").should("not.exist");
+    });
+
     it("keeps the canvas width constant as the selection moves", () => {
       cy.getBySelector("StudioHeader").should("exist");
       previewWidth().then((unselected) => {
