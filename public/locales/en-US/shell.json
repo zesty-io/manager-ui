@@ -12,7 +12,7 @@
   "addNewComment": "Add New Comment",
   "advancedSearch": "Advanced Search",
   "advancedSearchDescription": "As you and your team work together in Zesty, you'll create a searchable archive of content, models, and code files. Use the form below to find what you are looking for.",
-  "aiApplyTargetMissing": "Couldn't apply the suggestion: \"{{refKey}}\" is not on this page.",
+  "aiApplyTargetMissing": "The assistant can't fill in \"{{refKey}}\" here.",
   "aiAssistantBeta": "AI Assistant Beta",
   "aiCodeEditSummary": "{{fileName}} — lines: +{{added}} / −{{removed}}",
   "aiDrawerPlaceholder": "Ask for anything, for example \"Cater my content to a specific audience\"",

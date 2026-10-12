@@ -12,7 +12,7 @@
   "addNewComment": "नया कमेंट जोड़ें",
   "advancedSearch": "उन्नत खोज",
   "advancedSearchDescription": "जैसे-जैसे आप और आपकी टीम Zesty में मिलकर काम करते हैं, आप कंटेंट, मॉडल और कोड फ़ाइलों का एक खोजने योग्य संग्रह बनाएंगे। आप जो खोज रहे हैं उसे ढूंढने के लिए नीचे दिए गए फ़ॉर्म का उपयोग करें।",
-  "aiApplyTargetMissing": "सुझाव लागू नहीं किया जा सका: \"{{refKey}}\" इस पेज पर नहीं है।",
+  "aiApplyTargetMissing": "असिस्टेंट यहाँ \"{{refKey}}\" नहीं भर सकता।",
   "aiAssistantBeta": "AI सहायक बीटा",
   "aiCodeEditSummary": "{{fileName}} — पंक्तियाँ: +{{added}} / −{{removed}}",
   "aiDrawerPlaceholder": "कुछ भी पूछें, उदाहरण के लिए \"मेरे कंटेंट को किसी विशिष्ट दर्शक के अनुरूप बनाएं\"",

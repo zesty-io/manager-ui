@@ -115,6 +115,7 @@ describe("AI drawer", () => {
     );
     cy.getBySelector("AIChatSend").click();
     cy.wait("@mcp");
+    cy.contains("meta-description").should("exist");
 
     // With Auto Apply off again, both suggestions show as already applied.
     cy.getBySelector("AIChatAutoApply").find("input").uncheck();

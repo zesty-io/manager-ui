@@ -72,6 +72,7 @@ type ChatEntry = {
   type: string;
   payload: {
     value?: string;
+    isSuggestionRequest?: boolean;
     refKey?: string;
     path?: string;
     fileName?: string;
@@ -313,9 +314,7 @@ export const AIChat = ({
 
   const responsesEndRef = useRef(null);
 
-  // The model can name a ref that is not mounted on this route, such as
-  // `code-editor` in the content app. Skip it and say so: the handler would
-  // have nothing to call, and the suggestion should stay applicable.
+  // Skip and warn when the ref has no handle here; the suggestion stays applicable.
   const applySetValue = (refKey: string, value: string) => {
     if (!getRefRegistry()[refKey]?.handle) {
       dispatch(
@@ -486,10 +485,13 @@ export const AIChat = ({
                       sx={{
                         borderRadius: 1,
                         wordBreak: "break-word",
+                        // Transcripts persisted before the flag carry the English literal.
                         fontStyle:
-                          response.payload.value.startsWith(
-                            t("shell.generateSuggestions")
-                          ) && "italic",
+                          (response.payload.isSuggestionRequest ||
+                            /^generate suggestions/i.test(
+                              response.payload.value
+                            )) &&
+                          "italic",
                       }}
                     >
                       {response.payload.value}
@@ -689,6 +691,7 @@ export const AIChat = ({
                     value: prompt
                       ? t("shell.generateSuggestionsForPrompt", { prompt })
                       : t("shell.generateSuggestions"),
+                    isSuggestionRequest: true,
                   },
                 },
               ]);
