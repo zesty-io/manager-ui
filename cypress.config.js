@@ -40,7 +40,6 @@ module.exports = defineConfig({
     specPattern: "cypress/e2e/**/*.spec.{js,jsx,ts,tsx}",
     testIsolation: false,
   },
-  // Some tests hit live APIs that can occasionally be slow to respond. One retry
-  // keeps CI green without masking real failures
-  retries: 1,
+  // No retries: a test that needs a second attempt is flaky and should be fixed.
+  retries: 0,
 });
