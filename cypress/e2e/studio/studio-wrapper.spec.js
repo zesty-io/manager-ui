@@ -10,23 +10,8 @@ describe("Studio Wrapper", () => {
     <div data-layout-id="2">Two</div>
   `;
 
-  // The real bridge in the preview iframe posts its own source map and layers
-  // tree on startup. Feeding the app before that lands lets it overwrite ours.
-  const waitForBridgeStartup = () =>
-    cy.window({ timeout: 60000 }).should((win) => {
-      if (win.__bridgeSettled) return;
-      const types = win.__bridgeTypes || [];
-      const ready = types.indexOf("BRIDGE_READY");
-      expect(
-        ready >= 0 && types.indexOf("TEMPLATE_SOURCE_MAP", ready) >= 0,
-        "the real bridge finished its startup messages"
-      ).to.eq(true);
-      win.__bridgeSettled = true;
-    });
-
   const postBridgeMessage = (message) => {
     cy.getBySelector("StudioHeader").should("exist");
-    waitForBridgeStartup();
     cy.window().then(
       (win) =>
         new Cypress.Promise((resolve) => {
@@ -208,16 +193,7 @@ describe("Studio Wrapper", () => {
   beforeEach(() => {
     cy.stubStaffUser();
     cy.waitOn("/v1/content/models**", () => {
-      cy.visit(`/studio?path=${studioPath}`, {
-        onBeforeLoad(win) {
-          win.__bridgeTypes = [];
-          win.addEventListener("message", (e) => {
-            const type =
-              e.data?.source === "studio-bridge" && e.data.message?.type;
-            if (type) win.__bridgeTypes.push(type);
-          });
-        },
-      });
+      cy.visit(`/studio?path=${studioPath}`);
     });
   });
 
