@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: false
 
 # Job flow:
-#   setup -> typecheck -> run_tests -> run_global_tests
+#   setup (install + typecheck) -> run_tests -> run_global_tests
 #   localization_lint runs independently
 #   all_tests_passed / backend_health / merge_timings / coverage aggregate at the end
 jobs:
@@ -45,6 +45,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Install Dependencies
         uses: ./.github/actions/install-deps
+      # Repo-wide TypeScript check. A failure here fails setup, which gates all e2e jobs below.
+      - name: Run TypeScript check
+        run: npx tsc --noEmit
       - name: Auth with Gcloud
         uses: google-github-actions/auth@v0
         with:
@@ -56,23 +59,11 @@ jobs:
       - name: Delete Old Screenshots
         run: gsutil rm gs://cypress_screenshots/* || true
 
-  # Repo-wide TypeScript check. Gates all e2e jobs below.
-  typecheck:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-      - name: Install Dependencies
-        uses: ./.github/actions/install-deps
-      - name: Run TypeScript check
-        run: npx tsc --noEmit
-
   # Non-global specs, split 4 ways and run concurrently. The heavy global-state
   # specs run separately (run_global_tests) AFTER these, alone, so they never run
   # alongside other state mutators — which was the remaining source of flakiness.
   run_tests:
-    needs: [setup, typecheck]
+    needs: setup
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -149,10 +140,10 @@ jobs:
   # concurrently with another state mutator. Artifacts use index 4 so the existing
   # backend-markers-*/coverage-*/timings-partial-* globs pick them up.
   run_global_tests:
-    needs: [run_tests, typecheck]
+    needs: [setup, run_tests]
     runs-on: ubuntu-latest
-    # Still run after run_tests failures, but never when typecheck failed.
-    if: ${{ !cancelled() && needs.typecheck.result == 'success' }}
+    # Still run after run_tests failures, but never when setup (incl. typecheck) failed.
+    if: ${{ !cancelled() && needs.setup.result == 'success' }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -210,13 +201,13 @@ jobs:
   # Branch protection should require this job, not run_tests, because matrix jobs
   # produce individual checks (run_tests (0), run_tests (1), …) — never a single run_tests check.
   all_tests_passed:
-    needs: [localization_lint, run_tests, run_global_tests, typecheck]
+    needs: [localization_lint, setup, run_tests, run_global_tests]
     runs-on: ubuntu-latest
     if: always()
     steps:
       - name: Check results
         run: |
-          if [ "${{ needs.localization_lint.result }}" != "success" ] || [ "${{ needs.run_tests.result }}" != "success" ] || [ "${{ needs.run_global_tests.result }}" != "success" ] || [ "${{ needs.typecheck.result }}" != "success" ]; then
+          if [ "${{ needs.localization_lint.result }}" != "success" ] || [ "${{ needs.run_tests.result }}" != "success" ] || [ "${{ needs.run_global_tests.result }}" != "success" ] || [ "${{ needs.setup.result }}" != "success" ]; then
             echo "One or more test runners failed or were cancelled"
             exit 1
           fi
