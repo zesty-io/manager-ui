@@ -1,0 +1,43 @@
+{
+  "model": {
+    "label": "Redirects Path Change",
+    "type": "pageset",
+    "listed": true
+  },
+  "fields": [
+    {
+      "contentModelZUID": "",
+      "datatype": "text",
+      "name": "text",
+      "label": "text",
+      "sort": 0,
+      "settings": {
+        "list": true
+      }
+    },
+    {
+      "contentModelZUID": "",
+      "datatype": "textarea",
+      "name": "textarea",
+      "label": "textarea",
+      "sort": 1,
+
+      "settings": {
+        "list": true
+      }
+    }
+  ],
+  "items": [
+    {
+      "data": { "text": "text 1", "textarea": "textarea 1" },
+      "web": {
+        "metaTitle": "Redirects Path Change",
+        "metaLinkText": "Redirects Path Change",
+        "parentZUID": "0"
+      },
+      "meta": {
+        "sort": 0
+      }
+    }
+  ]
+}

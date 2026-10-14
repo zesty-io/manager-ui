@@ -74,7 +74,8 @@ export const ApiInfo = ({ type, large }: Props) => {
             href="https://zesty.org/apis/instant-content-api"
             target="_blank"
           >
-            Zesty's Instant API
+            {/* eslint-disable-next-line i18next/no-literal-string -- product name */}
+            <>Zesty's Instant API</>
           </Link>{" "}
           {t("schema.apiQuickAccessDescription")}
         </span>
