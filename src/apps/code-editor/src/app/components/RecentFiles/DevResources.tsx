@@ -49,7 +49,7 @@ export const DevResources = () => {
 
         <Typography variant="body3" color="grey.400">
           <Trans
-            i18nKey="code.buildFasterBody"
+            i18nKey="code.buildFasterBodyRich"
             components={{
               parsleyLink: (
                 <ExternalLink
@@ -76,7 +76,7 @@ export const DevResources = () => {
 
         <Typography variant="body3" color="grey.400">
           <Trans
-            i18nKey="code.simplifyWorkflowBody"
+            i18nKey="code.simplifyWorkflowBodyRich"
             components={{
               preprocessingLink: (
                 <ExternalLink

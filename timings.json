@@ -1,36 +1,32 @@
 {
   "durations": [
     {
-      "spec": "cypress/e2e/blocks/pages/AllBlocksPage.js",
-      "duration": null
-    },
-    {
-      "spec": "cypress/e2e/blocks/pages/BlockPage.js",
-      "duration": null
-    },
-    {
       "spec": "cypress/e2e/blocks/tests/blocks.spec.js",
-      "duration": 68842
+      "duration": 70514
     },
     {
       "spec": "cypress/e2e/blocks/tests/sidebar.spec.js",
-      "duration": 13971
+      "duration": 14298
     },
     {
       "spec": "cypress/e2e/blocks/tests/starter-blocks.spec.js",
-      "duration": 115700
+      "duration": 131355
     },
     {
       "spec": "cypress/e2e/code/actions.spec.js",
-      "duration": 20470
+      "duration": 20575
     },
     {
       "spec": "cypress/e2e/code/all-files-page.spec.js",
-      "duration": 106708
+      "duration": 113625
+    },
+    {
+      "spec": "cypress/e2e/code/editor.spec.js",
+      "duration": 25187
     },
     {
       "spec": "cypress/e2e/code/sidebar.spec.js",
-      "duration": 18562
+      "duration": 26936
     },
     {
       "spec": "cypress/e2e/content/actions.spec.js",
@@ -38,35 +34,31 @@
     },
     {
       "spec": "cypress/e2e/content/analyticsDashboard.spec.js",
-      "duration": 36402
-    },
-    {
-      "spec": "cypress/e2e/content/comments.js",
-      "duration": 32890
+      "duration": 38251
     },
     {
       "spec": "cypress/e2e/content/comments.spec.js",
-      "duration": 34946
+      "duration": 36391
     },
     {
       "spec": "cypress/e2e/content/content.spec.js",
-      "duration": 267806
+      "duration": 276024
     },
     {
       "spec": "cypress/e2e/content/failures.spec.js",
-      "duration": 2754
+      "duration": 2736
     },
     {
       "spec": "cypress/e2e/content/favicon.spec.js",
-      "duration": 2554
+      "duration": 2542
     },
     {
       "spec": "cypress/e2e/content/headTags.spec.js",
-      "duration": 21946
+      "duration": 24295
     },
     {
       "spec": "cypress/e2e/content/item-list-table.spec.js",
-      "duration": 61723
+      "duration": 66484
     },
     {
       "spec": "cypress/e2e/content/list.spec.js",
@@ -74,19 +66,19 @@
     },
     {
       "spec": "cypress/e2e/content/meta.spec.js",
-      "duration": 90431
+      "duration": 95670
     },
     {
       "spec": "cypress/e2e/content/multi-lang.spec.js",
-      "duration": 16414
+      "duration": 18863
     },
     {
       "spec": "cypress/e2e/content/navigation.spec.js",
-      "duration": 80666
+      "duration": 96988
     },
     {
-      "spec": "cypress/e2e/content/pages/ContentItemPage.js",
-      "duration": 1
+      "spec": "cypress/e2e/content/redirect-prompt.spec.js",
+      "duration": 102562
     },
     {
       "spec": "cypress/e2e/content/redirects.spec.js",
@@ -94,11 +86,11 @@
     },
     {
       "spec": "cypress/e2e/content/singlePageAnalytics.spec.js",
-      "duration": 29438
+      "duration": 34392
     },
     {
       "spec": "cypress/e2e/content/used-blocks.spec.js",
-      "duration": 48191
+      "duration": 49961
     },
     {
       "spec": "cypress/e2e/content/workflows.spec.js",
@@ -106,75 +98,75 @@
     },
     {
       "spec": "cypress/e2e/home/mature.spec.js",
-      "duration": 22576
+      "duration": 22922
+    },
+    {
+      "spec": "cypress/e2e/i18n/sub-app-translations.spec.js",
+      "duration": 567606
     },
     {
       "spec": "cypress/e2e/media/contentmodal.spec.js",
-      "duration": 53909
+      "duration": 55053
     },
     {
       "spec": "cypress/e2e/media/files.spec.js",
-      "duration": 2037
+      "duration": 2432
     },
     {
       "spec": "cypress/e2e/media/folders.spec.js",
-      "duration": 32091
+      "duration": 30763
     },
     {
       "spec": "cypress/e2e/media/sidebar.spec.js",
-      "duration": 14065
+      "duration": 14395
     },
     {
       "spec": "cypress/e2e/media/uploads.spec.js",
-      "duration": 2622
+      "duration": 2604
     },
     {
       "spec": "cypress/e2e/releases/members.spec.js",
-      "duration": 2535
+      "duration": 2542
     },
     {
       "spec": "cypress/e2e/releases/release.spec.js",
-      "duration": 15579
+      "duration": 17978
     },
     {
       "spec": "cypress/e2e/reports/activity-log/activity-log.spec.js",
-      "duration": 221348
+      "duration": 269981
     },
     {
       "spec": "cypress/e2e/schema/activity-log.spec.js",
-      "duration": 33560
+      "duration": 38578
     },
     {
       "spec": "cypress/e2e/schema/field.spec.js",
-      "duration": 99059
+      "duration": 131784
     },
     {
       "spec": "cypress/e2e/schema/integration.spec.js",
-      "duration": 260176
+      "duration": 350680
     },
     {
       "spec": "cypress/e2e/schema/models.spec.js",
-      "duration": 79684
-    },
-    {
-      "spec": "cypress/e2e/schema/pages/SchemaPage.js",
-      "duration": 1
+      "duration": 107036
     },
     {
       "spec": "cypress/e2e/schema/repeater-field.spec.js",
-      "duration": 87770
+      "duration": 100491
     },
     {
       "spec": "cypress/e2e/search/advanced-search.spec.js",
-      "duration": 45285
+      "duration": 47509
     },
     {
       "spec": "cypress/e2e/search/search-bar.spec.js",
-      "duration": 51887
+      "duration": 54625
     },
     {
       "spec": "cypress/e2e/search/search-page.spec.js",
-      "duration": 49951
+      "duration": 49635
     },
     {
       "spec": "cypress/e2e/seo/redirects/redirects.spec.js",
@@ -182,27 +174,27 @@
     },
     {
       "spec": "cypress/e2e/settings/actions.spec.js",
-      "duration": 16285
+      "duration": 15740
     },
     {
       "spec": "cypress/e2e/settings/fonts.spec.js",
-      "duration": 32256
+      "duration": 33156
     },
     {
       "spec": "cypress/e2e/settings/headtags.spec.js",
-      "duration": 8605
+      "duration": 9225
     },
     {
       "spec": "cypress/e2e/settings/instance.spec.js",
-      "duration": 19304
+      "duration": 27657
     },
     {
       "spec": "cypress/e2e/settings/sidebar.spec.js",
-      "duration": 13260
+      "duration": 13551
     },
     {
       "spec": "cypress/e2e/settings/tabs.spec.js",
-      "duration": 110665
+      "duration": 119532
     },
     {
       "spec": "cypress/e2e/settings/workflows.spec.js",
@@ -210,23 +202,39 @@
     },
     {
       "spec": "cypress/e2e/shell/instance-menu.spec.js",
-      "duration": 25174
+      "duration": 31575
     },
     {
       "spec": "cypress/e2e/studio/freestyle-alert.spec.js",
-      "duration": 112525
+      "duration": 109892
     },
     {
       "spec": "cypress/e2e/studio/inspector-panel.spec.js",
-      "duration": 477354
+      "duration": 525274
+    },
+    {
+      "spec": "cypress/e2e/studio/mode-entitlement.spec.js",
+      "duration": 63852
     },
     {
       "spec": "cypress/e2e/studio/responsive-fields.spec.js",
-      "duration": 18646
+      "duration": 22072
+    },
+    {
+      "spec": "cypress/e2e/studio/studio-binding.spec.js",
+      "duration": 45325
+    },
+    {
+      "spec": "cypress/e2e/studio/studio-feedback-modal.spec.js",
+      "duration": 114437
+    },
+    {
+      "spec": "cypress/e2e/studio/studio-mode.spec.js",
+      "duration": 174087
     },
     {
       "spec": "cypress/e2e/studio/studio-wrapper.spec.js",
-      "duration": 223221
+      "duration": 279656
     }
   ]
 }

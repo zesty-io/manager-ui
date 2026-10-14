@@ -364,7 +364,8 @@ export const UsersBarChart = ({
                 color="text.secondary"
                 sx={{ mt: 0.5 }}
               >
-                {dateRange0Label} vs {dateRange1Label}
+                {dateRange0Label} {t("content.analyticsVsLabel")}{" "}
+                {dateRange1Label}
               </Typography>
               <Typography variant="h2" fontWeight={600}>
                 {lastSet?.[tooltipModel?.dataIndex]?.toLocaleString()}
