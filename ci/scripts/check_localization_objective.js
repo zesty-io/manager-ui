@@ -1,17 +1,18 @@
 #!/usr/bin/env node
 /*
  * Deterministic i18n checks for a PR diff: JSON validity, cross-locale key parity
- * (CLDR-plural-aware, per CLAUDE.md's pluralization table), broken t()/i18n.t() key
- * references, and TypeScript errors scoped to files the PR actually touched.
+ * (CLDR-plural-aware, per CLAUDE.md's pluralization table), and broken t()/i18n.t()
+ * key references.
  *
- * These mirror the same checks the `localize` skill's Verifier phase performs
- * (.claude/workflows/localize.js), ported to a plain script so CI can gate on them
- * without an LLM judgment call.
+ * These mirror the same localization-specific checks the `localize` skill's Verifier
+ * phase performs (.claude/workflows/localize.js), ported to a plain script so CI can
+ * gate on them without an LLM judgment call. TypeScript checking is a separate,
+ * repo-wide concern — see the dedicated tsc job in .github/workflows/ci.yaml — and is
+ * deliberately out of scope here so this reviewer never reports unrelated TS errors.
  *
  * Usage:
- *   node ci/scripts/check_localization_objective.js --changed-files <file> --tsc-output <file>
+ *   node ci/scripts/check_localization_objective.js --changed-files <file>
  *     --changed-files  text file, one repo-relative path per line (from the PR Files API)
- *     --tsc-output     text file capturing `npx tsc --noEmit --pretty false` output
  *
  * Writes i18n-objective-results.json to the current working directory and exits 0
  * regardless of findings — the caller decides what to do with `passed`.
@@ -53,7 +54,6 @@ function parseArgs(argv) {
   const out = {};
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--changed-files") out.changedFiles = argv[++i];
-    else if (argv[i] === "--tsc-output") out.tscOutput = argv[++i];
   }
   return out;
 }
@@ -278,25 +278,6 @@ function checkBrokenKeys(ns, srcFiles, findings) {
   }
 }
 
-function checkTsc(tscOutputFile, changedFiles, findings) {
-  const changedSet = new Set(changedFiles.map((f) => path.normalize(f)));
-  const tscErrorPattern = /^(.+?)\((\d+),(\d+)\): error (TS\d+): (.+)$/;
-
-  for (const line of readLines(tscOutputFile)) {
-    const m = line.match(tscErrorPattern);
-    if (!m) continue;
-    const [, file, lineNo, , code, message] = m;
-    const relFile = path.normalize(file);
-    if (!changedSet.has(relFile)) continue; // don't gate on pre-existing, unrelated errors
-    findings.push({
-      kind: "tsc",
-      file: relFile,
-      line: Number(lineNo),
-      message: `${code}: ${message}`,
-    });
-  }
-}
-
 function writeResults(result) {
   fs.writeFileSync(
     path.join(ROOT, "i18n-objective-results.json"),
@@ -329,7 +310,6 @@ function main() {
     checkJsonAndParity(ns, findings);
     checkBrokenKeys(ns, srcFiles, findings);
   }
-  checkTsc(args.tscOutput, changedFiles, findings);
 
   writeResults({ passed: findings.length === 0, findings });
 }
