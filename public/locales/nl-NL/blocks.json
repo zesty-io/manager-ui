@@ -13,7 +13,6 @@
   "howToUseBlocks": "Hoe gebruik je Blokken?",
   "introToWebComponents": "Inleiding tot Web Components",
   "noResultsAvailable": "Geen resultaten beschikbaar voor \"{{filter}}\"",
-  "noSearchResultsAlt": "Geen zoekresultaten",
   "onboardingStep1Description": "Maak en voeg bewerkbare blokken toe (bijv. Hero, Testimonial, Formulieren, etc.) aan elke bestaande pagina van je website met een paar klikken",
   "onboardingStep1Title": "Introductie van Blokken",
   "onboardingStep2Description": "Maak een blokmodel aan in Schema en definieer de bewerkbare velden. Verbind deze velden vervolgens in de codesjabloon van je blok.",

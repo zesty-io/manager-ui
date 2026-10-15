@@ -13,7 +13,6 @@
   "howToUseBlocks": "如何使用区块功能",
   "introToWebComponents": "Web 组件简介",
   "noResultsAvailable": "未找到与 \"{{filter}}\" 相关的结果",
-  "noSearchResultsAlt": "无搜索结果",
   "onboardingStep1Description": "只需点击几下，即可创建可编辑的区块（如 Hero 主视觉、客户见证、表单等）并添加到网站的任何现有页面中",
   "onboardingStep1Title": "区块 (Blocks) 功能简介",
   "onboardingStep2Description": "在 Schema 中创建一个区块模型并定义可编辑的字段。然后，在区块的代码模板中连接这些字段。",

@@ -42,8 +42,8 @@ import {
 } from "../../../../../../../../../shell/services/types";
 import { AppState } from "../../../../../../../../../shell/store/types";
 import { useGetUsersRolesQuery } from "../../../../../../../../../shell/services/accounts";
-import { NoResults } from "./NoResults";
-import { useTranslation } from "react-i18next";
+import { EmptyResults } from "shell/components/EmptyResults";
+import { Trans, useTranslation } from "react-i18next";
 
 export const BG_COLOR_MAPPING: Record<string, string> = {
   "#0ba5ec": "blue.100",
@@ -291,9 +291,20 @@ export const VersionItem = memo(
                 }}
               />
               {!filteredStatusLabels?.length && filterKeyword && (
-                <NoResults
+                <EmptyResults
+                  variant="search"
+                  size="dialog"
+                  imageHeight={120}
                   query={filterKeyword}
-                  onSearchAgain={() => {
+                  title={
+                    <Trans
+                      i18nKey="content.itemEditStatusSearchNoResultsTitleRich"
+                      values={{ search: filterKeyword }}
+                      components={{ strong: <strong /> }}
+                    />
+                  }
+                  description={t("content.itemListSearchNoResultsBody")}
+                  onAction={() => {
                     setFilterKeyword("");
                     searchRef.current?.querySelector("input").focus();
                   }}

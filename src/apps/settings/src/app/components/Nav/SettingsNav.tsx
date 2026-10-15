@@ -4,7 +4,7 @@ import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import FormatSizeRoundedIcon from "@mui/icons-material/FormatSizeRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import PaletteRoundedIcon from "@mui/icons-material/PaletteRounded";
-import { Typography, Box, Stack } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 import { AppSideBar } from "../../../../../../shell/components/AppSidebar";
@@ -13,7 +13,7 @@ import {
   useGetInstanceSettingsQuery,
   useGetInstanceStylesCategoriesQuery,
 } from "../../../../../../shell/services/instance";
-import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
+import { EmptyResults } from "shell/components/EmptyResults";
 import {
   getCategoryLabel,
   getStyleCategoryLabel,
@@ -181,18 +181,11 @@ export const SettingsNav = memo(() => {
       !navItems.instance?.length &&
       !navItems.meta?.length &&
       !navItems.styles?.length ? (
-        <Stack gap={1.5} alignItems="center">
-          <Box
-            component="img"
-            src={noSearchResults}
-            height={64}
-            width={70}
-            alt={t("settings.noSearchResultsAlt")}
-          />
-          <Typography variant="body2" color="grey.400">
-            {t("settings.noResultsFor", { keyword })}
-          </Typography>
-        </Stack>
+        <EmptyResults
+          variant="search"
+          size="compact"
+          title={t("settings.noResultsFor", { keyword })}
+        />
       ) : (
         <>
           <NavTree
