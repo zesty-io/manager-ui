@@ -55,6 +55,7 @@ export default function LinkedSchema({ file, fields }: LinkedSchemaProps) {
           <FileCardListItem key={field?.ZUID} gap={0}>
             <span>
               <span className="brackets">{"{{"}</span>
+              {/* eslint-disable-next-line i18next/no-literal-string -- code snippet, not UI copy */}
               <span className="keywords">this.</span>
               <span className="fields">{field?.name}</span>
               <span className="brackets">{"}}"}</span>

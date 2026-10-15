@@ -106,7 +106,12 @@ export const MemoizedEditor = memo(
     }, [dimensions]);
 
     return (
-      <Box ref={containerRef} width="100%" height="100%">
+      <Box
+        data-cy="CodeEditorContainer"
+        ref={containerRef}
+        width="100%"
+        height="100%"
+      >
         <MonacoEditor
           ref={ref}
           theme="vs-dark"
