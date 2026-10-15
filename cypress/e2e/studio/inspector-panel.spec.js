@@ -367,6 +367,15 @@ describe("Studio Inspector Panel", () => {
     if (linkedModelZUID) cy.deleteModel(linkedModelZUID);
   });
 
+  // Full app boot is ~11s, so only the first test (or the first after a failure) does it.
+  let booted = false;
+
+  const navigateInApp = (url) =>
+    cy.window().then((win) => {
+      win.history.pushState({}, "", url);
+      win.dispatchEvent(new win.PopStateEvent("popstate", { state: {} }));
+    });
+
   beforeEach(() => {
     cy.stubStaffUser();
     // The page's path lookup; its response triggers clearSelection.
@@ -375,9 +384,25 @@ describe("Studio Inspector Panel", () => {
       pathname: "**/search/items",
       query: { field: "path" },
     }).as("resolveItemByPath");
+
+    if (booted) {
+      // Remount Studio in place to drop its UI state without reloading the app.
+      navigateInApp("/home");
+      cy.getBySelector("StudioHeader").should("not.exist");
+      navigateInApp(`/studio?path=${studioPath}`);
+      return;
+    }
+
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/studio?path=${studioPath}`);
     });
+    cy.then(() => {
+      booted = true;
+    });
+  });
+
+  afterEach(function () {
+    if (this.currentTest?.state === "failed") booted = false;
   });
 
   it("opens the inspector panel with read-only src + alt for an img in content mode", () => {
