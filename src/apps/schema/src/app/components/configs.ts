@@ -1,32 +1,9 @@
 import { InputField } from "./AddFieldModal/FieldFormInput";
 import { ContentModelField } from "../../../../../shell/services/types";
 
-export type FieldType =
-  | "text"
-  | "textarea"
-  | "wysiwyg_basic"
-  | "markdown"
-  | "images"
-  | "one_to_one"
-  | "one_to_many"
-  | "link"
-  | "internal_link"
-  | "number"
-  | "currency"
-  | "date"
-  | "datetime"
-  | "yes_no"
-  | "dropdown"
-  | "color"
-  | "sort"
-  | "uuid"
-  | "files"
-  | "fontawesome"
-  | "wysiwyg_advanced"
-  | "article_writer"
-  | "block_selector" // TODO: Will need to confirm if this type is already supported by the api
-  | "integration"
-  | "repeater";
+import { FIELD_TYPES, FieldType } from "shell/fieldTypes";
+
+export type { FieldType };
 interface FieldListData {
   type: FieldType;
   name: string;
@@ -49,7 +26,7 @@ const getFieldCopyConfig = (
   text: [
     {
       type: "text",
-      name: t("schema.fieldTypeSingleLineTextName"),
+      name: t(FIELD_TYPES.text.label),
       shortDescription: t("schema.fieldTypeSingleLineTextShortDesc"),
       description: t("schema.fieldTypeSingleLineTextDescription"),
       commonUses: [
@@ -64,7 +41,7 @@ const getFieldCopyConfig = (
     },
     {
       type: "textarea",
-      name: t("schema.fieldTypeMultiLineTextName"),
+      name: t(FIELD_TYPES.textarea.label),
       shortDescription: t("schema.fieldTypeMultiLineTextShortDesc"),
       description: t("schema.fieldTypeMultiLineTextDescription"),
       commonUses: [
@@ -79,7 +56,7 @@ const getFieldCopyConfig = (
     },
     {
       type: "wysiwyg_basic",
-      name: t("schema.fieldTypeWysiwygName"),
+      name: t(FIELD_TYPES.wysiwyg_basic.label),
       shortDescription: t("schema.fieldTypeWysiwygShortDesc"),
       description: t("schema.fieldTypeWysiwygDescription"),
       commonUses: [
@@ -94,7 +71,7 @@ const getFieldCopyConfig = (
     },
     {
       type: "markdown",
-      name: t("schema.fieldTypeMarkdownName"),
+      name: t(FIELD_TYPES.markdown.label),
       shortDescription: t("schema.fieldTypeMarkdownShortDesc"),
       description: t("schema.fieldTypeMarkdownDescription"),
       commonUses: [
@@ -111,7 +88,7 @@ const getFieldCopyConfig = (
   media: [
     {
       type: "images",
-      name: t("schema.fieldTypeMediaName"),
+      name: t(FIELD_TYPES.images.label),
       shortDescription: t("schema.fieldTypeMediaShortDesc"),
       description: t("schema.fieldTypeMediaDescription"),
       commonUses: [
@@ -131,7 +108,7 @@ const getFieldCopyConfig = (
   relationship: [
     {
       type: "one_to_one",
-      name: t("schema.fieldTypeOneToOneName"),
+      name: t(FIELD_TYPES.one_to_one.label),
       shortDescription: t("schema.fieldTypeOneToOneShortDesc"),
       description: t("schema.fieldTypeOneToOneDescription"),
       commonUses: [
@@ -143,7 +120,7 @@ const getFieldCopyConfig = (
     },
     {
       type: "one_to_many",
-      name: t("schema.fieldTypeOneToManyName"),
+      name: t(FIELD_TYPES.one_to_many.label),
       shortDescription: t("schema.fieldTypeOneToManyShortDesc"),
       description: t("schema.fieldTypeOneToManyDescription"),
       commonUses: [
@@ -155,7 +132,7 @@ const getFieldCopyConfig = (
     },
     {
       type: "link",
-      name: t("schema.fieldTypeExternalUrlName"),
+      name: t(FIELD_TYPES.link.label),
       shortDescription: t("schema.fieldTypeExternalUrlShortDesc"),
       description: t("schema.fieldTypeExternalUrlDescription"),
       commonUses: [
@@ -168,7 +145,7 @@ const getFieldCopyConfig = (
     },
     {
       type: "internal_link",
-      name: t("schema.fieldTypeInternalLinkName"),
+      name: t(FIELD_TYPES.internal_link.label),
       shortDescription: t("schema.fieldTypeInternalLinkShortDesc"),
       description: t("schema.fieldTypeInternalLinkDescription"),
       commonUses: [
@@ -180,7 +157,7 @@ const getFieldCopyConfig = (
     },
     {
       type: "block_selector",
-      name: t("schema.fieldTypeBlockSelectorName"),
+      name: t(FIELD_TYPES.block_selector.label),
       shortDescription: t("schema.fieldTypeBlockSelectorShortDesc"),
       description: t("schema.fieldTypeBlockSelectorDescription"),
       commonUses: [
@@ -195,7 +172,7 @@ const getFieldCopyConfig = (
   numeric: [
     {
       type: "number",
-      name: t("schema.fieldTypeNumberName"),
+      name: t(FIELD_TYPES.number.label),
       shortDescription: t("schema.fieldTypeNumberShortDesc"),
       description: t("schema.fieldTypeNumberDescription"),
       commonUses: [
@@ -210,7 +187,7 @@ const getFieldCopyConfig = (
     },
     {
       type: "currency",
-      name: t("schema.fieldTypeCurrencyName"),
+      name: t(FIELD_TYPES.currency.label),
       shortDescription: t("schema.fieldTypeCurrencyShortDesc"),
       description: t("schema.fieldTypeCurrencyDescription"),
       commonUses: [
@@ -224,7 +201,7 @@ const getFieldCopyConfig = (
   dateandtime: [
     {
       type: "date",
-      name: t("schema.fieldTypeDateName"),
+      name: t(FIELD_TYPES.date.label),
       shortDescription: t("schema.fieldTypeDateShortDesc"),
       description: t("schema.fieldTypeDateDescription"),
       commonUses: [
@@ -238,7 +215,7 @@ const getFieldCopyConfig = (
     },
     {
       type: "datetime",
-      name: t("schema.fieldTypeDateTimeName"),
+      name: t(FIELD_TYPES.datetime.label),
       shortDescription: t("schema.fieldTypeDateTimeShortDesc"),
       description: t("schema.fieldTypeDateTimeDescription"),
       commonUses: [
@@ -253,7 +230,7 @@ const getFieldCopyConfig = (
   options: [
     {
       type: "yes_no",
-      name: t("schema.fieldTypeBooleanName"),
+      name: t(FIELD_TYPES.yes_no.label),
       shortDescription: t("schema.fieldTypeBooleanShortDesc"),
       description: t("schema.fieldTypeBooleanDescription"),
       commonUses: [
@@ -267,7 +244,7 @@ const getFieldCopyConfig = (
     },
     {
       type: "dropdown",
-      name: t("schema.fieldTypeDropdownName"),
+      name: t(FIELD_TYPES.dropdown.label),
       shortDescription: t("schema.fieldTypeDropdownShortDesc"),
       description: t("schema.fieldTypeDropdownDescription"),
       commonUses: [
@@ -281,7 +258,7 @@ const getFieldCopyConfig = (
     },
     {
       type: "color",
-      name: t("schema.fieldTypeColorName"),
+      name: t(FIELD_TYPES.color.label),
       shortDescription: t("schema.fieldTypeColorShortDesc"),
       description: t("schema.fieldTypeColorDescription"),
       commonUses: [
@@ -295,7 +272,7 @@ const getFieldCopyConfig = (
     },
     {
       type: "sort",
-      name: t("schema.fieldTypeSortOrderName"),
+      name: t(FIELD_TYPES.sort.label),
       shortDescription: t("schema.fieldTypeSortOrderShortDesc"),
       description: t("schema.fieldTypeSortOrderDescription"),
       commonUses: [
@@ -308,7 +285,7 @@ const getFieldCopyConfig = (
     },
     {
       type: "integration",
-      name: t("schema.fieldTypeIntegrationName"),
+      name: t(FIELD_TYPES.integration.label),
       shortDescription: t("schema.fieldTypeIntegrationShortDesc"),
       description: t("schema.fieldTypeIntegrationDescription"),
       commonUses: [
@@ -324,7 +301,7 @@ const getFieldCopyConfig = (
     },
     {
       type: "uuid",
-      name: t("schema.fieldTypeUuidName"),
+      name: t(FIELD_TYPES.uuid.label),
       shortDescription: t("schema.fieldTypeUuidShortDesc"),
       description: t("schema.fieldTypeUuidDescription"),
       commonUses: [
@@ -337,7 +314,7 @@ const getFieldCopyConfig = (
     },
     {
       type: "repeater",
-      name: t("schema.fieldTypeRepeaterName"),
+      name: t(FIELD_TYPES.repeater.label),
       shortDescription: t("schema.fieldTypeRepeaterShortDesc"),
       description: t("schema.fieldTypeRepeaterDescription"),
       commonUses: [
@@ -352,33 +329,10 @@ const getFieldCopyConfig = (
   ],
 });
 
-const getTypeText = (t: TranslateFn): Record<FieldType, string> => ({
-  article_writer: t("schema.typeTextArticleWriter"),
-  color: t("schema.typeTextColor"),
-  currency: t("schema.typeTextCurrency"),
-  date: t("schema.typeTextDate"),
-  datetime: t("schema.typeTextDatetime"),
-  dropdown: t("schema.typeTextDropdown"),
-  files: t("schema.typeTextFiles"),
-  fontawesome: t("schema.typeTextFontawesome"),
-  images: t("schema.typeTextImages"),
-  internal_link: t("schema.typeTextInternalLink"),
-  link: t("schema.typeTextLink"),
-  markdown: t("schema.typeTextMarkdown"),
-  number: t("schema.typeTextNumber"),
-  one_to_many: t("schema.typeTextOneToMany"),
-  one_to_one: t("schema.typeTextOneToOne"),
-  sort: t("schema.typeTextSort"),
-  text: t("schema.typeTextText"),
-  textarea: t("schema.typeTextTextarea"),
-  uuid: t("schema.typeTextUuid"),
-  wysiwyg_advanced: t("schema.typeTextWysiwygAdvanced"),
-  wysiwyg_basic: t("schema.typeTextWysiwygBasic"),
-  yes_no: t("schema.typeTextBoolean"),
-  block_selector: t("schema.typeTextBlockSelector"),
-  integration: t("schema.typeTextIntegration"),
-  repeater: t("schema.typeTextRepeater"),
-});
+const getTypeText = (t: TranslateFn): Record<FieldType, string> =>
+  Object.fromEntries(
+    Object.entries(FIELD_TYPES).map(([type, meta]) => [type, t(meta.label)])
+  ) as Record<FieldType, string>;
 
 const getCommonFields = (t: TranslateFn): InputField[] => [
   {

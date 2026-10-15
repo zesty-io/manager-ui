@@ -94,7 +94,7 @@ export const buildParsley = (ref: ParsleyRef): string => {
   // keeps datasets out.
   if (ref.kind === "url") return `{{${base}.getUrl()}}`;
   const method =
-    getFieldMeta(ref.datatype).category === "media" ? ".getImage()" : "";
+    getFieldMeta(ref.datatype).group === "media" ? ".getImage()" : "";
   return `{{${base}.${ref.name}${method}}}`;
 };
 
