@@ -143,8 +143,11 @@ export const HeadTag = (props) => {
                   {t("shell.headTagTypeNone")}
                   {" -"}
                 </MenuItem>
+                {/* eslint-disable-next-line i18next/no-literal-string -- HTML element name */}
                 <MenuItem value="script">Script</MenuItem>
+                {/* eslint-disable-next-line i18next/no-literal-string -- HTML element name */}
                 <MenuItem value="meta">Meta</MenuItem>
+                {/* eslint-disable-next-line i18next/no-literal-string -- HTML element name */}
                 <MenuItem value="link">Link</MenuItem>
               </Select>
             </FormControl>
