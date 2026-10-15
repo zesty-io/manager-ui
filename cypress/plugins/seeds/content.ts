@@ -7,6 +7,7 @@ import {
   ContentModel,
   ContentModelField,
   CreateStatusLabel,
+  Publishing,
   RedirectRequest,
   WorkflowStatusLabel,
 } from "../../../src/shell/services/types";
@@ -204,6 +205,65 @@ module.exports = function content(config) {
     return res.data;
   }
 
+  // Polls the item-level publishings list until it reports `version` as the
+  // active publishing. The instances API caches this GET (response header
+  // `instances-api-cache`), and a read that lands just before a publish can
+  // keep serving the pre-publish list for 40s or more after the POST (#4393).
+  // Native fetch rather than sdk.instance.getItemPublishings: the SDK drops
+  // response headers, and the timeout error needs the cache header.
+  async function waitForActivePublishing(
+    modelZUID: string,
+    itemZUID: string,
+    version: number
+  ): Promise<Publishing> {
+    const TIMEOUT_MS = 90000;
+    const INTERVAL_MS = 2000;
+
+    const sdk = await getSDK(config);
+    const url = `${config.env.API_INSTANCE_URL}/content/models/${modelZUID}/items/${itemZUID}/publishings`;
+    const start = Date.now();
+    let attempts = 0;
+    let lastStatus: number | string = "none";
+    let lastCache: string | null = null;
+    let lastBody = "";
+
+    while (Date.now() - start < TIMEOUT_MS) {
+      attempts++;
+      try {
+        const res = await fetch(url, {
+          headers: { authorization: `Bearer ${sdk.token}` },
+          signal: AbortSignal.timeout(10000),
+        });
+        lastStatus = res.status;
+        lastCache = res.headers.get("instances-api-cache");
+        lastBody = await res.text();
+
+        const publishings: Publishing[] = res.ok
+          ? JSON.parse(lastBody)?.data ?? []
+          : [];
+        const active = publishings.find(
+          (publishing) => publishing._active && publishing.version === version
+        );
+        if (active) {
+          console.log(
+            `api:waitForActivePublishing: ${itemZUID} v${version} active after ${
+              Date.now() - start
+            }ms (${attempts} attempt(s), instances-api-cache: ${lastCache})`
+          );
+          return active;
+        }
+      } catch (error) {
+        lastStatus = "error";
+        lastBody = error?.message;
+      }
+      await new Promise((r) => setTimeout(r, INTERVAL_MS));
+    }
+
+    throw new Error(
+      `api:waitForActivePublishing: no active publishing for ${itemZUID} v${version} after ${TIMEOUT_MS}ms (${attempts} attempts). Last response: status ${lastStatus}, instances-api-cache: ${lastCache}, body: ${lastBody}`
+    );
+  }
+
   async function createRedirect(payload: RedirectRequest) {
     const sdk = await getSDK(config);
     const res = await sdk.instance.createRedirect(payload);
@@ -218,6 +278,11 @@ module.exports = function content(config) {
     "cleanup:labels": () => deleteAllLabels(),
     "api:publishItem": (data: { modelZUID: string; itemZUID: string }) =>
       publishItem(data.modelZUID, data.itemZUID),
+    "api:waitForActivePublishing": (data: {
+      modelZUID: string;
+      itemZUID: string;
+      version: number;
+    }) => waitForActivePublishing(data.modelZUID, data.itemZUID, data.version),
     "api:createRedirect": (payload: RedirectRequest) => createRedirect(payload),
   };
 };

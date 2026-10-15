@@ -164,19 +164,46 @@ describe("Content Item Workflows", { retries: 0 }, () => {
       .its("response.statusCode")
       .should("be.oneOf", [200, 201]);
 
+    // Publish stays blocked until the item's workflow labels load, so clicking
+    // before this GET resolves sends no POST. Alias only the reloaded page's
+    // request: the PUT above invalidates these labels, so the old page can
+    // refetch them too, and that response would not gate the click.
+    let reloaded = false;
+    cy.intercept("GET", "**/content/models/*/items/*/labels*", (req) => {
+      if (reloaded) req.alias = "itemLabels";
+    });
+    cy.then(() => {
+      cy.once("window:before:load", () => {
+        reloaded = true;
+      });
+    });
+
     cy.reload();
+    cy.wait("@itemLabels");
 
     cy.intercept("POST", "**/items/*/publishings").as("publishItem");
 
     ContentItemPage.elements.publishItemButton().should("exist").click();
     ContentItemPage.elements.confirmPublishItemButton().should("exist").click();
 
-    // Wait for the publish to persist, then reload so the indicator reads the
-    // fresh published state — it intermittently failed to render off the live
-    // post-publish refetch under load.
-    cy.wait("@publishItem")
-      .its("response.statusCode")
-      .should("be.oneOf", [200, 201]);
+    cy.wait("@publishItem").then(({ response }) => {
+      expect(response.statusCode).to.be.oneOf([200, 201]);
+
+      // The instances API caches GET .../publishings (`instances-api-cache`).
+      // A read that lands just before the publish can keep serving the
+      // pre-publish list for 40s or more, and a reload inside that window
+      // still renders the Publish button (#4393). Wait until the API itself
+      // reports this version active, then reload.
+      cy.task(
+        "api:waitForActivePublishing",
+        {
+          modelZUID: Cypress.env("modelZUID"),
+          itemZUID: Cypress.env("itemZUID"),
+          version: response.body.data.version,
+        },
+        { timeout: 120000 }
+      );
+    });
 
     cy.reload();
 

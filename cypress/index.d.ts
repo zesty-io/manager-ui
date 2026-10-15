@@ -6,6 +6,7 @@ import {
   Stylesheet,
   Script,
   CreateStatusLabel,
+  Publishing,
   RedirectRequest,
   WorkflowStatusLabel,
 } from "../src/shell/services/types";
@@ -89,6 +90,11 @@ declare global {
         event: "api:publishItem",
         data: { modelZUID: string; itemZUID: string }
       ): Chainable<any>;
+      task(
+        event: "api:waitForActivePublishing",
+        data: { modelZUID: string; itemZUID: string; version: number },
+        options?: Partial<Loggable & Timeoutable>
+      ): Chainable<Publishing>;
       task(
         event: "api:createRedirect",
         payload: RedirectRequest
