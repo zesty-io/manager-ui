@@ -78,6 +78,11 @@ import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
 import { getRefRegistry } from "../../engine/refRegistry";
 import { useMultiPermission } from "shell/hooks/use-permissions";
 import { MediaApp } from "../media/src/app";
+import {
+  isInlineEditableFieldType,
+  isRichTextFieldType,
+  isTextLikeFieldType,
+} from "shell/fieldTypes";
 
 const drawerWidth = 440;
 
@@ -1467,9 +1472,8 @@ export const StudioWrapper = () => {
         : String(rawValue);
 
     if (
-      ["markdown", "wysiwyg_basic", "wysiwyg_advanced"].includes(
-        selectedElement.fieldType
-      )
+      isInlineEditableFieldType(selectedElement.fieldType) &&
+      isRichTextFieldType(selectedElement.fieldType)
     ) {
       // Use ref registry to update tinyMCE field
       if (bridgeUpdatedFieldZuidRef.current === selectedElement.fieldZuid) {
@@ -1488,8 +1492,9 @@ export const StudioWrapper = () => {
     }
 
     if (
-      selectedElement.fieldType &&
-      ["text", "textarea"].includes(selectedElement.fieldType)
+      isInlineEditableFieldType(selectedElement.fieldType) &&
+      isTextLikeFieldType(selectedElement.fieldType) &&
+      !isRichTextFieldType(selectedElement.fieldType)
     ) {
       // A text field can hold markup, and WebEngine renders it as markup — so
       // the server already painted a real element here. Seeding it as text
