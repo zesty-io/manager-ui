@@ -1,8 +1,6 @@
 const SDK = require("@zesty-io/sdk");
 
-// Dev auth sessions expire when idle; `/verify` extends them. One verify a
-// minute is plenty against an idle TTL measured in tens of minutes, and it
-// spares the several `getSDK` calls a single seed task makes in a row.
+// Dev auth sessions expire when idle; `/verify` extends them.
 const VERIFY_INTERVAL_MS = 60 * 1000;
 
 const sdkCache = new Map();
@@ -40,8 +38,6 @@ async function isTokenValid(config, token) {
     const res = await auth.verifyToken(token);
     return !!res?.verified;
   } catch {
-    // A failed verify is treated as an expired token: a re-login costs one
-    // request, while a dead token fails every seed call after it.
     return false;
   }
 }
