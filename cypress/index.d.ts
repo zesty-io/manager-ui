@@ -91,10 +91,9 @@ declare global {
         data: { modelZUID: string; itemZUID: string }
       ): Chainable<any>;
       task(
-        event: "api:waitForActivePublishing",
-        data: { modelZUID: string; itemZUID: string; version: number },
-        options?: Partial<Loggable & Timeoutable>
-      ): Chainable<Publishing>;
+        event: "api:waitForPublishing",
+        publishingZUID: string
+      ): Chainable<Omit<Publishing, "_active" | "isPublished">>;
       task(
         event: "api:createRedirect",
         payload: RedirectRequest

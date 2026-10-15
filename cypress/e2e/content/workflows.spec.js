@@ -188,24 +188,37 @@ describe("Content Item Workflows", { retries: 0 }, () => {
 
     cy.wait("@publishItem").then(({ response }) => {
       expect(response.statusCode).to.be.oneOf([200, 201]);
+      const publishing = response.body.data;
 
-      // The instances API caches GET .../publishings (`instances-api-cache`).
-      // A read that lands just before the publish can keep serving the
-      // pre-publish list for 40s or more, and a reload inside that window
-      // still renders the Publish button (#4393). Wait until the API itself
-      // reports this version active, then reload.
-      cy.task(
-        "api:waitForActivePublishing",
+      // The instances API caches GET content/models/{m}/items/{i}/publishings
+      // (`instances-api-cache`) and can keep serving the pre-publish list for
+      // minutes after the POST, so the reloaded header would still show
+      // Publish (#4393). Confirm the write on the instance-wide
+      // GET content/items/publishings instead, then stub the item-level read
+      // with the record the POST returned.
+      cy.task("api:waitForPublishing", publishing.ZUID);
+      cy.intercept(
+        "GET",
+        `**/content/models/${Cypress.env("modelZUID")}/items/${Cypress.env(
+          "itemZUID"
+        )}/publishings`,
         {
-          modelZUID: Cypress.env("modelZUID"),
-          itemZUID: Cypress.env("itemZUID"),
-          version: response.body.data.version,
-        },
-        { timeout: 120000 }
-      );
+          body: {
+            _meta: {
+              timestamp: new Date().toISOString(),
+              totalResults: 1,
+              start: 0,
+              offset: 0,
+              limit: 1,
+            },
+            data: [{ ...publishing, _active: true }],
+          },
+        }
+      ).as("itemPublishings");
     });
 
     cy.reload();
+    cy.wait("@itemPublishings");
 
     ContentItemPage.elements.contentPublishedIndicator().should("exist");
   });

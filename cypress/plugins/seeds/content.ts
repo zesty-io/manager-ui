@@ -205,22 +205,20 @@ module.exports = function content(config) {
     return res.data;
   }
 
-  // Polls the item-level publishings list until it reports `version` as the
-  // active publishing. The instances API caches this GET (response header
-  // `instances-api-cache`), and a read that lands just before a publish can
-  // keep serving the pre-publish list for 40s or more after the POST (#4393).
-  // Native fetch rather than sdk.instance.getItemPublishings: the SDK drops
-  // response headers, and the timeout error needs the cache header.
-  async function waitForActivePublishing(
-    modelZUID: string,
-    itemZUID: string,
-    version: number
-  ): Promise<Publishing> {
-    const TIMEOUT_MS = 90000;
+  // Polls the instance-wide publishings list until it contains
+  // `publishingZUID`, to confirm a publish reached the backend. The item-level
+  // list cannot be used for this: the instances API caches it
+  // (`instances-api-cache`) and can keep serving the pre-publish list for
+  // minutes after the POST (#4393). The instance-wide list is cached too, so
+  // each read carries a unique query param to bypass the cache. Native fetch
+  // rather than the SDK, which drops response headers.
+  async function waitForPublishing(
+    publishingZUID: string
+  ): Promise<Omit<Publishing, "_active" | "isPublished">> {
+    const TIMEOUT_MS = 30000;
     const INTERVAL_MS = 2000;
 
     const sdk = await getSDK(config);
-    const url = `${config.env.API_INSTANCE_URL}/content/models/${modelZUID}/items/${itemZUID}/publishings`;
     const start = Date.now();
     let attempts = 0;
     let lastStatus: number | string = "none";
@@ -230,27 +228,31 @@ module.exports = function content(config) {
     while (Date.now() - start < TIMEOUT_MS) {
       attempts++;
       try {
-        const res = await fetch(url, {
-          headers: { authorization: `Bearer ${sdk.token}` },
-          signal: AbortSignal.timeout(10000),
-        });
+        const res = await fetch(
+          `${
+            config.env.API_INSTANCE_URL
+          }/content/items/publishings?limit=100&order=created&dir=DESC&_=${Date.now()}`,
+          {
+            headers: { authorization: `Bearer ${sdk.token}` },
+            signal: AbortSignal.timeout(10000),
+          }
+        );
         lastStatus = res.status;
         lastCache = res.headers.get("instances-api-cache");
         lastBody = await res.text();
 
-        const publishings: Publishing[] = res.ok
-          ? JSON.parse(lastBody)?.data ?? []
-          : [];
-        const active = publishings.find(
-          (publishing) => publishing._active && publishing.version === version
+        const publishings: Omit<Publishing, "_active" | "isPublished">[] =
+          res.ok ? JSON.parse(lastBody)?.data ?? [] : [];
+        const publishing = publishings.find(
+          (publishing) => publishing.ZUID === publishingZUID
         );
-        if (active) {
+        if (publishing) {
           console.log(
-            `api:waitForActivePublishing: ${itemZUID} v${version} active after ${
+            `api:waitForPublishing: ${publishingZUID} listed after ${
               Date.now() - start
             }ms (${attempts} attempt(s), instances-api-cache: ${lastCache})`
           );
-          return active;
+          return publishing;
         }
       } catch (error) {
         lastStatus = "error";
@@ -259,8 +261,10 @@ module.exports = function content(config) {
       await new Promise((r) => setTimeout(r, INTERVAL_MS));
     }
 
+    // The list is ~30KB; its head holds the newest publishings.
+    const bodyHead = lastBody.slice(0, 2000);
     throw new Error(
-      `api:waitForActivePublishing: no active publishing for ${itemZUID} v${version} after ${TIMEOUT_MS}ms (${attempts} attempts). Last response: status ${lastStatus}, instances-api-cache: ${lastCache}, body: ${lastBody}`
+      `api:waitForPublishing: ${publishingZUID} not in the instance-wide publishings after ${TIMEOUT_MS}ms (${attempts} attempts). Last response: status ${lastStatus}, instances-api-cache: ${lastCache}, body (first 2000 chars): ${bodyHead}`
     );
   }
 
@@ -278,11 +282,8 @@ module.exports = function content(config) {
     "cleanup:labels": () => deleteAllLabels(),
     "api:publishItem": (data: { modelZUID: string; itemZUID: string }) =>
       publishItem(data.modelZUID, data.itemZUID),
-    "api:waitForActivePublishing": (data: {
-      modelZUID: string;
-      itemZUID: string;
-      version: number;
-    }) => waitForActivePublishing(data.modelZUID, data.itemZUID, data.version),
+    "api:waitForPublishing": (publishingZUID: string) =>
+      waitForPublishing(publishingZUID),
     "api:createRedirect": (payload: RedirectRequest) => createRedirect(payload),
   };
 };
