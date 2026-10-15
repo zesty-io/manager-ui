@@ -8,8 +8,6 @@ runs:
       uses: actions/setup-node@v4.1.0
       with:
         node-version: "22.19.0"
-        cache: "npm"
-        cache-dependency-path: package-lock.json
     # node_modules and the Cypress binary are cached together so they hit or miss as one.
     - name: Cache Dependencies
       id: deps-cache
