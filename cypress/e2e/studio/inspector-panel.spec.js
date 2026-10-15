@@ -378,6 +378,12 @@ describe("Studio Inspector Panel", () => {
 
   beforeEach(() => {
     cy.stubStaffUser();
+    // The page's path lookup; its response triggers clearSelection.
+    cy.intercept({
+      method: "GET",
+      pathname: "**/search/items",
+      query: { field: "path" },
+    }).as("resolveItemByPath");
 
     if (booted) {
       // Remount Studio in place to drop its UI state without reloading the app.
@@ -2360,6 +2366,183 @@ describe("Studio Inspector Panel", () => {
       // row would keep saving a value the user can neither see nor clear.
       cy.getBySelector("StudioLinkToInput").clear().type("#section-two");
       cy.getBySelector("StudioOpenInNewTab").should("exist");
+    });
+  });
+
+  // #4374 — the layout grammar keeps a right panel mounted whatever is selected.
+  describe("empty panel in layout mode", () => {
+    // The bridge emits no `slots` for a tag outside its SUPPORTED_ELEMENTS.
+    const siblingNode = (codeId, layoutId, tagName, slots) => ({
+      id: `${codeId}:${layoutId}`,
+      kind: "element",
+      tagName,
+      codeId,
+      layoutId,
+      ...(slots
+        ? {
+            layoutPatch: {
+              codeId,
+              layoutId,
+              isSelf: true,
+              tagName,
+              elementIndex: 0,
+            },
+            slots,
+          }
+        : {}),
+      children: [],
+    });
+    const paragraph = siblingNode("code-1", "1", "p", []);
+    const small = siblingNode("code-1", "2", "small");
+
+    const feedSiblings = () =>
+      postBridgeMessage({ type: "LAYERS_TREE", tree: [paragraph, small] });
+
+    const selectRow = (node) =>
+      cy.get(`[data-cy="StudioLayersRow"][data-node-id="${node.id}"]`).click();
+
+    const previewWidth = () =>
+      cy
+        .getBySelector("StudioPreviewFrame")
+        .then(($frame) => $frame[0].getBoundingClientRect().width);
+
+    const assertPreviewWidth = (expected) =>
+      cy.getBySelector("StudioPreviewFrame").should(($frame) => {
+        expect($frame[0].getBoundingClientRect().width).to.eq(expected);
+      });
+
+    beforeEach(() => {
+      // Otherwise its clearSelection can land after the first selection.
+      cy.wait("@resolveItemByPath");
+      setStudioMode("layout");
+    });
+
+    it("shows the select-an-element empty state with nothing selected", () => {
+      cy.getBySelector("StudioEmptyPanel").should("exist");
+      cy.getBySelector("StudioEmptyPanelTitle").should(
+        "have.text",
+        "Inspector"
+      );
+      cy.getBySelector("StudioEmptyPanelMessage").should(
+        "have.text",
+        "Select an element on the canvas or in Layers to edit it."
+      );
+      cy.getBySelector("StudioInspectorPanel").should("not.exist");
+    });
+
+    it("names an element with no editable properties instead of closing", () => {
+      feedSiblings();
+      selectRow(small);
+
+      // Positive anchor first: the selection landed, independent of the panel.
+      cy.getBySelector("StudioBreadcrumbChip")
+        .last()
+        .should("have.text", "small");
+      cy.getBySelector("StudioEmptyPanelTitle").should("have.text", "small");
+      cy.getBySelector("StudioEmptyPanelMessage").should(
+        "have.text",
+        "This element has no editable properties."
+      );
+      cy.getBySelector("StudioInspectorPanel").should("not.exist");
+    });
+
+    it("opens the Text panel from the Layers row of a bare element with a lone run", () => {
+      // `<small>fine print</small>`: no panel of its own, one text run — the
+      // row opens the run's panel, as a canvas click on the element does.
+      const smallWithText = {
+        ...small,
+        children: [
+          {
+            id: "code-1:textOf:2:0",
+            kind: "text",
+            tagName: null,
+            codeId: "code-1",
+            layoutId: null,
+            label: "fine print",
+            layoutPatch: {
+              codeId: "code-1",
+              layoutId: "2",
+              isSelf: true,
+              tagName: "small",
+              elementIndex: 0,
+            },
+            slots: [
+              {
+                kind: "text",
+                key: "text",
+                control: "text",
+                isDynamic: false,
+                value: "fine print",
+                sourceValue: "fine print",
+                layoutEditable: true,
+                textIndex: 0,
+              },
+            ],
+            children: [],
+          },
+        ],
+      };
+      postBridgeMessage({
+        type: "LAYERS_TREE",
+        tree: [paragraph, smallWithText],
+      });
+      selectRow(smallWithText);
+
+      cy.getBySelector("StudioBreadcrumbChip")
+        .last()
+        .should("have.text", "small");
+      cy.getBySelector("StudioInspectorPanel").should("exist");
+      cy.getBySelector("StudioSlotInput-text").should(
+        "have.value",
+        "fine print"
+      );
+      // A text panel: no Tag selector.
+      cy.getBySelector("StudioTagSelect").should("not.exist");
+      cy.getBySelector("StudioEmptyPanel").should("not.exist");
+    });
+
+    it("keeps the canvas width constant as the selection moves", () => {
+      cy.getBySelector("StudioHeader").should("exist");
+      previewWidth().then((unselected) => {
+        expect(unselected, "preview has laid out").to.be.greaterThan(0);
+        feedSiblings();
+
+        selectRow(paragraph);
+        cy.getBySelector("StudioInspectorPanel").should("exist");
+        assertPreviewWidth(unselected);
+
+        // Not anchored on the empty panel, so this fails on width alone.
+        selectRow(small);
+        cy.getBySelector("StudioBreadcrumbChip")
+          .last()
+          .should("have.text", "small");
+        cy.getBySelector("StudioInspectorPanel").should("not.exist");
+        assertPreviewWidth(unselected);
+
+        selectRow(paragraph);
+        cy.getBySelector("StudioInspectorPanel").should("exist");
+        assertPreviewWidth(unselected);
+      });
+    });
+
+    it("shows the neutral copy, not 'no editable properties', when the Inspector is closed", () => {
+      feedSiblings();
+      selectRow(paragraph);
+      cy.getBySelector("StudioInspectorPanel").should("exist");
+
+      cy.getBySelector("StudioInspectorPanelClose").click();
+
+      // The layout selection outlives the close; the <p> is still editable.
+      cy.getBySelector("StudioInspectorPanel").should("not.exist");
+      cy.getBySelector("StudioBreadcrumbChip").last().should("have.text", "p");
+      cy.getBySelector("StudioEmptyPanelTitle").should(
+        "have.text",
+        "Inspector"
+      );
+      cy.getBySelector("StudioEmptyPanelMessage").should(
+        "have.text",
+        "Select an element on the canvas or in Layers to edit it."
+      );
     });
   });
 });
