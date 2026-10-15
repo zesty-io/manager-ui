@@ -44,11 +44,16 @@ const cleanUp = () => {
 // drifting the active-label count.
 describe("Content Item Workflows", { retries: 0 }, () => {
   let ITEM = null;
+  let PUBLISH_LABEL_ZUID = null;
   before(() => {
     cleanUp();
 
     Object.values(LABEL_DATA).forEach((data) => {
-      cy.task("api:createLabel", data);
+      cy.task("api:createLabel", data).then((label) => {
+        if (label?.name === TITLES.publishLabel) {
+          PUBLISH_LABEL_ZUID = label.ZUID;
+        }
+      });
     });
 
     cy.task("seed:content", "fixtures/item.json")
@@ -166,9 +171,18 @@ describe("Content Item Workflows", { retries: 0 }, () => {
 
     // Publish stays blocked until the item's workflow labels load, so clicking
     // before this GET resolves sends no POST. Alias only the reloaded page's
-    // request: the PUT above invalidates these labels, so the old page can
+    // requests: the PUT above invalidates these labels, so the old page can
     // refetch them too, and that response would not gate the click.
     let reloaded = false;
+    cy.intercept(
+      "GET",
+      `**/content/models/${Cypress.env("modelZUID")}/items/${Cypress.env(
+        "itemZUID"
+      )}`,
+      (req) => {
+        if (reloaded) req.alias = "item";
+      }
+    );
     cy.intercept("GET", "**/content/models/*/items/*/labels*", (req) => {
       if (reloaded) req.alias = "itemLabels";
     });
@@ -179,7 +193,18 @@ describe("Content Item Workflows", { retries: 0 }, () => {
     });
 
     cy.reload();
-    cy.wait("@itemLabels");
+    // The app allows publishing only if the labels for the item's current
+    // version include an allowPublish label, so a stale /labels read fails here.
+    cy.wait(["@item", "@itemLabels"]).then(([item, itemLabels]) => {
+      const version = item.response.body.data.meta.version;
+      const status = itemLabels.response.body.data.find(
+        (itemStatus) => itemStatus.itemVersion === version
+      );
+      expect(
+        status?.labelZUIDs ?? [],
+        `workflow labels for item version ${version}`
+      ).to.include(PUBLISH_LABEL_ZUID);
+    });
 
     cy.intercept("POST", "**/items/*/publishings").as("publishItem");
 
@@ -196,7 +221,9 @@ describe("Content Item Workflows", { retries: 0 }, () => {
       // Publish (#4393). Confirm the write on the instance-wide
       // GET content/items/publishings instead, then stub the item-level read
       // with the record the POST returned.
-      cy.task("api:waitForPublishing", publishing.ZUID);
+      cy.task("api:waitForPublishing", publishing.ZUID).then((listed) => {
+        expect(listed.version).to.eq(publishing.version);
+      });
       cy.intercept(
         "GET",
         `**/content/models/${Cypress.env("modelZUID")}/items/${Cypress.env(

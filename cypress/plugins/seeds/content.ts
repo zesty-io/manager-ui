@@ -205,13 +205,8 @@ module.exports = function content(config) {
     return res.data;
   }
 
-  // Polls the instance-wide publishings list until it contains
-  // `publishingZUID`, to confirm a publish reached the backend. The item-level
-  // list cannot be used for this: the instances API caches it
-  // (`instances-api-cache`) and can keep serving the pre-publish list for
-  // minutes after the POST (#4393). The instance-wide list is cached too, so
-  // each read carries a unique query param to bypass the cache. Native fetch
-  // rather than the SDK, which drops response headers.
+  // Instance-wide list, cache-busted per read: the item-level list is served
+  // stale after a publish (#4393). Fetch, not the SDK, to keep the headers.
   async function waitForPublishing(
     publishingZUID: string
   ): Promise<Omit<Publishing, "_active" | "isPublished">> {
@@ -241,8 +236,14 @@ module.exports = function content(config) {
         lastCache = res.headers.get("instances-api-cache");
         lastBody = await res.text();
 
-        const publishings: Omit<Publishing, "_active" | "isPublished">[] =
-          res.ok ? JSON.parse(lastBody)?.data ?? [] : [];
+        let publishings: Omit<Publishing, "_active" | "isPublished">[] = [];
+        if (res.ok) {
+          try {
+            publishings = JSON.parse(lastBody)?.data ?? [];
+          } catch {
+            // Not JSON: lastStatus and lastBody already describe the response.
+          }
+        }
         const publishing = publishings.find(
           (publishing) => publishing.ZUID === publishingZUID
         );
@@ -256,12 +257,12 @@ module.exports = function content(config) {
         }
       } catch (error) {
         lastStatus = "error";
+        lastCache = null;
         lastBody = error?.message;
       }
       await new Promise((r) => setTimeout(r, INTERVAL_MS));
     }
 
-    // The list is ~30KB; its head holds the newest publishings.
     const bodyHead = lastBody.slice(0, 2000);
     throw new Error(
       `api:waitForPublishing: ${publishingZUID} not in the instance-wide publishings after ${TIMEOUT_MS}ms (${attempts} attempts). Last response: status ${lastStatus}, instances-api-cache: ${lastCache}, body (first 2000 chars): ${bodyHead}`
