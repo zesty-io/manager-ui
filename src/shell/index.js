@@ -96,13 +96,20 @@ const themeOverrides = {
     },
     background: {
       editor: "#0F0F0F",
+      shimmer: "#EFF1F3",
+      shimmerSweep: "#E2E2E2",
+    },
+
+    // Off-system colours carried by the leads app. None of them matches a step
+    // on the @zesty-io/material ramps, so they are minted here rather than
+    // snapped onto a nearby token - see docs/design-system.md section 4, step 5.
+    leads: {
+      toolbar: "#697A91",
+      toolbarLabel: "#C3CDDF",
+      rowHover: "#DAE2F1",
+      rowHoverBorder: "#F7F7F7",
     },
     text: {
-      // No existing ramp/semantic token matches this muted label color (see
-      // docs/design-system.md §4) — named here so the literal is greppable in
-      // one place; consumed via sx={{ color: "text.mutedFormLabel" }} in
-      // src/apps/leads/src/app/components/LeadExporter/TableDateFilter/TableDateFilter.js.
-      mutedFormLabel: "#c3cddf",
       // No existing ramp/semantic token matches this breadcrumb separator
       // icon color (see docs/design-system.md §4) — named here so it's
       // greppable in one place; consumed via
