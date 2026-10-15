@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useState } from "react";
 import { connect, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { alpha } from "@mui/material/styles";
@@ -41,7 +41,6 @@ export default connect((state) => {
     const [loading, setLoading] = useState(false);
     const [twoFactor, setTwoFactor] = useState(false);
     const [error, setError] = useState("");
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = (evt) => {
@@ -81,12 +80,6 @@ export default connect((state) => {
         })
         .finally(() => setLoading(false));
     };
-
-    useEffect(() => {
-      if (isAuthenticated) {
-        props.dispatch(verify());
-      }
-    }, [isAuthenticated]);
 
     return (
       <Box
@@ -185,7 +178,7 @@ export default connect((state) => {
                       },
                     },
                   });
-                  setIsAuthenticated(true);
+                  dispatch(verify());
                 }}
                 onError={(err) => {
                   setError(err);
