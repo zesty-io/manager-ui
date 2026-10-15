@@ -159,17 +159,27 @@ describe("Code App - Editor", () => {
 describe("Code App - Editor - Show suggestions", () => {
   // Monaco's completion provider (MonacoSetup.js) only activates for files
   // with a `contentModelZUID`, filtering Redux `state.fields` by that model.
-  // A dynamically created, disposable model is used (instead of pointing at
-  // a real/shared model already used elsewhere in this repo) because the
-  // dev API refuses to delete a view once it's bound to a content model
-  // ("cannot delete view ... that belongs to a content model") - binding to
-  // a real, shared model would leave a permanently orphaned file on
-  // production-synced data. Deleting a model we created ourselves cascades
-  // and removes the bound view too, so this stays fully self-cleaning.
+  // Creating a model auto-creates a view already bound to it, so that view is
+  // used directly - binding a seeded snippet via PUT doesn't take (the API
+  // accepts the request but the view comes back without `contentModelZUID`,
+  // so the fields are never fetched). Deleting the model cascades and removes
+  // its view too, so this stays fully self-cleaning.
   const MODEL_NAME = `e2e_code_suggestions_${uuidv4().replace(/-/g, "")}`;
   const FIELD_NAME = "test_field";
   let MODEL_ZUID;
-  let FILE_ZUID;
+
+  // The auto-created view can lag the model by a moment under API load, so
+  // re-query a few times before giving up.
+  const findModelView = (attemptsLeft = 5) =>
+    cy
+      .apiRequest({ url: `${API_ENDPOINTS.devInstance}/web/views` })
+      .then(({ data }) => {
+        const view = data?.find((v) => v?.contentModelZUID === MODEL_ZUID);
+        if (view?.ZUID || attemptsLeft <= 1) {
+          return view;
+        }
+        return findModelView(attemptsLeft - 1);
+      });
 
   before(() => {
     cy.blockLock();
@@ -189,26 +199,18 @@ describe("Code App - Editor - Show suggestions", () => {
           settings: { defaultValue: "", list: true },
         });
       })
-      .then(() => {
-        return cy.task("seed:code", "fixtures/code/editor.json");
-      })
-      .then((res) => {
-        FILE_ZUID = res?.ZUID;
-        // Bind the file to the freshly-created model - the model ZUID only
-        // exists at test run time, so this can't live in the seed fixture.
-        return cy.apiRequest({
-          method: "PUT",
-          url: `${API_ENDPOINTS.devInstance}/web/views/${FILE_ZUID}`,
-          body: { contentModelZUID: MODEL_ZUID },
-        });
-      })
-      .then(() => {
+      .then(() => findModelView())
+      .then((view) => {
+        expect(view?.ZUID, `auto-created view for model ${MODEL_ZUID}`).to.be.a(
+          "string"
+        ).and.not.be.empty;
+
         // Wait for the model's fields to actually load into the store before
         // proceeding - Monaco's completion provider reads `state.fields`
         // synchronously at the moment the trigger character is typed, and
         // that fetch (kicked off by this same visit) is otherwise a race.
         cy.waitOn(`**/content/models/${MODEL_ZUID}/fields**`, () => {
-          cy.visit(`/code/file/views/${FILE_ZUID}`);
+          cy.visit(`/code/file/views/${view.ZUID}`);
         });
       });
   });
