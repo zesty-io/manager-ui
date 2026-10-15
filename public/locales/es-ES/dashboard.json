@@ -9,6 +9,7 @@
   "deltaLabel_many": "VS {{count}} días anteriores",
   "deltaLabel_other": "VS {{count}} días anteriores",
   "emptyStateDescription": "No ha habido elementos nuevos ni modificaciones en los últimos 30 días. Comienza a crear o editar contenido, modelos o archivos de código para ver los archivos recientes aquí.",
+  "emptyStateImageAlt": "Ilustración de una instancia en crecimiento",
   "emptyStateTitle": "Comienza a hacer crecer tu instancia hoy mismo",
   "greeting": "Buenos días, {{name}}",
   "instanceSummary": "Aquí está el resumen de tu instancia de los",

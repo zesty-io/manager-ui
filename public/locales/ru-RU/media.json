@@ -28,6 +28,7 @@
   "dropAreaUploadPrompt": "Загрузить файлы в {{location}}",
   "editedFile": "Файл {{filename}} изменён",
   "emptyStateDescription": "Вы можете перетащить файлы сюда или использовать кнопку «Загрузить».",
+  "emptyStateImageAlt": "Иллюстрация загрузки файлов",
   "emptyStateTitle": "Начните загрузку прямо сейчас",
   "failedCreatingGroup": "Не удалось создать группу",
   "failedDeletingFile": "Не удалось удалить файл",
