@@ -108,6 +108,12 @@ describe("Studio Full Mode", () => {
   });
 
   beforeEach(() => {
+    // The page's path lookup; its response triggers clearSelection.
+    cy.intercept({
+      method: "GET",
+      pathname: "**/search/items",
+      query: { field: "path" },
+    }).as("resolveItemByPath");
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/studio?path=${studioPath}`);
     });
@@ -125,10 +131,10 @@ describe("Studio Full Mode", () => {
     cy.getBySelector("StudioModeToggleOption-layout").should("exist");
   });
 
-  it("shows no right panel until something is selected, matching layout", () => {
+  it("shows the empty panel, not the content editor, until something is selected", () => {
     cy.getBySelector("StudioPreviewFrame").should("exist");
-    // The positive assertion above is what stops this from passing on a page
-    // that simply failed to render.
+    // Layout grammar always reserves the right panel (#4374).
+    cy.getBySelector("StudioEmptyPanel").should("exist");
     cy.getBySelector("StudioSidePanel").should("not.exist");
   });
 
@@ -145,6 +151,62 @@ describe("Studio Full Mode", () => {
     // Selection is what the message drives; the panel switching to "edit" is
     // the observable consequence.
     cy.getBySelector("StudioSidePanel").should("exist");
+  });
+
+  it("shows the neutral empty panel after the content editor closes on a selected element", () => {
+    // An <h1> the Inspector can edit, selected on the canvas, then its bound
+    // field opened in the content editor.
+    cy.wait("@resolveItemByPath");
+    postBridgeMessage({
+      type: "LAYERS_TREE",
+      tree: [
+        {
+          id: `${codeId}:2`,
+          kind: "element",
+          tagName: "h1",
+          codeId,
+          layoutId: "2",
+          layoutPatch: {
+            codeId,
+            layoutId: "2",
+            isSelf: true,
+            tagName: "h1",
+            elementIndex: 0,
+          },
+          slots: [],
+          children: [],
+        },
+      ],
+    });
+    postBridgeMessage({
+      type: "DOM_EVENT",
+      eventType: "mousedown",
+      element: { dataset: { codeId, layoutId: "2" } },
+      breadcrumb: [{ layoutId: "2", label: "h1" }],
+    });
+    postBridgeMessage({
+      type: "DYNAMIC_EDIT_REQUEST",
+      studioId: `${itemZUID}:title`,
+      fieldZuid: "fake-field-zuid",
+      fieldType: "text",
+      itemZuid: itemZUID,
+      modelZuid: "fake-model-zuid",
+    });
+    cy.getBySelector("StudioSidePanel").should("exist");
+
+    cy.getBySelector("StudioSidePanel")
+      .find('button[aria-label="Close Studio preview"]')
+      .click();
+
+    // The side panel's close clears only the field selection; the layout
+    // selection stays, so the empty panel must not call the <h1> uneditable.
+    cy.getBySelector("StudioSidePanel").should("not.exist");
+    cy.getBySelector("StudioBreadcrumbChip").last().should("have.text", "h1");
+    cy.getBySelector("StudioEmptyPanelTitle").should("have.text", "Inspector");
+    cy.getBySelector("StudioEmptyPanelMessage").should(
+      "have.text",
+      "Select an element on the canvas or in Layers to edit it."
+    );
   });
 
   it("writes an inline canvas edit back to the item in full mode", () => {
@@ -203,10 +265,7 @@ describe("Studio Full Mode", () => {
       .and("not.contain.text", "Switch to Content mode");
   });
 
-  // This case used to be "deliberately not covered": the layout-mode guard on
-  // DYNAMIC_EDIT_REQUEST had no observable consequence, because layout renders
-  // no right panel whether or not the message is handled. It has one now — the
-  // guard tells the user instead of dropping the gesture — so it is testable.
+  // The layout-mode guard on DYNAMIC_EDIT_REQUEST is observable as its toast.
   it("tells a layout-mode user that a bound leaf needs content editing", () => {
     reloadAsStaff();
     cy.getBySelector("StudioModeToggleOption-layout").click();
