@@ -27,7 +27,14 @@ module.exports = [
       "no-restricted-syntax": [
         "error",
         {
-          selector: "Literal[value=/^#[0-9a-fA-F]{3,8}$/]",
+          // Not fully anchored: also catches a hex code embedded in a larger
+          // string ("6px solid #fff") or template literal ("...#444;..."),
+          // not just a literal that is nothing but the hex code. The
+          // lookaround excludes hex digits/dashes on either side so a
+          // ZUID-style fragment (e.g. "#a630bb24-0760-...") is never a false
+          // positive — it has more hex-looking characters immediately after.
+          selector:
+            "Literal[value=/(?<![0-9a-fA-F-])#[0-9a-fA-F]{3,8}(?![0-9a-fA-F-])/], TemplateElement[value.raw=/(?<![0-9a-fA-F-])#[0-9a-fA-F]{3,8}(?![0-9a-fA-F-])/]",
           message:
             "Hex color literals are not allowed under src/ — use a token " +
             "from @zesty-io/material's `theme` (see docs/design-system.md). " +

@@ -105,6 +105,15 @@ const themeOverrides = {
       rowHover: "#DAE2F1",
       rowHoverBorder: "#F7F7F7",
     },
+
+    // Studio's canvas hover/selection outlines, injected as CSS into the
+    // preview iframe (see useStudioBridge.ts). Neither matches a ramp step,
+    // so minted here rather than snapped onto a nearby token - see
+    // docs/design-system.md section 4, step 5.
+    studio: {
+      hoverOutline: "#00bcd4",
+      selectionOutline: "#ff9800",
+    },
   },
 
   components: {

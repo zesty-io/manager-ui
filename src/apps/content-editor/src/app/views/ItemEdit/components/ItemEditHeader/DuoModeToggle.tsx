@@ -72,7 +72,7 @@ const IOSSwitch = styled((props: SwitchProps) => (
     },
     "&.Mui-focusVisible .MuiSwitch-thumb": {
       color: theme.palette.grey[300],
-      border: "6px solid #fff",
+      border: `6px solid ${theme.palette.common.white}`,
     },
   },
   "& .MuiSwitch-thumb": {

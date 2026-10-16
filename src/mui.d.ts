@@ -20,8 +20,14 @@ declare module "@mui/material/styles" {
     rowHoverBorder: string;
   }
 
+  export interface StudioPalette {
+    hoverOutline: string;
+    selectionOutline: string;
+  }
+
   export interface Palette {
     leads: LeadsPalette;
+    studio: StudioPalette;
     red: Color;
     deepPurple: Color;
     deepOrange: Color;
