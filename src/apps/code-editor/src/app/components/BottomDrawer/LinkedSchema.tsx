@@ -41,10 +41,10 @@ export default function LinkedSchema({ file, fields }: LinkedSchemaProps) {
             ...theme.typography.body2,
           }),
           "& span.brackets": {
-            color: "#95c65c",
+            color: "success.main",
           },
           "& span.keywords": {
-            color: "#91ace8",
+            color: "deepPurple.300",
           },
           "& span.fields": {
             color: "grey.300",

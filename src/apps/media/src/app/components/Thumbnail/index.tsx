@@ -1012,7 +1012,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
               overflow: "hidden",
               position: "relative",
               display: "flex",
-              backgroundColor: "#000",
+              backgroundColor: "common.black",
             }}
           >
             <Box
@@ -1044,7 +1044,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 controls={false}
                 src={src}
                 sx={{
-                  backgroundColor: "#000",
+                  backgroundColor: "common.black",
                   display: "flex",
                   alignItems: "center",
                   flexWrap: "wrap",
@@ -1060,7 +1060,7 @@ export const Thumbnail: FC<ThumbnailProps> = ({
                 right: 0,
                 left: 0,
                 m: "auto",
-                color: "#FFF",
+                color: "common.white",
                 position: "absolute",
                 textAlign: "center",
               }}

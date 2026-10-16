@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { createPortal } from "react-dom";
 import CloseIcon from "@mui/icons-material/Close";
+import { theme } from "@zesty-io/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
@@ -411,7 +412,7 @@ export const SubField = memo(
           );
         } else {
           content = (
-            <h1 style={{ color: "#e53c05" }}>
+            <h1 style={{ color: theme.palette.error.dark }}>
               <FontAwesomeIcon icon={faExclamationTriangle} />
               &nbsp;
               <Link
@@ -477,6 +478,7 @@ export const SubField = memo(
             <FieldShell settings={field} errors={errors} withComment={false}>
               <FieldTypeColor
                 name={field?.name}
+                // eslint-disable-next-line no-restricted-syntax -- colour-field default value (design-system.md §3: values the user picks or we store)
                 value={value || "#FFFFFF"}
                 onChange={(evt) => onChange(evt.target.value, field?.name)}
                 error={hasError}
