@@ -198,6 +198,23 @@ const findLoneTextSlotChild = (node: LayersTreeNode): LayersTreeNode | null => {
 const countTextSlotChildren = (node: LayersTreeNode): number =>
   findTextSlotChildren(node).length;
 
+// The row whose panel a canvas click on a layout element opens: the element
+// itself when it owns a panel, or — for a bare element (no panel, no slots) —
+// its lone text run / bound field. Null when neither is panel-worthy, i.e. the
+// Inspector has nothing to edit.
+const findLayoutPanelTarget = (
+  node: LayersTreeNode,
+  interactionMode: InteractionMode
+): LayersTreeNode | null => {
+  const ownsPanel =
+    isPanelNode(node, interactionMode) && !!node.layoutPatch?.isSelf;
+  const textChild =
+    ownsPanel || node.slots?.length ? null : findLoneTextSlotChild(node);
+  const target =
+    textChild && isPanelNode(textChild, interactionMode) ? textChild : node;
+  return isPanelNode(target, interactionMode) ? target : null;
+};
+
 // The slots an Inspector panel shows for a node: its own, plus — in layout mode,
 // for an element whose content is a lone text run or bound field — that row's
 // Value slot, so Tag and Value share one panel. Mixed content is unchanged.
@@ -359,6 +376,25 @@ export const useStudioLayersTree = ({
     selectedElement,
     selectedLayout,
   ]);
+
+  // Whether the selected layout element is in the tree and has nothing the
+  // Inspector can edit. False before the tree arrives or for a panel-worthy
+  // element, so a closed panel never reads as "no editable properties".
+  const selectedLayoutHasNoPanel = useMemo(() => {
+    if (!usesLayoutGrammar(interactionMode) || !selectedLayout?.layoutId) {
+      return false;
+    }
+    for (const node of nodeById.values()) {
+      if (
+        node.kind === "element" &&
+        node.layoutId === selectedLayout.layoutId &&
+        node.codeId === selectedLayout.codeId
+      ) {
+        return !findLayoutPanelTarget(node, interactionMode);
+      }
+    }
+    return false;
+  }, [interactionMode, nodeById, selectedLayout]);
 
   // A selection (canvas click, drill-down, inspector open) can land on a row
   // whose ancestors are collapsed — expand them so the selected row actually
@@ -589,18 +625,8 @@ export const useStudioLayersTree = ({
           node.layoutId === layoutId &&
           node.codeId === codeId
         ) {
-          // Fall back to the run's panel only for a bare element (no panel, no slots).
-          const ownsPanel =
-            isPanelNode(node, interactionMode) && !!node.layoutPatch?.isSelf;
-          const textChild =
-            ownsPanel || node.slots?.length
-              ? null
-              : findLoneTextSlotChild(node);
-          const target =
-            textChild && isPanelNode(textChild, interactionMode)
-              ? textChild
-              : node;
-          if (!isPanelNode(target, interactionMode)) return;
+          const target = findLayoutPanelTarget(node, interactionMode);
+          if (!target) return;
           applyInspectorSelection({
             nodeId: target.id,
             tagName: target.tagName || "",
@@ -679,6 +705,21 @@ export const useStudioLayersTree = ({
 
       if (usesLayoutGrammar(interactionMode)) {
         selectLayoutElement(node);
+        // An element with no panel of its own (`<small>fine print</small>`)
+        // opens its lone text run's panel, as a canvas click on it does.
+        const target =
+          node.kind === "element"
+            ? findLayoutPanelTarget(node, interactionMode)
+            : null;
+        if (target) {
+          applyInspectorSelection({
+            nodeId: target.id,
+            tagName: target.tagName || "",
+            slots: resolveSlotValues(getPanelSlots(target, interactionMode)),
+            layoutPatch: target.layoutPatch ?? null,
+            ownsLinkControls: ownsElementLinkControls(target, parentById),
+          });
+        }
         return;
       }
 
@@ -814,6 +855,7 @@ export const useStudioLayersTree = ({
     hasTree: tree !== null,
     flatRows,
     selectedNodeId,
+    selectedLayoutHasNoPanel,
     handleLayersTree,
     resetTree,
     toggleNode,
