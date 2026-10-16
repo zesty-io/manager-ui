@@ -1,4 +1,4 @@
-import { memo, useEffect } from "react";
+import { memo, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { Backdrop } from "@mui/material";
@@ -14,6 +14,14 @@ export default connect((state) => {
 })(
   memo(function PrivateRoute(props) {
     const { t } = useTranslation();
+    const open = !props.auth.checking && !props.auth.valid;
+
+    // Login's state and useSSO's isAuthenticated (@zesty-io/material) latch
+    // after the first SSO success, so remount the form after each close.
+    const [loginKey, setLoginKey] = useState(0);
+    useEffect(() => {
+      if (!open) setLoginKey((k) => k + 1);
+    }, [open]);
 
     useEffect(() => {
       const checkSession = () => {
@@ -78,9 +86,9 @@ export default connect((state) => {
           sx={{
             zIndex: (theme) => theme.zIndex.tooltip + 10, // Needs to be on top of everything
           }}
-          open={!props.auth.checking && !props.auth.valid}
+          open={open}
         >
-          <Login />
+          <Login key={loginKey} />
         </Backdrop>
       </>
     );
