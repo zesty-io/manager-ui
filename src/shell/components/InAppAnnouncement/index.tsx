@@ -1,6 +1,6 @@
 import { theme } from "@zesty-io/material";
 import { useEffect, useMemo } from "react";
-import { addYears, isWithinInterval } from "date-fns";
+import { addYears, isValid, isWithinInterval } from "date-fns";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +21,24 @@ import { useTranslation } from "react-i18next";
 import { useGetAnnouncementsQuery } from "../../services/marketing";
 
 const READ_ANNOUNCEMENTS_COOKIE = "READ_ANNOUNCEMENTS_ZUID";
+
+// date-fns' isWithinInterval throws a RangeError on an invalid or inverted
+// interval, and this component renders above Shell's ErrorBoundary — so a blank
+// or malformed date in the CMS would white-screen the whole manager. Treat any
+// unusable interval as "not active". The raw-value check is required because
+// new Date(null) is the (valid) 1970 epoch.
+const isAnnouncementActive = (start?: string, end?: string): boolean => {
+  if (!start || !end) return false;
+
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  if (!isValid(startDate) || !isValid(endDate) || startDate > endDate) {
+    return false;
+  }
+
+  return isWithinInterval(new Date(), { start: startDate, end: endDate });
+};
 
 export const InAppAnnouncement = () => {
   const { t } = useTranslation();
@@ -93,10 +111,13 @@ export const InAppAnnouncement = () => {
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       )[0];
 
-      const now = new Date();
-      const start = new Date(latest?.start_date_and_time);
-      const end = new Date(latest?.end_date_and_time);
-      if (isWithinInterval(now, { start, end })) return latest;
+      if (
+        isAnnouncementActive(
+          latest?.start_date_and_time,
+          latest?.end_date_and_time
+        )
+      )
+        return latest;
     }
   }, [announcements]);
 
