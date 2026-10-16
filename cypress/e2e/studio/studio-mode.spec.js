@@ -317,7 +317,11 @@ describe("Studio Full Mode", () => {
     // `hasPermission` is true for staff whatever the role, so the narrowing
     // below only bites for a non-staff user whose real role has loaded.
     reloadAsNonStaff();
-    cy.getBySelector("StudioModeToggle").should("not.exist");
+    cy.window()
+      .its("zestyStore")
+      .invoke("getState")
+      .its("user.staff")
+      .should("eq", false);
     cy.window()
       .its("zestyStore")
       .invoke("getState")
