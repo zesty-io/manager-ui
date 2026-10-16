@@ -28,6 +28,20 @@ describe("Studio Full Mode", () => {
     cy.getBySelector("StudioHeader").should("exist");
   };
 
+  const reloadAsNonStaff = () => {
+    cy.intercept("GET", "**/v1/users/*", (req) => {
+      req.continue((res) => {
+        if (!res.body?.data) return;
+        res.body.data = { ...res.body.data, staff: false };
+      });
+    }).as("getUserAsNonStaff");
+    cy.waitOn("/v1/content/models**", () => {
+      cy.visit(`/studio?path=${studioPath}`);
+    });
+    cy.wait("@getUserAsNonStaff");
+    cy.getBySelector("StudioHeader").should("exist");
+  };
+
   const postBridgeMessage = (message) => {
     cy.getBySelector("StudioHeader").should("exist");
     cy.window().then(
@@ -300,6 +314,16 @@ describe("Studio Full Mode", () => {
   });
 
   it("discards and reports unsaved layout work when code access is revoked mid-session", () => {
+    // `hasPermission` is true for staff whatever the role, so the narrowing
+    // below only bites for a non-staff user whose real role has loaded.
+    reloadAsNonStaff();
+    cy.getBySelector("StudioModeToggle").should("not.exist");
+    cy.window()
+      .its("zestyStore")
+      .invoke("getState")
+      .its("userRole.systemRoleZUID")
+      .should("be.a", "string");
+
     stageLayoutChange();
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
 
