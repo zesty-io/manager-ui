@@ -17,7 +17,7 @@ export const Notice = ({ className, children }: NoticeProps) => {
         alignItems: "center",
         border: 1,
         borderColor: "border",
-        bgcolor: "warning.noticeBackground",
+        bgcolor: "background.noticeBackground",
         color: "text.secondary",
       }}
     >

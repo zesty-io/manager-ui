@@ -45,7 +45,7 @@ window.CONFIG = {
 import * as amplitude from "@amplitude/analytics-browser";
 import { isContentOne } from "../utility/isContentOne";
 
-// needed for Breadcrumbs in Shell
+// needed for the content nav tree
 injectReducer(store, "navContent", navContent);
 
 // Some legacy code refers to this global which is an observable
@@ -77,11 +77,6 @@ const themeOverrides = {
     },
     warning: {
       contrastText: "#fff",
-      // No ramp step matches this pale notice background (see
-      // docs/design-system.md §4) — named here so it's greppable in one
-      // place; consumed via sx={{ bgcolor: "warning.noticeBackground" }} in
-      // src/shell/components/legacy/Notice.tsx.
-      noticeBackground: "#fffde2",
     },
     info: {
       contrastText: "#fff",
@@ -98,6 +93,7 @@ const themeOverrides = {
       editor: "#0F0F0F",
       shimmer: "#EFF1F3",
       shimmerSweep: "#E2E2E2",
+      noticeBackground: "#fffde2",
     },
 
     // Off-system colours carried by the leads app. None of them matches a step
@@ -108,16 +104,6 @@ const themeOverrides = {
       toolbarLabel: "#C3CDDF",
       rowHover: "#DAE2F1",
       rowHoverBorder: "#F7F7F7",
-    },
-    text: {
-      // No existing ramp/semantic token matches this breadcrumb separator
-      // icon color (see docs/design-system.md §4) — named here so it's
-      // greppable in one place; consumed via
-      // theme.palette.text.breadcrumbSeparator in
-      // src/shell/components/global-tabs/components/Breadcrumbs/Breadcrumbs.js
-      // (a raw style prop on a FontAwesomeIcon, not sx, so it needs a
-      // resolved value rather than a "text.x"-style path string).
-      breadcrumbSeparator: "#afbcd4",
     },
   },
 
