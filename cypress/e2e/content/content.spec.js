@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from "uuid";
+
 const options = { timeout: 20_000 };
 const forceClick = { force: true };
 const formatDate = (ts) =>
@@ -961,7 +963,22 @@ describe("Content Specs", () => {
   });
 
   describe("WYSIWYG dirty detection", () => {
+    // Lazy: modelZUID/itemZUID are set by the top-level seed hook at runtime
+    const itemUrl = () =>
+      `${Cypress.env("API_INSTANCE_URL")}/content/models/${Cypress.env(
+        "modelZUID"
+      )}/items/${Cypress.env("itemZUID")}`;
+    let originalItem;
+
     before(() => {
+      // Snapshot the item so the shared dev instance can be restored afterwards
+      cy.apiRequest({ url: itemUrl() }).then((res) => {
+        originalItem = res?.data;
+      });
+    });
+
+    beforeEach(() => {
+      cy.blockLock();
       cy.waitOn("/v1/content/models*", () => {
         cy.visit(
           `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
@@ -969,7 +986,21 @@ describe("Content Specs", () => {
       });
     });
 
-    it("dirties on the first keystroke and clears after save", () => {
+    after(() => {
+      if (originalItem) {
+        cy.apiRequest({
+          url: itemUrl(),
+          method: "PUT",
+          body: {
+            data: originalItem.data,
+            meta: originalItem.meta,
+            web: originalItem.web,
+          },
+        });
+      }
+    });
+
+    it("dirties on the first keystroke and stays clean after save", () => {
       // 1. A freshly loaded item is clean — no save button.
       cy.getBySelector("SaveItemButton", options).should("not.exist");
 
@@ -978,18 +1009,56 @@ describe("Content Specs", () => {
       cy.iframe("#wysiwyg_basic_ifr").should("be.visible").click().type("a");
       cy.getBySelector("SaveItemButton", options).should("exist");
 
-      // 3. Saving clears the dirty state and it stays clear through the
+      // 3. Saving clears the dirty state, and it stays clear through the
       //    post-save version bump + editor remount.
-      cy.waitOn("/v1/content/models/*/items/*", () => {
-        cy.getBySelector("SaveItemButton").should("be.enabled").click();
-      });
-      cy.getBySelector("toast").contains("Item Saved").should("exist");
-      cy.getBySelector("SaveItemButton", options).should("not.exist");
+      cy.get("#wysiwyg_basic_ifr").then(($oldIframe) => {
+        cy.waitOn("/v1/content/models/*/items/*", () => {
+          cy.getBySelector("SaveItemButton").should("be.enabled").click();
+        });
+        cy.getBySelector("toast").contains("Item Saved").should("exist");
 
-      // 4. After the remount, a keystroke still dirties the item — proving the
-      //    baseline was re-established for the new editor instance.
+        // Wait for the remount: a new iframe whose body holds the saved text
+        cy.get("#wysiwyg_basic_ifr", options).should(($iframe) => {
+          expect($iframe[0]).not.to.equal($oldIframe[0]);
+          expect(
+            $iframe[0].contentDocument?.body?.textContent ?? ""
+          ).to.contain("a");
+        });
+
+        // A spurious post-remount change would land on the 500ms input
+        // debounce. There is no DOM/network signal for "debounce window
+        // elapsed", and a negative assertion passes instantly, so retry until
+        // it has passed.
+        cy.then(() => performance.now()).then((remountedAt) => {
+          cy.wrap(null, options).should(() => {
+            expect(performance.now() - remountedAt).to.be.greaterThan(1000);
+          });
+        });
+        cy.getBySelector("SaveItemButton").should("not.exist");
+      });
+
+      // 4. A keystroke still dirties the item after the save.
       cy.iframe("#wysiwyg_basic_ifr").should("be.visible").click().type("b");
       cy.getBySelector("SaveItemButton", options).should("exist");
+    });
+
+    it("persists the latest typed text when saving immediately with the keyboard shortcut", () => {
+      const text = `shortcut${uuidv4().slice(0, 8)}`;
+      const modifier = Cypress.platform === "darwin" ? "{meta}" : "{ctrl}";
+
+      cy.intercept("PUT", "**/v1/content/models/*/items/*").as("saveItem");
+
+      cy.iframe("#wysiwyg_basic_ifr")
+        .should("be.visible")
+        .click()
+        .type(`${text}${modifier}s`);
+
+      // The very first PUT must already contain the just-typed text
+      cy.wait("@saveItem", { timeout: 30000 })
+        .its("request.body.data.wysiwyg_basic")
+        .should("contain", text);
+
+      cy.getBySelector("toast").contains("Item Saved").should("exist");
     });
   });
 });
