@@ -458,13 +458,13 @@ export const FieldSelectorDialog = ({
         }
 
         if (dataType === "yes_no") {
-          if (!a?.item?.data[fieldName]) {
-            return 1;
-          } else if (!b?.item?.data[fieldName]) {
-            return -1;
-          } else {
-            return b - a;
-          }
+          const av = a?.item?.data[fieldName];
+          const bv = b?.item?.data[fieldName];
+          const aBlank = av === null || av === undefined || av === "";
+          const bBlank = bv === null || bv === undefined || bv === "";
+          if (aBlank) return 1;
+          if (bBlank) return -1;
+          return Number(bv) - Number(av);
         }
 
         const aValue =

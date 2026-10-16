@@ -44,39 +44,7 @@ import { fetchFields } from "../../../../../../shell/store/fields";
 import { debounce } from "lodash";
 import { SkeletonContentHeader, SkeletonItemListFilters } from "./Loader";
 import { NotFound } from "../../../../../../shell/components/NotFound";
-
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-  timeZone: "UTC",
-});
-
-const timeFormatter = new Intl.DateTimeFormat("en-US", {
-  hour: "numeric",
-  minute: "numeric",
-});
-
-const formatDateTime = (source: string) => {
-  if (!source) return "";
-
-  const dateObj = new Date(source);
-  if (isNaN(dateObj.getTime())) return "";
-
-  const date = dateFormatter.format(dateObj);
-  const time = timeFormatter.format(dateObj);
-
-  return `${date} ${time}`;
-};
-
-const formatDate = (source: string) => {
-  if (!source) return "";
-
-  const dateObj = new Date(source);
-  if (isNaN(dateObj.getTime())) return "";
-
-  return dateFormatter.format(dateObj);
-};
+import { formatDate, formatDateTime } from "shell/fieldTypes";
 
 export const ItemList = () => {
   const { t } = useTranslation();
@@ -484,13 +452,15 @@ export const ItemList = () => {
         }
 
         if (dataType === "yes_no") {
-          if (!a.data[sort]) {
-            return 1;
-          } else if (!b.data[sort]) {
-            return -1;
-          } else {
-            return sortOrder === "asc" ? a - b : b - a;
-          }
+          const av = a.data[sort];
+          const bv = b.data[sort];
+          const aBlank = av === null || av === undefined || av === "";
+          const bBlank = bv === null || bv === undefined || bv === "";
+          if (aBlank) return 1;
+          if (bBlank) return -1;
+          return sortOrder === "asc"
+            ? Number(av) - Number(bv)
+            : Number(bv) - Number(av);
         }
 
         const aValue =
