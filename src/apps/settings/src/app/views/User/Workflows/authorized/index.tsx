@@ -18,7 +18,7 @@ import ActiveStatus from "./ActiveStatus";
 import DeactivatedStatus from "./DeactivatedStatus";
 import { useGetWorkflowStatusLabelsQuery } from "../../../../../../../../shell/services/instance";
 import { useFormDialogContext } from "./forms-dialogs";
-import { NoResults } from "../../../../../../../schema/src/app/components/NoResults";
+import { EmptyResults } from "shell/components/EmptyResults";
 import { StatusLabelQuery } from "../../../../../../../../shell/services/types";
 import SearchBox from "../../../../../../../../shell/components/SearchBox";
 
@@ -230,10 +230,11 @@ export const AuthorizedUserPage = () => {
             height="100%"
             sx={{ display: "grid", placeContent: "center" }}
           >
-            <NoResults
-              type="search"
-              onButtonClick={handleSearchRetry}
-              searchTerm={searchValue}
+            <EmptyResults
+              dataCy="NoResults"
+              variant="search"
+              query={searchValue}
+              onAction={handleSearchRetry}
             />
           </Box>
         ) : (

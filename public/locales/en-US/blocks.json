@@ -13,7 +13,6 @@
   "howToUseBlocks": "How to use Blocks",
   "introToWebComponents": "Introduction to Web Components",
   "noResultsAvailable": "No results available for \"{{filter}}\"",
-  "noSearchResultsAlt": "No search results",
   "onboardingStep1Description": "Create and add editable blocks (e.g. Hero, Testimonial, Forms, etc.) to any existing page of your website with a few clicks",
   "onboardingStep1Title": "Introducing Blocks",
   "onboardingStep2Description": "Create a block model in Schema and define the editable fields. And then connect these fields in the code template for your block.",

@@ -57,7 +57,7 @@ export const EmptyState = () => {
           </Box>
         </Box>
         <Box>
-          <img src={growInstance} />
+          <img src={growInstance} alt={t("dashboard.emptyStateImageAlt")} />
         </Box>
       </Box>
       {openCreateContentDialog ? (

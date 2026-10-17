@@ -1,10 +1,10 @@
-import { Box, Typography, Stack, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
-import noSearchResults from "../../../../../../public/images/noSearchResults.jpg";
 import BackupTableRoundedIcon from "@mui/icons-material/BackupTableRounded";
-import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { useSelector } from "react-redux";
+
+import { EmptyResults } from "shell/components/EmptyResults";
 import { State } from "../../../../../shell/store/media-revamp";
 
 interface Props {
@@ -17,48 +17,32 @@ export const SearchEmptyState = ({ searchTerm }: Props) => {
   const isSelectDialog = useSelector(
     (state: { mediaRevamp: State }) => state.mediaRevamp.isSelectDialog
   );
+
   return (
     <Box
       display="flex"
       justifyContent="center"
       alignItems="center"
       height="100%"
-      textAlign={"center"}
     >
-      <Box width="387px">
-        <img src={noSearchResults} height="200px" />
-        <Typography sx={{ mt: 4 }} variant="h4" fontWeight={600}>
-          {t("media.searchEmptyStateTitle", { searchTerm })}
-        </Typography>
-        <Typography
-          sx={{ mt: 1, mb: 3 }}
-          variant="body2"
-          color="text.secondary"
-        >
-          {t("media.searchEmptyStateDescription")}
-        </Typography>
-        <Stack direction="row" spacing={2} justifyContent="center">
-          {!isSelectDialog && (
-            <Button
-              color="inherit"
-              variant="contained"
-              startIcon={<BackupTableRoundedIcon color="action" />}
-              onClick={() => history.push("/media")}
-            >
-              {t("media.goToAllMedia")}
-            </Button>
-          )}
-          <Button
-            variant="contained"
-            startIcon={<SearchRoundedIcon />}
-            onClick={() =>
-              history.push(`/media/search?term=${searchTerm}&cf=true`)
-            }
-          >
-            {t("common.searchAgain")}
-          </Button>
-        </Stack>
-      </Box>
+      <EmptyResults
+        variant="search"
+        size="page"
+        title={t("media.searchEmptyStateTitle", { searchTerm })}
+        description={t("media.searchEmptyStateDescription")}
+        secondaryAction={
+          isSelectDialog
+            ? undefined
+            : {
+                label: t("media.goToAllMedia"),
+                icon: <BackupTableRoundedIcon color="action" />,
+                onClick: () => history.push("/media"),
+              }
+        }
+        onAction={() =>
+          history.push(`/media/search?term=${searchTerm}&cf=true`)
+        }
+      />
     </Box>
   );
 };

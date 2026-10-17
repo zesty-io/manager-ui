@@ -20,7 +20,7 @@ import {
   GridRenderCellParams,
 } from "@mui/x-data-grid-pro";
 import { debounce } from "lodash";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
@@ -34,7 +34,7 @@ import { TitleCell } from "./TitleCell";
 import { VersionCell } from "./VersionCell";
 import { ItemsLoading } from "./ItemsLoading";
 import { useGetUsersQuery } from "../../../services/accounts";
-import { NoSearchResults } from "../../NoSearchResults";
+import { EmptyResults } from "../../EmptyResults";
 import { DialogHeader } from "./DialogHeader";
 import { fetchItems } from "../../../store/content";
 import { AppState } from "../../../store/types";
@@ -630,41 +630,66 @@ export const FieldSelectorDialog = ({
                   }
                   slots={{
                     noResultsOverlay: () => (
-                      <NoSearchResults
-                        isFilter
-                        query={filterKeyword}
-                        onSearchAgain={() => {
-                          if (!!filterKeyword) {
-                            setFilterKeyword("");
-                            if (!!searchField.current) {
-                              searchField.current.querySelector("input").value =
-                                "";
-                              searchField.current
-                                .querySelector("input")
-                                .focus();
-                            }
-                          }
-
-                          updateFilters({
-                            sortOrder: "lastSaved",
-                            user: null,
-                            date: {
-                              preset: null,
-                              from: null,
-                              to: null,
-                            },
-                            lang: userSelectedLangCode
-                              ? langs?.find(
-                                  (lang) => lang.code === userSelectedLangCode
-                                )?.ID
-                              : null,
-
-                            status: null,
-                          });
+                      <Box
+                        data-cy="NoSearchResults"
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          height: "100%",
                         }}
-                        ignoreFilters
-                        hideBackButton
-                      />
+                      >
+                        <EmptyResults
+                          variant="search"
+                          size="page"
+                          query={filterKeyword}
+                          title={
+                            <Trans
+                              i18nKey="shell.filterNoResultsRich"
+                              values={{ query: filterKeyword }}
+                              components={{
+                                strong: (
+                                  <Box
+                                    component="strong"
+                                    fontWeight="bold"
+                                    sx={{ wordBreak: "break-word" }}
+                                  />
+                                ),
+                              }}
+                            />
+                          }
+                          onAction={() => {
+                            if (!!filterKeyword) {
+                              setFilterKeyword("");
+                              if (!!searchField.current) {
+                                searchField.current.querySelector(
+                                  "input"
+                                ).value = "";
+                                searchField.current
+                                  .querySelector("input")
+                                  .focus();
+                              }
+                            }
+
+                            updateFilters({
+                              sortOrder: "lastSaved",
+                              user: null,
+                              date: {
+                                preset: null,
+                                from: null,
+                                to: null,
+                              },
+                              lang: userSelectedLangCode
+                                ? langs?.find(
+                                    (lang) => lang.code === userSelectedLangCode
+                                  )?.ID
+                                : null,
+
+                              status: null,
+                            });
+                          }}
+                        />
+                      </Box>
                     ),
                     columnHeaders: () => null,
                   }}
