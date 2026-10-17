@@ -33,6 +33,9 @@ export const CreateVariantDialog = ({
     useGetContentModelFieldsQuery({ modelZUID: model?.ZUID });
 
   const handleVariantCreate = async () => {
+    if (!model?.ZUID) {
+      return;
+    }
     setIsLoading(true);
     const initialData: { [key: string]: any } = fields?.reduce((accu, curr) => {
       if (!curr.deletedAt) {
@@ -106,7 +109,7 @@ export const CreateVariantDialog = ({
           {t("common.cancel")}
         </Button>
         <Button
-          disabled={isFieldsLoading}
+          disabled={isFieldsLoading || !model?.ZUID}
           onClick={handleVariantCreate}
           loading={isLoading}
           variant="contained"
