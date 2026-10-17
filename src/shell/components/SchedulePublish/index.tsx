@@ -9,6 +9,7 @@ import { ContentItemWithDirtyAndPublishing } from "../../services/types";
 import { useGetUsersQuery } from "../../services/accounts";
 import { TIMEZONES } from "../FieldTypeDateTime/util";
 import { publish, unpublish } from "../../store/content";
+import { AppDispatch } from "../../store/types";
 import {
   formatDistanceToNowLocalized,
   getDateFnsLocale,
@@ -37,7 +38,7 @@ export const SchedulePublish = ({
   scheduledAction,
 }: SchedulePublishProps) => {
   const { i18n } = useTranslation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { data: users } = useGetUsersQuery();
 
   const now = new Date();
@@ -107,7 +108,7 @@ export const SchedulePublish = ({
         { publishAt: publishAtUtcStr, version: item?.meta?.version },
         { localTime: localPretty, localTimezone: publishTimezone }
       )
-    ) // @ts-expect-error untyped action
+    )
       .then((response) => {
         if (!response?.error) {
           onScheduleSuccess?.();
@@ -128,7 +129,7 @@ export const SchedulePublish = ({
         item?.scheduling?.ZUID,
         { version: item?.scheduling?.version }
       )
-    ) // @ts-expect-error untyped action
+    )
       .then((response) => {
         if (!response?.error) {
           onUnscheduleSuccess?.();
@@ -182,13 +183,11 @@ export const SchedulePublish = ({
             item?.scheduling?.ZUID,
             { version: item?.scheduling?.version }
           )
-        )
-          // @ts-expect-error untyped action
-          .then((response) => {
-            if (response?.error) {
-              throw new Error(response?.error);
-            }
-          });
+        ).then((response) => {
+          if (response?.error) {
+            throw new Error(response?.error);
+          }
+        });
       }
 
       await dispatch(
@@ -202,13 +201,11 @@ export const SchedulePublish = ({
           },
           { localTime: localPretty, localTimezone: publishTimezone }
         )
-      )
-        // @ts-expect-error untyped action
-        .then((response) => {
-          if (response?.error) {
-            throw new Error(response?.error);
-          }
-        });
+      ).then((response) => {
+        if (response?.error) {
+          throw new Error(response?.error);
+        }
+      });
 
       onScheduleSuccess?.();
     } catch {
@@ -236,13 +233,11 @@ export const SchedulePublish = ({
             item?.scheduling?.ZUID,
             { version: item?.scheduling?.version }
           )
-        )
-          // @ts-expect-error untyped action
-          .then((response) => {
-            if (response?.error) {
-              throw new Error(response?.error);
-            }
-          });
+        ).then((response) => {
+          if (response?.error) {
+            throw new Error(response?.error);
+          }
+        });
       }
       await dispatch(
         publish(
@@ -255,13 +250,11 @@ export const SchedulePublish = ({
           },
           { localTime: "", localTimezone: publishTimezone }
         )
-      )
-        // @ts-expect-error untyped action
-        .then((response) => {
-          if (response?.error) {
-            throw new Error(response?.error);
-          }
-        });
+      ).then((response) => {
+        if (response?.error) {
+          throw new Error(response?.error);
+        }
+      });
 
       onUnscheduleSuccess?.();
     } catch {
