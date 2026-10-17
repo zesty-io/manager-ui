@@ -74,6 +74,49 @@ const VIDEO_FILE_TYPES = [
 const NORMAL_EDITOR_HEIGHT = 560;
 const COMPACT_EDITOR_HEIGHT = 259;
 
+// TinyMCE's `lists` plugin can throw a native HierarchyRequestError from its
+// own internals when a Safari user merges two adjacent lists with Backspace
+// (see https://github.com/zesty-io/manager-ui/issues/4325). There is no
+// first-party bug to fix here; this is a defensive recovery so the affected
+// editor reverts to its last consistent content instead of being left with a
+// partially-merged, corrupted list.
+//
+// Module-scoped guard so the recovery listener is registered exactly once
+// no matter how many FieldTypeTinyMCE instances mount (e.g. repeater rows
+// with multiple rich-text fields) — a listener per editor instance would run
+// undo() on every editor on the page instead of only the one that failed.
+let hierarchyErrorRecoveryAttached = false;
+
+function attachListMergeRecovery() {
+  if (hierarchyErrorRecoveryAttached) {
+    return;
+  }
+
+  hierarchyErrorRecoveryAttached = true;
+
+  window.addEventListener("error", (event) => {
+    // Deliberately not checking event.filename or the error stack here —
+    // in a minified production bundle the stack only resolves to
+    // tinymce/plugins/lists/plugin.js after Sentry applies source maps, not
+    // at runtime. The DOMException type/name check alone is specific enough
+    // to be an acceptable signal on its own.
+    if (
+      !(event.error instanceof DOMException) ||
+      event.error.name !== "HierarchyRequestError"
+    ) {
+      return;
+    }
+
+    // The editor with focus is the one that received the Backspace
+    // keystroke that triggered the list merge.
+    const editor = tinymce.activeEditor;
+
+    if (editor && !editor.destroyed && editor.hasFocus()) {
+      editor.undoManager.undo();
+    }
+  });
+}
+
 const compactToolbar =
   "compactBlocks | bold italic underline compactAlign compactLists | zestyMediaApp media link | fullscreen";
 const normalToolbar =
@@ -410,6 +453,8 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 
             // Customize editor buttons and actions
             setup: (editor: any) => {
+              attachListMergeRecovery();
+
               editor.on("init", function () {
                 editor.addShortcut("meta+p", "", () => {
                   window.dispatchEvent(
