@@ -21,10 +21,12 @@ src/apps/studio/
     useLayoutReorderState.ts                 template source patching + save/publish
     useStudioContentSave.ts                  batch content-item save/publish/discard
     useCrossModelConnectField.ts             read-back for a cross-item binding
+    useStudioAiEdit.ts                       AI edits to the page's view: staging + PVL preview
   components/
     StudioHeader · StudioPreview · StudioSidePanel · StudioInspectorPanel
     StudioLayersPanel · StudioLayersTreeItem · StudioSaveChangesModal
     StudioLinkItemDialog · StudioFreestyleAlert · FieldIconChip
+    StudioAIPanel · StudioAIPreview
     studioTags.ts · studioFieldMeta.ts · studioParsley.ts
 ```
 
@@ -58,11 +60,26 @@ Envelopes are asymmetric — always check `source` before trusting a message:
 { source: "studio-bridge",     message: { type: "<TYPE>", ... } }
 ```
 
-**Bridge → host** (handled in `useStudioBridge.ts`): `BRIDGE_READY` · `BRIDGE_ERROR` · `DOM_EVENT` · `LAYERS_TREE` · `TEMPLATE_SOURCE_MAP` · `REORDER_OUTPUT` · `LAYOUT_CONTENT_UPDATE` · `STATIC_EDIT_REJECTED` · `STATIC_EDIT_IMAGE`
+**Bridge → host** (handled in `useStudioBridge.ts`): `BRIDGE_READY` · `BRIDGE_ERROR` · `DOM_EVENT` · `LAYERS_TREE` · `TEMPLATE_SOURCE_MAP` · `REORDER_OUTPUT` · `LAYOUT_CONTENT_UPDATE` · `STATIC_EDIT_REJECTED` · `STATIC_EDIT_IMAGE` · `CODE_REGION_REPLACED`
 
-**Host → bridge** (`payload.action`): `injectCss` · `setInteractionMode` · `requestLayersTree` · `addClass` · `removeClass` · `addClassByLayoutId` · `removeClassByLayoutId` · `enableEditing` · `disableEditing` · `setTextByField` · `setHtmlByField` · `setSelectedLayoutId` · `clearSelectedLayout` · `enableReorderByUid` · `disableReorderByUid` · `moveLayoutElement` · `enterStaticEditingByLayoutId` · `updateElementText` · `updateElementAttr` · `updateElementTag` · `updateImageSrc` · `syncTemplateSource`
+**Host → bridge** (`payload.action`): `injectCss` · `setInteractionMode` · `requestLayersTree` · `addClass` · `removeClass` · `addClassByLayoutId` · `removeClassByLayoutId` · `enableEditing` · `disableEditing` · `setTextByField` · `setHtmlByField` · `setSelectedLayoutId` · `clearSelectedLayout` · `enableReorderByUid` · `disableReorderByUid` · `moveLayoutElement` · `enterStaticEditingByLayoutId` · `updateElementText` · `updateElementAttr` · `updateElementTag` · `updateImageSrc` · `syncTemplateSource` · `replaceCodeRegion` · `setPreviewLock`
 
 `updateElementText` carries three non-obvious fields: `previewValue` (a resolved value to _display_ while the template keeps `value`), `previewAsHtml` (parse it as markup rather than writing a text node), and `textIndex` (which of the leaf's own text runs to write).
+
+`BRIDGE_READY` carries `path`, the canvas page's `location.pathname`. Studio's AI preview compares it with the page it loaded, to tell a reload under a staged change from the canvas navigating away.
+
+The AI preview uses one command pair. `replaceCodeRegion` (`codeId`, `html`, optional `requestId`) paints `html` between a region's `data-code-boundary` comments and is answered by `CODE_REGION_REPLACED` (`codeId`, `ok`, `count`, echoed `requestId`, and `reason` when `ok` is false):
+
+| `reason`           | Meaning                                                                                 |
+| ------------------ | --------------------------------------------------------------------------------------- |
+| `region-not-found` | the page has no region with that `codeId`                                               |
+| `invalid-html`     | `html` was not a string                                                                 |
+| `replace-failed`   | the swap threw; `error` carries the message                                             |
+| `missing-code-id`  | the payload had no `codeId`                                                             |
+| `cancelled`        | a paint held for the initial page state was dropped by `setPreviewLock` `locked: false` |
+| `superseded`       | a paint held for the initial page state was replaced by a newer one                     |
+
+A paint that arrives before the bridge has posted its first `TEMPLATE_SOURCE_MAP` and `LAYERS_TREE` is held until it has; only the latest is kept. A successful paint also locks the canvas. `setPreviewLock` (`locked`) makes the canvas view-only while the preview shows: gestures, edits and link or form navigation post nothing, an in-flight drag or static edit is abandoned, and the layers tree is not re-emitted. Studio never unlocks — every way out reloads the frame, and a reloaded bridge starts unlocked.
 
 `DOM_EVENT.eventType` is one of `mousedown | dblclick | click | input | mouseover | mouseout | escape`, and carries `element.dataset` plus, in layout mode, a `breadcrumb`.
 
@@ -161,6 +178,8 @@ Partial failure keeps the Save Changes modal open.
 
 **Layout save reports failure by return value, not by throwing.** `handleSavePendingLayout` and `handleSaveAndPublishPendingLayout` resolve `{ failed: boolean }` on every path, including the path that catches an error and notifies. A caller that only wraps them in `try`/`catch` reads a failed `PUT` as success and clears the dirty state on top of it.
 
+**AI edits ride the layout save.** The AI panel (`shell/components/AIChat`, shared with the Shell drawer) registers the page's own view — the web view whose `contentModelZUID` is the page model — under refKey `code-editor`, so the MCP request matches the Code app's. A returned whole file is staged with `stageLayoutSourceUpdate(…, { replacesSource: true })`, rendered by POSTing it to WebEngine's `/-/pvl/?studio=bridge`, and painted into the live canvas by the bridge's `replaceCodeRegion`, which swaps what renders between the view's `codeId` markers and answers `CODE_REGION_REPLACED`. While a preview shows, the host drops canvas gestures and the layers panel is inert; Save or Cancel reloads the canvas.
+
 **Full mode saves both halves through one bar** (`runMergedSave`) — layout first, then content, stopping if the layout half reports `failed`. Permission is per half, so the bar's enablement is a union rather than an `&&`: a role that may edit content but not layout still has to be able to save its content edits in full mode.
 
 ## Parsley references and cross-item bindings
@@ -241,7 +260,7 @@ When testing cross-item links:
 
 `grep -rn 'data-cy' src/apps/studio/` is authoritative; the list below drifts.
 
-`StudioHeader` `StudioModeToggle` `StudioPreviewFrame` `StudioPreviewRefreshOverlay` `StudioLayersPanel` `StudioLayersRow` `StudioLayersRowChevron` `StudioInspectorPanel` `StudioInspectorPanelClose` `StudioTagSelect` `StudioConnectedField` `StudioConnectedFieldCaption` `StudioSidePanel` `StudioBackToInspector` `StudioBreadcrumbs` `StudioBreadcrumbRail` `StudioBreadcrumbRoot` `StudioBreadcrumbChip` `StudioAddLink` `StudioRemoveLink` `StudioLinkDisconnect` `StudioSaveChangesModal` `StudioSaveAllButton` `StudioSaveAndPublishAllButton` `StudioSaveChangeRow` `StudioSaveChangesCancelButton` `StudioLogo` `StudioLinkItemDialog` `StudioLinkItemDialogClose` `StudioLinkItemFieldSelect` `StudioLinkItemCancel` `StudioLinkItemConfirm` `StudioFreestyleAlert` `StudioFreestyleAlertEditButton` `StudioFreestyleAlertCloseButton` `StudioEditInManagerButton` `StudioEditInFreestyleButton`
+`StudioHeader` `StudioModeToggle` `StudioPreviewFrame` `StudioPreviewRefreshOverlay` `StudioLayersPanel` `StudioLayersRow` `StudioLayersRowChevron` `StudioInspectorPanel` `StudioInspectorPanelClose` `StudioTagSelect` `StudioConnectedField` `StudioConnectedFieldCaption` `StudioSidePanel` `StudioBackToInspector` `StudioBreadcrumbs` `StudioBreadcrumbRail` `StudioBreadcrumbRoot` `StudioBreadcrumbChip` `StudioAddLink` `StudioRemoveLink` `StudioLinkDisconnect` `StudioSaveChangesModal` `StudioSaveAllButton` `StudioSaveAndPublishAllButton` `StudioSaveChangeRow` `StudioSaveChangesCancelButton` `StudioLogo` `StudioLinkItemDialog` `StudioLinkItemDialogClose` `StudioLinkItemFieldSelect` `StudioLinkItemCancel` `StudioLinkItemConfirm` `StudioFreestyleAlert` `StudioFreestyleAlertEditButton` `StudioFreestyleAlertCloseButton` `StudioEditInManagerButton` `StudioEditInFreestyleButton` `StudioAIButton` `StudioSaveStatus` `StudioAIPanel` `StudioAIPreviewStatus` `StudioAIPreviewError`
 
 Templated: `StudioModeToggleOption-{mode}` `StudioSlotInput-{key}` `StudioSlotBrowse-{attr}` `StudioConnectContent-{key}` `StudioDisconnect-{key}` `StudioConnectField-{name}` `StudioConnectOtherItem-{key}` `StudioLinkItemField-{name}` `StudioLinkItemSearchInput` (also `-InputField`, `-Error`) `StudioSaveChangeSection-{label}` `Studio{Layout|Content}SaveBar` `Studio{Layout|Content}CancelButton` `Studio{Layout|Content}SaveChangesButton`
 
