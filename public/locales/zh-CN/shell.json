@@ -56,6 +56,7 @@
   "collapseSidebar": "折叠侧边栏",
   "commentAddError": "无法添加评论。请检查您的网络连接并重试。",
   "commentPlaceholder": "回复或使用 @ 添加他人",
+  "confirmDialogGenericError": "出了点问题，请重试。",
   "confirmPublishBody": "这将立即在您的所有平台上发布{{item}}的 v{{version}}。如有需要，您随时可以稍后取消发布此项。",
   "confirmPublishTitle": "发布{{item}}",
   "contactSupport": "联系支持",

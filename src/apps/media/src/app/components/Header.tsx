@@ -11,6 +11,7 @@ import DoneAllRoundedIcon from "@mui/icons-material/DoneAllRounded";
 import CheckIcon from "@mui/icons-material/Check";
 import CreateNewFolderRoundedIcon from "@mui/icons-material/CreateNewFolderRounded";
 import { useHistory } from "react-router";
+import { FetchBaseQueryMeta } from "@reduxjs/toolkit/query/react";
 import { useLocalStorage } from "react-use";
 
 import { NewFolderDialog } from "./NewFolderDialog";
@@ -20,6 +21,7 @@ import { MoveFileDialog } from "./FileModal/MoveFileDialog";
 import { DeleteFileModal } from "./FileModal/DeleteFileModal";
 import {
   clearSelectedFiles,
+  deselectFile,
   selectFile,
   State,
 } from "../../../../../shell/store/media-revamp";
@@ -63,8 +65,7 @@ export const Header = ({
   const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
   const now = useMemo(() => new Date(), []);
-  const [deleteFiles, { isLoading: isLoadingDelete }] =
-    useDeleteFilesMutation();
+  const [deleteFiles] = useDeleteFilesMutation();
   const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
   const [showDeleteFileDialog, setShowDeleteFileDialog] = useState(false);
   const selectedFiles = useSelector(
@@ -116,18 +117,42 @@ export const Header = ({
     });
   };
 
-  const handleDeleteMutation = () => {
-    deleteFiles(
-      selectedFiles.map((file) => ({
+  const handleDeleteMutation = async () => {
+    const filesToDelete = [...selectedFiles];
+    const { error } = await deleteFiles(
+      filesToDelete.map((file) => ({
         id: file.id,
         body: {
           group_id: file.group_id,
         },
       }))
-    ).then(() => {
-      setShowDeleteFileDialog(false);
-      dispatch(clearSelectedFiles());
-    });
+    ).unwrap();
+
+    if (error.length) {
+      // Batch results carry no id; each failed request's URL ends in
+      // /file/<id>. Deselect what was deleted and keep the failures selected
+      // so a retry only re-sends those. If any id can't be read, keep the
+      // whole selection rather than guess.
+      const failedIds = error.map((result) =>
+        (result.meta as FetchBaseQueryMeta | undefined)?.request?.url
+          ?.split("?")[0]
+          .split("/")
+          .pop()
+      );
+      if (failedIds.every(Boolean)) {
+        filesToDelete
+          .filter((file) => !failedIds.includes(file.id))
+          .forEach((file) => dispatch(deselectFile(file)));
+      }
+      throw new Error(
+        t("media.deleteFilesPartialFailure", {
+          failed: error.length,
+          total: filesToDelete.length,
+        })
+      );
+    }
+
+    dispatch(clearSelectedFiles());
   };
 
   const handleSelectAll = () => {
@@ -194,11 +219,8 @@ export const Header = ({
         <DeleteFileModal
           onDeleteFile={handleDeleteMutation}
           fileCount={selectedFiles?.length}
-          onClose={() => {
-            if (!isLoadingDelete) setShowDeleteFileDialog(false);
-          }}
-          filename={selectedFiles?.length && selectedFiles[0].filename}
-          isLoadingDelete={isLoadingDelete}
+          onClose={() => setShowDeleteFileDialog(false)}
+          filename={selectedFiles?.[0]?.filename}
         />
       )}
 
