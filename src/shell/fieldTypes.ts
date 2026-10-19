@@ -47,7 +47,7 @@ export type FieldType =
   | "fontawesome"
   | "wysiwyg_advanced"
   | "article_writer"
-  | "block_selector" // TODO: Will need to confirm if this type is already supported by the api
+  | "block_selector"
   | "integration"
   | "repeater";
 

@@ -452,15 +452,21 @@ export const ItemList = () => {
         }
 
         if (dataType === "yes_no") {
-          const av = a.data[sort];
-          const bv = b.data[sort];
-          const aBlank = av === null || av === undefined || av === "";
-          const bBlank = bv === null || bv === undefined || bv === "";
+          const aBoolValue = a.data[sort];
+          const bBoolValue = b.data[sort];
+          const aBlank =
+            aBoolValue === null ||
+            aBoolValue === undefined ||
+            aBoolValue === "";
+          const bBlank =
+            bBoolValue === null ||
+            bBoolValue === undefined ||
+            bBoolValue === "";
           if (aBlank) return 1;
           if (bBlank) return -1;
           return sortOrder === "asc"
-            ? Number(av) - Number(bv)
-            : Number(bv) - Number(av);
+            ? Number(aBoolValue) - Number(bBoolValue)
+            : Number(bBoolValue) - Number(aBoolValue);
         }
 
         const aValue =

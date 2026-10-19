@@ -3,7 +3,6 @@ import { ContentModelField } from "../../../../../shell/services/types";
 
 import { FIELD_TYPES, FieldType } from "shell/fieldTypes";
 
-export type { FieldType };
 interface FieldListData {
   type: FieldType;
   name: string;
