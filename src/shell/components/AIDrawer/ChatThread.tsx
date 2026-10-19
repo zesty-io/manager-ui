@@ -85,7 +85,7 @@ export type ChatResponse = { approval?: string } & (
     }
   | { type: "NOTICE"; payload: { value: string } }
   | {
-      type: "SYSTEM_SUGGESTION" | "ERROR";
+      type: "SYSTEM_SUGGESTION" | "SYSTEM_OUTPUT" | "ERROR";
       payload: { refKey?: string; value: string };
     }
 );

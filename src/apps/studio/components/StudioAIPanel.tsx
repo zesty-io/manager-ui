@@ -244,6 +244,12 @@ const StudioAIChat = ({
               },
             ]
           : toChatResponses(reply.data);
+      // The model describes a code edit in a SYSTEM_OUTPUT (mcp-remote#16),
+      // which then stands as the turn's summary. Without one, the summary is
+      // the edit's line counts.
+      const hasDescription = parsed.some(
+        (entry) => entry.type === "SYSTEM_OUTPUT"
+      );
       const entries = parsed.flatMap((entry): ChatResponse[] => {
         if (entry.type !== "SET_VALUE") return [entry];
         const { refKey, value } = entry.payload;
@@ -254,8 +260,9 @@ const StudioAIChat = ({
             ? getRefRegistry()["code-editor"]?.context?.()
             : null;
         if (!applySetValue(refKey, value) || !codeEditor) return [entry];
-        // Refused by the handle: nothing changed, so nothing to count.
-        if (!value.trim()) return [];
+        // Nothing to count when the handle refused a blank file, and nothing
+        // to add when the description already summarises the edit.
+        if (!value.trim() || hasDescription) return [];
 
         return [
           {

@@ -71,6 +71,23 @@ describe("Studio AI Assistant", () => {
     tools: [],
   });
 
+  // The dev MCP's own shape, recorded 2026-10-19: `data` is the action array
+  // itself, not a fenced string.
+  const liveReply = (actions) => ({
+    data: actions,
+    message: "Generated text content using Gemini",
+    tools: [],
+  });
+
+  // mcp-remote#16: a code edit is described, and an edit to content-bound
+  // text is declined, in a SYSTEM_OUTPUT.
+  const DESCRIPTION =
+    "Added a line under the heading and removed the second plain div.";
+  const systemOutput = (value) => ({
+    type: "SYSTEM_OUTPUT",
+    payload: { value },
+  });
+
   const setValue = (value) => ({
     type: "SET_VALUE",
     payload: { refKey: "code-editor", value },
@@ -272,8 +289,10 @@ describe("Studio AI Assistant", () => {
     cy.get("@mcp").its("request.body").should("not.have.property", "chatZuid");
   });
 
-  it("stages an edit, summarises it and previews it through PVL", () => {
-    stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
+  it("stages an edit, describes it and previews it through PVL", () => {
+    stubMcp((body) =>
+      liveReply([setValue(editSource(body.code)), systemOutput(DESCRIPTION)])
+    );
     stubPvl({
       statusCode: 200,
       body: '<p class="studio-e2e-ai">Rendered by PVL</p>',
@@ -292,10 +311,11 @@ describe("Studio AI Assistant", () => {
       expect(request.body).to.contain(itemZUID);
     });
 
-    cy.getBySelector("AIDrawerCodeEdit")
-      .should("contain.text", viewFileName)
-      .and("contain.text", "+1")
-      .and("contain.text", "−1");
+    // The description is the turn's summary, shown once, with no line counts.
+    cy.getBySelector("AIDrawerSystemOutput")
+      .should("have.length", 1)
+      .and("have.text", DESCRIPTION);
+    cy.getBySelector("AIDrawerCodeEdit").should("not.exist");
     cy.getBySelector("StudioAIPanel").should("not.contain", "studio-e2e");
 
     cy.getBySelector("StudioSaveStatus").should("contain.text", "Not Saved");
@@ -303,6 +323,37 @@ describe("Studio AI Assistant", () => {
       .should("have.attr", "aria-disabled", "true")
       .and("have.attr", "inert");
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
+  });
+
+  it("summarises an undescribed edit by its line counts", () => {
+    stubMcp((body) => liveReply([setValue(editSource(body.code))]));
+    stubPvl({ statusCode: 200, body: "<p>preview</p>" });
+    openAiPanel();
+    sendPrompt("Add a line under the heading");
+
+    cy.getBySelector("AIDrawerCodeEdit")
+      .should("contain.text", viewFileName)
+      .and("contain.text", "+1")
+      .and("contain.text", "−1");
+    cy.getBySelector("AIDrawerSystemOutput").should("not.exist");
+    cy.getBySelector("StudioAIPanel").should("not.contain", "studio-e2e");
+    expectPreviewing(true);
+  });
+
+  it("stages nothing for a reply that only declines the edit", () => {
+    const DECLINE =
+      "That heading comes from this page's title field. Edit it in the content editor.";
+    stubMcp(() => liveReply([systemOutput(DECLINE)]));
+    stubPvl({ statusCode: 200, body: "<p>unused</p>" });
+    openAiPanel();
+    sendPrompt('Change the page heading text to "Hello world"');
+
+    cy.getBySelector("AIDrawerSystemOutput").should("have.text", DECLINE);
+    cy.getBySelector("AIDrawerCodeEdit").should("not.exist");
+    expectPreviewing(false);
+    cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
+    cy.getBySelector("StudioSaveStatus").should("not.exist");
+    cy.get("@pvl.all").should("have.length", 0);
   });
 
   it("puts the preview password in the PVL URL but not in the request's actions", () => {
