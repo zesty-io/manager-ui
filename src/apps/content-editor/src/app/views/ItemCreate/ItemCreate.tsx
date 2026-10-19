@@ -209,6 +209,10 @@ export const ItemCreate = () => {
 
   const save = useCallback(
     async (action: ActionAfterSave) => {
+      // The Cmd/Ctrl+S shortcut doesn't move focus, so blur the active field
+      // to run its onBlur flush and commit any pending debounced value.
+      (document.activeElement as HTMLElement | null)?.blur();
+
       // Read the item from the store rather than this render's closure: a
       // field can flush its debounced value in the same task as the Save
       // click, before React has re-rendered with it.

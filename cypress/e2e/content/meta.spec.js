@@ -116,6 +116,22 @@ describe("Content Meta", () => {
     cy.getBySelector("toast").contains("Created Item");
   });
 
+  it("Saves the pending field value when using the save shortcut", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.waitOn("/v1/env/nav", () => {
+        cy.waitOn("/v1/search/items*", () => {
+          cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
+        });
+      });
+    });
+
+    const saveShortcut = Cypress.platform === "darwin" ? "{cmd}s" : "{ctrl}s";
+    const title = `shortcut ${today}`;
+
+    cy.getBySelector("field:text").find("input").type(title).type(saveShortcut);
+    cy.getBySelector("toast").contains(`Created Item: ${title}`);
+  });
+
   it("Auto applies page parent when creating an item", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/env/nav", () => {
