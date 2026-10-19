@@ -77,6 +77,13 @@ export type ChatResponse = { approval?: string } & (
   | { type: "SET_VALUE"; payload: { refKey: string; value: string } }
   // A prose reply.
   | { type: "MESSAGE"; payload: { value: string } }
+  // Built by a host, not sent by the server: an applied code edit's line
+  // counts, and a line of its own.
+  | {
+      type: "CODE_EDIT";
+      payload: { fileName: string; added: number; removed: number };
+    }
+  | { type: "NOTICE"; payload: { value: string } }
   | {
       type: "SYSTEM_SUGGESTION" | "ERROR";
       payload: { refKey?: string; value: string };
@@ -106,6 +113,9 @@ export type ChatThreadProps = {
   handlePrompt: (value: string) => boolean;
   handleGenerateSuggestions: (sourcePrompt: string) => void;
   responsesEndRef: MutableRefObject<HTMLDivElement | null>;
+  // For a host that applies every suggestion itself.
+  hideAutoApply?: boolean;
+  placeholder?: string;
 };
 
 export const ChatThread = ({
@@ -129,6 +139,8 @@ export const ChatThread = ({
   handlePrompt,
   handleGenerateSuggestions,
   responsesEndRef,
+  hideAutoApply = false,
+  placeholder,
 }: ChatThreadProps) => {
   const { t } = useTranslation();
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -307,6 +319,32 @@ export const ChatThread = ({
                         />
                       </Box>
                     );
+                  } else if (response.type === "CODE_EDIT") {
+                    return (
+                      <Box
+                        data-cy="AIDrawerCodeEdit"
+                        key={`${promptZUID}-${responseIndex}`}
+                      >
+                        <Typography variant="body2">
+                          {t("shell.aiCodeEditSummary", {
+                            fileName: response.payload.fileName,
+                            added: response.payload.added,
+                            removed: response.payload.removed,
+                          })}
+                        </Typography>
+                      </Box>
+                    );
+                  } else if (response.type === "NOTICE") {
+                    return (
+                      <Typography
+                        data-cy="AIDrawerNotice"
+                        key={`${promptZUID}-${responseIndex}`}
+                        variant="caption"
+                        color="text.secondary"
+                      >
+                        {response.payload.value}
+                      </Typography>
+                    );
                   }
 
                   return (
@@ -450,6 +488,7 @@ export const ChatThread = ({
           disabled={isLoading || isLoadingChatSessionLog}
           onSubmit={handlePrompt}
           onHasValueChange={setHasComposerValue}
+          placeholder={placeholder}
         />
       </Box>
       <Box
@@ -513,26 +552,28 @@ export const ChatThread = ({
         }}
         in={settingsOpen}
       >
-        <FormGroup>
-          <FormControlLabel
-            sx={{
-              mx: 0,
-            }}
-            control={
-              <Switch
-                data-cy="AIDrawerAutoApplyToggle"
-                size="small"
-                checked={autoApply}
-                onChange={(e) => setAutoApply(e.target.checked)}
-              />
-            }
-            label={
-              <Typography variant="subtitle2" color="text.secondary">
-                {t("shell.autoApply")}
-              </Typography>
-            }
-          />
-        </FormGroup>
+        {!hideAutoApply && (
+          <FormGroup>
+            <FormControlLabel
+              sx={{
+                mx: 0,
+              }}
+              control={
+                <Switch
+                  data-cy="AIDrawerAutoApplyToggle"
+                  size="small"
+                  checked={autoApply}
+                  onChange={(e) => setAutoApply(e.target.checked)}
+                />
+              }
+              label={
+                <Typography variant="subtitle2" color="text.secondary">
+                  {t("shell.autoApply")}
+                </Typography>
+              }
+            />
+          </FormGroup>
+        )}
 
         <Stack direction="row" gap={1} alignItems="center" mt={1}>
           <InputLabel sx={{ mb: 0 }}>{t("shell.language")}</InputLabel>
