@@ -38,6 +38,7 @@ import { AnimatedText } from "./AnimatedText";
 import { GeneratedImage } from "./GeneratedImage";
 import { PromptComposer, PromptComposerHandle } from "./PromptComposer";
 import { useUpdatePromptApprovalStatusMutation } from "../../services/mcp";
+import { useApplySetValue } from "./useApplySetValue";
 
 // `value` is the tone instruction sent to the model (do not translate);
 // `label` is the short UI name, resolved with t() at the render site.
@@ -74,6 +75,8 @@ export type ChatResponse = { approval?: string } & (
   | { type: "USER_INPUT"; payload: { value: string } }
   | { type: "NAVIGATE"; payload: { path: string } }
   | { type: "SET_VALUE"; payload: { refKey: string; value: string } }
+  // A prose reply.
+  | { type: "MESSAGE"; payload: { value: string } }
   | {
       type: "SYSTEM_SUGGESTION" | "ERROR";
       payload: { refKey?: string; value: string };
@@ -133,6 +136,7 @@ export const ChatThread = ({
   const [hasComposerValue, setHasComposerValue] = useState(false);
   const composerRef = useRef<PromptComposerHandle>(null);
   const { data: langMappings } = useGetLangsMappingQuery();
+  const applySetValue = useApplySetValue();
   const toneOptions = getToneOptions(t);
   const generateSuggestionsPromptPrefix = t("shell.generateSuggestionsPrompt", {
     prompt: "",
@@ -284,6 +288,25 @@ export const ChatThread = ({
                         {t("shell.navigate")}
                       </Button>
                     );
+                  } else if (response.type === "MESSAGE") {
+                    return (
+                      <Box
+                        data-cy="AIDrawerMessage"
+                        key={`${promptZUID}-${responseIndex}`}
+                      >
+                        <AnimatedText
+                          text={response.payload.value}
+                          animate={shouldAnimate}
+                          onGrow={() => {
+                            if (responsesEndRef.current) {
+                              responsesEndRef.current.scrollIntoView({
+                                behavior: "smooth",
+                              });
+                            }
+                          }}
+                        />
+                      </Box>
+                    );
                   }
 
                   return (
@@ -331,14 +354,16 @@ export const ChatThread = ({
                           disabled={response.approval === "1"}
                           onClick={() => {
                             if (!urlChatZUID) return;
+                            // Stays applicable when the ref is not on the page.
+                            if (
+                              !applySetValue(
+                                response.payload.refKey,
+                                response.payload.value
+                              )
+                            ) {
+                              return;
+                            }
 
-                            enqueueAction({
-                              type: response.type,
-                              payload: {
-                                refKey: response.payload.refKey,
-                                value: response.payload.value,
-                              },
-                            });
                             updatePromptApprovalStatus({
                               chatZUID: urlChatZUID,
                               promptZUID,
