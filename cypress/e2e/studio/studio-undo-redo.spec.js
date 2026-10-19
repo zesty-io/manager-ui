@@ -7,6 +7,8 @@
 // an intercept that echoes every host command back to the parent, which is
 // how the commands are read; the bridge's own messages are posted from the
 // parent, as the other studio specs do.
+import { v4 as uuidv4 } from "uuid";
+
 describe("Studio Undo / Redo", () => {
   const MCP_CLIENT = /\/client$/;
   const ORIGINAL_TITLE = "Studio Title";
@@ -16,11 +18,14 @@ describe("Studio Undo / Redo", () => {
   let itemZUID = "";
   let modelZUID = "";
   let titleFieldZUID = "";
+  let viewZUID = "";
   let seededPage = null;
 
   before(() => {
     cy.task("seed:content", "fixtures/studio.json").then(
-      ({ model, fields, items }) => {
+      ({ model, fields, items, view }) => {
+        viewZUID = view?.ZUID || "";
+        expect(viewZUID, "seeded view").to.match(/^11-/);
         itemZUID = items[0].meta.ZUID;
         modelZUID = model.ZUID;
         studioPath = `/${items[0].web.pathPart}`;
@@ -53,7 +58,7 @@ describe("Studio Undo / Redo", () => {
             }
           })
       )
-      .as("resolveItemByPath");
+      .as("pathSearch");
 
   const HOST_COMMAND = "E2E_HOST_COMMAND";
   const serveEchoCanvas = () =>
@@ -72,13 +77,33 @@ describe("Studio Undo / Redo", () => {
       }
     );
 
+  // Also answers each historyRestore as the bridge would, per
+  // `win.__restoreReply`: "ok", "fail", or "none" for no answer at all.
   const recordHostCommands = () =>
     cy.window().then((win) => {
       win.__hostCommands = [];
+      win.__restoreReply = "ok";
       win.addEventListener("message", (evt) => {
-        if (evt.data?.message?.type === HOST_COMMAND) {
-          win.__hostCommands.push(evt.data.message.payload);
-        }
+        if (evt.data?.message?.type !== HOST_COMMAND) return;
+        const command = evt.data.message.payload;
+        win.__hostCommands.push(command);
+        if (command.action !== "historyRestore") return;
+        if (win.__restoreReply === "none") return;
+        const ok = win.__restoreReply === "ok";
+        win.postMessage(
+          {
+            source: "studio-bridge",
+            message: {
+              type: "HISTORY_RESTORED",
+              stepId: command.stepId,
+              direction: command.direction,
+              codeIds: [],
+              ok,
+              ...(ok ? {} : { reason: "partial" }),
+            },
+          },
+          "*"
+        );
       });
     });
 
@@ -232,17 +257,18 @@ describe("Studio Undo / Redo", () => {
     cy.getBySelector("StudioRedoButton").should("not.be.disabled");
 
     // The step was snapshotted with the field it touched, then restored.
+    // It is re-snapshotted as it goes; every snapshot is the one step's.
     hostCommands("historySnapshot").then((snapshots) => {
-      expect(snapshots).to.have.length(1);
-      expect(snapshots[0].fields).to.deep.eq([
-        { fieldZuid: titleFieldZUID, itemZuid: itemZUID },
-      ]);
+      expect(snapshots).to.have.length.at.least(1);
+      const { stepId } = snapshots[0];
+      snapshots.forEach((snapshot) => {
+        expect(snapshot.stepId).to.eq(stepId);
+        expect(snapshot.fields).to.deep.eq([
+          { fieldZuid: titleFieldZUID, itemZuid: itemZUID },
+        ]);
+      });
       hostCommands("historyRestore").should("deep.eq", [
-        {
-          action: "historyRestore",
-          stepId: snapshots[0].stepId,
-          direction: "undo",
-        },
+        { action: "historyRestore", stepId, direction: "undo" },
       ]);
     });
 
@@ -358,32 +384,302 @@ describe("Studio Undo / Redo", () => {
     cy.getBySelector("StudioRedoButton").should("be.disabled");
   });
 
-  it("drops the history but keeps the staged edit when the canvas cannot restore", () => {
+  it("applies nothing and drops the history when the canvas cannot restore", () => {
     bridgeReady(["history"]);
     openTitleField();
     editTitle();
-    cy.getBySelector("StudioUndoButton").click();
-    cy.getBySelector("StudioRedoButton").click();
-    storedTitle().should("eq", EDITED_TITLE);
-    cy.getBySelector("StudioUndoButton").should("not.be.disabled");
+    cy.window().then((win) => {
+      win.__restoreReply = "fail";
+    });
     hostCommands("historyReset").then((resets) => {
       const before = resets.length;
 
-      postBridgeMessage({
-        type: "HISTORY_RESTORED",
-        stepId: 1,
-        direction: "redo",
-        ok: false,
-        reason: "region-not-found",
-      });
+      cy.getBySelector("StudioUndoButton").click();
 
+      hostCommands("historyRestore").should("have.length", 1);
       hostCommands("historyReset").should("have.length", before + 1);
     });
     cy.getBySelector("StudioUndoButton").should("be.disabled");
     cy.getBySelector("StudioRedoButton").should("be.disabled");
-    // The staged edit is still what a save would write.
+    // The canvas did not change, so neither did the staged edit.
     storedTitle().should("eq", EDITED_TITLE);
+    cy.getBySelector("EditorField-title").should("have.value", EDITED_TITLE);
     cy.getBySelector("StudioContentSaveBar").should("exist");
+  });
+
+  it("treats a restore the canvas never answers as failed", () => {
+    bridgeReady(["history"]);
+    openTitleField();
+    editTitle();
+    cy.window().then((win) => {
+      win.__restoreReply = "none";
+    });
+    hostCommands("historyReset").then((resets) => {
+      const before = resets.length;
+
+      cy.getBySelector("StudioUndoButton").click();
+      // Blocked while the restore is in flight.
+      cy.getBySelector("StudioUndoButton").should("be.disabled");
+      hostCommands("historyReset").should("have.length", before + 1);
+    });
+    storedTitle().should("eq", EDITED_TITLE);
+  });
+
+  // The staged layout source, as a save would PUT it. The PUT is answered
+  // here, so nothing reaches the seeded view.
+  const savedLayoutCode = () => {
+    cy.intercept("PUT", `**/web/views/${viewZUID}`, (req) =>
+      req.reply({ statusCode: 200, body: { data: { ...req.body } } })
+    ).as("updateWebView");
+    // A staged content edit is answered here too, so the save writes nothing.
+    cy.intercept("PUT", `**/items/${itemZUID}`, (req) =>
+      req.reply({ statusCode: 200, body: { data: {} } })
+    );
+    cy.get(
+      '[data-cy="StudioLayoutSaveChangesButton"], [data-cy="StudioContentSaveChangesButton"]'
+    ).click();
+    cy.getBySelector("StudioSaveAllButton").click();
+    return cy.wait("@updateWebView").its("request.body.code");
+  };
+
+  const LAYOUT_SOURCE =
+    '<div data-layout-id="1">One</div>\n<div data-layout-id="2">Two</div>';
+
+  it("undoes an inline layout edit back to nothing staged and redoes it", () => {
+    bridgeReady(["history"]);
+    postBridgeMessage({
+      type: "TEMPLATE_SOURCE_MAP",
+      templateSourceByCodeId: { [viewZUID]: LAYOUT_SOURCE },
+    });
+    postBridgeMessage({
+      type: "LAYOUT_CONTENT_UPDATE",
+      codeId: viewZUID,
+      layoutId: "1",
+      innerHtml: "One edited",
+    });
+    cy.getBySelector("StudioLayoutSaveBar").should("exist");
+    // Snapshotted while open, before anything closes it.
+    hostCommands("historySnapshot").should("have.length.at.least", 1);
+
+    cy.getBySelector("StudioUndoButton").click();
+    cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
+
+    cy.getBySelector("StudioRedoButton").click();
+    cy.getBySelector("StudioLayoutSaveBar").should("exist");
+    savedLayoutCode().should(
+      "match",
+      /<div>One edited<\/div>\s*<div>Two<\/div>/
+    );
+  });
+
+  it("keeps a canvas drag out of the step before it", () => {
+    // Unique, so the warm cache cannot already hold it and make the edit a
+    // no-op.
+    const draggedTitle = `${EDITED_TITLE} ${uuidv4()}`;
+    bridgeReady(["history"]);
+    postBridgeMessage({
+      type: "TEMPLATE_SOURCE_MAP",
+      templateSourceByCodeId: { [viewZUID]: LAYOUT_SOURCE },
+    });
+    postBridgeMessage({
+      type: "LAYOUT_CONTENT_UPDATE",
+      codeId: viewZUID,
+      layoutId: "1",
+      innerHtml: "One edited",
+    });
+    cy.getBySelector("StudioLayoutSaveBar").should("exist");
+    cy.window().should((win) => {
+      expect(
+        win.zestyStore.getState().content[itemZUID]?.meta?.ZUID,
+        "page item hydrated in store"
+      ).to.eq(itemZUID);
+    });
+    // A host-side edit, left open: nothing has ended it when the drag lands.
+    cy.window().then((win) => {
+      win.zestyStore.dispatch({
+        type: "SET_ITEM_DATA",
+        itemZUID,
+        key: "title",
+        value: draggedTitle,
+      });
+    });
+    // The edit's own snapshot — the one naming the title field — taken while
+    // it is still open.
+    hostCommands("historySnapshot")
+      .invoke("filter", (cmd) => cmd.fields?.length > 0)
+      .should("have.length.at.least", 1)
+      .then((snapshots) => {
+        const editStepId = snapshots[snapshots.length - 1].stepId;
+
+        // The canvas has already moved the block when this arrives. The marker
+        // records where in the command stream the drag happened.
+        cy.window().then(
+          (win) =>
+            new Cypress.Promise((resolve) => {
+              win.requestAnimationFrame(() => {
+                win.__hostCommands.push({ action: "e2e-drag" });
+                win.postMessage(
+                  {
+                    source: "studio-bridge",
+                    message: {
+                      type: "REORDER_OUTPUT",
+                      regions: [
+                        {
+                          codeId: viewZUID,
+                          selector: "[data-layout-id]",
+                          orderedLayoutIds: ["2", "1"],
+                          layoutStructure: [
+                            { layoutId: "2", parentLayoutId: null },
+                            { layoutId: "1", parentLayoutId: null },
+                          ],
+                          outputHtml: "",
+                        },
+                      ],
+                      primaryCodeId: viewZUID,
+                      selectedLayoutBreadcrumb: [
+                        { layoutId: "1", label: "div" },
+                      ],
+                    },
+                  },
+                  "*"
+                );
+                resolve();
+              });
+            })
+        );
+
+        // The reorder step is snapshotted when it ends; the edit step is not
+        // snapshotted again once the drag has happened.
+        cy.window()
+          .its("__hostCommands")
+          .should((commands) => {
+            const afterDrag = commands.slice(
+              commands.findIndex((cmd) => cmd.action === "e2e-drag")
+            );
+            const snapshots = afterDrag.filter(
+              (cmd) => cmd.action === "historySnapshot"
+            );
+            expect(
+              snapshots.filter((cmd) => cmd.stepId > editStepId),
+              "reorder step snapshot"
+            ).to.have.length.at.least(1);
+            expect(
+              snapshots.filter((cmd) => cmd.stepId === editStepId),
+              "edit step snapshot after the drag"
+            ).to.have.length(0);
+          });
+
+        cy.getBySelector("StudioUndoButton").click();
+        hostCommands("historyRestore")
+          .its(0)
+          .its("stepId")
+          .should("be.gt", editStepId);
+      });
+
+    // Undoing the drag leaves both edits staged, in the original order.
+    storedTitle().should("eq", draggedTitle);
+    savedLayoutCode().should(
+      "match",
+      /<div>One edited<\/div>\s*<div>Two<\/div>/
+    );
+  });
+
+  it("undoes and redoes an AI turn, unlocking and relocking the canvas", () => {
+    cy.intercept({ method: "POST", url: MCP_CLIENT }, (req) =>
+      req.reply({
+        statusCode: 200,
+        body: {
+          data: [
+            {
+              type: "SET_VALUE",
+              payload: {
+                refKey: "code-editor",
+                value: `${req.body.code}\n<p class="studio-e2e-ai">Added</p>`,
+              },
+            },
+          ],
+          message: "",
+          tools: [],
+        },
+      })
+    ).as("mcp");
+    cy.intercept({ method: "OPTIONS", url: /\/-\/pvl\// }, (req) =>
+      req.reply({
+        statusCode: 204,
+        headers: {
+          "access-control-allow-origin": "*",
+          "access-control-allow-methods": "POST, GET, OPTIONS",
+          "access-control-allow-headers": "authorization",
+        },
+      })
+    );
+    cy.intercept({ method: "POST", url: /\/-\/pvl\// }, (req) =>
+      req.reply({
+        statusCode: 200,
+        headers: { "access-control-allow-origin": "*" },
+        body: "<p>preview</p>",
+      })
+    );
+    const previewing = (on) =>
+      on
+        ? cy
+            .getBySelector("StudioLayersPanel")
+            .should("have.attr", "aria-disabled", "true")
+        : cy
+            .getBySelector("StudioLayersPanel")
+            .should("not.have.attr", "aria-disabled");
+
+    bridgeReady(["history"]);
+    cy.getBySelector("StudioAIButton").click();
+    cy.get('[data-cy="AIDrawerComposer"] textarea:not([aria-hidden])').type(
+      "Add a line"
+    );
+    cy.getBySelector("AIDrawerSend").click();
+    cy.wait("@mcp");
+    hostCommands("replaceCodeRegion")
+      .should("have.length", 1)
+      .its(0)
+      .then((command) =>
+        postBridgeMessage({
+          type: "CODE_REGION_REPLACED",
+          codeId: viewZUID,
+          ok: true,
+          count: 1,
+          requestId: command.requestId,
+        })
+      );
+    previewing(true);
+    cy.getBySelector("StudioUndoButton").should("not.be.disabled").click();
+    previewing(false);
+    // Unlocked only after the canvas restored.
+    cy.window()
+      .its("__hostCommands")
+      .should((commands) => {
+        const restore = commands.findIndex(
+          (cmd) => cmd.action === "historyRestore"
+        );
+        const unlock = commands.findIndex(
+          (cmd) => cmd.action === "setPreviewLock" && cmd.locked === false
+        );
+        expect(restore).to.be.gte(0);
+        expect(unlock).to.be.gt(restore);
+      });
+
+    cy.getBySelector("StudioRedoButton").click();
+    previewing(true);
+    // Locked before the painted preview comes back.
+    cy.window()
+      .its("__hostCommands")
+      .should((commands) => {
+        const redo = commands.findIndex(
+          (cmd) => cmd.action === "historyRestore" && cmd.direction === "redo"
+        );
+        expect(redo).to.be.gte(0);
+        expect(commands[redo - 1]).to.deep.include({
+          action: "setPreviewLock",
+          locked: true,
+        });
+      });
   });
 
   it("disables undo while an AI request is in flight", () => {
