@@ -90,7 +90,6 @@
   "fontInstallSuccess": "Шрифт «{{family}} ({{variants}})» успешно установлен",
   "fontPreviewText": "Это пример текста для предпросмотра",
   "fontUninstalled": "Шрифт «{{fontLabel}}» успешно удален",
-  "fontUninstallFailed": "Не удалось удалить {{fontLabel}}: {{error}}",
   "FriendlyPagination": "Удобная пагинация",
   "GoogleAutoLinker": "Google Auto Linker",
   "GoogleUrchinId": "Google Analytics ID",

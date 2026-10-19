@@ -58,6 +58,7 @@
   "collapseSidebar": "Contraer barra lateral",
   "commentAddError": "No se pudo añadir el comentario. Comprueba tu conexión a internet e inténtalo de nuevo.",
   "commentPlaceholder": "Responde o agrega a otros con @",
+  "confirmDialogGenericError": "Algo salió mal. Inténtalo de nuevo.",
   "confirmPublishBody": "Esto hará que la v{{version}} del {{item}} esté disponible de inmediato en todas tus plataformas. Siempre puedes dejar de publicar este elemento más tarde si es necesario.",
   "confirmPublishTitle": "Publicar {{item}}",
   "contactSupport": "Contactar con soporte",
