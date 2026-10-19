@@ -111,11 +111,11 @@ export const SchedulePublish = ({
       .then((response) => {
         if (!response?.error) {
           onScheduleSuccess?.();
+          onClose();
         }
       })
       .finally(() => {
         setIsLoading(false);
-        onClose();
       });
   };
 
@@ -131,8 +131,8 @@ export const SchedulePublish = ({
     ) // @ts-expect-error untyped action
       .then((response) => {
         if (!response?.error) {
-          onClose();
           onUnscheduleSuccess?.();
+          onClose();
         }
       })
       .finally(() => {
@@ -211,12 +211,12 @@ export const SchedulePublish = ({
         });
 
       onScheduleSuccess?.();
+      onClose();
     } catch {
       // Error notification is handled by the thunk; swallow here so the
-      // finally block always closes the dialog cleanly.
+      // dialog stays open for a retry.
     } finally {
       setIsLoading(false);
-      onClose();
     }
   };
 
@@ -264,12 +264,12 @@ export const SchedulePublish = ({
         });
 
       onUnscheduleSuccess?.();
+      onClose();
     } catch {
       // Error notification is handled by the thunk; swallow here so the
-      // finally block always closes the dialog cleanly.
+      // dialog stays open for a retry.
     } finally {
       setIsLoading(false);
-      onClose();
     }
   };
 
