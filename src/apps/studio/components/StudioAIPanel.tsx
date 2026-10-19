@@ -117,7 +117,7 @@ export const StudioAIPanel = ({
           borderColor="divider"
         >
           <Typography variant="body2" fontWeight={500}>
-            {t("shell.aiAssistantBeta")}
+            {t("content.studioAiAssistantTitle")}
           </Typography>
           <IconButton
             data-cy="StudioAIPanelClose"
