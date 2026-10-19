@@ -82,6 +82,7 @@ import {
 import { useStudioSelection } from "./hooks/useStudioSelection";
 import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
 import { CodeRegionReplaced, useStudioAiEdit } from "./hooks/useStudioAiEdit";
+import { useStudioHistory } from "./hooks/useStudioHistory";
 import { getRefRegistry } from "../../engine/refRegistry";
 import { useMultiPermission } from "shell/hooks/use-permissions";
 import { MediaApp } from "../media/src/app";
@@ -191,9 +192,39 @@ export const StudioWrapper = () => {
   // Keyed per slot, not per element: an <img> has several (src, alt, poster), and
   // an element-level key meant a plain-text edit to ANY of them dropped the label
   // recorded for a sibling that is still connected.
-  const [connectedBySlot, setConnectedBySlot] = useState<
+  const [connectedBySlot, setConnectedBySlotState] = useState<
     Record<string, ConnectField>
   >({});
+  // Synchronous mirror, so undo history reads a slot's binding in the same
+  // tick as the write that changed it.
+  const connectedBySlotRef = useRef<Record<string, ConnectField>>({});
+  const setConnectedBySlot = useCallback(
+    (
+      update: (
+        prev: Record<string, ConnectField>
+      ) => Record<string, ConnectField>
+    ) => {
+      const next = update(connectedBySlotRef.current);
+      connectedBySlotRef.current = next;
+      setConnectedBySlotState(next);
+    },
+    []
+  );
+  const getConnectedSlots = useCallback(() => connectedBySlotRef.current, []);
+  const restoreConnectedSlots = useCallback(
+    (patch: Record<string, ConnectField | undefined>) => {
+      setConnectedBySlot((prev) => {
+        const next = { ...prev };
+        Object.keys(patch).forEach((slotKey) => {
+          const connected = patch[slotKey];
+          if (connected) next[slotKey] = connected;
+          else delete next[slotKey];
+        });
+        return next;
+      });
+    },
+    [setConnectedBySlot]
+  );
   const [imageEditState, setImageEditState] = useState<{
     codeId: string;
     layoutId: string;
@@ -300,6 +331,12 @@ export const StudioWrapper = () => {
       requestId?: number;
       // setPreviewLock: whether the canvas is view-only.
       locked?: boolean;
+      // Undo history (historySnapshot / historyRestore / historyDrop).
+      stepId?: number;
+      stepIds?: number[];
+      direction?: "undo" | "redo";
+      codeIds?: string[];
+      fields?: { fieldZuid: string; itemZuid: string }[];
     }) => {
       const iframeWindow = iframeRef.current?.contentWindow;
       if (!iframeWindow) return;
@@ -1002,12 +1039,46 @@ export const StudioWrapper = () => {
     []
   );
   const aiBridgeReadyRef = useRef<(path?: string) => void>(() => {});
-  const handleAiBridgeReady = useCallback(
-    (path?: string) => aiBridgeReadyRef.current(path),
-    []
-  );
   const handleLayoutRegionSaved = useCallback(
     (codeId: string) => aiRegionSavedRef.current(codeId),
+    []
+  );
+  // Undo history is built last, from the hooks below; the layout hook and the
+  // bridge listener reach it through this ref.
+  const historyRef = useRef<ReturnType<typeof useStudioHistory> | null>(null);
+  const handleBeforeLayoutWrite = useCallback(
+    (codeIds: string[]) => historyRef.current?.recordLayoutWrite(codeIds),
+    []
+  );
+  const historyBridgeReadyRef = useRef<(capabilities?: string[]) => void>(
+    () => {}
+  );
+  const handleBridgeReadyForHost = useCallback(
+    (path?: string, capabilities?: string[]) => {
+      // History first: it posts historyReset before the AI repaints a staged
+      // change into the fresh frame.
+      historyBridgeReadyRef.current(capabilities);
+      aiBridgeReadyRef.current(path);
+    },
+    []
+  );
+  const handleHistoryKey = useCallback((action: "undo" | "redo") => {
+    if (action === "undo") historyRef.current?.undo();
+    else historyRef.current?.redo();
+  }, []);
+  const handleHistoryRestored = useCallback(
+    (msg: { stepId?: number; direction?: string; ok?: boolean }) =>
+      historyRef.current?.handleRestoreReply(msg),
+    []
+  );
+  // Escape ends whatever was being edited on the canvas.
+  const handleCanvasEscape = useCallback(
+    () => historyRef.current?.closeStep(false),
+    []
+  );
+  const aiPreviewSettledRef = useRef<() => void>(() => {});
+  const handleAiPreviewSettled = useCallback(
+    () => aiPreviewSettledRef.current(),
     []
   );
 
@@ -1030,6 +1101,8 @@ export const StudioWrapper = () => {
     handleLayoutLinkAttrUpdate,
     stageLayoutSourceUpdate,
     readStagedLayoutSource,
+    getLayoutRegionSnapshot,
+    restoreLayoutRegions,
   } = useLayoutReorderState({
     webViews,
     codeFileNameById,
@@ -1044,6 +1117,7 @@ export const StudioWrapper = () => {
     withCodeIdBreadcrumbRoot,
     onSelectedLayoutBreadcrumbChange: setSelectedLayout,
     onLayoutRegionSaved: handleLayoutRegionSaved,
+    onBeforeLayoutWrite: handleBeforeLayoutWrite,
   });
   const hasPendingLayoutChanges = pendingLayoutCodeIds.length > 0;
   const canPublishPendingLayout = useMultiPermission(
@@ -1167,6 +1241,7 @@ export const StudioWrapper = () => {
   // settle before either is read; the flush inside handleSavePendingLayout
   // stays as belt-and-braces and will normally find nothing left to do.
   const handleOpenSaveChangesModal = () => {
+    historyRef.current?.closeStep();
     if (usesLayoutGrammar(interactionMode)) flushPendingPatches();
     setShowSaveChangesModal(true);
   };
@@ -1743,14 +1818,38 @@ export const StudioWrapper = () => {
     [applyBridgeSelection, openInspectorForLayoutElement]
   );
 
+  // One drop is one step, even when it moves a block across regions.
+  const handleReorderOutputWithHistory = useCallback(
+    (msg: any) => {
+      historyRef.current?.beginStep("reorder");
+      handleReorderOutput(msg);
+      historyRef.current?.endStep();
+    },
+    [handleReorderOutput]
+  );
+
+  // An inline edit's keystrokes echo one at a time; they coalesce per element.
+  const handleLayoutContentUpdateWithHistory = useCallback(
+    (msg: any) => {
+      if (
+        typeof msg?.codeId === "string" &&
+        typeof msg?.layoutId === "string"
+      ) {
+        historyRef.current?.touch(`inline:${msg.codeId}:${msg.layoutId}`);
+      }
+      handleLayoutContentUpdate(msg);
+    },
+    [handleLayoutContentUpdate]
+  );
+
   const { handlePreviewLoad } = useStudioBridge({
     dispatch,
     interactionMode,
     syncBridgeInteractionMode,
     postCommandToBridge,
     handleTemplateSourceMap,
-    handleReorderOutput,
-    handleLayoutContentUpdate,
+    handleReorderOutput: handleReorderOutputWithHistory,
+    handleLayoutContentUpdate: handleLayoutContentUpdateWithHistory,
     handleLayersTree,
     applyLayoutSelection: handleBridgeLayoutSelection,
     clearLayoutSelection,
@@ -1766,7 +1865,10 @@ export const StudioWrapper = () => {
     onStaticEditImage: setImageEditState,
     canvasLockedRef: aiCanvasLockedRef,
     onCodeRegionReplaced: handleCodeRegionReplaced,
-    onBridgeReady: handleAiBridgeReady,
+    onBridgeReady: handleBridgeReadyForHost,
+    onEscape: handleCanvasEscape,
+    onHistoryKey: handleHistoryKey,
+    onHistoryRestored: handleHistoryRestored,
   });
 
   const handlePreviewFrameLoad = useCallback(() => {
@@ -1934,6 +2036,19 @@ export const StudioWrapper = () => {
       const writeKey = `${leafKey}::${slot.key}`;
       latestSlotWriteRef.current[writeKey] = value;
 
+      // Keystrokes in one slot are one undo step. An addressed text run is
+      // written back by the bridge's LAYOUT_CONTENT_UPDATE echo, so it takes
+      // the echo's key and the two coalesce.
+      historyRef.current?.touch(
+        slot.kind === "text" && slot.textIndex !== undefined
+          ? `inline:${patch.codeId}:${patch.layoutId}`
+          : `slot:${writeKey}`
+      );
+      historyRef.current?.recordConnected(
+        writeKey,
+        connectedBySlotRef.current[writeKey]
+      );
+
       setConnectedBySlot((prev) => {
         if (connected) return { ...prev, [writeKey]: connected };
         // A plain edit replaces whatever was bound in THIS slot only.
@@ -2011,6 +2126,7 @@ export const StudioWrapper = () => {
       postSlotPreview,
       resolvePreviewValue,
       schedulePatch,
+      setConnectedBySlot,
       inspectorSelection,
     ]
   );
@@ -2023,6 +2139,7 @@ export const StudioWrapper = () => {
     (newTag: string) => {
       const patch = inspectorSelection?.layoutPatch;
       if (!patch || !patch.codeId || !patch.isSelf) return;
+      historyRef.current?.touch(`tag:${patch.codeId}:${patch.layoutId}`);
       postCommandToBridge({
         action: "updateElementTag",
         layoutId: patch.layoutId,
@@ -2092,13 +2209,17 @@ export const StudioWrapper = () => {
   const handleAddLink = useCallback(() => {
     if (!linkPatch) return;
     clearPendingLinkWrites(linkPatch);
-    if (!handleLayoutWrapInLink(linkPatch.codeId, linkPatch.layoutId)) return;
-    // No href/target in the payload: the bridge leaves out what it isn't given,
-    // so the live <a> matches the attribute-less one staged into the template.
-    postCommandToBridge({
-      action: "wrapElementInLink",
-      layoutId: linkPatch.layoutId,
-    });
+    historyRef.current?.beginStep("link");
+    if (handleLayoutWrapInLink(linkPatch.codeId, linkPatch.layoutId)) {
+      // No href/target in the payload: the bridge leaves out what it isn't
+      // given, so the live <a> matches the attribute-less one staged into the
+      // template.
+      postCommandToBridge({
+        action: "wrapElementInLink",
+        layoutId: linkPatch.layoutId,
+      });
+    }
+    historyRef.current?.endStep();
   }, [
     clearPendingLinkWrites,
     handleLayoutWrapInLink,
@@ -2109,11 +2230,14 @@ export const StudioWrapper = () => {
   const handleRemoveLink = useCallback(() => {
     if (!linkPatch) return;
     clearPendingLinkWrites(linkPatch);
-    if (!handleLayoutUnwrapLink(linkPatch.codeId, linkPatch.layoutId)) return;
-    postCommandToBridge({
-      action: "unwrapElementLink",
-      layoutId: linkPatch.layoutId,
-    });
+    historyRef.current?.beginStep("link");
+    if (handleLayoutUnwrapLink(linkPatch.codeId, linkPatch.layoutId)) {
+      postCommandToBridge({
+        action: "unwrapElementLink",
+        layoutId: linkPatch.layoutId,
+      });
+    }
+    historyRef.current?.endStep();
   }, [
     clearPendingLinkWrites,
     handleLayoutUnwrapLink,
@@ -2134,6 +2258,7 @@ export const StudioWrapper = () => {
     (attr: "href" | "target", value: string) => {
       if (!linkPatch) return;
       const { codeId, layoutId } = linkPatch;
+      historyRef.current?.touch(`linkattr:${codeId}:${layoutId}:${attr}`);
 
       // An href may be a Parsley reference. The canvas gets the resolved URL;
       // the template keeps the expression, exactly as slots do.
@@ -2197,6 +2322,9 @@ export const StudioWrapper = () => {
     handleLayoutRegionSaved: handleAiRegionSaved,
     handleCodeRegionReplaced: handleAiRegionReplaced,
     handleBridgeReady: handleAiCanvasReady,
+    getAiState,
+    restoreAiState,
+    isRenderPending: isAiRenderPending,
   } = useStudioAiEdit({
     active: isAiPanelOpen && aiAllowed,
     webViews,
@@ -2211,6 +2339,7 @@ export const StudioWrapper = () => {
     postCommandToBridge,
     loadedPath: previewPath,
     reloadCanvas: refreshPreviewFrame,
+    onPreviewSettled: handleAiPreviewSettled,
   });
   aiRegionSavedRef.current = handleAiRegionSaved;
   aiRegionReplacedRef.current = handleAiRegionReplaced;
@@ -2222,6 +2351,92 @@ export const StudioWrapper = () => {
   useEffect(() => {
     if (!canUseAi) setIsAiPanelOpen(false);
   }, [canUseAi]);
+
+  // Undo/redo. Shown only when the canvas's bridge can snapshot and restore
+  // regions; an older bridge reports no `history` capability.
+  const [historyEnabled, setHistoryEnabled] = useState(false);
+  // Set while the AI panel waits on a reply.
+  const [isAiRequestPending, setIsAiRequestPending] = useState(false);
+  const studioHistory = useStudioHistory({
+    enabled: historyEnabled,
+    blocked:
+      isAiRequestPending ||
+      aiPreview?.status === "loading" ||
+      saveBarIsSaving ||
+      isRefreshing ||
+      isNavigating,
+    dispatch,
+    getState: store.getState,
+    postCommandToBridge,
+    flushPendingPatches,
+    cancelAllPendingPatches,
+    getLayoutRegionSnapshot,
+    restoreLayoutRegions,
+    getConnectedSlots,
+    restoreConnectedSlots,
+    getAiState,
+    restoreAiState,
+    // An undone value is not the canvas echoing a keystroke, so TinyMCE must
+    // not be handed it as one.
+    onBeforeApply: () => {
+      bridgeUpdatedFieldZuidRef.current = null;
+    },
+    onApplied: () => {
+      // The bridge drops its selection when it restores a region, and the
+      // Inspector holds slot values the restore just changed — close it
+      // rather than show stale ones. A content field stays open: its editor
+      // reads the store, so only the canvas highlight needs putting back.
+      if (inspectorSelection) {
+        clearSelection();
+        clearLayoutSelection();
+      } else if (selectedLayout) {
+        clearLayoutSelection();
+      } else if (selectedElement?.fieldZuid) {
+        applySelection(selectedElement);
+      }
+    },
+  });
+  historyRef.current = studioHistory;
+
+  // The fresh frame's bridge has no snapshots. A staged AI change is painted
+  // into it again after it loads, so history re-bases once that paint lands,
+  // or its base would be the page without the AI change.
+  const rebaseHistoryAfterPaintRef = useRef(false);
+  historyBridgeReadyRef.current = (capabilities?: string[]) => {
+    const enabled = !!capabilities?.includes("history");
+    setHistoryEnabled(enabled);
+    studioHistory.reset(enabled);
+    rebaseHistoryAfterPaintRef.current = enabled && isAiPreviewing;
+  };
+  aiPreviewSettledRef.current = () => {
+    if (rebaseHistoryAfterPaintRef.current) {
+      rebaseHistoryAfterPaintRef.current = false;
+      studioHistory.reset(historyEnabled);
+      return;
+    }
+    // An AI turn's step closes once its render is on the canvas.
+    studioHistory.endStep();
+  };
+  const handleBeforeAiReplyApplied = useCallback(
+    () => historyRef.current?.beginStep("ai"),
+    []
+  );
+  const handleAfterAiReplyApplied = useCallback(() => {
+    // A reply that staged a change closes its step when the preview settles.
+    if (!isAiRenderPending()) historyRef.current?.endStep();
+  }, [isAiRenderPending]);
+
+  // Selecting something else ends the edit in progress.
+  const selectionKey = [
+    selectedElement?.studioId,
+    selectedElement?.fieldZuid,
+    selectedLayout?.codeId,
+    selectedLayout?.layoutId,
+    inspectorSelection?.nodeId,
+  ].join("|");
+  useEffect(() => {
+    historyRef.current?.closeStep(false);
+  }, [selectionKey]);
 
   const handleToggleAiPanel = useCallback(() => {
     // Land any debounced Inspector write before the AI reads the source.
@@ -2399,6 +2614,11 @@ export const StudioWrapper = () => {
             onToggleAiPanel={handleToggleAiPanel}
             saveStatus={aiSaveStatus}
             onFeedbackClick={() => setShowFeedbackModal(true)}
+            showHistoryControls={historyEnabled}
+            canUndo={studioHistory.canUndo}
+            canRedo={studioHistory.canRedo}
+            onUndo={studioHistory.undo}
+            onRedo={studioHistory.redo}
           />
           <Box display="flex" flex="1" minHeight={0} width="100%">
             <ResizableContainer
@@ -2447,6 +2667,9 @@ export const StudioWrapper = () => {
                 pageItemZUID={pageItemZUID}
                 drawerWidth={drawerWidth}
                 lastDiscard={aiLastDiscard}
+                onRequestPendingChange={setIsAiRequestPending}
+                onBeforeReplyApplied={handleBeforeAiReplyApplied}
+                onAfterReplyApplied={handleAfterAiReplyApplied}
               />
             ) : panelMode === "inspector" && inspectorSelection ? (
               <StudioInspectorPanel
@@ -2656,6 +2879,7 @@ export const StudioWrapper = () => {
               addImagesCallback={(images: any[]) => {
                 if (!images.length) return;
                 const newSrc = images[0].url;
+                historyRef.current?.beginStep("image");
                 if (imageEditState.fromInspector) {
                   // Attributes-panel Browse: write the chosen URL to the
                   // recorded attribute (src or poster) via the generic path.
@@ -2696,6 +2920,7 @@ export const StudioWrapper = () => {
                     newSrc,
                   });
                 }
+                historyRef.current?.endStep();
                 setImageEditState(null);
               }}
             />
