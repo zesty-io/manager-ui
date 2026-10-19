@@ -13,8 +13,8 @@ const PVL_MAX_PARSLEY_BYTES = 1024 * 1024 - 1024;
 // A healthy render takes well under a second; {{this.autolayout()}} never
 // answers at all.
 const PVL_TIMEOUT_MS = 20000;
-// Session-wide, so ids stay unique across Studio remounts: AIChat remembers
-// which discard it last showed for the rest of the session.
+// Session-wide, so ids stay unique across Studio remounts: StudioAIPanel
+// remembers which discard it last showed for the rest of the session.
 let discardSeq = 0;
 
 // A page path compared loosely: no query, hash or trailing slash.

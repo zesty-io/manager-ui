@@ -18,7 +18,6 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import { useLocation } from "react-router";
-import { suggestionSystemInstruction } from "./systemInstructions";
 import { useLocalStorage } from "react-use";
 import { getRefRegistry } from "../../../engine/refRegistry";
 import { AppState } from "shell/store/types";
@@ -31,6 +30,7 @@ import {
 import { ChatThread, ChatResponse } from "./ChatThread";
 import { toChatResponses } from "./parseResponse";
 import { useApplySetValue } from "./useApplySetValue";
+import { buildPromptRequest, buildSuggestionsRequest } from "./promptRequest";
 import { ChatHistory } from "./ChatHistory";
 import {
   isContentAppPath,
@@ -506,36 +506,22 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
         return false;
       }
 
-      const registryKeys = Object.keys(getRefRegistry() || {});
-      const refRegistry = getRefRegistry();
-      const mappedRefRegistry = registryKeys.map(
-        (x) => `"${x}": "${JSON.stringify(refRegistry[x].context())}"`
-      );
-      const temperature = 0.5;
       const trimmedPrompt = newPrompt.trim();
 
       isAwaitingLiveResponseRef.current = true;
       requestedChatZUIDRef.current = urlChatZUID;
       isRequestAbandonedRef.current = false;
-      geminiGenerate({
-        prompt: trimmedPrompt,
-        tone: selectedTone.value,
-        language: selectedLanguage.value,
-        modelZuid: modelZUID,
-        itemZuid: itemZUID,
-        registryKeys,
-        refRegistry: mappedRefRegistry,
-        filename:
-          getRefRegistry()?.["code-editor"]?.context()?.fileName || undefined,
-        code: getRefRegistry()?.["code-editor"]?.context()?.code || undefined,
-        fields:
-          getRefRegistry()?.["code-editor"]?.context()?.fields || undefined,
-        temperature,
-        url: window.location.href,
-        roleZuid: userRole.role.ZUID,
-        // This tells the /client endpoint whether to generate a new chat session or use an existing one
-        ...(urlChatZUID && { chatZuid: urlChatZUID }),
-      });
+      geminiGenerate(
+        buildPromptRequest({
+          prompt: trimmedPrompt,
+          tone: selectedTone.value,
+          language: selectedLanguage.value,
+          modelZUID,
+          itemZUID,
+          roleZUID: userRole.role.ZUID,
+          chatZUID: urlChatZUID,
+        })
+      );
       setResponses((prev) => ({
         ...prev,
         pendingPrompt: [
@@ -565,11 +551,6 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     (sourcePrompt: string) => {
       if (!urlChatZUID && !userRole?.role?.ZUID) return;
 
-      const systemInstruction = suggestionSystemInstruction(
-        Object.keys(getRefRegistry() || {}),
-        getRefRegistry()
-      );
-      const temperature = 0.5;
       const normalizedPrompt = sourcePrompt ? sourcePrompt.trim() : "";
       const promptValue = normalizedPrompt
         ? t("shell.generateSuggestionsPrompt", { prompt: normalizedPrompt })
@@ -578,15 +559,13 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
       isAwaitingLiveResponseRef.current = true;
       requestedChatZUIDRef.current = urlChatZUID;
       isRequestAbandonedRef.current = false;
-      geminiGenerate({
-        prompt: promptValue,
-        systemInstruction,
-        temperature,
-        chatZuid: urlChatZUID,
-        url: window.location.href,
-        // roleZUID is needed to create a new chat session when Generate Suggestions button is clicked and there is no existing chatZUID yet
-        ...(!urlChatZUID && { roleZuid: userRole?.role?.ZUID }),
-      });
+      geminiGenerate(
+        buildSuggestionsRequest({
+          prompt: promptValue,
+          chatZUID: urlChatZUID,
+          roleZUID: userRole?.role?.ZUID,
+        })
+      );
       setResponses((prev) => ({
         ...prev,
         pendingPrompt: [

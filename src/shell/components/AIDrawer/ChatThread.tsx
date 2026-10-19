@@ -42,7 +42,7 @@ import { useApplySetValue } from "./useApplySetValue";
 
 // `value` is the tone instruction sent to the model (do not translate);
 // `label` is the short UI name, resolved with t() at the render site.
-const TONE_VALUES = {
+export const TONE_VALUES = {
   intriguing: "Intriguing - Curious, mysterious, and thought-provoking",
   professional: "Professional - Serious, formal, and authoritative",
   playful: "Playful - Fun, light-hearted, and whimsical",
