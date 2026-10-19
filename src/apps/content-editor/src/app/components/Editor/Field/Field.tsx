@@ -1,4 +1,4 @@
-import { useMemo, useState, ChangeEvent, memo } from "react";
+import { useEffect, useMemo, useRef, useState, ChangeEvent, memo } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch } from "react-redux";
 import { Trans, useTranslation } from "react-i18next";
@@ -49,6 +49,14 @@ import { format as fmt } from "date-fns";
 import { FieldTypeRepeater } from "shell/components/FieldTypeRepeater";
 
 const AIFieldShell = withAI(FieldShell);
+
+// Editors that read their value only when they mount.
+const MOUNT_READ_DATATYPES = [
+  "wysiwyg_basic",
+  "wysiwyg_advanced",
+  "markdown",
+  "article_writer",
+];
 
 export const sortHTML = (a: any, b: any) => {
   const nameA = String(a.html) && String(a.html).toUpperCase(); // ignore upper and lowercase
@@ -117,9 +125,12 @@ export const Field = memo(
     const fieldData = fields?.find((field) => field.ZUID === ZUID);
     const [rerenderKey, setRerenderKey] = useState(0);
 
-    const { local, onLocalChange } = useDebouncedInput(value, (v) => {
-      onChange(v, name);
-    });
+    const { local, onLocalChange, showLocal } = useDebouncedInput(
+      value,
+      (v) => {
+        onChange(v, name);
+      }
+    );
 
     const handle = useMemo<any>(
       () => ({
@@ -147,6 +158,15 @@ export const Field = memo(
           }
 
           setRerenderKey((prevKey: number) => prevKey + 1);
+        },
+        // Shows a value restored from outside (Studio's undo/redo) without
+        // writing it back. TinyMCE and the markdown editor read their value
+        // only when they mount, so they remount to pick it up.
+        showValue: (val: unknown) => {
+          showLocal(String(val ?? ""));
+          if (MOUNT_READ_DATATYPES.includes(datatype)) {
+            setRerenderKey((prevKey: number) => prevKey + 1);
+          }
         },
       }),
       []

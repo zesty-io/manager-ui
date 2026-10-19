@@ -163,6 +163,20 @@ export const StudioWrapper = () => {
   const canSelectMode = isStaff;
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const studioModalRef = useRef<HTMLDivElement | null>(null);
+  // Whether a modal over Studio — a dialog, a menu, the media picker — owns
+  // the keyboard. Studio itself renders as a modal dialog, so its own root
+  // does not count.
+  const isModalOverStudio = useCallback((target?: EventTarget | null) => {
+    const studioRoot = studioModalRef.current;
+    // Studio's own dialog is the direct child of its modal root.
+    const dialog =
+      target instanceof Element ? target.closest('[role="dialog"]') : null;
+    if (dialog && dialog.parentElement !== studioRoot) return true;
+    return Array.from(
+      document.querySelectorAll(".MuiModal-root:not(.MuiModal-hidden)")
+    ).some((modal) => modal !== studioRoot);
+  }, []);
   const currentHoverStudioIdRef = useRef<string | null>(null);
   const [showPendingLayoutModal, setShowPendingLayoutModal] = useState(false);
   const [showSaveChangesModal, setShowSaveChangesModal] = useState(false);
@@ -1062,10 +1076,15 @@ export const StudioWrapper = () => {
     },
     []
   );
-  const handleHistoryKey = useCallback((action: "undo" | "redo") => {
-    if (action === "undo") historyRef.current?.undo();
-    else historyRef.current?.redo();
-  }, []);
+  const handleHistoryKey = useCallback(
+    (action: "undo" | "redo") => {
+      // The canvas sits behind any open modal; its shortcut is not for it.
+      if (isModalOverStudio()) return;
+      if (action === "undo") historyRef.current?.undo();
+      else historyRef.current?.redo();
+    },
+    [isModalOverStudio]
+  );
   const handleHistoryRestored = useCallback(
     (msg: { stepId?: number; direction?: string; ok?: boolean }) =>
       historyRef.current?.handleRestoreReply(msg),
@@ -2381,7 +2400,17 @@ export const StudioWrapper = () => {
     onBeforeApply: () => {
       bridgeUpdatedFieldZuidRef.current = null;
     },
-    onApplied: () => {
+    isModalOpen: isModalOverStudio,
+    onApplied: (contentWrites) => {
+      // The panel editor shows the restored value without writing it, so no
+      // new step is recorded. Its input may hold typing the store never saw
+      // change (typed, flushed and undone in one batch), and TinyMCE reads
+      // its value only when it mounts.
+      contentWrites.forEach((write) => {
+        if (write.type !== "SET_ITEM_DATA") return;
+        if (write.itemZUID !== selectedItemZUID) return;
+        getRefRegistry()?.[write.key]?.handle?.showValue?.(write.value);
+      });
       // The bridge drops its selection when it restores a region, and the
       // Inspector holds slot values the restore just changed — close it
       // rather than show stale ones. A content field stays open: its editor
@@ -2576,6 +2605,7 @@ export const StudioWrapper = () => {
   return (
     <>
       <Modal
+        ref={studioModalRef}
         open
         hideBackdrop
         disableEnforceFocus

@@ -287,6 +287,60 @@ describe("Studio Undo / Redo", () => {
     storedTitle().should("eq", EDITED_TITLE);
   });
 
+  it("lands a panel edit still in its debounce before undoing it", () => {
+    bridgeReady(["history"]);
+    openTitleField();
+    // An earlier step on another field, so Undo is enabled before the typing
+    // below has committed.
+    cy.window().then((win) => {
+      win.zestyStore.dispatch({
+        type: "SET_ITEM_DATA",
+        itemZUID,
+        key: "body",
+        value: "Edited body",
+      });
+    });
+    cy.getBySelector("StudioUndoButton").should("not.be.disabled");
+
+    // Undo straight after typing, inside the panel's 500ms debounce: the
+    // typing is what gets undone, not the earlier step.
+    cy.getBySelector("EditorField-title").type(" more");
+    cy.getBySelector("StudioUndoButton").click();
+
+    storedTitle().should("eq", ORIGINAL_TITLE);
+    cy.getBySelector("EditorField-title").should("have.value", ORIGINAL_TITLE);
+    cy.window()
+      .its("zestyStore")
+      .invoke("getState")
+      .its("content")
+      .its(itemZUID)
+      .its("data.body")
+      .should("eq", "Edited body");
+    cy.getBySelector("StudioRedoButton").click();
+    storedTitle().should("eq", `${ORIGINAL_TITLE} more`);
+  });
+
+  it("leaves the shortcut alone while a modal is open over Studio", () => {
+    bridgeReady(["history"]);
+    openTitleField();
+    editTitle();
+
+    cy.getBySelector("StudioContentSaveChangesButton").click();
+    cy.getBySelector("StudioSaveChangesModal").should("exist");
+    pressUndoKey(cy.get("body"));
+    postBridgeMessage({ type: "HISTORY_KEY", action: "undo" });
+    storedTitle().should("eq", EDITED_TITLE);
+    hostCommands("historyRestore").should("have.length", 0);
+
+    cy.getBySelector("StudioSaveChangesCancelButton").click();
+    cy.getBySelector("StudioSaveChangesModal").should("not.exist");
+    // Messages are handled in order, so exactly one restore means the one
+    // sent behind the modal was ignored.
+    postBridgeMessage({ type: "HISTORY_KEY", action: "undo" });
+    storedTitle().should("eq", ORIGINAL_TITLE);
+    hostCommands("historyRestore").should("have.length", 1);
+  });
+
   it("starts a fresh history when the canvas reloads", () => {
     bridgeReady(["history"]);
     openTitleField();

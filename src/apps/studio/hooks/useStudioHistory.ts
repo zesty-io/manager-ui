@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { isEqual } from "lodash";
+import { flushAllDebouncedInputs } from "shell/hooks/useDebouncedInput";
 import {
   setStudioHistoryRecorder,
   StudioHistoryContentType,
@@ -80,7 +81,19 @@ type Args = {
   // Run around every undo/redo, for host state that has to follow the
   // restored canvas (selection, echo guards).
   onBeforeApply?: () => void;
-  onApplied?: () => void;
+  // The content values the undo/redo just wrote, for editors that only read
+  // their value when they mount.
+  onApplied?: (contentWrites: AppliedContentWrite[]) => void;
+  // Whether a modal over Studio owns the keyboard. Undo/redo stays out of
+  // its way: what it would change is behind it.
+  isModalOpen?: (target: EventTarget | null) => boolean;
+};
+
+export type AppliedContentWrite = {
+  type: StudioHistoryContentType;
+  itemZUID: string;
+  key: string;
+  value: unknown;
 };
 
 const hasEntries = (step: Step) =>
@@ -360,7 +373,10 @@ export const useStudioHistory = (args: Args) => {
       } = argsRef.current;
       if (!enabled || blocked || applyingRef.current) return;
 
-      // An edit still open is the first thing undo takes back.
+      // An edit still open is the first thing undo takes back — including
+      // what is still in a panel input's or an Inspector slot's debounce.
+      flushAllDebouncedInputs();
+      argsRef.current.flushPendingPatches();
       closeStep();
       const step =
         direction === "undo"
@@ -370,17 +386,19 @@ export const useStudioHistory = (args: Args) => {
       const pick = <T>(change: Change<T>) =>
         direction === "undo" ? change.before : change.after;
 
+      const contentWrites: AppliedContentWrite[] = Array.from(
+        step.content.values()
+      ).map((entry) => ({
+        type: entry.type,
+        itemZUID: entry.itemZUID,
+        key: entry.key,
+        value: pick(entry),
+      }));
+
       applyingRef.current = true;
       try {
         onBeforeApply?.();
-        step.content.forEach((entry) => {
-          dispatch({
-            type: entry.type,
-            itemZUID: entry.itemZUID,
-            key: entry.key,
-            value: pick(entry),
-          });
-        });
+        contentWrites.forEach((write) => dispatch(write));
         if (step.layout.size) {
           const snapshots: Record<string, LayoutRegionSnapshot> = {};
           step.layout.forEach((change, codeId) => {
@@ -421,7 +439,7 @@ export const useStudioHistory = (args: Args) => {
       } finally {
         applyingRef.current = false;
       }
-      onApplied?.();
+      onApplied?.(contentWrites);
       bump();
     },
     [bump, closeStep]
@@ -473,6 +491,7 @@ export const useStudioHistory = (args: Args) => {
         (key === "z" && evt.shiftKey) || (key === "y" && evt.ctrlKey);
       if (!isUndo && !isRedo) return;
       if (isEditableTarget(evt.target)) return;
+      if (argsRef.current.isModalOpen?.(evt.target)) return;
       evt.preventDefault();
       apply(isUndo ? "undo" : "redo");
     };

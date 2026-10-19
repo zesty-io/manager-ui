@@ -1,6 +1,17 @@
 import { debounce } from "lodash";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 
+// Every mounted input's debounce, so a caller about to read the store can land
+// whatever is still waiting out its delay. Flushing a debounce with nothing
+// pending is a no-op.
+const mountedDebounces = new Set<{ flush: () => void }>();
+
+// Commits every pending debounced input now. Studio's undo/redo calls it so an
+// undo applies to what the user has actually typed.
+export const flushAllDebouncedInputs = () => {
+  mountedDebounces.forEach((debounced) => debounced.flush());
+};
+
 export function useDebouncedInput(
   externalValue: string | number | null | undefined,
   commit: (v: string) => void,
@@ -30,7 +41,11 @@ export function useDebouncedInput(
 
   useEffect(() => {
     const d = debouncedRef.current!;
-    return () => d.cancel();
+    mountedDebounces.add(d);
+    return () => {
+      mountedDebounces.delete(d);
+      d.cancel();
+    };
   }, []);
 
   const onLocalChange = useCallback((v: string) => {
@@ -38,5 +53,10 @@ export function useDebouncedInput(
     debouncedRef.current!(v);
   }, []);
 
-  return { local, onLocalChange };
+  // Shows a value set from outside without committing it. The external value
+  // alone cannot do this when it ends where it started — typed, flushed and
+  // then undone in one batch — because the sync effect above never re-runs.
+  const showLocal = useCallback((v: string) => setLocal(v), []);
+
+  return { local, onLocalChange, showLocal };
 }
