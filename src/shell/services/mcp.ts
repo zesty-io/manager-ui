@@ -1,24 +1,74 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { prepareHeaders } from "./util";
+import { getResponseData, prepareHeaders as prepareAuthHeaders } from "./util";
 import instanceZUID from "../../utility/instanceZUID";
 import { AppState } from "../store/types";
+import {
+  ChatSession,
+  GeminiResponse,
+  ChatPromptMetadata,
+  ChatSessionLog,
+} from "./types";
+
+// PVL is on the instance's preview host, whose CORS preflight allows
+// `Authorization` only, so it does not get the MCP service's
+// `X-Instance-Zuid` header.
+const pvlBaseQuery = fetchBaseQuery({ prepareHeaders: prepareAuthHeaders });
 
 export const mcpApi = createApi({
   reducerPath: "mcpApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${__CONFIG__.MCP_DOMAIN}`,
-    prepareHeaders,
+    prepareHeaders: (headers) => {
+      const preparedHeaders = prepareAuthHeaders(headers);
+      preparedHeaders.set("X-Instance-Zuid", instanceZUID);
+
+      return preparedHeaders;
+    },
   }),
+  tagTypes: ["ChatSessions", "ChatSessionLog"],
   endpoints: (builder) => ({
-    geminiGeneration: builder.mutation<any, any>({
+    geminiGeneration: builder.mutation<GeminiResponse, any>({
       query: (body) => {
         return {
           url: `client`,
           method: "POST",
           body,
-          headers: {
-            "X-Instance-Zuid": instanceZUID,
-          },
+        };
+      },
+      invalidatesTags: (result, error, { chatZuid }) =>
+        error ? [] : [{ type: "ChatSessionLog", id: chatZuid }],
+    }),
+    getChatSessions: builder.query<ChatSession[], void>({
+      query: () => {
+        return {
+          url: `api/chats`,
+          method: "GET",
+        };
+      },
+      transformResponse: getResponseData,
+      providesTags: ["ChatSessions"],
+    }),
+    getChatSessionLog: builder.query<ChatSessionLog, { chatZUID: string }>({
+      query: ({ chatZUID }) => {
+        return {
+          url: `api/chats/${chatZUID}?instanceZuid=${instanceZUID}`,
+          method: "GET",
+        };
+      },
+      transformResponse: getResponseData,
+      providesTags: (results, error, { chatZUID }) => [
+        { type: "ChatSessionLog", id: chatZUID },
+      ],
+    }),
+    updatePromptApprovalStatus: builder.mutation<
+      void,
+      { chatZUID: string; promptZUID: string; approval: "0" | "1" }
+    >({
+      query: ({ chatZUID, promptZUID, approval }) => {
+        return {
+          url: `api/chats/${chatZUID}/prompt/${promptZUID}`,
+          method: "PATCH",
+          body: { approval, instanceZuid: instanceZUID },
         };
       },
     }),
@@ -33,11 +83,10 @@ export const mcpApi = createApi({
     >({
       queryFn: async (
         { origin, parsley, itemZUID, timeout },
-        { getState },
-        _extraOptions,
-        baseQuery
+        api,
+        extraOptions
       ) => {
-        const password = (getState() as AppState).settings.instance.find(
+        const password = (api.getState() as AppState).settings.instance.find(
           (setting: { key: string; value: string }) =>
             setting.key === "preview_lock_password" && setting.value
         )?.value;
@@ -48,13 +97,17 @@ export const mcpApi = createApi({
         const body = new FormData();
         body.append("parsley", parsley);
         body.append("zuid", itemZUID);
-        const result = await baseQuery({
-          url: `${origin}/-/pvl/?${query}`,
-          method: "POST",
-          body,
-          timeout,
-          responseHandler: "text",
-        });
+        const result = await pvlBaseQuery(
+          {
+            url: `${origin}/-/pvl/?${query}`,
+            method: "POST",
+            body,
+            timeout,
+            responseHandler: "text",
+          },
+          api,
+          extraOptions
+        );
         return result.error
           ? { error: result.error }
           : { data: result.data as string };
@@ -63,5 +116,10 @@ export const mcpApi = createApi({
   }),
 });
 
-export const { useGeminiGenerationMutation, useRenderParsleyPreviewMutation } =
-  mcpApi;
+export const {
+  useGeminiGenerationMutation,
+  useGetChatSessionLogQuery,
+  useUpdatePromptApprovalStatusMutation,
+  useGetChatSessionsQuery,
+  useRenderParsleyPreviewMutation,
+} = mcpApi;

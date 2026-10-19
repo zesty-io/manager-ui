@@ -32,7 +32,7 @@ import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import { useGetLangsMappingQuery } from "../services/instance";
-import { suggestionSystemInstruction } from "../views/Shell/systemInstructions";
+import { suggestionSystemInstruction } from "./AIDrawer/systemInstructions";
 import { getRefRegistry } from "../../engine/refRegistry";
 import geminiLogo from "../../../public/images/geminiLogo.svg";
 import geminiIcon from "../../../public/images/geminiIcon.svg";
