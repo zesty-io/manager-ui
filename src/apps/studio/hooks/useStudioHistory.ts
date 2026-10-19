@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { isEqual } from "lodash";
+import { notify } from "shell/store/notifications";
 import { flushAllDebouncedInputs } from "shell/hooks/useDebouncedInput";
 import {
   setStudioHistoryRecorder,
@@ -10,8 +12,15 @@ import { ConnectField } from "./studioTypes";
 import { LayoutRegionSnapshot } from "./useLayoutReorderState";
 import { StudioAiState } from "./useStudioAiEdit";
 
-// Oldest steps are evicted past this many.
 const MAX_STEPS = 50;
+
+// The open step is re-snapshotted this long after its last write. A tick is
+// not enough: a panel edit reaches the canvas through a passive effect, which
+// React runs after paint.
+const SNAPSHOT_DELAY_MS = 50;
+
+// A restore the bridge has not answered by then is treated as failed.
+const RESTORE_TIMEOUT_MS = 3000;
 
 export type StudioHistoryDirection = "undo" | "redo";
 
@@ -25,9 +34,9 @@ type ContentEntry = {
 
 type Change<T> = { before: T; after: T };
 
-// One undoable step. `before` is captured on the step's first touch of each
-// key and `after` is read when the step closes, so a step that coalesces many
-// writes to one target holds only its two ends.
+// `before` is captured on the step's first touch of each key and `after` is
+// read when the step closes, so a step that coalesces many writes to one
+// target holds only its two ends.
 type Step = {
   id: number;
   // The target the step coalesces on, or a bulk kind from beginStep.
@@ -37,9 +46,10 @@ type Step = {
   layout: Map<string, Change<LayoutRegionSnapshot>>;
   connected: Map<string, Change<ConnectField | undefined>>;
   ai?: Change<StudioAiState>;
+  // Whether the bridge holds a snapshot for this id.
+  snapshotted: boolean;
 };
 
-// What history sends the bridge.
 type StudioHistoryCommand =
   | {
       action: "historySnapshot";
@@ -53,19 +63,17 @@ type StudioHistoryCommand =
       direction: StudioHistoryDirection;
     }
   | { action: "historyDrop"; stepIds: number[] }
-  | { action: "historyReset" };
+  | { action: "historyReset" }
+  | { action: "setPreviewLock"; locked: boolean };
 
 type Args = {
-  // The bridge can snapshot and restore regions (BRIDGE_READY capabilities).
+  // The bridge reported the `history` capability.
   enabled: boolean;
-  // Undo and redo wait while true: an AI request or render in flight, a save,
-  // or a canvas reload.
   blocked: boolean;
   dispatch: (action: any) => any;
   // `any` because the content and fields slices are untyped (AppState TODO).
   getState: () => any;
   postCommandToBridge: (cmd: StudioHistoryCommand) => void;
-  // Lands every debounced Inspector write, so a closing step holds it.
   flushPendingPatches: () => string[];
   cancelAllPendingPatches: () => void;
   getLayoutRegionSnapshot: (codeId: string) => LayoutRegionSnapshot;
@@ -78,14 +86,9 @@ type Args = {
   ) => void;
   getAiState: () => StudioAiState;
   restoreAiState: (state: StudioAiState) => void;
-  // Run around every undo/redo, for host state that has to follow the
-  // restored canvas (selection, echo guards).
+  isAiRenderPending: () => boolean;
   onBeforeApply?: () => void;
-  // The content values the undo/redo just wrote, for editors that only read
-  // their value when they mount.
   onApplied?: (contentWrites: AppliedContentWrite[]) => void;
-  // Whether a modal over Studio owns the keyboard. Undo/redo stays out of
-  // its way: what it would change is behind it.
   isModalOpen?: (target: EventTarget | null) => boolean;
 };
 
@@ -94,6 +97,16 @@ export type AppliedContentWrite = {
   itemZUID: string;
   key: string;
   value: unknown;
+};
+
+type CloseOptions = {
+  // A bulk step closes only when forced, so a selection change mid-way
+  // through a reorder or an AI turn cannot split it.
+  force?: boolean;
+  // Snapshot the canvas as the step closes. Not when a bridge gesture is
+  // what closes it: the bridge changed the DOM before its message arrived,
+  // so a snapshot now would hold the gesture, not this step.
+  snapshot?: boolean;
 };
 
 const hasEntries = (step: Step) =>
@@ -112,6 +125,9 @@ const isNoop = (step: Step) =>
   Array.from(step.connected.values()).every(isUnchanged) &&
   (!step.ai || isUnchanged(step.ai));
 
+const sliceOf = (type: StudioHistoryContentType) =>
+  type === "SET_ITEM_DATA" ? "data" : type === "SET_ITEM_WEB" ? "web" : "meta";
+
 const isEditableTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) return false;
   if (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return true;
@@ -122,33 +138,85 @@ const isEditableTarget = (target: EventTarget | null) => {
 
 // Undo/redo for everything Studio stages before a save: content values,
 // view source and its pending-save state, connected-field labels and an AI
-// change. The canvas DOM is restored by the bridge from snapshots it takes
-// when each step closes, so no per-gesture inverse exists anywhere.
+// change. The canvas DOM is restored by the bridge from snapshots of each
+// step, so no per-gesture inverse exists anywhere. An undo asks the bridge
+// to restore first and applies the host's half only once it has, so the
+// canvas and the staged state never disagree.
 //
 // Every frame reload — save, discard, path or language change, refresh —
 // resets the stack, because the bridge's snapshots die with the frame.
 export const useStudioHistory = (args: Args) => {
+  const { t } = useTranslation();
   const argsRef = useRef(args);
   argsRef.current = args;
 
   const stepsRef = useRef<Step[]>([]);
-  // How many of `steps` are applied: steps[pointer - 1] is the next undo,
-  // steps[pointer] the next redo.
+  // steps[pointer - 1] is the next undo, steps[pointer] the next redo.
   const pointerRef = useRef(0);
   const openRef = useRef<Step | null>(null);
   const nextIdRef = useRef(1);
   const applyingRef = useRef(false);
-  // Pointer 0 is the last save until a step is evicted past it.
   const baseIsSavedRef = useRef(true);
   // Whether each item touched since the reset was dirty before its first
   // write. Undoing back to a saved base clears the dirty flag only on items
   // that were clean there.
   const baseDirtyRef = useRef(new Map<string, boolean>());
+  const snapshotTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingRestoreRef = useRef<{
+    step: Step;
+    direction: StudioHistoryDirection;
+    timer: ReturnType<typeof setTimeout>;
+  } | null>(null);
 
   // The stack lives in refs so writes can record synchronously; this only
   // re-renders the buttons.
   const [, setVersion] = useState(0);
   const bump = useCallback(() => setVersion((prev) => prev + 1), []);
+
+  const postSnapshot = useCallback((step: Step) => {
+    const { getState, postCommandToBridge } = argsRef.current;
+    const fields = getState().fields || {};
+    const content = getState().content || {};
+    const fieldRefs: { fieldZuid: string; itemZuid: string }[] = [];
+    step.content.forEach((entry) => {
+      if (entry.type !== "SET_ITEM_DATA") return;
+      // The bridge finds a field's canvas regions by ZUID; the action
+      // carries its name.
+      const modelZUID = content[entry.itemZUID]?.meta?.contentModelZUID;
+      // `any`: the fields slice is untyped (see AppState's TODO).
+      const field = Object.values(fields).find(
+        (candidate: any) =>
+          candidate?.contentModelZUID === modelZUID &&
+          candidate?.name === entry.key
+      ) as { ZUID?: string } | undefined;
+      if (field?.ZUID) {
+        fieldRefs.push({ fieldZuid: field.ZUID, itemZuid: entry.itemZUID });
+      }
+    });
+    postCommandToBridge({
+      action: "historySnapshot",
+      stepId: step.id,
+      codeIds: Array.from(step.layout.keys()),
+      fields: fieldRefs,
+    });
+    step.snapshotted = true;
+  }, []);
+
+  const clearSnapshotTimer = useCallback(() => {
+    if (snapshotTimerRef.current) clearTimeout(snapshotTimerRef.current);
+    snapshotTimerRef.current = null;
+  }, []);
+
+  // The open step's snapshot is kept current as it goes, so a bridge gesture
+  // that closes it never has to take one.
+  const scheduleSnapshot = useCallback(() => {
+    clearSnapshotTimer();
+    snapshotTimerRef.current = setTimeout(() => {
+      snapshotTimerRef.current = null;
+      const step = openRef.current;
+      if (step && hasEntries(step) && !applyingRef.current) postSnapshot(step);
+    }, SNAPSHOT_DELAY_MS);
+  }, [clearSnapshotTimer, postSnapshot]);
 
   const openStep = useCallback((key: string, bulk: boolean): Step => {
     const step: Step = {
@@ -158,6 +226,7 @@ export const useStudioHistory = (args: Args) => {
       content: new Map(),
       layout: new Map(),
       connected: new Map(),
+      snapshotted: false,
     };
     if (key === "ai") {
       const ai = argsRef.current.getAiState();
@@ -167,14 +236,12 @@ export const useStudioHistory = (args: Args) => {
     return step;
   }, []);
 
-  // Drops the oldest step. The bridge folds a dropped step into its base when
-  // no remaining step is older, so the regions it touched stay restorable to
-  // its after-state; only ever the oldest is dropped this way.
+  // The bridge folds a dropped step into its base while that step is
+  // applied, so the regions it touched stay restorable to its after-state.
   const evictOldest = useCallback(() => {
     const evicted = stepsRef.current.shift();
     if (!evicted) return;
     pointerRef.current--;
-    // Pointer 0 now holds the evicted step's edits, not the last save.
     baseIsSavedRef.current = false;
     argsRef.current.postCommandToBridge({
       action: "historyDrop",
@@ -182,12 +249,8 @@ export const useStudioHistory = (args: Args) => {
     });
   }, []);
 
-  // Closes the open step: lands debounced writes into it, reads every after,
-  // drops it if nothing changed, and otherwise pushes it and asks the bridge
-  // to snapshot what it touched. A bulk step (a reorder, an AI turn) only
-  // closes when forced, so a selection change mid-way cannot split it.
   const closeStep = useCallback(
-    (force = true) => {
+    ({ force = true, snapshot = true }: CloseOptions = {}) => {
       const step = openRef.current;
       if (!step || applyingRef.current) return;
       if (step.bulk && !force) return;
@@ -197,38 +260,21 @@ export const useStudioHistory = (args: Args) => {
         getLayoutRegionSnapshot,
         getConnectedSlots,
         getAiState,
+        isAiRenderPending,
         postCommandToBridge,
       } = argsRef.current;
+      // An AI turn ends when its render is on the canvas, not before.
+      if (step.key === "ai" && isAiRenderPending()) return;
 
       // Still open while it flushes, so the flushed writes land in it.
       flushPendingPatches();
+      clearSnapshotTimer();
       openRef.current = null;
 
       const content = getState().content || {};
-      const fields = getState().fields || {};
-      const fieldRefs: { fieldZuid: string; itemZuid: string }[] = [];
       step.content.forEach((entry) => {
-        const slice =
-          entry.type === "SET_ITEM_DATA"
-            ? "data"
-            : entry.type === "SET_ITEM_WEB"
-            ? "web"
-            : "meta";
-        const item = content[entry.itemZUID];
-        entry.after = item?.[slice]?.[entry.key];
-        if (entry.type !== "SET_ITEM_DATA") return;
-        // The bridge finds a field's canvas regions by ZUID; the action
-        // carries its name.
-        const modelZUID = item?.meta?.contentModelZUID;
-        // `any`: the fields slice is untyped (see AppState's TODO).
-        const field = Object.values(fields).find(
-          (candidate: any) =>
-            candidate?.contentModelZUID === modelZUID &&
-            candidate?.name === entry.key
-        ) as { ZUID?: string } | undefined;
-        if (field?.ZUID) {
-          fieldRefs.push({ fieldZuid: field.ZUID, itemZuid: entry.itemZUID });
-        }
+        entry.after =
+          content[entry.itemZUID]?.[sliceOf(entry.type)]?.[entry.key];
       });
       step.layout.forEach((entry, codeId) => {
         entry.after = getLayoutRegionSnapshot(codeId);
@@ -240,6 +286,9 @@ export const useStudioHistory = (args: Args) => {
       if (step.ai) step.ai.after = getAiState();
 
       if (isNoop(step)) {
+        if (step.snapshotted) {
+          postCommandToBridge({ action: "historyDrop", stepIds: [step.id] });
+        }
         bump();
         return;
       }
@@ -247,44 +296,44 @@ export const useStudioHistory = (args: Args) => {
       // A new step after an undo replaces the redo tail.
       if (pointerRef.current < stepsRef.current.length) {
         const truncated = stepsRef.current.splice(pointerRef.current);
-        const stepIds = truncated.map(({ id }) => id);
-        postCommandToBridge({ action: "historyDrop", stepIds });
+        postCommandToBridge({
+          action: "historyDrop",
+          stepIds: truncated.map(({ id }) => id),
+        });
       }
       stepsRef.current.push(step);
       pointerRef.current++;
-      postCommandToBridge({
-        action: "historySnapshot",
-        stepId: step.id,
-        codeIds: Array.from(step.layout.keys()),
-        fields: fieldRefs,
-      });
+      if (snapshot) postSnapshot(step);
       if (stepsRef.current.length > MAX_STEPS) evictOldest();
       bump();
     },
-    [bump, evictOldest]
+    [bump, clearSnapshotTimer, evictOldest, postSnapshot]
   );
 
-  // A write is about to land on `key`. It joins the open step when that step
-  // is on the same target (or is a bulk step), and starts a new one
-  // otherwise.
+  // A write is about to land on `key`: it joins the open step when that step
+  // is on the same target or is a bulk step, and starts a new one otherwise.
+  // `fromBridge` marks a gesture the canvas has already applied.
   const touch = useCallback(
-    (key: string) => {
+    (key: string, fromBridge = false) => {
       if (!argsRef.current.enabled || applyingRef.current) return;
       const open = openRef.current;
-      if (open && (open.bulk || open.key === key)) return;
-      closeStep();
-      openStep(key, false);
+      if (!open || (!open.bulk && open.key !== key)) {
+        closeStep({ snapshot: !fromBridge });
+        // An AI turn still rendering stays open and takes the write.
+        if (!openRef.current) openStep(key, false);
+      }
+      scheduleSnapshot();
     },
-    [closeStep, openStep]
+    [closeStep, openStep, scheduleSnapshot]
   );
 
   // Brackets one gesture that writes several targets at once — a reorder
-  // across regions, a link add or remove, an image pick, an AI turn — into a
-  // single step.
+  // across regions, a link add or remove, an image pick, an AI turn.
   const beginStep = useCallback(
-    (kind: string) => {
+    (kind: string, fromBridge = false) => {
       if (!argsRef.current.enabled || applyingRef.current) return;
-      closeStep();
+      closeStep({ snapshot: !fromBridge });
+      if (openRef.current) return;
       openStep(kind, true);
     },
     [closeStep, openStep]
@@ -292,8 +341,6 @@ export const useStudioHistory = (args: Args) => {
 
   const endStep = useCallback(() => closeStep(), [closeStep]);
 
-  // The first write a step makes to an entry knows the before; nothing else
-  // does.
   const ensureOpenStep = useCallback(() => {
     if (openRef.current) return openRef.current;
     // A write nothing announced is a step of its own.
@@ -310,9 +357,10 @@ export const useStudioHistory = (args: Args) => {
         const before = argsRef.current.getLayoutRegionSnapshot(codeId);
         step.layout.set(codeId, { before, after: before });
       });
+      scheduleSnapshot();
       if (wasEmpty) bump();
     },
-    [bump, ensureOpenStep]
+    [bump, ensureOpenStep, scheduleSnapshot]
   );
 
   const recordConnected = useCallback(
@@ -323,9 +371,10 @@ export const useStudioHistory = (args: Args) => {
       if (!step.connected.has(slotKey)) {
         step.connected.set(slotKey, { before, after: before });
       }
+      scheduleSnapshot();
       if (wasEmpty) bump();
     },
-    [bump, ensureOpenStep]
+    [bump, ensureOpenStep, scheduleSnapshot]
   );
 
   const recordContentWrite = useCallback(
@@ -334,7 +383,7 @@ export const useStudioHistory = (args: Args) => {
       if (!baseDirtyRef.current.has(write.itemZUID)) {
         baseDirtyRef.current.set(write.itemZUID, write.wasDirty);
       }
-      const key = `content:${write.itemZUID}:${write.type}:${write.key}`;
+      const key = contentKey(write.itemZUID, write.type, write.key);
       touch(key);
       const step = ensureOpenStep();
       const wasEmpty = !hasEntries(step);
@@ -357,13 +406,47 @@ export const useStudioHistory = (args: Args) => {
     return () => setStudioHistoryRecorder(null);
   }, [recordContentWrite]);
 
-  const apply = useCallback(
-    (direction: StudioHistoryDirection) => {
+  const reset = useCallback(
+    (enabled: boolean) => {
+      clearSnapshotTimer();
+      if (pendingRestoreRef.current) {
+        clearTimeout(pendingRestoreRef.current.timer);
+        pendingRestoreRef.current = null;
+      }
+      openRef.current = null;
+      stepsRef.current = [];
+      pointerRef.current = 0;
+      baseIsSavedRef.current = true;
+      baseDirtyRef.current.clear();
+      if (enabled) {
+        argsRef.current.postCommandToBridge({ action: "historyReset" });
+      }
+      bump();
+    },
+    [bump, clearSnapshotTimer]
+  );
+
+  // Nothing of the host's half has been applied, so the staged edits still
+  // match what a save writes and they stay. The history goes, because the
+  // canvas may be part-way between two steps.
+  const failRestore = useCallback(
+    (reply?: unknown) => {
+      console.warn(
+        "Studio: the canvas could not restore a history step",
+        reply
+      );
+      argsRef.current.dispatch(
+        notify({ kind: "warn", message: t("content.studioUndoFailed") })
+      );
+      reset(argsRef.current.enabled);
+    },
+    [reset, t]
+  );
+
+  const applyHostState = useCallback(
+    (step: Step, direction: StudioHistoryDirection) => {
       const {
-        enabled,
-        blocked,
         dispatch,
-        postCommandToBridge,
         restoreLayoutRegions,
         restoreConnectedSlots,
         restoreAiState,
@@ -371,21 +454,8 @@ export const useStudioHistory = (args: Args) => {
         onBeforeApply,
         onApplied,
       } = argsRef.current;
-      if (!enabled || blocked || applyingRef.current) return;
-
-      // An edit still open is the first thing undo takes back — including
-      // what is still in a panel input's or an Inspector slot's debounce.
-      flushAllDebouncedInputs();
-      argsRef.current.flushPendingPatches();
-      closeStep();
-      const step =
-        direction === "undo"
-          ? stepsRef.current[pointerRef.current - 1]
-          : stepsRef.current[pointerRef.current];
-      if (!step) return;
       const pick = <T>(change: Change<T>) =>
         direction === "undo" ? change.before : change.after;
-
       const contentWrites: AppliedContentWrite[] = Array.from(
         step.content.values()
       ).map((entry) => ({
@@ -413,17 +483,9 @@ export const useStudioHistory = (args: Args) => {
           });
           restoreConnectedSlots(patch);
         }
-        // Lock the canvas before a painted preview comes back, and unlock it
-        // only after it has gone, so the bridge never accepts a gesture on
-        // markup that is not the page's.
-        const ai = step.ai ? pick(step.ai) : null;
-        if (ai?.stagedCodeId) restoreAiState(ai);
-        postCommandToBridge({
-          action: "historyRestore",
-          stepId: step.id,
-          direction,
-        });
-        if (ai && !ai.stagedCodeId) restoreAiState(ai);
+        // Unlocking waits until here, after the bridge has taken the painted
+        // preview off the canvas; a lock was posted before the restore.
+        if (step.ai) restoreAiState(pick(step.ai));
 
         pointerRef.current += direction === "undo" ? -1 : 1;
 
@@ -442,38 +504,86 @@ export const useStudioHistory = (args: Args) => {
       onApplied?.(contentWrites);
       bump();
     },
-    [bump, closeStep]
+    [bump]
+  );
+
+  const apply = useCallback(
+    (direction: StudioHistoryDirection) => {
+      const { enabled, blocked, postCommandToBridge, flushPendingPatches } =
+        argsRef.current;
+      if (!enabled || blocked || applyingRef.current) return;
+      if (pendingRestoreRef.current) return;
+
+      // An edit still open is the first thing undo takes back — including
+      // what is still in a panel input's or an Inspector slot's debounce.
+      flushAllDebouncedInputs();
+      flushPendingPatches();
+      closeStep();
+      const step =
+        direction === "undo"
+          ? stepsRef.current[pointerRef.current - 1]
+          : stepsRef.current[pointerRef.current];
+      if (!step) return;
+
+      // Lock the canvas before a painted preview comes back, so the bridge
+      // never accepts a gesture on markup that is not the page's.
+      const ai = step.ai
+        ? direction === "undo"
+          ? step.ai.before
+          : step.ai.after
+        : null;
+      if (ai?.stagedCodeId) {
+        postCommandToBridge({ action: "setPreviewLock", locked: true });
+      }
+      postCommandToBridge({
+        action: "historyRestore",
+        stepId: step.id,
+        direction,
+      });
+      pendingRestoreRef.current = {
+        step,
+        direction,
+        timer: setTimeout(() => {
+          pendingRestoreRef.current = null;
+          failRestore({ stepId: step.id, direction, reason: "timeout" });
+        }, RESTORE_TIMEOUT_MS),
+      };
+      bump();
+    },
+    [bump, closeStep, failRestore]
   );
 
   const undo = useCallback(() => apply("undo"), [apply]);
   const redo = useCallback(() => apply("redo"), [apply]);
 
-  // A new frame: its bridge holds no snapshots, so neither does the stack.
-  const reset = useCallback(
-    (enabled: boolean) => {
-      openRef.current = null;
-      stepsRef.current = [];
-      pointerRef.current = 0;
-      baseIsSavedRef.current = true;
-      baseDirtyRef.current.clear();
-      if (enabled)
-        argsRef.current.postCommandToBridge({ action: "historyReset" });
-      bump();
-    },
-    [bump]
-  );
-
-  // A restore the canvas could not carry out leaves it disagreeing with the
-  // staged state, and every later step would build on that. The staged edits
-  // are still what a save writes, so they stay; the history goes, and the
-  // canvas catches up on the next save or reload.
   const handleRestoreReply = useCallback(
     (msg: { stepId?: number; direction?: string; ok?: boolean }) => {
-      if (msg?.ok !== false) return;
-      console.warn("Studio: the canvas could not restore a history step", msg);
-      reset(argsRef.current.enabled);
+      const pending = pendingRestoreRef.current;
+      if (!pending) return;
+      if (msg?.stepId !== pending.step.id) return;
+      if (msg?.direction !== pending.direction) return;
+      clearTimeout(pending.timer);
+      pendingRestoreRef.current = null;
+      if (msg.ok) applyHostState(pending.step, pending.direction);
+      else failRestore(msg);
     },
-    [reset]
+    [applyHostState, failRestore]
+  );
+
+  // A save that does not reload the canvas leaves pointer 0 behind the
+  // stored state.
+  const markBaseUnsaved = useCallback(() => {
+    baseIsSavedRef.current = false;
+  }, []);
+
+  useEffect(
+    () => () => {
+      clearSnapshotTimer();
+      if (pendingRestoreRef.current) {
+        clearTimeout(pendingRestoreRef.current.timer);
+      }
+    },
+    [clearSnapshotTimer]
   );
 
   // Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z and Ctrl+Y outside a text control. Inside
@@ -501,7 +611,7 @@ export const useStudioHistory = (args: Args) => {
 
   const open = openRef.current;
   const openHasEntries = !!open && hasEntries(open);
-  const ready = args.enabled && !args.blocked;
+  const ready = args.enabled && !args.blocked && !pendingRestoreRef.current;
 
   return {
     canUndo: ready && (pointerRef.current > 0 || openHasEntries),
@@ -517,5 +627,12 @@ export const useStudioHistory = (args: Args) => {
     recordConnected,
     reset,
     handleRestoreReply,
+    markBaseUnsaved,
   };
 };
+
+export const contentKey = (
+  itemZUID: string,
+  type: StudioHistoryContentType,
+  key: string
+) => `content:${itemZUID}:${type}:${key}`;

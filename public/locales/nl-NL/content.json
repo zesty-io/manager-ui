@@ -748,6 +748,7 @@
   "studioStaticEditNotSingleField": "Dit blok kan niet inline worden bewerkt omdat de inhoud niet uit één gekoppeld veld bestaat.",
   "studioStaticEditRejected": "Dit blok bevat dynamische inhoud en kan niet inline worden bewerkt. Schakel naar de modus Content om te bewerken.",
   "studioUndo": "Ongedaan maken",
+  "studioUndoFailed": "Het canvas kon die wijziging niet ongedaan maken of opnieuw uitvoeren, dus de geschiedenis is gewist. Je niet-opgeslagen wijzigingen blijven behouden.",
   "studioUnsavedLayoutBody": "Je hebt niet-opgeslagen lay-outwijzigingen. Wil je ze opslaan voordat je doorgaat?",
   "studioUnsavedLayoutTitle": "Niet-opgeslagen lay-outwijzigingen",
   "studioUntitledItem": "Naamloos",

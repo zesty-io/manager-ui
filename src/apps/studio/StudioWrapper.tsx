@@ -82,7 +82,7 @@ import {
 import { useStudioSelection } from "./hooks/useStudioSelection";
 import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
 import { CodeRegionReplaced, useStudioAiEdit } from "./hooks/useStudioAiEdit";
-import { useStudioHistory } from "./hooks/useStudioHistory";
+import { contentKey, useStudioHistory } from "./hooks/useStudioHistory";
 import { getRefRegistry } from "../../engine/refRegistry";
 import { useMultiPermission } from "shell/hooks/use-permissions";
 import { MediaApp } from "../media/src/app";
@@ -163,6 +163,9 @@ export const StudioWrapper = () => {
   const canSelectMode = isStaff;
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  // Undo history is built last, from the hooks below; everything before it
+  // reaches it through this ref.
+  const historyRef = useRef<ReturnType<typeof useStudioHistory> | null>(null);
   const studioModalRef = useRef<HTMLDivElement | null>(null);
   // Whether a modal over Studio — a dialog, a menu, the media picker — owns
   // the keyboard. Studio itself renders as a modal dialog, so its own root
@@ -925,13 +928,28 @@ export const StudioWrapper = () => {
     [activeFields, dispatch, t]
   );
 
-  const { saveAllContent, saveAndPublishAllContent, discardAllContent } =
-    useStudioContentSave({
-      dispatch,
-      refreshPreviewFrame,
-      applyItemSaveErrors,
-      setStudioSaving,
-    });
+  const {
+    saveAllContent: saveAllContentItems,
+    saveAndPublishAllContent: saveAndPublishAllContentItems,
+    discardAllContent,
+  } = useStudioContentSave({
+    dispatch,
+    refreshPreviewFrame,
+    applyItemSaveErrors,
+    setStudioSaving,
+  });
+
+  // A content save that fails part-way does not reload the canvas, so undo
+  // history stops treating its base as the stored state. Marked up front:
+  // that is only ever too cautious, and a save that reloads resets it.
+  const saveAllContent = useCallback(() => {
+    historyRef.current?.markBaseUnsaved();
+    return saveAllContentItems();
+  }, [saveAllContentItems]);
+  const saveAndPublishAllContent = useCallback(() => {
+    historyRef.current?.markBaseUnsaved();
+    return saveAndPublishAllContentItems();
+  }, [saveAndPublishAllContentItems]);
 
   const dirtyContentItems = useMemo(
     () => collectDirtyContentItems(contentItems),
@@ -1053,13 +1071,12 @@ export const StudioWrapper = () => {
     []
   );
   const aiBridgeReadyRef = useRef<(path?: string) => void>(() => {});
-  const handleLayoutRegionSaved = useCallback(
-    (codeId: string) => aiRegionSavedRef.current(codeId),
-    []
-  );
-  // Undo history is built last, from the hooks below; the layout hook and the
-  // bridge listener reach it through this ref.
-  const historyRef = useRef<ReturnType<typeof useStudioHistory> | null>(null);
+  const handleLayoutRegionSaved = useCallback((codeId: string) => {
+    // Undo history's base is no longer the stored state, and a partly failed
+    // save does not reload the canvas to reset it.
+    historyRef.current?.markBaseUnsaved();
+    aiRegionSavedRef.current(codeId);
+  }, []);
   const handleBeforeLayoutWrite = useCallback(
     (codeIds: string[]) => historyRef.current?.recordLayoutWrite(codeIds),
     []
@@ -1090,9 +1107,17 @@ export const StudioWrapper = () => {
       historyRef.current?.handleRestoreReply(msg),
     []
   );
+  const handleBeforeBridgeContentInput = useCallback(
+    (itemZuid: string, fieldName: string) =>
+      historyRef.current?.touch(
+        contentKey(itemZuid, "SET_ITEM_DATA", fieldName),
+        true
+      ),
+    []
+  );
   // Escape ends whatever was being edited on the canvas.
   const handleCanvasEscape = useCallback(
-    () => historyRef.current?.closeStep(false),
+    () => historyRef.current?.closeStep({ force: false }),
     []
   );
   const aiPreviewSettledRef = useRef<() => void>(() => {});
@@ -1661,6 +1686,7 @@ export const StudioWrapper = () => {
 
   const handleSave = useCallback(async () => {
     if (!selectedItemZUID) return;
+    historyRef.current?.markBaseUnsaved();
     setSaveClicked(true);
     setStudioSaving(true);
 
@@ -1840,7 +1866,9 @@ export const StudioWrapper = () => {
   // One drop is one step, even when it moves a block across regions.
   const handleReorderOutputWithHistory = useCallback(
     (msg: any) => {
-      historyRef.current?.beginStep("reorder");
+      // The bridge has already moved the block, so the step before this one
+      // keeps the snapshot it took before the drag.
+      historyRef.current?.beginStep("reorder", true);
       handleReorderOutput(msg);
       historyRef.current?.endStep();
     },
@@ -1854,7 +1882,7 @@ export const StudioWrapper = () => {
         typeof msg?.codeId === "string" &&
         typeof msg?.layoutId === "string"
       ) {
-        historyRef.current?.touch(`inline:${msg.codeId}:${msg.layoutId}`);
+        historyRef.current?.touch(`inline:${msg.codeId}:${msg.layoutId}`, true);
       }
       handleLayoutContentUpdate(msg);
     },
@@ -1885,6 +1913,7 @@ export const StudioWrapper = () => {
     canvasLockedRef: aiCanvasLockedRef,
     onCodeRegionReplaced: handleCodeRegionReplaced,
     onBridgeReady: handleBridgeReadyForHost,
+    onBeforeBridgeContentInput: handleBeforeBridgeContentInput,
     onEscape: handleCanvasEscape,
     onHistoryKey: handleHistoryKey,
     onHistoryRestored: handleHistoryRestored,
@@ -2395,6 +2424,7 @@ export const StudioWrapper = () => {
     restoreConnectedSlots,
     getAiState,
     restoreAiState,
+    isAiRenderPending,
     // An undone value is not the canvas echoing a keystroke, so TinyMCE must
     // not be handed it as one.
     onBeforeApply: () => {
@@ -2464,7 +2494,7 @@ export const StudioWrapper = () => {
     inspectorSelection?.nodeId,
   ].join("|");
   useEffect(() => {
-    historyRef.current?.closeStep(false);
+    historyRef.current?.closeStep({ force: false });
   }, [selectionKey]);
 
   const handleToggleAiPanel = useCallback(() => {
@@ -2815,6 +2845,8 @@ export const StudioWrapper = () => {
                   startIcon={<SaveRoundedIcon fontSize="small" />}
                   sx={{ whiteSpace: "nowrap" }}
                   onClick={handleOpenSaveChangesModal}
+                  // An AI turn still rendering is not staged in full yet.
+                  disabled={aiPreview?.status === "loading"}
                 >
                   {t("content.studioSaveChanges")}
                 </Button>

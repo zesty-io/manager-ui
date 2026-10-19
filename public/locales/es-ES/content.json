@@ -768,6 +768,7 @@
   "studioStaticEditNotSingleField": "Este bloque no se puede editar en línea porque su contenido no es un único campo conectado.",
   "studioStaticEditRejected": "Este bloque contiene contenido dinámico y no se puede editar en línea. Cambia al modo Contenido para realizar ediciones.",
   "studioUndo": "Deshacer",
+  "studioUndoFailed": "El lienzo no pudo deshacer ni rehacer ese cambio, así que se borró el historial de deshacer. Tus cambios sin guardar se conservan.",
   "studioUnsavedLayoutBody": "Tienes cambios de diseño sin guardar. ¿Guardarlos antes de continuar?",
   "studioUnsavedLayoutTitle": "Cambios de diseño sin guardar",
   "studioUntitledItem": "Sin título",

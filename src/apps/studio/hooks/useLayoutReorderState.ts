@@ -1388,11 +1388,19 @@ export const useLayoutReorderState = ({
   const restoreLayoutRegions = useCallback(
     (snapshots: Record<string, LayoutRegionSnapshot>) => {
       const sources: Record<string, string> = {};
+      const removed: string[] = [];
       Object.keys(snapshots).forEach((codeId) => {
         const { source } = snapshots[codeId];
         if (typeof source === "string") sources[codeId] = source;
+        else removed.push(codeId);
       });
       if (Object.keys(sources).length) writeTemplateSources(sources);
+      if (removed.length) {
+        const next = { ...templateSourceByCodeIdRef.current };
+        removed.forEach((codeId) => delete next[codeId]);
+        templateSourceByCodeIdRef.current = next;
+        setTemplateSourceVersion((prev) => prev + 1);
+      }
 
       setPendingLayoutSave((prev) => {
         const regions = { ...(prev?.regions || {}) };

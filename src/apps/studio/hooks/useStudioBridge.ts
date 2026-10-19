@@ -124,6 +124,11 @@ type Args = {
    * `capabilities` lists optional bridge features; an older bridge sends none.
    */
   onBridgeReady?: (path?: string, capabilities?: string[]) => void;
+  /**
+   * A canvas keystroke in a bound field, before it is written to the store.
+   * The canvas already shows it.
+   */
+  onBeforeBridgeContentInput?: (itemZuid: string, fieldName: string) => void;
   /** Escape on the canvas: an edit in progress there has ended. */
   onEscape?: () => void;
   /** Undo/redo pressed while focus was in the canvas. */
@@ -171,6 +176,7 @@ export const useStudioBridge = ({
   canvasLockedRef,
   onCodeRegionReplaced,
   onBridgeReady,
+  onBeforeBridgeContentInput,
   onEscape,
   onHistoryKey,
   onHistoryRestored,
@@ -280,6 +286,7 @@ export const useStudioBridge = ({
           const fieldName = fieldNameByZuid.get(fieldZuid);
           if (!fieldName) return;
 
+          onBeforeBridgeContentInput?.(itemZuid, fieldName);
           dispatch({
             type: "SET_ITEM_DATA",
             itemZUID: itemZuid,
@@ -328,6 +335,7 @@ export const useStudioBridge = ({
       interactionMode,
       postCommandToBridge,
       onBridgeFieldInput,
+      onBeforeBridgeContentInput,
       onEscape,
     ]
   );
