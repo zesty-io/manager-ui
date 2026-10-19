@@ -131,12 +131,12 @@ export const SchedulePublish = ({
     ) // @ts-expect-error untyped action
       .then((response) => {
         if (!response?.error) {
+          onClose();
           onUnscheduleSuccess?.();
         }
       })
       .finally(() => {
         setIsLoading(false);
-        onClose();
       });
   };
 
