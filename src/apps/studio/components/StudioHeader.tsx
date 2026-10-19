@@ -8,6 +8,8 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import { Brain } from "@zesty-io/material";
 import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "../../content-editor/src/app/views/ItemEdit/components/ItemEditHeader/LanguageSelector";
 import { InteractionMode, usesLayoutGrammar } from "../hooks/studioTypes";
@@ -237,10 +239,19 @@ export const StudioHeader = ({
           <Button
             data-cy="StudioAIButton"
             size="small"
-            variant={isAiPanelOpen ? "contained" : "outlined"}
             aria-pressed={isAiPanelOpen}
-            endIcon={<AutoAwesomeRoundedIcon fontSize="small" />}
+            endIcon={<Brain fontSize="small" />}
             onClick={onToggleAiPanel}
+            sx={{
+              fontWeight: 500,
+              color: isAiPanelOpen ? "primary.main" : "text.secondary",
+              ...(isAiPanelOpen && {
+                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+                "&:hover": {
+                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+                },
+              }),
+            }}
           >
             {t("content.studioAiButton")}
           </Button>
