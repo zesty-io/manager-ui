@@ -71,16 +71,13 @@ describe("Studio AI Assistant", () => {
     tools: [],
   });
 
-  // The dev MCP's own shape, recorded 2026-10-19: `data` is the action array
-  // itself, not a fenced string.
+  // The dev MCP's shape, recorded 2026-10-19: `data` is the action array.
   const liveReply = (actions) => ({
     data: actions,
     message: "Generated text content using Gemini",
     tools: [],
   });
 
-  // mcp-remote#16: a code edit is described, and an edit to content-bound
-  // text is declined, in a SYSTEM_OUTPUT.
   const DESCRIPTION =
     "Added a line under the heading and removed the second plain div.";
   const systemOutput = (value) => ({
