@@ -309,7 +309,14 @@ describe("AI drawer", () => {
   describe("replies the drawer has to handle", () => {
     const CHAT_ZUID = "e2e-stub-chat";
 
-    const openDrawerWithReply = (response) => {
+    const CODE_EDITOR_REPLY = JSON.stringify([
+      {
+        type: "SET_VALUE",
+        payload: { refKey: "code-editor", value: "<h1>Hi</h1>" },
+      },
+    ]);
+
+    const openDrawerWithReply = (response, beforePrompt = () => {}) => {
       cy.intercept("GET", "**/chats", { body: { data: [] } });
       cy.intercept("POST", "**/client", {
         body: { chatZuid: CHAT_ZUID, data: response, message: "", tools: [] },
@@ -340,6 +347,7 @@ describe("AI drawer", () => {
       });
       cy.getBySelector("DuoModeToggle").click({ force: true });
       cy.getBySelector("AIDrawerToggle").click();
+      beforePrompt();
       cy.getBySelector("AIDrawerComposer").type("Stubbed prompt{enter}");
       cy.wait("@postClient");
       cy.wait("@getChat");
@@ -356,18 +364,21 @@ describe("AI drawer", () => {
     });
 
     it("warns instead of applying a suggestion for a ref not on the page", () => {
-      openDrawerWithReply(
-        JSON.stringify([
-          {
-            type: "SET_VALUE",
-            payload: { refKey: "code-editor", value: "<h1>Hi</h1>" },
-          },
-        ])
-      );
+      openDrawerWithReply(CODE_EDITOR_REPLY);
 
       cy.getBySelector("AIDrawerSetValue").click();
       cy.getBySelector("toast").should("contain.text", '"code-editor"');
       cy.getBySelector("AIDrawerSetValue").should("not.be.disabled");
+      cy.get("@approve.all").should("have.length", 0);
+    });
+
+    it("warns instead of auto-applying a suggestion for a ref not on the page", () => {
+      openDrawerWithReply(CODE_EDITOR_REPLY, () => {
+        cy.getBySelector("AIDrawerSettings").click();
+        cy.getBySelector("AIDrawerAutoApplyToggle").find("input").check();
+      });
+
+      cy.getBySelector("toast").should("contain.text", '"code-editor"');
       cy.get("@approve.all").should("have.length", 0);
     });
   });

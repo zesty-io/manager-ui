@@ -39,6 +39,10 @@ type StudioChat = {
   chatZUID?: string;
   // The discard this transcript already notes.
   noticeId?: number;
+  // Bumped by Clear: a reply to a turn sent before it is dropped.
+  clears: number;
+  // How the open panel adds to this transcript; unset while it is closed.
+  append?: (turnZUID: string, entries: ChatResponse[]) => void;
 };
 
 // Every page shares the /studio pathname, so transcripts are keyed by page
@@ -47,6 +51,22 @@ type StudioChat = {
 // is never restored here, since it would show edits that were discarded.
 const studioChats = new Map<string, StudioChat>();
 let turnSeq = 0;
+
+// Adds to a page's transcript whether or not its panel is open now.
+const appendToChat = (
+  chat: StudioChat,
+  turnZUID: string,
+  entries: ChatResponse[]
+) => {
+  if (chat.append) {
+    chat.append(turnZUID, entries);
+    return;
+  }
+  chat.responses = {
+    ...chat.responses,
+    [turnZUID]: [...(chat.responses[turnZUID] || []), ...entries],
+  };
+};
 
 // Takes the inspector's column.
 export const StudioAIPanel = ({
@@ -139,7 +159,11 @@ const StudioAIChat = ({
     const existing = studioChats.get(pageItemZUID);
     if (existing) return existing;
     // A discard from before the transcript existed is not its news.
-    const created: StudioChat = { responses: {}, noticeId: discardId };
+    const created: StudioChat = {
+      responses: {},
+      noticeId: discardId,
+      clears: 0,
+    };
     studioChats.set(pageItemZUID, created);
     return created;
   });
@@ -160,16 +184,15 @@ const StudioAIChat = ({
     label: t("shell.toneNameProfessional"),
   });
   const responsesEndRef = useRef<HTMLDivElement | null>(null);
-  // Bumped when the chat is cleared or the panel unmounts (it closed, or
-  // moved to another page), so a reply for a turn no longer on screen is
-  // dropped rather than applied to whatever is open now.
-  const epochRef = useRef(0);
-  useEffect(
-    () => () => {
-      epochRef.current++;
-    },
-    []
-  );
+  // False once this panel closes or moves to another page. A reply that
+  // lands after that is not applied to whatever is open now.
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     chat.responses = responses;
@@ -200,47 +223,65 @@ const StudioAIChat = ({
       })),
     []
   );
+  useEffect(() => {
+    chat.append = appendToTurn;
+    return () => {
+      if (chat.append === appendToTurn) chat.append = undefined;
+    };
+  }, [chat, appendToTurn]);
 
   const handleReply = useCallback(
     (turnZUID: string, reply: GeminiResponse) => {
       if (reply.chatZuid) chat.chatZUID = reply.chatZuid;
 
-      const entries = toChatResponses(reply.data).flatMap(
-        (entry): ChatResponse[] => {
-          if (entry.type !== "SET_VALUE") return [entry];
-          const { refKey, value } = entry.payload;
-
-          // Read before the action applies: the handle replaces the file.
-          const codeEditor =
-            refKey === "code-editor"
-              ? getRefRegistry()["code-editor"]?.context?.()
-              : null;
-          if (!applySetValue(refKey, value) || !codeEditor) return [entry];
-          // Refused by the handle: nothing changed, so nothing to count.
-          if (!value.trim()) return [];
-
-          return [
-            {
-              type: "CODE_EDIT",
-              payload: {
-                fileName: codeEditor.fileName,
-                ...countLineChanges(codeEditor.code || "", value),
+      // No reply at all is a failure the user should see.
+      const parsed: ChatResponse[] =
+        reply.data == null
+          ? [
+              {
+                type: "ERROR",
+                payload: { value: t("shell.errorParsingAiResponse") },
               },
+            ]
+          : toChatResponses(reply.data);
+      const entries = parsed.flatMap((entry): ChatResponse[] => {
+        if (entry.type !== "SET_VALUE") return [entry];
+        const { refKey, value } = entry.payload;
+
+        // Read before the action applies: the handle replaces the file.
+        const codeEditor =
+          refKey === "code-editor"
+            ? getRefRegistry()["code-editor"]?.context?.()
+            : null;
+        if (!applySetValue(refKey, value) || !codeEditor) return [entry];
+        // Refused by the handle: nothing changed, so nothing to count.
+        if (!value.trim()) return [];
+
+        return [
+          {
+            type: "CODE_EDIT",
+            payload: {
+              fileName: codeEditor.fileName,
+              ...countLineChanges(codeEditor.code || "", value),
             },
-          ];
-        }
-      );
+          },
+        ];
+      });
 
       appendToTurn(turnZUID, entries);
       setLatestPromptZUIDs(new Set([turnZUID]));
     },
-    [chat, applySetValue, appendToTurn]
+    [chat, applySetValue, appendToTurn, t]
   );
 
   const sendTurn = useCallback(
     (prompt: string, body: Record<string, unknown>) => {
       const turnZUID = `turn-${++turnSeq}`;
-      const epoch = epochRef.current;
+      const clears = chat.clears;
+      const failed: ChatResponse = {
+        type: "ERROR",
+        payload: { value: t("shell.errorGeneratingAiResponse") },
+      };
       appendToTurn(turnZUID, [
         { type: "USER_INPUT", payload: { value: prompt } },
       ]);
@@ -248,19 +289,22 @@ const StudioAIChat = ({
       geminiGenerate(body)
         .unwrap()
         .then((reply) => {
-          if (epoch === epochRef.current) handleReply(turnZUID, reply);
+          if (clears !== chat.clears) return;
+          if (isMountedRef.current) {
+            handleReply(turnZUID, reply);
+            return;
+          }
+          // Closed or moved to another page: the session is kept, so the
+          // next turn continues it, but the edit is not applied.
+          if (reply.chatZuid) chat.chatZUID = reply.chatZuid;
+          appendToChat(chat, turnZUID, [failed]);
         })
         .catch(() => {
-          if (epoch !== epochRef.current) return;
-          appendToTurn(turnZUID, [
-            {
-              type: "ERROR",
-              payload: { value: t("shell.errorGeneratingAiResponse") },
-            },
-          ]);
+          if (clears !== chat.clears) return;
+          appendToChat(chat, turnZUID, [failed]);
         });
     },
-    [geminiGenerate, handleReply, appendToTurn, t]
+    [chat, geminiGenerate, handleReply, appendToTurn, t]
   );
 
   const handlePrompt = useCallback(
@@ -311,7 +355,7 @@ const StudioAIChat = ({
 
   // The next turn starts a new server session.
   const handleClearChat = useCallback(() => {
-    epochRef.current++;
+    chat.clears++;
     chat.chatZUID = undefined;
     setResponses({});
     setComposerSeed("");

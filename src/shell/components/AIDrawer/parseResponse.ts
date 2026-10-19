@@ -43,25 +43,30 @@ const flattenResponses = (items: unknown[]): unknown[] =>
     return isResponseArray ? flattenResponses(nested) : [item];
   });
 
+const isScalar = (value: unknown): value is number | boolean =>
+  typeof value === "number" || typeof value === "boolean";
+
 // Only shapes ChatThread can render get through: NAVIGATE is drawn from
 // `payload.path`, every other entry from `payload.value`. A bare scalar is a
-// reply. Anything else becomes an ERROR entry rather than reaching the render.
+// reply, and a scalar SET_VALUE is the text it sets. Anything else becomes an
+// ERROR entry rather than reaching the render.
 const toChatResponse = (entry: unknown): ChatResponse => {
   if (typeof entry === "string" && entry.trim()) return toMessage(entry);
-  if (typeof entry === "number" || typeof entry === "boolean") {
-    return toMessage(String(entry));
-  }
+  if (isScalar(entry)) return toMessage(String(entry));
 
   if (entry && typeof entry === "object") {
     const { type, payload } = entry as { type?: unknown; payload?: unknown };
-    const field = type === "NAVIGATE" ? "path" : "value";
-    if (
-      typeof type === "string" &&
-      payload &&
-      typeof payload === "object" &&
-      typeof (payload as Record<string, unknown>)[field] === "string"
-    ) {
-      return entry as ChatResponse;
+    if (typeof type === "string" && payload && typeof payload === "object") {
+      const fields = payload as Record<string, unknown>;
+      if (type === "SET_VALUE" && isScalar(fields.value)) {
+        return {
+          ...entry,
+          payload: { ...fields, value: String(fields.value) },
+        } as ChatResponse;
+      }
+
+      const field = type === "NAVIGATE" ? "path" : "value";
+      if (typeof fields[field] === "string") return entry as ChatResponse;
     }
   }
 
@@ -71,8 +76,9 @@ const toChatResponse = (entry: unknown): ChatResponse => {
   };
 };
 
-// A model reply as transcript entries. Blank text is no reply at all.
+// A model reply as transcript entries. Null or blank text is no reply at all.
 export const toChatResponses = (rawResponse: unknown): ChatResponse[] => {
+  if (rawResponse == null) return [];
   if (typeof rawResponse === "string" && !rawResponse.trim()) return [];
 
   const decoded =

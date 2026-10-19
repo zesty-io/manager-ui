@@ -265,6 +265,11 @@ describe("Studio AI Assistant", () => {
 
     sendPrompt("Second");
     cy.get("@mcp").its("request.body.chatZuid").should("eq", CHAT_ZUID);
+
+    // Clear starts a new session.
+    cy.getBySelector("AIDrawerClearChat").click();
+    sendPrompt("Third");
+    cy.get("@mcp").its("request.body").should("not.have.property", "chatZuid");
   });
 
   it("stages an edit, summarises it and previews it through PVL", () => {

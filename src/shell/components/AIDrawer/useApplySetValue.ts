@@ -14,7 +14,7 @@ export const useApplySetValue = () => {
 
   return useCallback(
     (refKey: string, value: string) => {
-      if (!getRefRegistry()[refKey]?.handle) {
+      if (typeof getRefRegistry()[refKey]?.handle?.setValue !== "function") {
         dispatch(
           notify({
             kind: "warn",
