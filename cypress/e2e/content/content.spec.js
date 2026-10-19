@@ -1060,5 +1060,74 @@ describe("Content Specs", () => {
 
       cy.getBySelector("toast").contains("Item Saved").should("exist");
     });
+
+    it("shows the selected version's content and stays clean after switching versions", () => {
+      const olderText = `older${uuidv4().slice(0, 8)}`;
+      const newerText = `newer${uuidv4().slice(0, 8)}`;
+      let olderVersion;
+
+      // Each PUT creates a new version: seed an older and a newer one with
+      // distinct WYSIWYG content.
+      const saveVersion = (text) =>
+        cy.apiRequest({ url: itemUrl() }).then((res) => {
+          const item = res?.data;
+          return cy.apiRequest({
+            url: itemUrl(),
+            method: "PUT",
+            body: {
+              data: { ...item.data, wysiwyg_basic: `<p>${text}</p>` },
+              meta: item.meta,
+              web: item.web,
+            },
+          });
+        });
+
+      saveVersion(olderText);
+      cy.apiRequest({ url: itemUrl() }).then((res) => {
+        olderVersion = res?.data?.meta?.version;
+      });
+      saveVersion(newerText);
+
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit(
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+        );
+      });
+      cy.get("#wysiwyg_basic_ifr", options).should(($iframe) => {
+        expect($iframe[0].contentDocument?.body?.textContent ?? "").to.contain(
+          newerText
+        );
+      });
+
+      // Versions are listed newest first, so the second row is the older one
+      cy.getBySelector("VersionSelector").should("exist").click();
+      cy.getBySelector("VersionItem", options)
+        .eq(1)
+        .should(($row) => {
+          expect($row.text()).to.contain(`v${olderVersion}`);
+        })
+        .click();
+
+      // The remounted editor must show the selected version, not the previous
+      cy.get("#wysiwyg_basic_ifr", options).should(($iframe) => {
+        const text = $iframe[0].contentDocument?.body?.textContent ?? "";
+        expect(text).to.contain(olderText);
+        expect(text).not.to.contain(newerText);
+      });
+
+      // A spurious post-remount change would land on the 500ms input
+      // debounce; retry until that window has passed (see the save test).
+      cy.then(() => performance.now()).then((switchedAt) => {
+        cy.wrap(null, options).should(() => {
+          expect(performance.now() - switchedAt).to.be.greaterThan(1000);
+        });
+      });
+      cy.getBySelector("SaveItemButton").should("not.exist");
+      cy.get("#wysiwyg_basic_ifr").should(($iframe) => {
+        expect($iframe[0].contentDocument?.body?.textContent ?? "").to.contain(
+          olderText
+        );
+      });
+    });
   });
 });
