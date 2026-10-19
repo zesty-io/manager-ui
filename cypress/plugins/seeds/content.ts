@@ -54,16 +54,22 @@ module.exports = function content(config) {
     };
     // Retry up to 3 times — createModel can return null data under API load
     let model = null;
+    // The SDK does not throw on 4xx; it resolves `{ statusCode, ...body }`.
+    // On 5xx it resolves the raw fetch Response, which carries `status`.
+    let modelResponse = null;
     for (let attempt = 1; attempt <= 3; attempt++) {
-      const modelResponse = await sdk.instance.createModel(modelPayload);
+      modelResponse = await sdk.instance.createModel(modelPayload);
       model = modelResponse?.data;
       if (model?.ZUID) break;
       // API can be slow under parallel runner load — wait longer each attempt
       if (attempt < 3) await new Promise((r) => setTimeout(r, 2000 * attempt));
     }
     if (!model?.ZUID) {
+      const apiError = modelResponse?.error || modelResponse?.message;
+      const detail = typeof apiError === "string" ? `: ${apiError}` : "";
+      const status = modelResponse?.statusCode ?? modelResponse?.status;
       throw new Error(
-        `seed:content failed to create model after 3 attempts: "${modelPayload.label}"`
+        `seed:content failed to create model after 3 attempts (last status ${status}${detail}): "${modelPayload.label}"`
       );
     }
 
