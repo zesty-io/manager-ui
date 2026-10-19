@@ -1103,8 +1103,12 @@ export const StudioWrapper = () => {
     [isModalOverStudio]
   );
   const handleHistoryRestored = useCallback(
-    (msg: { stepId?: number; direction?: string; ok?: boolean }) =>
-      historyRef.current?.handleRestoreReply(msg),
+    (msg: {
+      stepId?: number;
+      direction?: string;
+      ok?: boolean;
+      reason?: string;
+    }) => historyRef.current?.handleRestoreReply(msg),
     []
   );
   const handleBeforeBridgeContentInput = useCallback(
@@ -2425,6 +2429,7 @@ export const StudioWrapper = () => {
     getAiState,
     restoreAiState,
     isAiRenderPending,
+    reloadCanvas: refreshPreviewFrame,
     // An undone value is not the canvas echoing a keystroke, so TinyMCE must
     // not be handed it as one.
     onBeforeApply: () => {

@@ -62,7 +62,7 @@ type StudioHistoryCommand =
       stepId: number;
       direction: StudioHistoryDirection;
     }
-  | { action: "historyDrop"; stepIds: number[] }
+  | { action: "historyDrop"; stepIds: number[]; discard?: boolean }
   | { action: "historyReset" }
   | { action: "setPreviewLock"; locked: boolean };
 
@@ -87,6 +87,7 @@ type Args = {
   getAiState: () => StudioAiState;
   restoreAiState: (state: StudioAiState) => void;
   isAiRenderPending: () => boolean;
+  reloadCanvas: () => void;
   onBeforeApply?: () => void;
   onApplied?: (contentWrites: AppliedContentWrite[]) => void;
   isModalOpen?: (target: EventTarget | null) => boolean;
@@ -218,6 +219,13 @@ export const useStudioHistory = (args: Args) => {
     }, SNAPSHOT_DELAY_MS);
   }, [clearSnapshotTimer, postSnapshot]);
 
+  // Writes are not recorded while undo/redo applies its own, nor while a
+  // restore is in flight: the step they would join is about to change.
+  const isRecording = () =>
+    argsRef.current.enabled &&
+    !applyingRef.current &&
+    !pendingRestoreRef.current;
+
   const openStep = useCallback((key: string, bulk: boolean): Step => {
     const step: Step = {
       id: nextIdRef.current++,
@@ -287,7 +295,13 @@ export const useStudioHistory = (args: Args) => {
 
       if (isNoop(step)) {
         if (step.snapshotted) {
-          postCommandToBridge({ action: "historyDrop", stepIds: [step.id] });
+          // Deleted outright: folded into the base, its mid-edit canvas
+          // would become the "before" of every later step.
+          postCommandToBridge({
+            action: "historyDrop",
+            stepIds: [step.id],
+            discard: true,
+          });
         }
         bump();
         return;
@@ -315,7 +329,7 @@ export const useStudioHistory = (args: Args) => {
   // `fromBridge` marks a gesture the canvas has already applied.
   const touch = useCallback(
     (key: string, fromBridge = false) => {
-      if (!argsRef.current.enabled || applyingRef.current) return;
+      if (!isRecording()) return;
       const open = openRef.current;
       if (!open || (!open.bulk && open.key !== key)) {
         closeStep({ snapshot: !fromBridge });
@@ -331,7 +345,7 @@ export const useStudioHistory = (args: Args) => {
   // across regions, a link add or remove, an image pick, an AI turn.
   const beginStep = useCallback(
     (kind: string, fromBridge = false) => {
-      if (!argsRef.current.enabled || applyingRef.current) return;
+      if (!isRecording()) return;
       closeStep({ snapshot: !fromBridge });
       if (openRef.current) return;
       openStep(kind, true);
@@ -349,7 +363,7 @@ export const useStudioHistory = (args: Args) => {
 
   const recordLayoutWrite = useCallback(
     (codeIds: string[]) => {
-      if (!argsRef.current.enabled || applyingRef.current) return;
+      if (!isRecording()) return;
       const step = ensureOpenStep();
       const wasEmpty = !hasEntries(step);
       codeIds.forEach((codeId) => {
@@ -365,7 +379,7 @@ export const useStudioHistory = (args: Args) => {
 
   const recordConnected = useCallback(
     (slotKey: string, before: ConnectField | undefined) => {
-      if (!argsRef.current.enabled || applyingRef.current) return;
+      if (!isRecording()) return;
       const step = ensureOpenStep();
       const wasEmpty = !hasEntries(step);
       if (!step.connected.has(slotKey)) {
@@ -379,7 +393,7 @@ export const useStudioHistory = (args: Args) => {
 
   const recordContentWrite = useCallback(
     (write: StudioHistoryContentWrite) => {
-      if (!argsRef.current.enabled || applyingRef.current) return;
+      if (!isRecording()) return;
       if (!baseDirtyRef.current.has(write.itemZUID)) {
         baseDirtyRef.current.set(write.itemZUID, write.wasDirty);
       }
@@ -426,21 +440,46 @@ export const useStudioHistory = (args: Args) => {
     [bump, clearSnapshotTimer]
   );
 
-  // Nothing of the host's half has been applied, so the staged edits still
-  // match what a save writes and they stay. The history goes, because the
-  // canvas may be part-way between two steps.
+  // The bridge refused the restore before swapping anything (every reason
+  // but "restore-failed"), so the canvas did not change; the host applied
+  // nothing either, so the two still agree and the staged edits stay. The
+  // history goes, because the step could not be restored. A lock posted
+  // ahead of a redo into an AI change is put back to match the host.
   const failRestore = useCallback(
     (reply?: unknown) => {
+      const { dispatch, enabled, getAiState, postCommandToBridge } =
+        argsRef.current;
       console.warn(
         "Studio: the canvas could not restore a history step",
         reply
       );
-      argsRef.current.dispatch(
+      dispatch(
         notify({ kind: "warn", message: t("content.studioUndoFailed") })
       );
-      reset(argsRef.current.enabled);
+      postCommandToBridge({
+        action: "setPreviewLock",
+        locked: !!getAiState().stagedCodeId,
+      });
+      reset(enabled);
     },
     [reset, t]
+  );
+
+  // The canvas may be part-way through a swap: the bridge threw mid-swap
+  // ("restore-failed"), or never answered and may yet swap late. It cannot
+  // be trusted to match the host, so it is reloaded: the reload puts back
+  // what is staged (a staged AI change is repainted) and its BRIDGE_READY
+  // resets the history. A late reply finds nothing pending and is ignored.
+  const reloadAfterUnsureRestore = useCallback(
+    (reply: unknown) => {
+      const { dispatch, reloadCanvas } = argsRef.current;
+      console.warn("Studio: a history restore may have left the canvas", reply);
+      dispatch(
+        notify({ kind: "warn", message: t("content.studioUndoFailed") })
+      );
+      reloadCanvas();
+    },
+    [t]
   );
 
   const applyHostState = useCallback(
@@ -545,19 +584,29 @@ export const useStudioHistory = (args: Args) => {
         direction,
         timer: setTimeout(() => {
           pendingRestoreRef.current = null;
-          failRestore({ stepId: step.id, direction, reason: "timeout" });
+          reloadAfterUnsureRestore({
+            stepId: step.id,
+            direction,
+            reason: "timeout",
+          });
+          bump();
         }, RESTORE_TIMEOUT_MS),
       };
       bump();
     },
-    [bump, closeStep, failRestore]
+    [bump, closeStep, reloadAfterUnsureRestore]
   );
 
   const undo = useCallback(() => apply("undo"), [apply]);
   const redo = useCallback(() => apply("redo"), [apply]);
 
   const handleRestoreReply = useCallback(
-    (msg: { stepId?: number; direction?: string; ok?: boolean }) => {
+    (msg: {
+      stepId?: number;
+      direction?: string;
+      ok?: boolean;
+      reason?: string;
+    }) => {
       const pending = pendingRestoreRef.current;
       if (!pending) return;
       if (msg?.stepId !== pending.step.id) return;
@@ -565,9 +614,11 @@ export const useStudioHistory = (args: Args) => {
       clearTimeout(pending.timer);
       pendingRestoreRef.current = null;
       if (msg.ok) applyHostState(pending.step, pending.direction);
+      else if (msg.reason === "restore-failed") reloadAfterUnsureRestore(msg);
       else failRestore(msg);
+      bump();
     },
-    [applyHostState, failRestore]
+    [applyHostState, bump, failRestore, reloadAfterUnsureRestore]
   );
 
   // A save that does not reload the canvas leaves pointer 0 behind the

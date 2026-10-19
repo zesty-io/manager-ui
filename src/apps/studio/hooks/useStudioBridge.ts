@@ -138,6 +138,7 @@ type Args = {
     stepId?: number;
     direction?: string;
     ok?: boolean;
+    reason?: string;
   }) => void;
 };
 
