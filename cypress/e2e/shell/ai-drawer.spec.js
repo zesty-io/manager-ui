@@ -304,4 +304,71 @@ describe("AI drawer", () => {
       cy.getBySelector("AIDrawerSetValue").should("exist");
     });
   });
+
+  // Stubbed, so the reply is fixed instead of whatever the model writes.
+  describe("replies the drawer has to handle", () => {
+    const CHAT_ZUID = "e2e-stub-chat";
+
+    const openDrawerWithReply = (response) => {
+      cy.intercept("GET", "**/chats", { body: { data: [] } });
+      cy.intercept("POST", "**/client", {
+        body: { chatZuid: CHAT_ZUID, data: response, message: "", tools: [] },
+      }).as("postClient");
+      cy.intercept("GET", `**/chats/${CHAT_ZUID}?*`, {
+        body: {
+          data: {
+            chatZuid: CHAT_ZUID,
+            prompts: [
+              {
+                promptZuid: "e2e-stub-prompt",
+                chatZuid: CHAT_ZUID,
+                prompt: "Stubbed prompt",
+                response,
+                approval: "0",
+              },
+            ],
+          },
+        },
+      }).as("getChat");
+      cy.intercept("PATCH", "**/chats/*/prompt/*", { body: {} }).as("approve");
+
+      cy.clearLocalStorage();
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit(
+          `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+        );
+      });
+      cy.getBySelector("DuoModeToggle").click({ force: true });
+      cy.getBySelector("AIDrawerToggle").click();
+      cy.getBySelector("AIDrawerComposer").type("Stubbed prompt{enter}");
+      cy.wait("@postClient");
+      cy.wait("@getChat");
+    };
+
+    it("renders a prose reply as a message", () => {
+      openDrawerWithReply("Here is a friendlier headline.");
+
+      cy.getBySelector("AIDrawerMessage").should(
+        "contain.text",
+        "Here is a friendlier headline."
+      );
+      cy.contains("Error parsing AI response").should("not.exist");
+    });
+
+    it("warns instead of applying a suggestion for a ref not on the page", () => {
+      openDrawerWithReply(
+        JSON.stringify([
+          {
+            type: "SET_VALUE",
+            payload: { refKey: "code-editor", value: "<h1>Hi</h1>" },
+          },
+        ])
+      );
+
+      cy.getBySelector("AIDrawerSetValue").click();
+      cy.getBySelector("toast").should("contain.text", '"code-editor"');
+      cy.getBySelector("AIDrawerSetValue").should("not.be.disabled");
+      cy.get("@approve.all").should("have.length", 0);
+    });
+  });
 });

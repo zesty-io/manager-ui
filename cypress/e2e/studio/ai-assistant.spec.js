@@ -30,24 +30,12 @@ describe("Studio AI Assistant", () => {
     });
   });
 
-  // The transcript persists per page in localStorage, and this suite does not
-  // isolate storage between tests.
-  const clearChatHistory = (win) =>
-    Object.keys(win.localStorage)
-      .filter((key) => key.startsWith("ai-drawer-"))
-      .forEach((key) => win.localStorage.removeItem(key));
-
   // Waits for the page's view list too, so a test that visits again never
   // aborts a request an intercept of its own has caught.
   const visitStudio = (onBeforeLoad = () => {}) => {
     cy.intercept("GET", "**/v1/web/views?status=dev").as("webViews");
     cy.waitOn("/v1/content/models**", () => {
-      cy.visit(`/studio?path=${studioPath}`, {
-        onBeforeLoad: (win) => {
-          clearChatHistory(win);
-          onBeforeLoad(win);
-        },
-      });
+      cy.visit(`/studio?path=${studioPath}`, { onBeforeLoad });
     });
     cy.wait("@webViews");
   };
@@ -208,8 +196,10 @@ describe("Studio AI Assistant", () => {
       );
 
   const sendPrompt = (prompt) => {
-    cy.get('[data-cy="AIChatPrompt"] textarea:not([aria-hidden])').type(prompt);
-    cy.getBySelector("AIChatSend").click();
+    cy.get('[data-cy="AIDrawerComposer"] textarea:not([aria-hidden])').type(
+      prompt
+    );
+    cy.getBySelector("AIDrawerSend").click();
     cy.wait("@mcp");
   };
 
@@ -223,7 +213,7 @@ describe("Studio AI Assistant", () => {
       "true"
     );
 
-    cy.getBySelector("AIChatClose").click();
+    cy.getBySelector("StudioAIPanelClose").click();
     cy.getBySelector("StudioAIPanel").should("not.exist");
   });
 
@@ -259,6 +249,24 @@ describe("Studio AI Assistant", () => {
       });
   });
 
+  it("opens one chat session for the page and reuses it", () => {
+    const CHAT_ZUID = "e2e-studio-chat";
+    stubMcp(() => ({ ...mcpReply([]), chatZuid: CHAT_ZUID }));
+    openAiPanel();
+
+    sendPrompt("First");
+    cy.get("@mcp")
+      .its("request.body")
+      .then((body) => {
+        expect(body).not.to.have.property("chatZuid");
+        expect(body.roleZuid).to.be.a("string").and.not.be.empty;
+        expect(body.url).to.contain("/studio");
+      });
+
+    sendPrompt("Second");
+    cy.get("@mcp").its("request.body.chatZuid").should("eq", CHAT_ZUID);
+  });
+
   it("stages an edit, summarises it and previews it through PVL", () => {
     stubMcp((body) => mcpReply([setValue(editSource(body.code))]));
     stubPvl({
@@ -279,7 +287,7 @@ describe("Studio AI Assistant", () => {
       expect(request.body).to.contain(itemZUID);
     });
 
-    cy.getBySelector("AIChatCodeEdit")
+    cy.getBySelector("AIDrawerCodeEdit")
       .should("contain.text", viewFileName)
       .and("contain.text", "+1")
       .and("contain.text", "−1");
@@ -717,7 +725,7 @@ describe("Studio AI Assistant", () => {
     });
     sendPrompt("Add a line under the heading");
 
-    cy.getBySelector("AIChatCodeEdit").should("exist");
+    cy.getBySelector("AIDrawerCodeEdit").should("exist");
     expectPreviewing(true);
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
   });
@@ -737,7 +745,7 @@ describe("Studio AI Assistant", () => {
     openAiPanel();
 
     sendPrompt("Change the background");
-    cy.getBySelector("AIChatMessage").should(
+    cy.getBySelector("AIDrawerMessage").should(
       "contain.text",
       "Background and text updated."
     );
@@ -747,8 +755,8 @@ describe("Studio AI Assistant", () => {
     );
 
     sendPrompt("Change the heading text");
-    cy.getBySelector("AIChatMessage").should("have.length", 2);
-    cy.getBySelector("AIChatNavigate").should("exist");
+    cy.getBySelector("AIDrawerMessage").should("have.length", 2);
+    cy.getBySelector("AIDrawerNavigate").should("exist");
     expectPreviewing(false);
   });
 
@@ -770,18 +778,18 @@ describe("Studio AI Assistant", () => {
     );
 
     sendPrompt("Second");
-    cy.getBySelector("AIChatMessage").should("have.text", "42");
-    cy.getBySelector("AIChatNavigate").should("not.exist");
+    cy.getBySelector("AIDrawerMessage").should("have.text", "42");
+    cy.getBySelector("AIDrawerNavigate").should("not.exist");
 
     sendPrompt("Third");
-    cy.getBySelector("AIChatUserInput").should("have.length", 3);
+    cy.getBySelector("AIDrawerUserInput").should("have.length", 3);
     cy.getBySelector("StudioHeader").should("exist");
     expectPreviewing(false);
 
     // A blank file is refused, and no line counts are shown for it.
     sendPrompt("Fourth");
     cy.contains("The assistant returned an empty file").should("exist");
-    cy.getBySelector("AIChatCodeEdit").should("not.exist");
+    cy.getBySelector("AIDrawerCodeEdit").should("not.exist");
     cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
   });
 
@@ -882,24 +890,24 @@ describe("Studio AI Assistant", () => {
     sendPrompt("Add a line under the heading");
     expectPreviewing(true);
     cy.getBySelector("StudioLayoutCancelButton").click();
-    cy.getBySelector("AIChatNotice").should("have.length", 1);
+    cy.getBySelector("AIDrawerNotice").should("have.length", 1);
 
     // Page B, in-app: stage, then cancel.
     sendPrompt("Go to the other page");
-    cy.getBySelector("AIChatNavigate").last().click();
+    cy.getBySelector("AIDrawerNavigate").last().click();
     cy.location("search").should("eq", `?path=${otherPath}`);
-    cy.getBySelector("AIChatNotice").should("not.exist");
+    cy.getBySelector("AIDrawerNotice").should("not.exist");
     sendPrompt("Add a line under the heading");
     expectPreviewing(true);
     cy.getBySelector("StudioLayoutCancelButton").click();
-    cy.getBySelector("AIChatNotice").should("have.length", 1);
+    cy.getBySelector("AIDrawerNotice").should("have.length", 1);
 
     // Back on A, its transcript still records only its own discard.
     sendPrompt("Go back");
-    cy.getBySelector("AIChatNavigate").last().click();
+    cy.getBySelector("AIDrawerNavigate").last().click();
     cy.location("search").should("eq", `?path=${studioPath}`);
-    cy.getBySelector("AIChatCodeEdit").should("have.length", 1);
-    cy.getBySelector("AIChatNotice").should("have.length", 1);
+    cy.getBySelector("AIDrawerCodeEdit").should("have.length", 1);
+    cy.getBySelector("AIDrawerNotice").should("have.length", 1);
   });
 
   it("notes a discard made while the panel is closed, once", () => {
@@ -909,11 +917,11 @@ describe("Studio AI Assistant", () => {
     sendPrompt("Add a line under the heading");
     expectPreviewing(true);
 
-    cy.getBySelector("AIChatClose").click();
+    cy.getBySelector("StudioAIPanelClose").click();
     cy.getBySelector("StudioLayoutCancelButton").click();
     expectPreviewing(false);
     openAiPanel();
-    cy.getBySelector("AIChatNotice").should("have.length", 1);
+    cy.getBySelector("AIDrawerNotice").should("have.length", 1);
   });
 
   it("cancel drops every staged turn and returns to the live canvas", () => {
@@ -936,7 +944,7 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("StudioLayoutCancelButton").click();
     expectPreviewing(false);
     holdsUnload(false);
-    cy.getBySelector("AIChatNotice").should("have.text", "Changes discarded");
+    cy.getBySelector("AIDrawerNotice").should("have.text", "Changes discarded");
     cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
     cy.getBySelector("StudioSaveStatus").should("not.exist");
     cy.getBySelector("StudioLayersPanel").should(
@@ -949,22 +957,17 @@ describe("Studio AI Assistant", () => {
     stubMcp(() => ({ data: "Nothing to change.", message: "", tools: [] }));
     openAiPanel();
     sendPrompt("Anything to change?");
-    cy.getBySelector("AIChatMessage").should("have.length", 1);
+    cy.getBySelector("AIDrawerMessage").should("have.length", 1);
 
-    cy.getBySelector("AIChatClose").click();
+    cy.getBySelector("StudioAIPanelClose").click();
     openAiPanel();
-    cy.getBySelector("AIChatMessage").should("have.length", 1);
-    cy.window().then((win) => {
-      const stored = Object.keys(win.localStorage).filter((key) =>
-        key.startsWith("ai-drawer-")
-      );
-      expect(stored, "nothing persisted").to.be.empty;
-    });
+    cy.getBySelector("AIDrawerMessage").should("have.length", 1);
 
+    // Studio never restores a server session, so a reload starts empty.
     cy.reload();
     openAiPanel();
-    cy.getBySelector("AIChatUserInput").should("not.exist");
-    cy.getBySelector("AIChatMessage").should("not.exist");
+    cy.getBySelector("AIDrawerUserInput").should("not.exist");
+    cy.getBySelector("AIDrawerMessage").should("not.exist");
   });
 
   it("prompts before leaving Studio with a staged change", () => {
@@ -984,13 +987,13 @@ describe("Studio AI Assistant", () => {
     expectPreviewing(true);
     sendPrompt("Take me to the content item");
 
-    cy.getBySelector("AIChatNavigate").click();
+    cy.getBySelector("AIDrawerNavigate").click();
     cy.getBySelector("PendingEditsModal").should("exist");
     cy.getBySelector("PendingEditsModalCancel").click();
     cy.location("pathname").should("eq", "/studio");
     expectPreviewing(true);
 
-    cy.getBySelector("AIChatNavigate").click();
+    cy.getBySelector("AIDrawerNavigate").click();
     cy.getBySelector("PendingEditsModalDiscard").click();
     cy.location("pathname").should("eq", `/content/${modelZUID}/${itemZUID}`);
   });
@@ -1114,7 +1117,7 @@ describe("Studio AI Assistant", () => {
     cy.wait("@pvl");
     sendPrompt("Add a comment at the end");
     cy.wait("@pvl");
-    cy.getBySelector("AIChatCodeEdit").should("have.length", 2);
+    cy.getBySelector("AIDrawerCodeEdit").should("have.length", 2);
     // The second turn is built on the first turn's staged file.
     cy.then(() => expect(secondTurnInput).to.eq(firstTurn));
 
