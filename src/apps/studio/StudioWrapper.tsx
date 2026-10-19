@@ -47,7 +47,11 @@ import { StudioHeader } from "./components/StudioHeader";
 import { StudioFeedbackModal } from "./components/StudioFeedbackModal";
 import { StudioPreview } from "./components/StudioPreview";
 import { StudioSidePanel } from "./components/StudioSidePanel";
-import { StudioInspectorPanel } from "./components/StudioInspectorPanel";
+import {
+  StudioInspectorPanel,
+  getTagTitles,
+} from "./components/StudioInspectorPanel";
+import { StudioEmptyPanel } from "./components/StudioEmptyPanel";
 import {
   isMediaSlotDatatype,
   isTextReferenceableDatatype,
@@ -1620,6 +1624,7 @@ export const StudioWrapper = () => {
     hasTree: hasLayersTree,
     flatRows: layersFlatRows,
     selectedNodeId: selectedLayersNodeId,
+    selectedLayoutHasNoPanel,
     handleLayersTree,
     resetTree: resetLayersTree,
     toggleNode: toggleLayersNode,
@@ -1670,13 +1675,12 @@ export const StudioWrapper = () => {
   // The bridge resolved a bound leaf on the canvas. Open the Inspector for that
   // element FIRST, then select the field.
   //
-  // Order is the whole point. `applySelection` keeps an open Inspector only
-  // when its slots carry the field being edited, and clears it otherwise —
-  // so selecting straight from the canvas closes the Inspector and takes
-  // "Back to Element" with it. `openInspectorForLayoutElement` resolves the
-  // element to its lone bound text child, whose slots DO carry the fieldZuid,
-  // which is exactly why the layers-row route keeps the button and this one
-  // did not.
+  // `applySelection` keeps an open Inspector only when one of its slots
+  // carries the selected fieldZuid, and clears it otherwise.
+  // `openInspectorForLayoutElement` opens the element's panel with its lone
+  // bound field's Value slot on it (or, for an element with no panel of its
+  // own, that field row's panel). The bridge omits fieldZuid from a field
+  // row's text slot, so that slot does not match on its own.
   const handleDynamicEditRequest = useCallback(
     (msg: {
       codeId?: string;
@@ -2263,6 +2267,10 @@ export const StudioWrapper = () => {
   );
 
   const isResolved = !!pageItemZUID && !!pageModelZUID;
+  // The bridge labels each breadcrumb segment with its element's tag.
+  const selectedLayoutTag = selectedLayoutHasNoPanel
+    ? selectedLayout?.breadcrumb.at(-1)?.label || ""
+    : "";
 
   return (
     <>
@@ -2365,11 +2373,8 @@ export const StudioWrapper = () => {
               />
             ) : interactionMode === "content" ||
               (interactionMode === "full" && panelMode === "edit") ? (
-              // Studio renders the content editor when a field is being
-              // edited, but otherwise shows nothing — matching layout, which
-              // has no right panel at all. Falling through to `panelMode`'s
-              // "info" default here would put an info panel where layout mode
-              // deliberately shows empty canvas.
+              // Full mode: the content editor only while a field is edited,
+              // else the empty panel below — never panelMode's "info" default.
               <StudioSidePanel
                 headerTitle={headerTitle}
                 selectedItemLabel={selectedItemLabel}
@@ -2399,6 +2404,22 @@ export const StudioWrapper = () => {
                     />
                   ) : null
                 }
+              />
+            ) : usesLayoutGrammar(interactionMode) ? (
+              // Layout grammar always reserves the right panel; see #4374.
+              <StudioEmptyPanel
+                title={
+                  selectedLayoutTag
+                    ? getTagTitles(t)[selectedLayoutTag] || selectedLayoutTag
+                    : t("content.studioEmptyPanelTitle")
+                }
+                message={
+                  selectedLayoutTag
+                    ? t("content.studioEmptyPanelNoProperties")
+                    : t("content.studioEmptyPanelNoSelection")
+                }
+                drawerWidth={drawerWidth}
+                logoSrc={contentOneLogo}
               />
             ) : null}
           </Box>

@@ -13,7 +13,15 @@ declare module "@mui/material/Typography" {
 }
 
 declare module "@mui/material/styles" {
+  export interface LeadsPalette {
+    toolbar: string;
+    toolbarLabel: string;
+    rowHover: string;
+    rowHoverBorder: string;
+  }
+
   export interface Palette {
+    leads: LeadsPalette;
     red: Color;
     deepPurple: Color;
     deepOrange: Color;
@@ -22,6 +30,11 @@ declare module "@mui/material/styles" {
     green: Color;
     purple: Color;
     yellow: Color;
+  }
+
+  export interface TypeBackground {
+    shimmer: string;
+    shimmerSweep: string;
   }
 }
 
