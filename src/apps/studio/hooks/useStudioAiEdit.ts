@@ -51,8 +51,6 @@ export type CodeRegionReplaced = {
   requestId?: number;
 };
 
-export type StudioSaveStatus = "unsaved" | "saved" | null;
-
 type Args = {
   // Registers the page's view for the AI while true.
   active: boolean;
@@ -109,7 +107,6 @@ export const useStudioAiEdit = ({
   const [stagedCodeId, setStagedCodeId] = useState<string | null>(null);
   const stagedCodeIdRef = useRef<string | null>(null);
   const [preview, setPreview] = useState<StudioAiPreview | null>(null);
-  const [saveStatus, setSaveStatus] = useState<StudioSaveStatus>(null);
   const previewRequestRef = useRef(0);
   // The last staged AI change dropped without a save, and whose page it was,
   // so that page's transcript can say so.
@@ -324,7 +321,6 @@ export const useStudioAiEdit = ({
     stagedCodeIdRef.current = pageView.ZUID;
     stagedPageRef.current = pageItemZUID;
     setStagedCodeId(pageView.ZUID);
-    setSaveStatus("unsaved");
     void renderPreview(next, pageView.ZUID);
   };
   const stageRef = useRef(stage);
@@ -365,7 +361,6 @@ export const useStudioAiEdit = ({
     stagedCodeIdRef.current = null;
     setStagedCodeId(null);
     setPreview(null);
-    setSaveStatus((prev) => (prev === "saved" ? prev : null));
     if (!savedRef.current) {
       setLastDiscard({
         id: ++discardSeq,
@@ -374,10 +369,6 @@ export const useStudioAiEdit = ({
     }
     savedRef.current = false;
   }, [pendingLayoutCodeIds, stagedCodeId]);
-
-  useEffect(() => {
-    if (!stagedCodeIdRef.current) setSaveStatus(null);
-  }, [pageItemZUID]);
 
   // A reload or a closed tab would drop the staged change without a word; the
   // in-app prompt only sees navigation the router handles.
@@ -392,29 +383,15 @@ export const useStudioAiEdit = ({
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [stagedCodeId]);
 
-  // "Saved" describes the last AI save only until anything is staged again.
-  // Keyed on the empty → non-empty transition: a save only ever shrinks the
-  // set, so a multi-file save cannot clear the chip it just set.
-  const hadPendingLayoutRef = useRef(false);
-  useEffect(() => {
-    const hasPending = pendingLayoutCodeIds.length > 0;
-    if (hasPending && !hadPendingLayoutRef.current) {
-      setSaveStatus((prev) => (prev === "saved" ? null : prev));
-    }
-    hadPendingLayoutRef.current = hasPending;
-  }, [pendingLayoutCodeIds]);
-
   const handleLayoutRegionSaved = useCallback((codeId: string) => {
     if (codeId !== stagedCodeIdRef.current) return;
     savedRef.current = true;
-    setSaveStatus("saved");
   }, []);
 
   return {
     pageView,
     isPreviewing: !!stagedCodeId,
     preview,
-    saveStatus,
     lastDiscard,
     handleLayoutRegionSaved,
     handleCodeRegionReplaced,

@@ -2192,7 +2192,6 @@ export const StudioWrapper = () => {
     pageView: aiPageView,
     isPreviewing: isAiPreviewing,
     preview: aiPreview,
-    saveStatus: aiSaveStatus,
     lastDiscard: aiLastDiscard,
     handleLayoutRegionSaved: handleAiRegionSaved,
     handleCodeRegionReplaced: handleAiRegionReplaced,
@@ -2397,7 +2396,6 @@ export const StudioWrapper = () => {
             showAiButton={canUseAi}
             isAiPanelOpen={showAiPanel}
             onToggleAiPanel={handleToggleAiPanel}
-            saveStatus={aiSaveStatus}
             onFeedbackClick={() => setShowFeedbackModal(true)}
           />
           <Box display="flex" flex="1" minHeight={0} width="100%">

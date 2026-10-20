@@ -315,7 +315,8 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("AIDrawerCodeEdit").should("not.exist");
     cy.getBySelector("StudioAIPanel").should("not.contain", "studio-e2e");
 
-    cy.getBySelector("StudioSaveStatus").should("contain.text", "Not Saved");
+    // The save bar is the only save state; the header carries no status chip.
+    cy.getBySelector("StudioSaveStatus").should("not.exist");
     cy.getBySelector("StudioLayersPanel")
       .should("have.attr", "aria-disabled", "true")
       .and("have.attr", "inert");
@@ -349,7 +350,6 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("AIDrawerCodeEdit").should("not.exist");
     expectPreviewing(false);
     cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
-    cy.getBySelector("StudioSaveStatus").should("not.exist");
     cy.get("@pvl.all").should("have.length", 0);
   });
 
@@ -999,7 +999,6 @@ describe("Studio AI Assistant", () => {
     holdsUnload(false);
     cy.getBySelector("AIDrawerNotice").should("have.text", "Changes discarded");
     cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
-    cy.getBySelector("StudioSaveStatus").should("not.exist");
     cy.getBySelector("StudioLayersPanel").should(
       "not.have.attr",
       "aria-disabled"
@@ -1180,11 +1179,14 @@ describe("Studio AI Assistant", () => {
     cy.wait("@updateWebView").then(({ request }) => {
       expect(request.body.code).to.eq(staged);
     });
-    cy.getBySelector("StudioSaveStatus").should("have.text", "Saved");
+    // Saved, not discarded: the bar is gone and the transcript has no notice.
+    cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
     expectPreviewing(false);
+    cy.getBySelector("AIDrawerNotice").should("not.exist");
     cy.get("@updateWebView.all").should("have.length", 1);
 
-    // A later, non-AI layout edit is not "Saved".
+    // A later, non-AI layout edit is not an AI preview, and dropping it is
+    // not reported as a discarded AI change.
     cy.window().then((win) => {
       const post = (message) =>
         win.postMessage({ source: "studio-bridge", message }, "*");
@@ -1207,7 +1209,9 @@ describe("Studio AI Assistant", () => {
       });
     });
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
-    cy.getBySelector("StudioSaveStatus").should("not.exist");
+    expectPreviewing(false);
     cy.getBySelector("StudioLayoutCancelButton").click();
+    cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
+    cy.getBySelector("AIDrawerNotice").should("not.exist");
   });
 });
