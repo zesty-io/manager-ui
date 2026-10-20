@@ -33,6 +33,7 @@
   "appErrorBody": "Este error se envió a nuestro equipo. Vuelve a cargar la aplicación para continuar.",
   "appErrorHeading": "Vaya, algo salió mal",
   "appLoadingFailure": "Error al cargar la aplicación: {{message}}",
+  "appNavigation": "Navegación de la aplicación",
   "applyAiSuggestion": "Aplicar",
   "audiencePlaceholder": "ej. Freelancers, Diseñadores, .....",
   "autoApply": "Aplicar automáticamente",
