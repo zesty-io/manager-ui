@@ -95,10 +95,13 @@ describe("Studio Undo / Redo", () => {
         const command = evt.data.message.payload;
         win.__hostCommands.push(command);
         if (command.action !== "historyRestore") return;
-        if (win.__restoreReply === "none") return;
-        const ok = win.__restoreReply === "ok";
-        const reason =
-          win.__restoreReply === "throw" ? "restore-failed" : "no-snapshot";
+        // `__restoreReplies`, when set, answers restores one by one.
+        const reply = win.__restoreReplies?.length
+          ? win.__restoreReplies.shift()
+          : win.__restoreReply;
+        if (reply === "none") return;
+        const ok = reply === "ok";
+        const reason = reply === "throw" ? "restore-failed" : "no-snapshot";
         win.postMessage(
           {
             source: "studio-bridge",
@@ -181,6 +184,29 @@ describe("Studio Undo / Redo", () => {
       .its(itemZUID)
       .its("data.title");
 
+  // Selects the title field as a canvas click on it would.
+  const selectTitleField = (win) =>
+    win.dispatchEvent(
+      new win.MessageEvent("message", {
+        data: {
+          source: "studio-bridge",
+          message: {
+            type: "DOM_EVENT",
+            eventType: "click",
+            element: {
+              dataset: {
+                studioId: `${itemZUID}:title`,
+                fieldZuid: titleFieldZUID,
+                fieldType: "text",
+                itemZuid: itemZUID,
+                modelZuid: modelZUID,
+              },
+            },
+          },
+        },
+      })
+    );
+
   // Content mode, with the page's title field open in the side panel.
   const openTitleField = () => {
     cy.getBySelector("StudioModeToggleOption-content").click();
@@ -195,40 +221,33 @@ describe("Studio Undo / Redo", () => {
     // Re-select until the field is open.
     cy.get("body").should(($body) => {
       if (!$body.find('[data-cy="EditorField-title"]').length) {
-        const win = $body[0].ownerDocument.defaultView;
-        win.dispatchEvent(
-          new win.MessageEvent("message", {
-            data: {
-              source: "studio-bridge",
-              message: {
-                type: "DOM_EVENT",
-                eventType: "click",
-                element: {
-                  dataset: {
-                    studioId: `${itemZUID}:title`,
-                    fieldZuid: titleFieldZUID,
-                    fieldType: "text",
-                    itemZuid: itemZUID,
-                    modelZuid: modelZUID,
-                  },
-                },
-              },
-            },
-          })
-        );
+        selectTitleField($body[0].ownerDocument.defaultView);
       }
       expect($body.find('[data-cy="EditorField-title"]')).to.have.length(1);
     });
     cy.getBySelector("EditorField-title").should("have.value", ORIGINAL_TITLE);
   };
 
-  // Types into the panel and waits out its debounce, so the store holds it.
+  // Enters the edit in the panel, as typing would, and waits out its
+  // debounce, so the store holds it. The page's late path resolution can
+  // clear the selection or reload the field mid-edit; then the field is
+  // reopened and the value entered again.
   const editTitle = () => {
-    cy.getBySelector("EditorField-title").clear().type(EDITED_TITLE);
-    cy.window().should((win) => {
-      expect(win.zestyStore.getState().content[itemZUID]?.data?.title).to.eq(
-        EDITED_TITLE
-      );
+    cy.get("body").should(($body) => {
+      const win = $body[0].ownerDocument.defaultView;
+      const stored = win.zestyStore.getState().content[itemZUID]?.data?.title;
+      if (stored !== EDITED_TITLE) {
+        const input = $body.find('[data-cy="EditorField-title"]')[0];
+        if (!input) selectTitleField(win);
+        else if (!input.disabled && input.value !== EDITED_TITLE) {
+          Object.getOwnPropertyDescriptor(
+            win.HTMLInputElement.prototype,
+            "value"
+          ).set.call(input, EDITED_TITLE);
+          input.dispatchEvent(new win.Event("input", { bubbles: true }));
+        }
+      }
+      expect(stored).to.eq(EDITED_TITLE);
     });
   };
 
@@ -998,8 +1017,104 @@ describe("Studio Undo / Redo", () => {
     cy.get("@titleBefore").then((titleBefore) =>
       storedTitle().should("eq", titleBefore)
     );
+    // Still no reload once everything has settled.
+    cy.window()
+      .its("__canvasLoads")
+      .then((loads) => {
+        cy.getBySelector("StudioRedoButton").should("not.be.disabled");
+        cy.window().its("__canvasLoads").should("eq", loads);
+      });
     // The staged AI change was dropped, and its transcript says so.
     cy.getBySelector("AIDrawerNotice").should("have.length", 1);
+  });
+
+  it("cancels by reloading, with the AI notice, when a restore fails after the AI step was undone", () => {
+    stubAiTurn();
+    bridgeReady(["history"]);
+    stageLayoutAndContent(`${EDITED_TITLE} ${uuidv4()}`);
+    sendAiPrompt();
+    answerPaint();
+    previewing(true);
+    cy.getBySelector("StudioUndoButton").should("not.be.disabled");
+    cy.window().then((win) => {
+      win.__restoreReplies = ["ok", "fail"];
+    });
+    cy.window()
+      .its("__canvasLoads")
+      .then((loads) => {
+        clickSaveBarCancel();
+        hostCommands("historyRestore").should("have.length", 2);
+        cy.window()
+          .its("__canvasLoads")
+          .should("eq", loads + 1);
+      });
+    cy.getBySelector("AIDrawerNotice").should("have.length", 1);
+  });
+
+  it("cancels by reloading when the replay leaves something it never touched pending", () => {
+    bridgeReady(["history"]);
+    waitForPageHydrated();
+    // Dirty without any history step: undo cannot clear it.
+    cy.window().then((win) => {
+      win.zestyStore.dispatch({ type: "MARK_ITEM_DIRTY", itemZUID });
+    });
+    postBridgeMessage({
+      type: "TEMPLATE_SOURCE_MAP",
+      templateSourceByCodeId: { [viewZUID]: LAYOUT_SOURCE },
+    });
+    postBridgeMessage({
+      type: "LAYOUT_CONTENT_UPDATE",
+      codeId: viewZUID,
+      layoutId: "1",
+      innerHtml: "One edited",
+    });
+    cy.getBySelector("StudioContentSaveBar").should("exist");
+    hostCommands("historySnapshot").should("have.length.at.least", 1);
+    cy.window()
+      .its("__canvasLoads")
+      .then((loads) => {
+        clickSaveBarCancel();
+        hostCommands("historyRestore").should("have.length", 1);
+        cy.window()
+          .its("__canvasLoads")
+          .should("eq", loads + 1);
+      });
+  });
+
+  it("does not stay covered when the canvas reloads during Cancel's replay", () => {
+    bridgeReady(["history"]);
+    stageLayoutAndContent(`${EDITED_TITLE} ${uuidv4()}`);
+    cy.window().then((win) => {
+      win.__restoreReply = "none";
+    });
+    cy.window()
+      .its("__canvasLoads")
+      .then((loads) => {
+        clickSaveBarCancel();
+        hostCommands("historyRestore").should("have.length", 1);
+        // Mid-replay: covered, and nothing can be saved.
+        cy.getBySelector("StudioPreviewRefreshOverlay").should(
+          "have.css",
+          "opacity",
+          "1"
+        );
+        cy.get(
+          '[data-cy="StudioLayoutSaveChangesButton"], [data-cy="StudioContentSaveChangesButton"]'
+        ).should("be.disabled");
+
+        postBridgeMessage({ type: "BRIDGE_READY", capabilities: ["history"] });
+        // The replay gives up and Cancel discards by reloading.
+        cy.window()
+          .its("__canvasLoads")
+          .should("eq", loads + 1);
+      });
+    cy.getBySelector("StudioPreviewRefreshOverlay").should(
+      "have.css",
+      "opacity",
+      "0"
+    );
+    cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
+    cy.getBySelector("StudioContentSaveBar").should("not.exist");
   });
 
   it("cancels by reloading when a restore fails part-way", () => {

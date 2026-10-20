@@ -2506,18 +2506,21 @@ export const StudioWrapper = () => {
     const hadAiChange = isAiPreviewing;
     if (studioHistory.canRevertToBase()) {
       setIsRevertingToBase(true);
-      const reverted = await studioHistory.revertToBase();
-      setIsRevertingToBase(false);
+      let reverted = false;
+      try {
+        reverted = await studioHistory.revertToBase();
+      } finally {
+        setIsRevertingToBase(false);
+      }
       const nothingPending =
         !collectDirtyContentItems((store.getState() as AppState).content)
           .length &&
         !getPendingLayoutCodeIds().length &&
         !getAiState().stagedCodeId;
-      if (reverted && nothingPending) {
-        // Undo restores an AI change silently; Cancel still drops it.
-        if (hadAiChange) announceAiDiscard();
-        return;
-      }
+      // Undo restores an AI change silently, and once its step is undone
+      // the reload below no longer sees one to drop; Cancel still drops it.
+      if (hadAiChange && !getAiState().stagedCodeId) announceAiDiscard();
+      if (reverted && nothingPending) return;
     }
     discardByReload();
   };
@@ -2716,7 +2719,15 @@ export const StudioWrapper = () => {
             onUndo={studioHistory.undo}
             onRedo={studioHistory.redo}
           />
-          <Box display="flex" flex="1" minHeight={0} width="100%">
+          <Box
+            display="flex"
+            flex="1"
+            minHeight={0}
+            width="100%"
+            // Cancel's replay is in progress: the panels describe a state that
+            // is about to change, so they take no clicks until it is done.
+            sx={isRevertingToBase ? { pointerEvents: "none" } : undefined}
+          >
             <ResizableContainer
               id="studioLayersPanel"
               defaultWidth={220}
@@ -2892,8 +2903,11 @@ export const StudioWrapper = () => {
                   startIcon={<SaveRoundedIcon fontSize="small" />}
                   sx={{ whiteSpace: "nowrap" }}
                   onClick={handleOpenSaveChangesModal}
-                  // An AI turn still rendering is not staged in full yet.
-                  disabled={aiPreview?.status === "loading"}
+                  // An AI turn still rendering is not staged in full yet, and
+                  // a Cancel in progress is half-way back to the saved state.
+                  disabled={
+                    aiPreview?.status === "loading" || isRevertingToBase
+                  }
                 >
                   {t("content.studioSaveChanges")}
                 </Button>

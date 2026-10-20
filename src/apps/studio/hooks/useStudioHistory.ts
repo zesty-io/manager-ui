@@ -221,12 +221,23 @@ export const useStudioHistory = (args: Args) => {
     }, SNAPSHOT_DELAY_MS);
   }, [clearSnapshotTimer, postSnapshot]);
 
+  // Set while revertToBase replays undo. A write from anywhere else in that
+  // time — the user, the canvas — means the result is not the saved state.
+  const revertingRef = useRef(false);
+  const writesDuringRevertRef = useRef(0);
+
   // Writes are not recorded while undo/redo applies its own, nor while a
   // restore is in flight: the step they would join is about to change.
-  const isRecording = () =>
-    argsRef.current.enabled &&
-    !applyingRef.current &&
-    !pendingRestoreRef.current;
+  const isRecording = () => {
+    if (revertingRef.current && !applyingRef.current) {
+      writesDuringRevertRef.current++;
+    }
+    return (
+      argsRef.current.enabled &&
+      !applyingRef.current &&
+      !pendingRestoreRef.current
+    );
+  };
 
   const openStep = useCallback((key: string, bulk: boolean): Step => {
     const step: Step = {
@@ -425,9 +436,12 @@ export const useStudioHistory = (args: Args) => {
   const reset = useCallback(
     (enabled: boolean) => {
       clearSnapshotTimer();
-      if (pendingRestoreRef.current) {
-        clearTimeout(pendingRestoreRef.current.timer);
+      const pending = pendingRestoreRef.current;
+      if (pending) {
+        clearTimeout(pending.timer);
         pendingRestoreRef.current = null;
+        // A replay waiting on this restore must not wait forever.
+        pending.onSettled?.(false);
       }
       openRef.current = null;
       stepsRef.current = [];
@@ -631,14 +645,19 @@ export const useStudioHistory = (args: Args) => {
       if (msg?.direction !== pending.direction) return;
       clearTimeout(pending.timer);
       pendingRestoreRef.current = null;
-      if (msg.ok) applyHostState(pending.step, pending.direction);
-      if (pending.onSettled) pending.onSettled(!!msg.ok);
-      else if (msg.ok) {
-        // Applied above.
-      } else if (msg.reason === "restore-failed") {
-        reloadAfterUnsureRestore(msg);
-      } else failRestore(msg);
-      bump();
+      let applied = false;
+      try {
+        if (msg.ok) {
+          applyHostState(pending.step, pending.direction);
+          applied = true;
+        }
+      } finally {
+        if (pending.onSettled) pending.onSettled(applied);
+        else if (!msg.ok && msg.reason === "restore-failed") {
+          reloadAfterUnsureRestore(msg);
+        } else if (!msg.ok) failRestore(msg);
+        bump();
+      }
     },
     [applyHostState, bump, failRestore, reloadAfterUnsureRestore]
   );
@@ -670,13 +689,19 @@ export const useStudioHistory = (args: Args) => {
     flushAllDebouncedInputs();
     argsRef.current.flushPendingPatches();
     closeStep();
-    while (pointerRef.current > 0) {
-      const ok = await new Promise<boolean>((resolve) => {
-        if (!apply("undo", resolve)) resolve(false);
-      });
-      if (!ok) return false;
+    revertingRef.current = true;
+    writesDuringRevertRef.current = 0;
+    try {
+      while (pointerRef.current > 0) {
+        const ok = await new Promise<boolean>((resolve) => {
+          if (!apply("undo", resolve)) resolve(false);
+        });
+        if (!ok) return false;
+      }
+      return writesDuringRevertRef.current === 0;
+    } finally {
+      revertingRef.current = false;
     }
-    return true;
   }, [apply, canRevertToBase, closeStep]);
 
   // A save that does not reload the canvas leaves pointer 0 behind the
