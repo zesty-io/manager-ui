@@ -66,6 +66,7 @@ export const GlobalTopbar = memo(({ onShowAiDrawerToggle }: Props) => {
         {hasAISupport && (
           <IconButton
             data-cy="AIDrawerToggle"
+            data-amp-track-id="ai-drawer-open-button"
             onClick={() => {
               onShowAiDrawerToggle();
             }}
