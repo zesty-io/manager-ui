@@ -1,4 +1,4 @@
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { ReactNode, RefObject } from "react";
 
 type StudioPreviewProps = {
@@ -6,6 +6,8 @@ type StudioPreviewProps = {
   iframeSrc: string;
   isNavigating: boolean;
   isBusy: boolean;
+  // Shown under the spinner while busy. Only the AI preview sets it.
+  busyMessage?: string;
   onLoad: () => void;
   // Floats over the top of the canvas, above the refresh overlay.
   overlaySlot?: ReactNode;
@@ -16,6 +18,7 @@ export const StudioPreview = ({
   iframeSrc,
   isNavigating,
   isBusy,
+  busyMessage,
   onLoad,
   overlaySlot,
 }: StudioPreviewProps) => (
@@ -51,9 +54,9 @@ export const StudioPreview = ({
         <CircularProgress size={24} />
       </Box>
     ) : null}
-    {/* While a save reload is in flight, a dark overlay fades over the preview
-        to hide the blank reload and block edits against soon-to-be-stale
-        content. It fades back out once the refreshed page has loaded. */}
+    {/* While a save reload or an AI preview render is in flight, a dark
+        overlay fades over the preview to hide the stale or blank page and
+        block edits against it. It fades back out once the canvas is current. */}
     <Box
       data-cy="StudioPreviewRefreshOverlay"
       sx={{
@@ -61,6 +64,8 @@ export const StudioPreview = ({
         inset: 0,
         zIndex: 2,
         display: "flex",
+        flexDirection: "column",
+        gap: 1.5,
         alignItems: "center",
         justifyContent: "center",
         bgcolor: "grey.900",
@@ -70,6 +75,15 @@ export const StudioPreview = ({
       }}
     >
       {isBusy ? <CircularProgress size={28} /> : null}
+      {isBusy && busyMessage ? (
+        <Typography
+          data-cy="StudioAIPreviewStatus"
+          variant="body2"
+          color="grey.100"
+        >
+          {busyMessage}
+        </Typography>
+      ) : null}
     </Box>
     {overlaySlot ? (
       <Box

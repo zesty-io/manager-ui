@@ -437,6 +437,10 @@ describe("Studio AI Assistant", () => {
       "contain.text",
       "Rendering the preview"
     );
+    // The page from before the change is covered, not shown, until the paint.
+    cy.getBySelector("StudioPreviewRefreshOverlay")
+      .should("have.css", "opacity", "1")
+      .and("have.css", "pointer-events", "auto");
     paintCommand().then((command) => {
       expect(command.codeId).to.eq(viewZUID);
       expect(command.html).to.eq('<p class="studio-e2e-ai">Painted</p>');
@@ -449,6 +453,11 @@ describe("Studio AI Assistant", () => {
       });
     });
     cy.getBySelector("StudioAIPreviewStatus").should("not.exist");
+    cy.getBySelector("StudioPreviewRefreshOverlay").should(
+      "have.css",
+      "pointer-events",
+      "none"
+    );
     cy.getBySelector("StudioAIPreviewError").should("not.exist");
     expectPreviewing(true);
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
