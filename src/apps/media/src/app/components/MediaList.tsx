@@ -779,7 +779,7 @@ export const MediaList: FC<Props> = ({ files, groups }) => {
   ];
 
   return (
-    <Box component="main" sx={{ height: "100%", width: "100%", px: 4 }}>
+    <Box sx={{ height: "100%", width: "100%", px: 4 }}>
       {files && (
         <AutoSizer>
           {({ width, height }: Size) => (
