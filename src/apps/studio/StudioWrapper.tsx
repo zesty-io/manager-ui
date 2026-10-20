@@ -2369,7 +2369,6 @@ export const StudioWrapper = () => {
     pageView: aiPageView,
     isPreviewing: isAiPreviewing,
     preview: aiPreview,
-    saveStatus: aiSaveStatus,
     lastDiscard: aiLastDiscard,
     handleLayoutRegionSaved: handleAiRegionSaved,
     handleCodeRegionReplaced: handleAiRegionReplaced,
@@ -2397,6 +2396,9 @@ export const StudioWrapper = () => {
   aiRegionReplacedRef.current = handleAiRegionReplaced;
   aiBridgeReadyRef.current = handleAiCanvasReady;
   aiCanvasLockedRef.current = isAiPreviewing;
+  // The canvas still shows the page from before the change until PVL's
+  // render is painted, so it is covered meanwhile.
+  const isAiRendering = isAiPreviewing && aiPreview?.status === "loading";
   const canUseAi = aiAllowed && !!aiPageView;
   const showAiPanel = isAiPanelOpen && canUseAi;
 
@@ -2677,7 +2679,6 @@ export const StudioWrapper = () => {
             showAiButton={canUseAi}
             isAiPanelOpen={showAiPanel}
             onToggleAiPanel={handleToggleAiPanel}
-            saveStatus={aiSaveStatus}
             onFeedbackClick={() => setShowFeedbackModal(true)}
             showHistoryControls={historyEnabled}
             canUndo={studioHistory.canUndo}
@@ -2712,7 +2713,17 @@ export const StudioWrapper = () => {
                 iframeRef={iframeRef}
                 iframeSrc={iframeSrc}
                 isNavigating={isNavigating}
-                isBusy={isRefreshing || studioSaving || isSavingLayout}
+                isBusy={
+                  isRefreshing ||
+                  studioSaving ||
+                  isSavingLayout ||
+                  isAiRendering
+                }
+                busyMessage={
+                  isAiRendering
+                    ? t("content.studioAiPreviewRendering")
+                    : undefined
+                }
                 onLoad={handlePreviewFrameLoad}
                 overlaySlot={
                   usesLayoutGrammar(interactionMode) && showFreestyleAlert ? (

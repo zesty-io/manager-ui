@@ -17,7 +17,6 @@ import { Brain } from "@zesty-io/material";
 import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "../../content-editor/src/app/views/ItemEdit/components/ItemEditHeader/LanguageSelector";
 import { InteractionMode, usesLayoutGrammar } from "../hooks/studioTypes";
-import { StudioSaveStatus } from "../hooks/useStudioAiEdit";
 
 type LayoutBreadcrumbItem = {
   layoutId?: string;
@@ -45,7 +44,6 @@ type StudioHeaderProps = {
   showAiButton: boolean;
   isAiPanelOpen: boolean;
   onToggleAiPanel: () => void;
-  saveStatus: StudioSaveStatus;
   onFeedbackClick: () => void;
   /** Undo/redo render only when the canvas's bridge supports history. */
   showHistoryControls: boolean;
@@ -99,7 +97,6 @@ export const StudioHeader = ({
   showAiButton,
   isAiPanelOpen,
   onToggleAiPanel,
-  saveStatus,
   onFeedbackClick,
   showHistoryControls,
   canUndo,
@@ -309,18 +306,6 @@ export const StudioHeader = ({
           >
             {t("content.studioAiButton")}
           </Button>
-        ) : null}
-        {saveStatus ? (
-          <Chip
-            data-cy="StudioSaveStatus"
-            size="small"
-            color={saveStatus === "saved" ? "success" : "warning"}
-            label={
-              saveStatus === "saved"
-                ? t("content.studioSaved")
-                : t("content.studioNotSaved")
-            }
-          />
         ) : null}
       </Box>
     </Box>

@@ -51,14 +51,11 @@ export type CodeRegionReplaced = {
   requestId?: number;
 };
 
-export type StudioSaveStatus = "unsaved" | "saved" | null;
-
 // Everything about the AI change that undo/redo swaps as a unit. Staging has
 // no other exit than a reload, so history needs to put all of it back.
 export type StudioAiState = {
   stagedCodeId: string | null;
   preview: StudioAiPreview | null;
-  saveStatus: StudioSaveStatus;
   lastPaint: { codeId: string; html: string } | null;
 };
 
@@ -122,11 +119,9 @@ export const useStudioAiEdit = ({
   const [stagedCodeId, setStagedCodeId] = useState<string | null>(null);
   const stagedCodeIdRef = useRef<string | null>(null);
   const [preview, setPreviewState] = useState<StudioAiPreview | null>(null);
-  const [saveStatus, setSaveStatusState] = useState<StudioSaveStatus>(null);
-  // Synchronous mirrors of the two states above, for getAiState: undo history
-  // reads them in the same tick as the change that set them.
+  // Synchronous mirror of preview, for getAiState: undo history reads it in
+  // the same tick as the change that set it.
   const previewRef = useRef<StudioAiPreview | null>(null);
-  const saveStatusRef = useRef<StudioSaveStatus>(null);
   const onPreviewSettledRef = useRef(onPreviewSettled);
   onPreviewSettledRef.current = onPreviewSettled;
   const setPreview = useCallback((next: StudioAiPreview | null) => {
@@ -134,17 +129,6 @@ export const useStudioAiEdit = ({
     setPreviewState(next);
     if (next && next.status !== "loading") onPreviewSettledRef.current?.();
   }, []);
-  const setSaveStatus = useCallback(
-    (
-      update: StudioSaveStatus | ((prev: StudioSaveStatus) => StudioSaveStatus)
-    ) => {
-      const next =
-        typeof update === "function" ? update(saveStatusRef.current) : update;
-      saveStatusRef.current = next;
-      setSaveStatusState(next);
-    },
-    []
-  );
   const previewRequestRef = useRef(0);
   // The last staged AI change dropped without a save, and whose page it was,
   // so that page's transcript can say so.
@@ -360,7 +344,6 @@ export const useStudioAiEdit = ({
     stagedCodeIdRef.current = pageView.ZUID;
     stagedPageRef.current = pageItemZUID;
     setStagedCodeId(pageView.ZUID);
-    setSaveStatus("unsaved");
     void renderPreview(next, pageView.ZUID);
   };
   const stageRef = useRef(stage);
@@ -401,7 +384,6 @@ export const useStudioAiEdit = ({
     stagedCodeIdRef.current = null;
     setStagedCodeId(null);
     setPreview(null);
-    setSaveStatus((prev) => (prev === "saved" ? prev : null));
     if (!savedRef.current) {
       setLastDiscard({
         id: ++discardSeq,
@@ -409,11 +391,7 @@ export const useStudioAiEdit = ({
       });
     }
     savedRef.current = false;
-  }, [pendingLayoutCodeIds, setPreview, setSaveStatus, stagedCodeId]);
-
-  useEffect(() => {
-    if (!stagedCodeIdRef.current) setSaveStatus(null);
-  }, [pageItemZUID, setSaveStatus]);
+  }, [pendingLayoutCodeIds, setPreview, stagedCodeId]);
 
   // A reload or a closed tab would drop the staged change without a word; the
   // in-app prompt only sees navigation the router handles.
@@ -428,32 +406,15 @@ export const useStudioAiEdit = ({
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [stagedCodeId]);
 
-  // "Saved" describes the last AI save only until anything is staged again.
-  // Keyed on the empty → non-empty transition: a save only ever shrinks the
-  // set, so a multi-file save cannot clear the chip it just set.
-  const hadPendingLayoutRef = useRef(false);
-  useEffect(() => {
-    const hasPending = pendingLayoutCodeIds.length > 0;
-    if (hasPending && !hadPendingLayoutRef.current) {
-      setSaveStatus((prev) => (prev === "saved" ? null : prev));
-    }
-    hadPendingLayoutRef.current = hasPending;
-  }, [pendingLayoutCodeIds, setSaveStatus]);
-
-  const handleLayoutRegionSaved = useCallback(
-    (codeId: string) => {
-      if (codeId !== stagedCodeIdRef.current) return;
-      savedRef.current = true;
-      setSaveStatus("saved");
-    },
-    [setSaveStatus]
-  );
+  const handleLayoutRegionSaved = useCallback((codeId: string) => {
+    if (codeId !== stagedCodeIdRef.current) return;
+    savedRef.current = true;
+  }, []);
 
   const getAiState = useCallback(
     (): StudioAiState => ({
       stagedCodeId: stagedCodeIdRef.current,
       preview: previewRef.current,
-      saveStatus: saveStatusRef.current,
       lastPaint: lastPaintRef.current,
     }),
     []
@@ -476,13 +437,12 @@ export const useStudioAiEdit = ({
       setStagedCodeId(state.stagedCodeId);
       previewRef.current = state.preview;
       setPreviewState(state.preview);
-      setSaveStatus(state.saveStatus);
       postCommandToBridge({
         action: "setPreviewLock",
         locked: !!state.stagedCodeId,
       });
     },
-    [clearPendingPaint, pageItemZUID, postCommandToBridge, setSaveStatus]
+    [clearPendingPaint, pageItemZUID, postCommandToBridge]
   );
 
   // Whether a PVL render or its paint is still on its way to the canvas.
@@ -495,7 +455,6 @@ export const useStudioAiEdit = ({
     pageView,
     isPreviewing: !!stagedCodeId,
     preview,
-    saveStatus,
     lastDiscard,
     handleLayoutRegionSaved,
     handleCodeRegionReplaced,
