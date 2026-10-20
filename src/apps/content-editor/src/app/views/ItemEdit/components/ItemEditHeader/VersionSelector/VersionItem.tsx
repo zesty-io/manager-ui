@@ -296,6 +296,11 @@ export const VersionItem = memo(
                   size="dialog"
                   imageHeight={120}
                   query={filterKeyword}
+                  sx={{
+                    p: 2.5,
+                    whiteSpace: "normal",
+                    overflowWrap: "anywhere",
+                  }}
                   title={
                     <Trans
                       i18nKey="content.itemEditStatusSearchNoResultsTitleRich"
