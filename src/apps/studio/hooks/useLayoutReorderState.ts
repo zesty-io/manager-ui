@@ -1423,7 +1423,13 @@ export const useLayoutReorderState = ({
     [setPendingLayoutSave, writeTemplateSources]
   );
 
+  const getPendingLayoutCodeIds = useCallback(
+    () => Object.keys(pendingLayoutSaveRef.current?.regions || {}),
+    []
+  );
+
   return {
+    getPendingLayoutCodeIds,
     pendingLayoutSave,
     pendingLayoutCodeIds,
     isSavingLayout,

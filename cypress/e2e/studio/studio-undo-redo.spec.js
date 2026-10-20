@@ -154,6 +154,24 @@ describe("Studio Undo / Redo", () => {
       );
     });
 
+  // The page item and its model's fields are in the store, so a content
+  // write resolves to the field the bridge snapshots.
+  const waitForPageHydrated = () =>
+    cy.window().should((win) => {
+      const state = win.zestyStore.getState();
+      expect(
+        state.content[itemZUID]?.meta?.ZUID,
+        "page item hydrated in store"
+      ).to.eq(itemZUID);
+      expect(
+        Object.values(state.fields || {}).some(
+          (field) =>
+            field?.contentModelZUID === modelZUID && field?.name === "title"
+        ),
+        "page model fields in store"
+      ).to.eq(true);
+    });
+
   const storedTitle = () =>
     cy
       .window()
@@ -378,12 +396,7 @@ describe("Studio Undo / Redo", () => {
 
   it("discards a snapshotted step that ended where it started", () => {
     bridgeReady(["history"]);
-    cy.window().should((win) => {
-      expect(
-        win.zestyStore.getState().content[itemZUID]?.meta?.ZUID,
-        "page item hydrated in store"
-      ).to.eq(itemZUID);
-    });
+    waitForPageHydrated();
     storedTitle().then((titleBefore) => {
       // Typed, snapshotted mid-edit, then typed back.
       cy.window().then((win) => {
@@ -602,12 +615,7 @@ describe("Studio Undo / Redo", () => {
       innerHtml: "One edited",
     });
     cy.getBySelector("StudioLayoutSaveBar").should("exist");
-    cy.window().should((win) => {
-      expect(
-        win.zestyStore.getState().content[itemZUID]?.meta?.ZUID,
-        "page item hydrated in store"
-      ).to.eq(itemZUID);
-    });
+    waitForPageHydrated();
     // A host-side edit, left open: nothing has ended it when the drag lands.
     cy.window().then((win) => {
       win.zestyStore.dispatch({
@@ -854,12 +862,7 @@ describe("Studio Undo / Redo", () => {
     const releasePvl = stubAiTurn({ holdPvl: true });
     const writtenTitle = `${EDITED_TITLE} ${uuidv4()}`;
     bridgeReady(["history"]);
-    cy.window().should((win) => {
-      expect(
-        win.zestyStore.getState().content[itemZUID]?.meta?.ZUID,
-        "page item hydrated in store"
-      ).to.eq(itemZUID);
-    });
+    waitForPageHydrated();
     storedTitle().as("titleBefore");
     sendAiPrompt();
     cy.window().then((win) => {
@@ -928,6 +931,127 @@ describe("Studio Undo / Redo", () => {
     hostCommands("historyRestore").should("have.length", 1);
   });
 
+  const clickSaveBarCancel = () =>
+    cy
+      .get(
+        '[data-cy="StudioLayoutCancelButton"], [data-cy="StudioContentCancelButton"]'
+      )
+      .click();
+
+  const stageLayoutAndContent = (title) => {
+    postBridgeMessage({
+      type: "TEMPLATE_SOURCE_MAP",
+      templateSourceByCodeId: { [viewZUID]: LAYOUT_SOURCE },
+    });
+    postBridgeMessage({
+      type: "LAYOUT_CONTENT_UPDATE",
+      codeId: viewZUID,
+      layoutId: "1",
+      innerHtml: "One edited",
+    });
+    cy.getBySelector("StudioLayoutSaveBar").should("exist");
+    waitForPageHydrated();
+    cy.window().then((win) => {
+      win.zestyStore.dispatch({
+        type: "SET_ITEM_DATA",
+        itemZUID,
+        key: "title",
+        value: title,
+      });
+    });
+    hostCommands("historySnapshot")
+      .invoke("filter", (cmd) => cmd.fields?.length > 0)
+      .should("have.length.at.least", 1);
+  };
+
+  it("cancels by undoing to the saved state, without reloading the canvas", () => {
+    stubAiTurn();
+    bridgeReady(["history"]);
+    storedTitle().as("titleBefore");
+    stageLayoutAndContent(`${EDITED_TITLE} ${uuidv4()}`);
+    sendAiPrompt();
+    answerPaint();
+    previewing(true);
+    cy.getBySelector("StudioUndoButton").should("not.be.disabled");
+
+    cy.window()
+      .its("__canvasLoads")
+      .then((loads) => {
+        clickSaveBarCancel();
+        // AI turn, content edit, inline edit: three undos, in that order.
+        hostCommands("historyRestore")
+          .should("have.length", 3)
+          .then((restores) => {
+            expect(restores.map((cmd) => cmd.direction)).to.deep.eq([
+              "undo",
+              "undo",
+              "undo",
+            ]);
+          });
+        cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
+        cy.getBySelector("StudioContentSaveBar").should("not.exist");
+        // Redo is still there: the history was undone, not thrown away.
+        cy.getBySelector("StudioRedoButton").should("not.be.disabled");
+        cy.window().its("__canvasLoads").should("eq", loads);
+      });
+    previewing(false);
+    cy.get("@titleBefore").then((titleBefore) =>
+      storedTitle().should("eq", titleBefore)
+    );
+    // The staged AI change was dropped, and its transcript says so.
+    cy.getBySelector("AIDrawerNotice").should("have.length", 1);
+  });
+
+  it("cancels by reloading when a restore fails part-way", () => {
+    bridgeReady(["history"]);
+    stageLayoutAndContent(`${EDITED_TITLE} ${uuidv4()}`);
+    cy.window().then((win) => {
+      win.__restoreReply = "fail";
+    });
+    cy.window()
+      .its("__canvasLoads")
+      .then((loads) => {
+        clickSaveBarCancel();
+        hostCommands("historyRestore").should("have.length", 1);
+        cy.window()
+          .its("__canvasLoads")
+          .should("eq", loads + 1);
+      });
+    cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
+  });
+
+  it("cancels by reloading, without undoing, when the base is not the saved state", () => {
+    bridgeReady(["history"]);
+    openTitleField();
+    editTitle();
+    cy.intercept("PUT", `**/items/${itemZUID}`, (req) =>
+      req.reply({ statusCode: 500, body: { error: "e2e failure" } })
+    ).as("failedSave");
+    cy.window()
+      .its("__canvasLoads")
+      .then((loads) => {
+        cy.getBySelector("StudioContentSaveChangesButton").click();
+        cy.getBySelector("StudioSaveAllButton").click();
+        cy.wait("@failedSave");
+        cy.getBySelector("StudioSaveChangesCancelButton").click();
+        // The failed save still reloads the canvas once.
+        cy.window()
+          .its("__canvasLoads")
+          .should("eq", loads + 1);
+        cy.getBySelector("StudioPreviewRefreshOverlay").should(
+          "have.css",
+          "opacity",
+          "0"
+        );
+
+        clickSaveBarCancel();
+        cy.window()
+          .its("__canvasLoads")
+          .should("eq", loads + 2);
+      });
+    hostCommands("historyRestore").should("have.length", 0);
+  });
+
   it("disables undo while an AI request is in flight", () => {
     // Held until released, so the in-flight state can be asserted without a
     // timed wait.
@@ -945,12 +1069,7 @@ describe("Studio Undo / Redo", () => {
     ).as("mcp");
 
     bridgeReady(["history"]);
-    cy.window().should((win) => {
-      expect(
-        win.zestyStore.getState().content[itemZUID]?.meta?.ZUID,
-        "page item hydrated in store"
-      ).to.eq(itemZUID);
-    });
+    waitForPageHydrated();
     // Every content write is recorded, whatever dispatched it.
     cy.window().then((win) => {
       win.zestyStore.dispatch({

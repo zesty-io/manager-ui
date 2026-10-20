@@ -445,6 +445,17 @@ export const useStudioAiEdit = ({
     [clearPendingPaint, pageItemZUID, postCommandToBridge]
   );
 
+  // Says in the page's transcript that its staged change was dropped. A
+  // discard by reload does this as the staged view leaves the pending set;
+  // undoing back to the saved state restores silently, so Cancel's no-reload
+  // path calls this itself.
+  const announceDiscard = useCallback(() => {
+    setLastDiscard({
+      id: ++discardSeq,
+      pageItemZUID: stagedPageRef.current || pageItemZUID,
+    });
+  }, [pageItemZUID]);
+
   // Whether a PVL render or its paint is still on its way to the canvas.
   const isRenderPending = useCallback(
     () => previewRef.current?.status === "loading",
@@ -461,6 +472,7 @@ export const useStudioAiEdit = ({
     handleBridgeReady,
     getAiState,
     restoreAiState,
+    announceDiscard,
     isRenderPending,
   };
 };

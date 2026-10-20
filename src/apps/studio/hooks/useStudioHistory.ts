@@ -167,6 +167,8 @@ export const useStudioHistory = (args: Args) => {
     step: Step;
     direction: StudioHistoryDirection;
     timer: ReturnType<typeof setTimeout>;
+    // Set by revertToBase, which handles a failure itself.
+    onSettled?: (ok: boolean) => void;
   } | null>(null);
 
   // The stack lives in refs so writes can record synchronously; this only
@@ -546,12 +548,19 @@ export const useStudioHistory = (args: Args) => {
     [bump]
   );
 
+  // Returns whether a restore was started. `onSettled` hands the outcome to
+  // the caller instead of the failure handling below; revertToBase runs
+  // undo while the canvas is covered, so it does not wait on `blocked`.
   const apply = useCallback(
-    (direction: StudioHistoryDirection) => {
+    (
+      direction: StudioHistoryDirection,
+      onSettled?: (ok: boolean) => void
+    ): boolean => {
       const { enabled, blocked, postCommandToBridge, flushPendingPatches } =
         argsRef.current;
-      if (!enabled || blocked || applyingRef.current) return;
-      if (pendingRestoreRef.current) return;
+      if (!enabled || applyingRef.current) return false;
+      if (blocked && !onSettled) return false;
+      if (pendingRestoreRef.current) return false;
 
       // An edit still open is the first thing undo takes back — including
       // what is still in a panel input's or an Inspector slot's debounce.
@@ -562,7 +571,7 @@ export const useStudioHistory = (args: Args) => {
         direction === "undo"
           ? stepsRef.current[pointerRef.current - 1]
           : stepsRef.current[pointerRef.current];
-      if (!step) return;
+      if (!step) return false;
 
       // Lock the canvas before a painted preview comes back, so the bridge
       // never accepts a gesture on markup that is not the page's.
@@ -582,23 +591,32 @@ export const useStudioHistory = (args: Args) => {
       pendingRestoreRef.current = {
         step,
         direction,
+        onSettled,
         timer: setTimeout(() => {
           pendingRestoreRef.current = null;
-          reloadAfterUnsureRestore({
-            stepId: step.id,
-            direction,
-            reason: "timeout",
-          });
+          if (onSettled) onSettled(false);
+          else {
+            reloadAfterUnsureRestore({
+              stepId: step.id,
+              direction,
+              reason: "timeout",
+            });
+          }
           bump();
         }, RESTORE_TIMEOUT_MS),
       };
       bump();
+      return true;
     },
     [bump, closeStep, reloadAfterUnsureRestore]
   );
 
-  const undo = useCallback(() => apply("undo"), [apply]);
-  const redo = useCallback(() => apply("redo"), [apply]);
+  const undo = useCallback(() => {
+    apply("undo");
+  }, [apply]);
+  const redo = useCallback(() => {
+    apply("redo");
+  }, [apply]);
 
   const handleRestoreReply = useCallback(
     (msg: {
@@ -614,12 +632,52 @@ export const useStudioHistory = (args: Args) => {
       clearTimeout(pending.timer);
       pendingRestoreRef.current = null;
       if (msg.ok) applyHostState(pending.step, pending.direction);
-      else if (msg.reason === "restore-failed") reloadAfterUnsureRestore(msg);
-      else failRestore(msg);
+      if (pending.onSettled) pending.onSettled(!!msg.ok);
+      else if (msg.ok) {
+        // Applied above.
+      } else if (msg.reason === "restore-failed") {
+        reloadAfterUnsureRestore(msg);
+      } else failRestore(msg);
       bump();
     },
     [applyHostState, bump, failRestore, reloadAfterUnsureRestore]
   );
+
+  // Whether undo alone can take Studio back to the stored state: pointer 0
+  // is the last save, nothing touched was already dirty there, and there is
+  // something to undo. Cancel uses this to discard without a reload.
+  const canRevertToBase = useCallback(() => {
+    const { enabled, blocked } = argsRef.current;
+    const open = openRef.current;
+    return (
+      enabled &&
+      !blocked &&
+      !pendingRestoreRef.current &&
+      baseIsSavedRef.current &&
+      Array.from(baseDirtyRef.current.values()).every(
+        (wasDirty) => !wasDirty
+      ) &&
+      (pointerRef.current > 0 || (!!open && hasEntries(open)))
+    );
+  }, []);
+
+  // Undoes every step, one restore at a time, each through the same
+  // restore-then-apply path as an undo click. Resolves false as soon as one
+  // restore fails or goes unanswered, with nothing further applied; the
+  // caller then discards by reloading, which resets the history.
+  const revertToBase = useCallback(async (): Promise<boolean> => {
+    if (!canRevertToBase()) return false;
+    flushAllDebouncedInputs();
+    argsRef.current.flushPendingPatches();
+    closeStep();
+    while (pointerRef.current > 0) {
+      const ok = await new Promise<boolean>((resolve) => {
+        if (!apply("undo", resolve)) resolve(false);
+      });
+      if (!ok) return false;
+    }
+    return true;
+  }, [apply, canRevertToBase, closeStep]);
 
   // A save that does not reload the canvas leaves pointer 0 behind the
   // stored state.
@@ -679,6 +737,8 @@ export const useStudioHistory = (args: Args) => {
     reset,
     handleRestoreReply,
     markBaseUnsaved,
+    canRevertToBase,
+    revertToBase,
   };
 };
 

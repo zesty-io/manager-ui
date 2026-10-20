@@ -1151,6 +1151,7 @@ export const StudioWrapper = () => {
     readStagedLayoutSource,
     getLayoutRegionSnapshot,
     restoreLayoutRegions,
+    getPendingLayoutCodeIds,
   } = useLayoutReorderState({
     webViews,
     codeFileNameById,
@@ -1211,7 +1212,7 @@ export const StudioWrapper = () => {
   }, [clearLayoutSelection, clearSelection, inspectorSelection]);
 
   // Discards whatever is actually pending, in either or both backends.
-  const handleSaveBarCancel = () => {
+  const discardByReload = () => {
     deselectForPreviewReload();
     if (hasPendingLayoutChanges) handleDiscardPendingLayoutSave();
     if (hasPendingContentChanges) void discardAllContent();
@@ -2375,6 +2376,7 @@ export const StudioWrapper = () => {
     handleBridgeReady: handleAiCanvasReady,
     getAiState,
     restoreAiState,
+    announceDiscard: announceAiDiscard,
     isRenderPending: isAiRenderPending,
   } = useStudioAiEdit({
     active: isAiPanelOpen && aiAllowed,
@@ -2411,6 +2413,8 @@ export const StudioWrapper = () => {
   const [historyEnabled, setHistoryEnabled] = useState(false);
   // Set while the AI panel waits on a reply.
   const [isAiRequestPending, setIsAiRequestPending] = useState(false);
+  // Set while Cancel undoes back to the saved state behind the busy overlay.
+  const [isRevertingToBase, setIsRevertingToBase] = useState(false);
   const studioHistory = useStudioHistory({
     enabled: historyEnabled,
     blocked:
@@ -2418,7 +2422,8 @@ export const StudioWrapper = () => {
       aiPreview?.status === "loading" ||
       saveBarIsSaving ||
       isRefreshing ||
-      isNavigating,
+      isNavigating ||
+      isRevertingToBase,
     dispatch,
     getState: store.getState,
     postCommandToBridge,
@@ -2491,6 +2496,31 @@ export const StudioWrapper = () => {
     // A reply that staged a change closes its step when the preview settles.
     if (!isAiRenderPending()) historyRef.current?.endStep();
   }, [isAiRenderPending]);
+
+  // Cancel discards by undoing back to the saved state when the history can
+  // reach it: nothing reloads, and redo still works afterwards. Anything
+  // else — a base that is not the stored state, an AI render in flight, a
+  // restore that fails or goes unanswered, or something still pending
+  // afterwards — discards by reloading the canvas, as before.
+  const handleSaveBarCancel = async () => {
+    const hadAiChange = isAiPreviewing;
+    if (studioHistory.canRevertToBase()) {
+      setIsRevertingToBase(true);
+      const reverted = await studioHistory.revertToBase();
+      setIsRevertingToBase(false);
+      const nothingPending =
+        !collectDirtyContentItems((store.getState() as AppState).content)
+          .length &&
+        !getPendingLayoutCodeIds().length &&
+        !getAiState().stagedCodeId;
+      if (reverted && nothingPending) {
+        // Undo restores an AI change silently; Cancel still drops it.
+        if (hadAiChange) announceAiDiscard();
+        return;
+      }
+    }
+    discardByReload();
+  };
 
   // Selecting something else ends the edit in progress.
   const selectionKey = [
@@ -2717,7 +2747,8 @@ export const StudioWrapper = () => {
                   isRefreshing ||
                   studioSaving ||
                   isSavingLayout ||
-                  isAiRendering
+                  isAiRendering ||
+                  isRevertingToBase
                 }
                 busyMessage={
                   isAiRendering
@@ -2850,7 +2881,7 @@ export const StudioWrapper = () => {
                   data-cy={`${saveBarHookPrefix}CancelButton`}
                   color="inherit"
                   onClick={handleSaveBarCancel}
-                  disabled={saveBarIsSaving}
+                  disabled={saveBarIsSaving || isRevertingToBase}
                 >
                   {t("common.cancel")}
                 </Button>
