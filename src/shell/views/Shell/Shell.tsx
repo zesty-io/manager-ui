@@ -111,7 +111,6 @@ export default memo(function Shell() {
 
   return (
     <Box
-      component="section"
       className={styles.Shell}
       height="100vh"
       overflow="clip"
