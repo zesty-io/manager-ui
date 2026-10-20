@@ -48,7 +48,7 @@ import { dateFilterOperator } from "./dateFilter";
 const selectFilteredItems = (
   state: AppState,
   modelZUID: string,
-  activeLangId: number,
+  activeLangId: number | null,
   skip = false
 ) => {
   if (skip) {
@@ -63,14 +63,14 @@ const selectFilteredItems = (
 
 export type FieldFilters = {
   sortOrder: string;
-  user: string;
+  user: string | null;
   date: {
-    preset: string;
-    from: string;
-    to: string;
+    preset: string | null;
+    from: string | null;
+    to: string | null;
   };
-  lang: number;
-  status: keyof typeof STATUS_FILTER;
+  lang: number | null;
+  status: keyof typeof STATUS_FILTER | null;
 };
 type FieldSelectorDialogProps = {
   onClose: () => void;
@@ -98,8 +98,9 @@ export const FieldSelectorDialog = ({
   const userSelectedLangCode = useSelector(
     (state: AppState) => state?.user?.selected_lang
   );
-  const searchField = useRef(null);
-  const [filterKeyword, setFilterKeyword] = useState<string>(null);
+  const [noResults, setNoResults] = useState<boolean>(false);
+  const searchField = useRef<HTMLInputElement>(null);
+  const [filterKeyword, setFilterKeyword] = useState<string>("");
   const [filters, updateFilters] = useReducer(
     (state: FieldFilters, newValue: Partial<FieldFilters>): FieldFilters => {
       return {
@@ -577,17 +578,19 @@ export const FieldSelectorDialog = ({
       >
         <TextField
           data-cy="relational-fields-search-input"
-          ref={searchField}
+          inputRef={searchField}
           fullWidth
           onChange={(evt) => debouncedSetFilterKeyword(evt.currentTarget.value)}
           size="small"
           placeholder={t("shell.relationalFilterItems")}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            },
           }}
         />
         <FieldSelectorFilters
@@ -600,17 +603,11 @@ export const FieldSelectorDialog = ({
         ) : (
           <Box
             height={
-              !rows?.length && isFilteringResults ? 610 : rows?.length * 64 + 2
+              (noResults || !rows?.length) && isFilteringResults
+                ? 610
+                : rows?.length * 64 + 2
             }
             maxHeight={1024}
-            sx={{
-              "& [data-cy='NoSearchResults']": {
-                border: 1,
-                borderColor: "border",
-                bgcolor: "background.paper",
-                borderRadius: 2,
-              },
-            }}
           >
             <AutoSizer>
               {({ width, height }: Size) => (
@@ -662,12 +659,8 @@ export const FieldSelectorDialog = ({
                             if (!!filterKeyword) {
                               setFilterKeyword("");
                               if (!!searchField.current) {
-                                searchField.current.querySelector(
-                                  "input"
-                                ).value = "";
-                                searchField.current
-                                  .querySelector("input")
-                                  .focus();
+                                searchField.current.value = "";
+                                searchField.current.focus();
                               }
                             }
 
@@ -737,6 +730,9 @@ export const FieldSelectorDialog = ({
                         : []),
                     ],
                     logicOperator: GridLogicOperator.And,
+                  }}
+                  onRowCountChange={(count) => {
+                    setNoResults(count < 1);
                   }}
                   rowSelectionModel={filteredSelectionModels}
                   onRowSelectionModelChange={(newSelectionModel: any) => {
