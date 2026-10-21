@@ -2370,6 +2370,7 @@ export const StudioWrapper = () => {
         disablePortal
       >
         <Paper
+          data-cy="StudioEditor"
           role="dialog"
           aria-modal="true"
           aria-label={t("content.studioEditorAriaLabel")}

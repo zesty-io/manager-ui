@@ -14,6 +14,7 @@ import {
   ChatResponse,
   ChatThread,
   TONE_VALUES,
+  scrollToEnd,
 } from "shell/components/AIDrawer/ChatThread";
 import { toChatResponses } from "shell/components/AIDrawer/parseResponse";
 import {
@@ -183,7 +184,7 @@ const StudioAIChat = ({
     value: TONE_VALUES.professional,
     label: t("shell.toneNameProfessional"),
   });
-  const responsesEndRef = useRef<HTMLDivElement | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   // False once this panel closes or moves to another page. A reply that
   // lands after that is not applied to whatever is open now.
   const isMountedRef = useRef(true);
@@ -196,7 +197,9 @@ const StudioAIChat = ({
 
   useEffect(() => {
     chat.responses = responses;
-    responsesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (Object.keys(responses).length) {
+      scrollToEnd(scrollContainerRef.current);
+    }
   }, [chat, responses]);
 
   // Read through `chat` so the effect stays idempotent when StrictMode runs
@@ -388,7 +391,7 @@ const StudioAIChat = ({
       setSelectedTone={setSelectedTone}
       handlePrompt={handlePrompt}
       handleGenerateSuggestions={handleGenerateSuggestions}
-      responsesEndRef={responsesEndRef}
+      scrollContainerRef={scrollContainerRef}
       placeholder={t("content.studioAiPlaceholder")}
     />
   );

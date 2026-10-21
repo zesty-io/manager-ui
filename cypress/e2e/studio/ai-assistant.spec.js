@@ -231,6 +231,40 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("StudioAIPanel").should("not.exist");
   });
 
+  it("opens the AI panel without scrolling the Studio shell", () => {
+    cy.getBySelector("StudioEditor").should(([editor]) => {
+      expect(editor.scrollHeight, "Studio overflow").to.equal(
+        editor.clientHeight
+      );
+    });
+    // Gives the shell somewhere to scroll, as any future overflow would, so
+    // a scroll that reaches past the transcript moves it.
+    cy.getBySelector("StudioPreviewFrame")
+      .parent()
+      .then(([canvas]) => {
+        const overflow = canvas.ownerDocument.createElement("div");
+        overflow.style.cssText =
+          "position:absolute;top:100%;width:1px;height:8px";
+        canvas.append(overflow);
+      });
+    let scrolls = 0;
+    cy.getBySelector("StudioEditor").then(([editor]) => {
+      expect(editor.scrollHeight).to.be.greaterThan(editor.clientHeight);
+      editor.addEventListener("scroll", () => scrolls++);
+    });
+
+    // A click scrolls its target into view by default, which would scroll
+    // the shell itself.
+    cy.getBySelector("StudioAIButton").click({ scrollBehavior: false });
+    cy.getBySelector("StudioAIPanel").should("exist");
+    cy.getBySelector("StudioAIPanelClose").click({ scrollBehavior: false });
+    cy.getBySelector("StudioAIPanel").should("not.exist");
+    cy.getBySelector("StudioEditor").should(([editor]) => {
+      expect(editor.scrollTop, "Studio scrollTop").to.equal(0);
+      expect(scrolls, "Studio scroll events").to.equal(0);
+    });
+  });
+
   it("offers the AI only where layout editing is available", () => {
     cy.getBySelector("StudioAIButton").should("exist");
     cy.getBySelector("StudioModeToggleOption-content").click();

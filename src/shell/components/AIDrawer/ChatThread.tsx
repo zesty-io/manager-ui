@@ -90,6 +90,11 @@ export type ChatResponse = { approval?: string } & (
     }
 );
 
+// Scrolls only the transcript. `scrollIntoView` would also scroll every
+// ancestor that overflows, moving the host's own layout.
+export const scrollToEnd = (container: HTMLElement | null) =>
+  container?.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+
 export type ChatThreadProps = {
   responses: Record<string, ChatResponse[]>;
   setResponses: Dispatch<SetStateAction<Record<string, ChatResponse[]>>>;
@@ -112,7 +117,8 @@ export type ChatThreadProps = {
   setSelectedTone: (tone: ToneOption) => void;
   handlePrompt: (value: string) => boolean;
   handleGenerateSuggestions: (sourcePrompt: string) => void;
-  responsesEndRef: MutableRefObject<HTMLDivElement | null>;
+  // The transcript's own scroll box; scroll it with `scrollToEnd`.
+  scrollContainerRef: MutableRefObject<HTMLDivElement | null>;
   // For a host that applies every suggestion itself.
   hideAutoApply?: boolean;
   placeholder?: string;
@@ -138,7 +144,7 @@ export const ChatThread = ({
   setSelectedTone,
   handlePrompt,
   handleGenerateSuggestions,
-  responsesEndRef,
+  scrollContainerRef,
   hideAutoApply = false,
   placeholder,
 }: ChatThreadProps) => {
@@ -168,6 +174,7 @@ export const ChatThread = ({
     <>
       <Box display="flex" flexGrow={1} overflow="auto">
         <Box
+          ref={scrollContainerRef}
           display="block"
           overflow="auto"
           width="100%"
@@ -187,6 +194,7 @@ export const ChatThread = ({
               boxSizing: "border-box",
               minHeight: "100%",
               width: "100%",
+              pb: 2,
             }}
           >
             {isLoadingChatSessionLog ? (
@@ -270,13 +278,7 @@ export const ChatThread = ({
                         <AnimatedText
                           text={response.payload.value}
                           animate={shouldAnimate}
-                          onGrow={() => {
-                            if (responsesEndRef.current) {
-                              responsesEndRef.current.scrollIntoView({
-                                behavior: "smooth",
-                              });
-                            }
-                          }}
+                          onGrow={() => scrollToEnd(scrollContainerRef.current)}
                         />
                       </Button>
                     );
@@ -309,13 +311,7 @@ export const ChatThread = ({
                         <AnimatedText
                           text={response.payload.value}
                           animate={shouldAnimate}
-                          onGrow={() => {
-                            if (responsesEndRef.current) {
-                              responsesEndRef.current.scrollIntoView({
-                                behavior: "smooth",
-                              });
-                            }
-                          }}
+                          onGrow={() => scrollToEnd(scrollContainerRef.current)}
                         />
                       </Box>
                     );
@@ -375,13 +371,7 @@ export const ChatThread = ({
                           key={`${promptZUID}-${responseIndex}`}
                           text={response.payload.value}
                           animate={shouldAnimate && !isInCodeApp}
-                          onGrow={() => {
-                            if (responsesEndRef.current) {
-                              responsesEndRef.current.scrollIntoView({
-                                behavior: "smooth",
-                              });
-                            }
-                          }}
+                          onGrow={() => scrollToEnd(scrollContainerRef.current)}
                         />
                       )}
                       {!autoApply && response.type === "SET_VALUE" && (
@@ -438,7 +428,6 @@ export const ChatThread = ({
                 });
               })
             )}
-            <div ref={responsesEndRef} />
             {isLoading && (
               <Box
                 display="flex"
