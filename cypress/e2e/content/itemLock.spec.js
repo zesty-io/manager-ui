@@ -7,10 +7,13 @@ const gateway = CONFIG[process.env.NODE_ENV]?.SERVICE_REDIS_GATEWAY;
 // Load the list, then route to the item in-app so leaving it unmounts ItemEdit
 const openItemInApp = (modelZUID, itemZUID) => {
   cy.visit(`/content/${modelZUID}`);
-  cy.location("pathname").should("eq", `/content/${modelZUID}`);
+  // The pathname already matches before the app boots, so wait for the router to be live
+  cy.getBySelector("listItemTable")
+    .find('[data-cy="itemListRow"]')
+    .should("have.length.greaterThan", 0);
   cy.window().then((win) => {
     win.history.pushState({}, "", `/content/${modelZUID}/${itemZUID}`);
-    win.dispatchEvent(new win.PopStateEvent("popstate"));
+    win.dispatchEvent(new win.PopStateEvent("popstate", { state: {} }));
   });
   cy.location("pathname").should("eq", `/content/${modelZUID}/${itemZUID}`);
 };
