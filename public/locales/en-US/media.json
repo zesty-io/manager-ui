@@ -18,7 +18,7 @@
   "deleteFileModalWarningMultiple": "You will not be able to recover these files.",
   "deleteFileModalWarningSingle": "{{filename}} will be deleted forever",
   "deleteFolderDialogConfirmButton": "Delete Folder",
-  "deleteFolderDialogMessage": "Deleting your folder will NOT delete the files in it. These files can still be found in All Media.",
+  "deleteFolderDialogMessage": "Deleting your folder will not delete the files in it. These files can still be found in All Media.",
   "deleteFolderDialogTitle": "Delete Folder?",
   "dropAreaAllMedia": "All Media",
   "dropAreaUploadPrompt": "Upload files to {{location}}",
