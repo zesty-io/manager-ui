@@ -127,6 +127,7 @@ describe("Studio Wrapper", () => {
       expect(seededViewZUID, "seed:content returned a disposable view").to.be.a(
         "string"
       ).and.not.be.empty;
+      cy.waitForBridgeTemplateMap();
       return cb({ ZUID: seededViewZUID, version: seededViewVersion });
     });
 
@@ -193,7 +194,7 @@ describe("Studio Wrapper", () => {
   beforeEach(() => {
     cy.stubStaffUser();
     cy.waitOn("/v1/content/models**", () => {
-      cy.visit(`/studio?path=${studioPath}`);
+      cy.visitStudio(studioPath);
     });
   });
 

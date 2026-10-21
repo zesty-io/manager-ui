@@ -23,7 +23,7 @@ describe("Studio Full Mode", () => {
   const reloadAsStaff = () => {
     cy.stubStaffUser();
     cy.waitOn("/v1/content/models**", () => {
-      cy.visit(`/studio?path=${studioPath}`);
+      cy.visitStudio(studioPath);
     });
     cy.getBySelector("StudioHeader").should("exist");
   };
@@ -95,6 +95,7 @@ describe("Studio Full Mode", () => {
       expect(seededViewZUID, "seed:content returned a disposable view").to.be.a(
         "string"
       ).and.not.be.empty;
+      cy.waitForBridgeTemplateMap();
       return cb({ ZUID: seededViewZUID, version: seededViewVersion });
     });
 
@@ -115,7 +116,7 @@ describe("Studio Full Mode", () => {
       query: { field: "path" },
     }).as("resolveItemByPath");
     cy.waitOn("/v1/content/models**", () => {
-      cy.visit(`/studio?path=${studioPath}`);
+      cy.visitStudio(studioPath);
     });
     cy.getBySelector("StudioHeader").should("exist");
   });

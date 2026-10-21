@@ -50,6 +50,28 @@ Cypress.Commands.add("stubStaffUser", () => {
   }).as("getUserAsStaff");
 });
 
+// Post a test TEMPLATE_SOURCE_MAP only after the live bridge has posted its own.
+Cypress.Commands.add("visitStudio", (path) => {
+  cy.visit(`/studio?path=${path}`, {
+    onBeforeLoad(win) {
+      win.addEventListener("message", (e) => {
+        // The live bridge posts from the preview origin; test posts from the app's.
+        if (
+          e.origin !== win.location.origin &&
+          e.data?.source === "studio-bridge" &&
+          e.data?.message?.type === "TEMPLATE_SOURCE_MAP"
+        ) {
+          win.__bridgeTemplateMapSeen = true;
+        }
+      });
+    },
+  });
+});
+
+Cypress.Commands.add("waitForBridgeTemplateMap", () => {
+  cy.window().its("__bridgeTemplateMapSeen").should("eq", true);
+});
+
 Cypress.Commands.add("assertClipboardValue", (value) => {
   cy.window().then((win) => {
     win.navigator?.clipboard?.readText().then((text) => {
