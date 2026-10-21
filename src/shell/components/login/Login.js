@@ -41,7 +41,6 @@ export default connect((state) => {
     const [loading, setLoading] = useState(false);
     const [twoFactor, setTwoFactor] = useState(false);
     const [error, setError] = useState("");
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = (evt) => {
@@ -82,11 +81,38 @@ export default connect((state) => {
         .finally(() => setLoading(false));
     };
 
+    // useSSO (@zesty-io/material) latches isAuthenticated/error after the first
+    // message, so SSOButtonGroup's onSuccess/onError never fire again. Listen to
+    // the auth service's postMessage directly so every SSO login verifies.
     useEffect(() => {
-      if (isAuthenticated) {
-        props.dispatch(verify());
-      }
-    }, [isAuthenticated]);
+      const handleSSOMessage = (event) => {
+        if (
+          event.origin !== CONFIG.SERVICE_AUTH ||
+          event.data?.source !== "zesty"
+        ) {
+          return;
+        }
+
+        if (event.data.status === "200") {
+          setError("");
+          dispatch({
+            type: "FETCH_LOGIN_SUCCESS",
+            payload: {
+              code: event.data.status,
+              meta: {
+                token: event.data.token,
+              },
+            },
+          });
+          dispatch(verify());
+        } else {
+          setError(event.data.error_message);
+        }
+      };
+
+      window.addEventListener("message", handleSSOMessage);
+      return () => window.removeEventListener("message", handleSSOMessage);
+    }, []);
 
     return (
       <Box
@@ -173,24 +199,7 @@ export default connect((state) => {
                   {t("shell.loginSubtitle")}
                 </Typography>
               </Box>
-              <SSOButtonGroup
-                authServiceUrl={CONFIG.SERVICE_AUTH}
-                onSuccess={(data) => {
-                  dispatch({
-                    type: "FETCH_LOGIN_SUCCESS",
-                    payload: {
-                      code: data.status,
-                      meta: {
-                        token: data.token,
-                      },
-                    },
-                  });
-                  setIsAuthenticated(true);
-                }}
-                onError={(err) => {
-                  setError(err);
-                }}
-              >
+              <SSOButtonGroup authServiceUrl={CONFIG.SERVICE_AUTH}>
                 <SSOButton
                   service="google"
                   label={t("shell.continueWith", { service: "Google" })}
