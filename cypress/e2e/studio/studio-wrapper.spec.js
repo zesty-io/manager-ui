@@ -131,13 +131,14 @@ describe("Studio Wrapper", () => {
       return cb({ ZUID: seededViewZUID, version: seededViewVersion });
     });
 
-  before(() => {
+  before(function () {
     cy.task("seed:content", "fixtures/studio.json").then(({ items, view }) => {
       itemZUID = items[0].meta.ZUID;
       modelZUID = items[0].meta.contentModelZUID;
       studioPath = `/${items[0].web.pathPart}`;
       seededViewZUID = view?.ZUID || "";
       seededViewVersion = view?.version ?? 1;
+      cy.skipIfPreviewDown(this, studioPath);
     });
   });
 

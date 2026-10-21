@@ -99,12 +99,13 @@ describe("Studio Full Mode", () => {
       return cb({ ZUID: seededViewZUID, version: seededViewVersion });
     });
 
-  before(() => {
+  before(function () {
     cy.task("seed:content", "fixtures/studio.json").then(({ items, view }) => {
       itemZUID = items[0].meta.ZUID;
       studioPath = `/${items[0].web.pathPart}`;
       seededViewZUID = view?.ZUID || "";
       seededViewVersion = view?.version ?? 1;
+      cy.skipIfPreviewDown(this, studioPath);
     });
   });
 

@@ -1,4 +1,5 @@
 import "./api";
+import CONFIG from "../../src/shell/app.config";
 
 Cypress.Commands.add("login", () => {
   const formBody = new FormData();
@@ -76,6 +77,28 @@ Cypress.Commands.add("waitForBridgeTemplateMap", () => {
       "live preview bridge posted its TEMPLATE_SOURCE_MAP"
     ).to.eq(true)
   );
+});
+
+// Skips the calling suite (pass the before hook's `this`) when the live preview at `path` is unreachable, times out, or answers 5xx.
+Cypress.Commands.add("skipIfPreviewDown", (context, path) => {
+  const { URL_PREVIEW_PROTOCOL, URL_PREVIEW } = CONFIG[process.env.NODE_ENV];
+  cy.apiRequest({
+    url: `${Cypress.env("API_ACCOUNTS")}/instances/${Cypress.env(
+      "INSTANCE_ZUID"
+    )}`,
+  }).then(({ data }) => {
+    expect(data?.randomHashID, "instance randomHashID").to.be.a("string");
+    const url = `${URL_PREVIEW_PROTOCOL}${data.randomHashID}${URL_PREVIEW}${path}`;
+    cy.task("probe:url", { url, timeout: 15000 }).then(({ status, error }) => {
+      const reason = error || (status >= 500 && `HTTP ${status}`);
+      if (!reason) return;
+      cy.task(
+        "log",
+        `::warning::SKIPPED ${Cypress.spec.relative}: live preview ${url} down (${reason})`
+      );
+      cy.then(() => context.skip());
+    });
+  });
 });
 
 Cypress.Commands.add("assertClipboardValue", (value) => {
