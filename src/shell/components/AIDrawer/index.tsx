@@ -27,7 +27,7 @@ import {
   ChatPrompt,
   ContentItemWithDirtyAndPublishing,
 } from "shell/services/types";
-import { ChatThread, ChatResponse } from "./ChatThread";
+import { ChatThread, ChatResponse, scrollToEnd } from "./ChatThread";
 import { toChatResponses } from "./parseResponse";
 import { useApplySetValue } from "./useApplySetValue";
 import { buildPromptRequest, buildSuggestionsRequest } from "./promptRequest";
@@ -213,7 +213,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     setUrlChatZUID,
   ]);
 
-  const responsesEndRef = useRef<HTMLDivElement | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   // Tracks whether the next chatSessionLog sync is the result of a prompt we
   // just sent live, vs. restoring history from opening/switching chats.
   const isAwaitingLiveResponseRef = useRef(false);
@@ -427,9 +427,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
   ]);
 
   useEffect(() => {
-    if (responsesEndRef.current) {
-      responsesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    scrollToEnd(scrollContainerRef.current);
   }, [responses]);
 
   // Maps the chat session log to a normalized format for rendering
@@ -719,7 +717,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
           setSelectedTone={setSelectedTone}
           handlePrompt={handlePrompt}
           handleGenerateSuggestions={handleGenerateSuggestions}
-          responsesEndRef={responsesEndRef}
+          scrollContainerRef={scrollContainerRef}
         />
       ) : (
         <ChatHistory

@@ -32,6 +32,8 @@ export const StudioPreview = ({
       src={iframeSrc}
       onLoad={onLoad}
       sx={{
+        // Inline, it sits on a line box whose descender overflows Studio.
+        display: "block",
         border: "none",
         height: "100%",
         width: "100%",
