@@ -50,7 +50,7 @@ Cypress.Commands.add("stubStaffUser", () => {
   }).as("getUserAsStaff");
 });
 
-// Post a test TEMPLATE_SOURCE_MAP only after the live bridge has posted its own.
+// Flags the live bridge's first TEMPLATE_SOURCE_MAP.
 Cypress.Commands.add("visitStudio", (path) => {
   cy.visit(`/studio?path=${path}`, {
     onBeforeLoad(win) {
@@ -68,8 +68,14 @@ Cypress.Commands.add("visitStudio", (path) => {
   });
 });
 
+// Post a test TEMPLATE_SOURCE_MAP only after the live bridge has posted its own.
 Cypress.Commands.add("waitForBridgeTemplateMap", () => {
-  cy.window().its("__bridgeTemplateMapSeen").should("eq", true);
+  cy.window().should((win) =>
+    expect(
+      win.__bridgeTemplateMapSeen,
+      "live preview bridge posted its TEMPLATE_SOURCE_MAP"
+    ).to.eq(true)
+  );
 });
 
 Cypress.Commands.add("assertClipboardValue", (value) => {
