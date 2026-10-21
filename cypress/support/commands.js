@@ -79,24 +79,42 @@ Cypress.Commands.add("waitForBridgeTemplateMap", () => {
   );
 });
 
-// Skips the calling suite (pass the before hook's `this`) when the live preview at `path` is unreachable, times out, or answers 5xx.
+// Skips the calling suite (pass the before hook's `this`) when Studio's iframe URL for `path` is unreachable, times out, answers 5xx, or lacks the bridge.
 Cypress.Commands.add("skipIfPreviewDown", (context, path) => {
   const { URL_PREVIEW_PROTOCOL, URL_PREVIEW } = CONFIG[process.env.NODE_ENV];
   cy.apiRequest({
     url: `${Cypress.env("API_ACCOUNTS")}/instances/${Cypress.env(
       "INSTANCE_ZUID"
     )}`,
-  }).then(({ data }) => {
-    expect(data?.randomHashID, "instance randomHashID").to.be.a("string");
-    const url = `${URL_PREVIEW_PROTOCOL}${data.randomHashID}${URL_PREVIEW}${path}`;
-    cy.task("probe:url", { url, timeout: 15000 }).then(({ status, error }) => {
-      const reason = error || (status >= 500 && `HTTP ${status}`);
-      if (!reason) return;
-      cy.task(
-        "log",
-        `::warning::SKIPPED ${Cypress.spec.relative}: live preview ${url} down (${reason})`
+  }).then(({ data: instance }) => {
+    expect(instance?.randomHashID, "instance randomHashID").to.be.a("string");
+    cy.apiRequest({
+      url: `${Cypress.env("API_INSTANCE_URL")}/env/settings`,
+    }).then(({ data: settings }) => {
+      const previewLock = settings?.find(
+        (setting) => setting.key === "preview_lock_password" && setting.value
       );
-      cy.then(() => context.skip());
+      const query = new URLSearchParams({ studio: "bridge" });
+      if (previewLock) query.set("zpw", previewLock.value);
+      const url = `${URL_PREVIEW_PROTOCOL}${
+        instance.randomHashID
+      }${URL_PREVIEW}${path.replace(/\/+$/, "")}/?${query}`;
+      cy.task("probe:url", { url, timeout: 15000, marker: "bridge.js" }).then(
+        ({ status, error, hasMarker }) => {
+          const reason =
+            error ||
+            (status >= 500 && `HTTP ${status}`) ||
+            (status < 400 && !hasMarker && "bridge not injected");
+          if (!reason) return;
+          cy.task(
+            "log",
+            `::warning::SKIPPED ${Cypress.spec.relative}: live preview ${
+              url.split("&zpw=")[0]
+            } down (${reason})`
+          );
+          cy.then(() => context.skip());
+        }
+      );
     });
   });
 });
