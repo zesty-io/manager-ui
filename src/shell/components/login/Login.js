@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { connect, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { alpha } from "@mui/material/styles";
@@ -42,6 +42,11 @@ export default connect((state) => {
     const [twoFactor, setTwoFactor] = useState(false);
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+
+    // Login stays mounted while the session is valid, so the SSO listener
+    // below reads the latest value through a ref instead of re-subscribing.
+    const isSessionValid = useRef(props.auth.valid);
+    isSessionValid.current = props.auth.valid;
 
     const handleLogin = (evt) => {
       evt.preventDefault();
@@ -88,7 +93,8 @@ export default connect((state) => {
       const handleSSOMessage = (event) => {
         if (
           event.origin !== CONFIG.SERVICE_AUTH ||
-          event.data?.source !== "zesty"
+          event.data?.source !== "zesty" ||
+          isSessionValid.current
         ) {
           return;
         }
@@ -98,7 +104,9 @@ export default connect((state) => {
           dispatch({
             type: "FETCH_LOGIN_SUCCESS",
             payload: {
-              code: event.data.status,
+              // The auth service posts status as the string "200", but the
+              // auth reducer only treats the number 200 as a valid session.
+              code: 200,
               meta: {
                 token: event.data.token,
               },
