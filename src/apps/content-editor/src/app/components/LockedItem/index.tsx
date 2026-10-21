@@ -76,10 +76,16 @@ export const LockedItem = ({
         </Stack>
       </DialogTitle>
       <DialogActions>
-        <Button variant="text" color="inherit" onClick={onCancel}>
+        <Button
+          data-cy="LockedItemGoBack"
+          variant="text"
+          color="inherit"
+          onClick={onCancel}
+        >
           {t("common.goBack")}
         </Button>
         <Button
+          data-cy="LockedItemUnlock"
           variant="contained"
           color="warning"
           startIcon={<LockOpenRounded />}
