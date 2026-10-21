@@ -46,7 +46,10 @@ module.exports = (on, config) => {
       try {
         const res = await fetch(url, { signal: AbortSignal.timeout(timeout) });
         const body = marker ? await res.text() : "";
-        return { status: res.status, hasMarker: body.includes(marker) };
+        return {
+          status: res.status,
+          hasMarker: marker ? body.includes(marker) : true,
+        };
       } catch (e) {
         return { error: e.cause?.code || e.cause?.message || e.name };
       }

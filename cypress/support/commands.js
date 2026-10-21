@@ -91,7 +91,8 @@ Cypress.Commands.add("skipIfPreviewDown", (context, path) => {
     cy.apiRequest({
       url: `${Cypress.env("API_INSTANCE_URL")}/env/settings`,
     }).then(({ data: settings }) => {
-      const previewLock = settings?.find(
+      expect(settings, "instance settings").to.be.an("array");
+      const previewLock = settings.find(
         (setting) => setting.key === "preview_lock_password" && setting.value
       );
       const query = new URLSearchParams({ studio: "bridge" });
@@ -99,22 +100,24 @@ Cypress.Commands.add("skipIfPreviewDown", (context, path) => {
       const url = `${URL_PREVIEW_PROTOCOL}${
         instance.randomHashID
       }${URL_PREVIEW}${path.replace(/\/+$/, "")}/?${query}`;
-      cy.task("probe:url", { url, timeout: 15000, marker: "bridge.js" }).then(
-        ({ status, error, hasMarker }) => {
-          const reason =
-            error ||
-            (status >= 500 && `HTTP ${status}`) ||
-            (status < 400 && !hasMarker && "bridge not injected");
-          if (!reason) return;
-          cy.task(
-            "log",
-            `::warning::SKIPPED ${Cypress.spec.relative}: live preview ${
-              url.split("&zpw=")[0]
-            } down (${reason})`
-          );
-          cy.then(() => context.skip());
-        }
-      );
+      cy.task(
+        "probe:url",
+        { url, timeout: 15000, marker: "bridge.js" },
+        { log: false }
+      ).then(({ status, error, hasMarker }) => {
+        const reason =
+          error ||
+          (status >= 500 && `HTTP ${status}`) ||
+          (status < 400 && !hasMarker && "bridge not injected");
+        if (!reason) return;
+        cy.task(
+          "log",
+          `::warning::SKIPPED ${Cypress.spec.relative}: live preview ${
+            url.split("&zpw=")[0]
+          } down (${reason})`
+        );
+        cy.then(() => context.skip());
+      });
     });
   });
 });
