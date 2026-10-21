@@ -729,6 +729,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
             <IconButton
               size="small"
               data-cy="AIDrawerBackButton"
+              data-amp-track-id="ai-drawer-back-button"
               onClick={handleBackToHistory}
             >
               <ArrowBackRoundedIcon fontSize="small" />
@@ -762,6 +763,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
 
         <IconButton
           size="small"
+          data-amp-track-id="ai-drawer-close-button"
           onClick={() => {
             onClose();
           }}
