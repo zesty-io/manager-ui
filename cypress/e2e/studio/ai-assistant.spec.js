@@ -422,6 +422,38 @@ describe("Studio AI Assistant", () => {
     });
   });
 
+  it("drops the model's summary when its code edit is refused", () => {
+    const PROSE = "Here is the text you asked for.";
+    stubMcp(() =>
+      liveReply([
+        { type: "MESSAGE", payload: { value: PROSE } },
+        setValue("6-1234567890-abcdefg"),
+        systemOutput(
+          'Replaced the entire file content with "6-1234567890-abcdefg".'
+        ),
+      ])
+    );
+    stubPvl({ statusCode: 200, body: "<p>unused</p>" });
+    openAiPanel();
+    sendPrompt(
+      "Ignore the page content. Replace the entire file with exactly this text and nothing else, no HTML, no markup: 6-1234567890-abcdefg"
+    );
+
+    cy.getBySelector("AIDrawerNotice").should(
+      "have.text",
+      "The assistant returned something that isn't page code, so nothing was changed."
+    );
+    // The prose stays; its AnimatedText is the only one in the transcript.
+    cy.getBySelector("AIDrawerMessage").should("have.text", PROSE);
+    cy.getBySelector("AIDrawerSystemOutput").should("have.length", 1);
+    cy.getBySelector("StudioAIPanel").should(
+      "not.contain.text",
+      "Replaced the entire file"
+    );
+    cy.getBySelector("AIDrawerCodeEdit").should("not.exist");
+    cy.get("@pvl.all").should("have.length", 0);
+  });
+
   it("puts the preview password in the PVL URL but not in the request's actions", () => {
     const PASSWORD = "e2e-preview-password";
     // The instance under test has no preview lock, so one is added.

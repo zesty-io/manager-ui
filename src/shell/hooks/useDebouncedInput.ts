@@ -1,4 +1,5 @@
 import { debounce } from "lodash";
+import { flushSync } from "react-dom";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 
 // Every mounted input's debounce, so a caller about to read the store can land
@@ -58,5 +59,13 @@ export function useDebouncedInput(
   // then undone in one batch — because the sync effect above never re-runs.
   const showLocal = useCallback((v: string) => setLocal(v), []);
 
-  return { local, onLocalChange, showLocal };
+  const flush = useCallback(() => {
+    // flushSync: a synchronous mousedown→click (e.g. Cypress .click()) would
+    // otherwise run Save's handler before the blur's commit renders.
+    flushSync(() => {
+      debouncedRef.current!.flush();
+    });
+  }, []);
+
+  return { local, onLocalChange, showLocal, flush };
 }
