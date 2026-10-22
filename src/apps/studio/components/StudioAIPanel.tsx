@@ -247,17 +247,30 @@ const StudioAIChat = ({
               },
             ]
           : toChatResponses(reply.data);
-      // A SYSTEM_OUTPUT is the edit's summary; line counts are the fallback.
-      const hasDescription = parsed.some(
-        (entry) =>
-          entry.type === "SYSTEM_OUTPUT" && !!entry.payload.value?.trim()
+      const refused = new Set(
+        parsed.filter(
+          (entry) =>
+            entry.type === "SET_VALUE" &&
+            getRefRegistry()[entry.payload.refKey]?.handle?.accepts?.(
+              entry.payload.value
+            ) === false
+        )
       );
+      // A SYSTEM_OUTPUT is the edit's summary; line counts are the fallback.
+      // A refused edit drops it: it describes a change that was not made.
+      const hasDescription =
+        !refused.size &&
+        parsed.some(
+          (entry) =>
+            entry.type === "SYSTEM_OUTPUT" && !!entry.payload.value?.trim()
+        );
       const entries = parsed.flatMap((entry): ChatResponse[] => {
+        if (entry.type === "SYSTEM_OUTPUT" && refused.size) return [];
         if (entry.type !== "SET_VALUE") return [entry];
         const { refKey, value } = entry.payload;
 
         // Said in the transcript, not as applySetValue's toast.
-        if (getRefRegistry()[refKey]?.handle?.accepts?.(value) === false) {
+        if (refused.has(entry)) {
           return [
             {
               type: "NOTICE",
