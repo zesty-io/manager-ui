@@ -62,6 +62,14 @@ export type CodeRegionReplaced = {
   requestId?: number;
 };
 
+// Everything about the AI change that undo/redo swaps as a unit. Staging has
+// no other exit than a reload, so history needs to put all of it back.
+export type StudioAiState = {
+  stagedCodeId: string | null;
+  preview: StudioAiPreview | null;
+  lastPaint: { codeId: string; html: string } | null;
+};
+
 type Args = {
   // Registers the page's view for the AI while true.
   active: boolean;
@@ -91,6 +99,9 @@ type Args = {
     requestId?: number;
     locked?: boolean;
   }) => void;
+  // Runs when a preview stops loading — painted, or failed — so an AI turn's
+  // undo step can close once the canvas shows its result.
+  onPreviewSettled?: () => void;
 };
 
 // AI edits to the page's own view. The model's whole-file replacement is
@@ -111,13 +122,24 @@ export const useStudioAiEdit = ({
   postCommandToBridge,
   loadedPath,
   reloadCanvas,
+  onPreviewSettled,
 }: Args) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [renderParsleyPreview] = useRenderParsleyPreviewMutation();
   const [stagedCodeId, setStagedCodeId] = useState<string | null>(null);
   const stagedCodeIdRef = useRef<string | null>(null);
-  const [preview, setPreview] = useState<StudioAiPreview | null>(null);
+  const [preview, setPreviewState] = useState<StudioAiPreview | null>(null);
+  // Synchronous mirror of preview, for getAiState: undo history reads it in
+  // the same tick as the change that set it.
+  const previewRef = useRef<StudioAiPreview | null>(null);
+  const onPreviewSettledRef = useRef(onPreviewSettled);
+  onPreviewSettledRef.current = onPreviewSettled;
+  const setPreview = useCallback((next: StudioAiPreview | null) => {
+    previewRef.current = next;
+    setPreviewState(next);
+    if (next && next.status !== "loading") onPreviewSettledRef.current?.();
+  }, []);
   const previewRequestRef = useRef(0);
   // The last staged AI change dropped without a save, and whose page it was,
   // so that page's transcript can say so.
@@ -210,7 +232,7 @@ export const useStudioAiEdit = ({
         requestId: pending.request,
       });
     },
-    [clearPendingPaint, postCommandToBridge, t]
+    [clearPendingPaint, postCommandToBridge, setPreview, t]
   );
 
   const renderPreview = useCallback(
@@ -267,6 +289,7 @@ export const useStudioAiEdit = ({
       paint,
       randomHashID,
       renderParsleyPreview,
+      setPreview,
       t,
     ]
   );
@@ -282,7 +305,7 @@ export const useStudioAiEdit = ({
           : { status: "error", message: t("content.studioAiPaintNotFound") }
       );
     },
-    [clearPendingPaint, t]
+    [clearPendingPaint, setPreview, t]
   );
 
   // The other page a canvas last reported, after reloading it once. A page
@@ -386,7 +409,7 @@ export const useStudioAiEdit = ({
       });
     }
     savedRef.current = false;
-  }, [pendingLayoutCodeIds, stagedCodeId]);
+  }, [pendingLayoutCodeIds, setPreview, stagedCodeId]);
 
   // A reload or a closed tab would drop the staged change without a word; the
   // in-app prompt only sees navigation the router handles.
@@ -406,6 +429,57 @@ export const useStudioAiEdit = ({
     savedRef.current = true;
   }, []);
 
+  const getAiState = useCallback(
+    (): StudioAiState => ({
+      stagedCodeId: stagedCodeIdRef.current,
+      preview: previewRef.current,
+      lastPaint: lastPaintRef.current,
+    }),
+    []
+  );
+
+  // Puts an AI change back exactly as getAiState captured it. Silent on
+  // purpose: undo history restores the region's staged source alongside, in
+  // the same batch, so the leave-pending effect above never sees the staged
+  // view missing from the pending set and does not announce a discard. The
+  // canvas DOM is restored by the bridge's own history snapshot, so nothing
+  // is rendered or painted here.
+  const restoreAiState = useCallback(
+    (state: StudioAiState) => {
+      previewRequestRef.current++;
+      clearPendingPaint();
+      reloadedFromRef.current = null;
+      lastPaintRef.current = state.lastPaint;
+      stagedCodeIdRef.current = state.stagedCodeId;
+      if (state.stagedCodeId) stagedPageRef.current = pageItemZUID;
+      setStagedCodeId(state.stagedCodeId);
+      previewRef.current = state.preview;
+      setPreviewState(state.preview);
+      postCommandToBridge({
+        action: "setPreviewLock",
+        locked: !!state.stagedCodeId,
+      });
+    },
+    [clearPendingPaint, pageItemZUID, postCommandToBridge]
+  );
+
+  // Says in the page's transcript that its staged change was dropped. A
+  // discard by reload does this as the staged view leaves the pending set;
+  // undoing back to the saved state restores silently, so Cancel's no-reload
+  // path calls this itself.
+  const announceDiscard = useCallback(() => {
+    setLastDiscard({
+      id: ++discardSeq,
+      pageItemZUID: stagedPageRef.current || pageItemZUID,
+    });
+  }, [pageItemZUID]);
+
+  // Whether a PVL render or its paint is still on its way to the canvas.
+  const isRenderPending = useCallback(
+    () => previewRef.current?.status === "loading",
+    []
+  );
+
   return {
     pageView,
     isPreviewing: !!stagedCodeId,
@@ -414,5 +488,9 @@ export const useStudioAiEdit = ({
     handleLayoutRegionSaved,
     handleCodeRegionReplaced,
     handleBridgeReady,
+    getAiState,
+    restoreAiState,
+    announceDiscard,
+    isRenderPending,
   };
 };

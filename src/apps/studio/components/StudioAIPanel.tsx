@@ -32,6 +32,14 @@ type StudioAIPanelProps = {
   drawerWidth: number;
   // The last staged AI change dropped without a save, and whose page it was.
   lastDiscard: { id: number; pageItemZUID: string } | null;
+} & StudioAITurnCallbacks;
+
+// How Studio's undo history hears about a turn: whether a request is in
+// flight, and the bracket around applying a reply's actions.
+type StudioAITurnCallbacks = {
+  onRequestPendingChange?: (pending: boolean) => void;
+  onBeforeReplyApplied?: () => void;
+  onAfterReplyApplied?: () => void;
 };
 
 type StudioChat = {
@@ -76,6 +84,9 @@ export const StudioAIPanel = ({
   pageItemZUID,
   drawerWidth,
   lastDiscard,
+  onRequestPendingChange,
+  onBeforeReplyApplied,
+  onAfterReplyApplied,
 }: StudioAIPanelProps) => {
   const { t } = useTranslation();
 
@@ -126,6 +137,9 @@ export const StudioAIPanel = ({
               ? lastDiscard.id
               : undefined
           }
+          onRequestPendingChange={onRequestPendingChange}
+          onBeforeReplyApplied={onBeforeReplyApplied}
+          onAfterReplyApplied={onAfterReplyApplied}
         />
       </Box>
     </Drawer>
@@ -136,7 +150,7 @@ type StudioAIChatProps = {
   pageModelZUID: string;
   pageItemZUID: string;
   discardId?: number;
-};
+} & StudioAITurnCallbacks;
 
 // One page's transcript. Every SET_VALUE is applied on arrival, and an
 // applied `code-editor` edit shows as its line counts, not the whole file.
@@ -144,6 +158,9 @@ const StudioAIChat = ({
   pageModelZUID,
   pageItemZUID,
   discardId,
+  onRequestPendingChange,
+  onBeforeReplyApplied,
+  onAfterReplyApplied,
 }: StudioAIChatProps) => {
   const { t } = useTranslation();
   const applySetValue = useApplySetValue();
@@ -151,6 +168,12 @@ const StudioAIChat = ({
   const { data: roles } = useGetUsersRolesQuery();
   const roleZUID = roles?.find((role) => role.ZUID === user.ZUID)?.role?.ZUID;
   const [geminiGenerate, { isLoading }] = useGeminiGenerationMutation();
+  // A reply that lands after this unmounts is not applied, so a request only
+  // counts as pending while the chat is open.
+  useEffect(() => {
+    onRequestPendingChange?.(isLoading);
+    return () => onRequestPendingChange?.(false);
+  }, [isLoading, onRequestPendingChange]);
   // Never called: auto-apply hides Apply, its only caller, and a Studio turn
   // has no server prompt ZUID to approve.
   const [updatePromptApprovalStatus] = useUpdatePromptApprovalStatusMutation();
@@ -247,6 +270,8 @@ const StudioAIChat = ({
               },
             ]
           : toChatResponses(reply.data);
+      // Everything this reply applies is one undo step.
+      onBeforeReplyApplied?.();
       const refused = new Set(
         parsed.filter(
           (entry) =>
@@ -298,10 +323,19 @@ const StudioAIChat = ({
         ];
       });
 
+      onAfterReplyApplied?.();
+
       appendToTurn(turnZUID, entries);
       setLatestPromptZUIDs(new Set([turnZUID]));
     },
-    [chat, applySetValue, appendToTurn, t]
+    [
+      chat,
+      applySetValue,
+      appendToTurn,
+      onAfterReplyApplied,
+      onBeforeReplyApplied,
+      t,
+    ]
   );
 
   const sendTurn = useCallback(
