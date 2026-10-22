@@ -1,4 +1,5 @@
 import { debounce } from "lodash";
+import { flushSync } from "react-dom";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 
 export function useDebouncedInput(
@@ -38,5 +39,15 @@ export function useDebouncedInput(
     debouncedRef.current!(v);
   }, []);
 
-  return { local, onLocalChange };
+  // Commits a pending value now. Wire it to `onBlur` where a click elsewhere
+  // (e.g. a Save button) must see the latest input, not wait out the delay.
+  const flush = useCallback(() => {
+    // React 18 defers the blur's state update past a synchronous mousedown→click,
+    // so without flushSync Save would validate stale formData.
+    flushSync(() => {
+      debouncedRef.current!.flush();
+    });
+  }, []);
+
+  return { local, onLocalChange, flush };
 }
