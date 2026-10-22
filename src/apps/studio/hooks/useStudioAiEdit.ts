@@ -37,6 +37,17 @@ const loadsExternalStylesheet = (source: string) =>
       /stylesheet/i.test(tag) && /\bhref\s*=\s*["']?(?:https?:)?\/\//i.test(tag)
   );
 
+// Not page code: a bare ZUID, or plain text replacing a file with markup.
+const BARE_ZUID = /^\d+-[0-9a-f]+-[0-9a-z]+$/i;
+const HAS_CODE = /<[a-z!/]|\{\{|\(\*\*/i;
+const isNotPageCode = (next: string, current: string) => {
+  const trimmed = next.trim();
+  return (
+    BARE_ZUID.test(trimmed) ||
+    (!!trimmed && !HAS_CODE.test(trimmed) && HAS_CODE.test(current))
+  );
+};
+
 // What the preview is doing. Once painted, the live canvas shows it.
 export type StudioAiPreview =
   | { status: "loading" }
@@ -307,8 +318,10 @@ export const useStudioAiEdit = ({
 
   useEffect(() => () => clearPendingPaint(), [clearPendingPaint]);
 
+  const accepts = (next: string) =>
+    typeof next === "string" && !isNotPageCode(next, readSource());
   const stage = (next: string) => {
-    if (!pageView || typeof next !== "string") return;
+    if (!pageView || !accepts(next)) return;
     if (!next.trim()) {
       dispatch(
         notify({ kind: "warn", message: t("content.studioAiEmptyFile") })
@@ -325,9 +338,14 @@ export const useStudioAiEdit = ({
   };
   const stageRef = useRef(stage);
   stageRef.current = stage;
+  const acceptsRef = useRef(accepts);
+  acceptsRef.current = accepts;
 
   const handle = useMemo(
-    () => ({ setValue: (next: string) => stageRef.current(next) }),
+    () => ({
+      accepts: (next: string) => acceptsRef.current(next),
+      setValue: (next: string) => stageRef.current(next),
+    }),
     []
   );
   const context = useCallback(

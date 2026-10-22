@@ -387,6 +387,41 @@ describe("Studio AI Assistant", () => {
     cy.get("@pvl.all").should("have.length", 0);
   });
 
+  it("refuses a code edit that is not page code", () => {
+    // The dev MCP's reply to "Generate an image of a hospital" on a model with
+    // no image field, recorded 2026-10-21.
+    stubMcp(() => ({
+      data: [
+        {
+          type: "SET_VALUE",
+          payload: { value: "3-1634c53d-7n8gvz", refKey: "code-editor" },
+        },
+      ],
+      message: "Image generated, uploaded, and processed successfully.",
+      chatZuid: "100-1634c54a-ldhrq9",
+    }));
+    stubPvl({ statusCode: 200, body: "<p>unused</p>" });
+    openAiPanel();
+    sendPrompt("Generate an image of a hospital");
+
+    cy.getBySelector("AIDrawerNotice").should(
+      "have.text",
+      "The assistant returned something that isn't page code, so nothing was changed."
+    );
+    cy.getBySelector("AIDrawerCodeEdit").should("not.exist");
+    cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
+    expectPreviewing(false);
+    cy.get("@pvl.all").should("have.length", 0);
+
+    // The next turn still sends the view as it was.
+    sendPrompt("Again");
+    cy.get("@mcp.all").then((calls) => {
+      expect(calls[1].request.body.code)
+        .to.equal(calls[0].request.body.code)
+        .and.to.include("<");
+    });
+  });
+
   it("puts the preview password in the PVL URL but not in the request's actions", () => {
     const PASSWORD = "e2e-preview-password";
     // The instance under test has no preview lock, so one is added.

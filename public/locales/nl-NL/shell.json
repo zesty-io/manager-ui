@@ -12,6 +12,7 @@
   "addNewComment": "Nieuw commentaar toevoegen",
   "advancedSearch": "Geavanceerd zoeken",
   "advancedSearchDescription": "Terwijl jij en je team samenwerken in Zesty, bouw je een doorzoekbaar archief van inhoud, modellen en codebestanden op. Gebruik het onderstaande formulier om te vinden wat je zoekt.",
+  "aiApplyNotPageCode": "De assistent gaf iets terug dat geen paginacode is, dus er is niets gewijzigd.",
   "aiApplyTargetMissing": "De assistent kan \"{{refKey}}\" hier niet invullen.",
   "aiAssistantBeta": "AI-assistent bèta",
   "aiCodeEditSummary": "{{fileName}} — regels: +{{added}} / −{{removed}}",
