@@ -12,6 +12,7 @@
   "addNewComment": "Add New Comment",
   "advancedSearch": "Advanced Search",
   "advancedSearchDescription": "As you and your team work together in Zesty, you'll create a searchable archive of content, models, and code files. Use the form below to find what you are looking for.",
+  "aiApplyNotPageCode": "The assistant returned something that isn't page code, so nothing was changed.",
   "aiApplyTargetMissing": "The assistant can't fill in \"{{refKey}}\" here.",
   "aiAssistantBeta": "AI Assistant Beta",
   "aiCodeEditSummary": "{{fileName}} — lines: +{{added}} / −{{removed}}",

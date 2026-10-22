@@ -281,6 +281,16 @@ const StudioAIChat = ({
         if (entry.type !== "SET_VALUE") return [entry];
         const { refKey, value } = entry.payload;
 
+        // Said in the transcript, not as applySetValue's toast.
+        if (getRefRegistry()[refKey]?.handle?.accepts?.(value) === false) {
+          return [
+            {
+              type: "NOTICE",
+              payload: { value: t("shell.aiApplyNotPageCode") },
+            },
+          ];
+        }
+
         // Read before the action applies: the handle replaces the file.
         const codeEditor =
           refKey === "code-editor"
