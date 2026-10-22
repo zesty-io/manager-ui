@@ -136,12 +136,14 @@ const LIST_POLL_INTERVAL_MS = 2000;
 function waitUntilListed(group, zuid, attempt = 1) {
   cy.apiRequest({
     url: `${Cypress.env("API_INSTANCE_URL")}/web/${group}?status=dev`,
-  }).then(({ data }) => {
+  }).then(({ status, data }) => {
     if (data?.some((file) => file.ZUID === zuid)) return;
 
     if (attempt >= LIST_POLL_ATTEMPTS) {
       throw new Error(
-        `Seeded ${group} file ${zuid} is still missing from GET /web/${group}?status=dev after ${LIST_POLL_ATTEMPTS} attempts: the list API is serving a stale list`
+        status === "error"
+          ? `GET /web/${group}?status=dev kept failing after ${LIST_POLL_ATTEMPTS} attempts`
+          : `Seeded ${group} file ${zuid} is still missing from GET /web/${group}?status=dev after ${LIST_POLL_ATTEMPTS} attempts: the list API is serving a stale list`
       );
     }
 

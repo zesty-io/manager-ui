@@ -39,11 +39,9 @@ export function useDebouncedInput(
     debouncedRef.current!(v);
   }, []);
 
-  // Commits a pending value now. Wire it to `onBlur` where a click elsewhere
-  // (e.g. a Save button) must see the latest input, not wait out the delay.
   const flush = useCallback(() => {
-    // React 18 defers the blur's state update past a synchronous mousedown→click,
-    // so without flushSync Save would validate stale formData.
+    // flushSync: a synchronous mousedown→click (e.g. Cypress .click()) would
+    // otherwise run Save's handler before the blur's commit renders.
     flushSync(() => {
       debouncedRef.current!.flush();
     });
