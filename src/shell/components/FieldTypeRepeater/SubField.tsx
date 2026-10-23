@@ -58,7 +58,7 @@ export const SubField = memo(
   }: SubFieldProps) => {
     const { t } = useTranslation();
     const { modelZUID } = useParams<{ modelZUID: string }>();
-    const { local, onLocalChange } = useDebouncedInput(value, (v) => {
+    const { local, onLocalChange, flush } = useDebouncedInput(value, (v) => {
       onChange(v, field.name);
     });
     const [imageModal, setImageModal] = useState(null);
@@ -136,6 +136,7 @@ export const SubField = memo(
             <TextField
               value={local}
               onChange={(e) => onLocalChange(e.target.value)}
+              onBlur={flush}
               fullWidth
               slotProps={{
                 htmlInput: {
@@ -161,6 +162,7 @@ export const SubField = memo(
             <TextField
               value={local}
               onChange={(e) => onLocalChange(e.target.value)}
+              onBlur={flush}
               fullWidth
               type="url"
               error={hasError}
@@ -203,6 +205,7 @@ export const SubField = memo(
             <TextField
               value={local}
               onChange={(e) => onLocalChange(e.target.value)}
+              onBlur={flush}
               fullWidth
               multiline
               rows={6}
@@ -230,6 +233,7 @@ export const SubField = memo(
                 value={value}
                 version={version}
                 onChange={(value) => onLocalChange(value)}
+                onBlur={flush}
                 onCharacterCountChange={(charCount: number) =>
                   setCharacterCount(charCount)
                 }
@@ -266,6 +270,7 @@ export const SubField = memo(
                 value={local}
                 // version={version}
                 onChange={(value: string) => onLocalChange(value)}
+                onBlur={flush}
                 datatype={field?.datatype}
                 mediaBrowser={(opts: any) => {
                   setImageModal(opts);
