@@ -19,6 +19,7 @@ import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRena
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
+import DOMPurify from "dompurify";
 import { isValid } from "date-fns";
 import { useLocation, useParams } from "react-router";
 import { useSelector } from "react-redux";
@@ -121,7 +122,10 @@ export const CommentItem = ({
         return text;
       });
 
-      commentBodyRef.current.innerHTML = hyperlinkedContent;
+      commentBodyRef.current.innerHTML = DOMPurify.sanitize(
+        hyperlinkedContent || "",
+        { ADD_ATTR: ["target"] }
+      );
     }
   }, [body, commentBodyRef, commentZUIDtoEdit]);
 
