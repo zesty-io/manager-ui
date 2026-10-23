@@ -56,6 +56,12 @@ describe("Studio Inspector Panel", () => {
     cy.get(`[role="option"][data-value="${optionValue}"]`).click();
   };
 
+  // The label a select SHOWS. `data-cy` lands on MUI's hidden input, so
+  // `have.value` passes even while the select renders blank — the label lives
+  // in the sibling display element.
+  const selectDisplay = (dataCy) =>
+    cy.getBySelector(dataCy).siblings('[aria-haspopup="listbox"]');
+
   // Slots mirror exactly what the bridge emits: a STRUCTURAL description, with
   // no human-facing copy (the panel owns labels, keyed off `key`).
   //
@@ -1548,15 +1554,19 @@ describe("Studio Inspector Panel", () => {
 
       cy.getBySelector("StudioAddLink").should("not.exist");
       cy.getBySelector("StudioLinkToInput").should("have.value", "/about/");
+      // No `target` attribute reads as "No", not as a blank select.
+      selectDisplay("StudioOpenInNewTab").should("have.text", "No");
 
       selectMuiOption("StudioOpenInNewTab", "_blank");
       // The select's displayed value is read back off the template, so this
       // only passes once the write has actually landed there.
       cy.getBySelector("StudioOpenInNewTab").should("have.value", "_blank");
+      selectDisplay("StudioOpenInNewTab").should("have.text", "Yes");
 
       // "No" must REMOVE the attribute — `target=""` is noise in saved code.
       selectMuiOption("StudioOpenInNewTab", "");
       cy.getBySelector("StudioOpenInNewTab").should("have.value", "");
+      selectDisplay("StudioOpenInNewTab").should("have.text", "No");
 
       saveAllViaModal("layout");
       cy.wait("@updateWebView").then(({ request }) => {
@@ -1693,6 +1703,7 @@ describe("Studio Inspector Panel", () => {
       cy.getBySelector("StudioSlotInput-href").should("have.value", "/about/");
       // `target` is exposed as the same Yes/No choice, not as a raw string.
       cy.getBySelector("StudioSlotInput-target").should("have.value", "");
+      selectDisplay("StudioSlotInput-target").should("have.text", "No");
       // …and its destination can be bound to an item, like a wrapper's can.
       cy.getBySelector("StudioConnectContent-href").should("exist");
     });
@@ -2361,6 +2372,7 @@ describe("Studio Inspector Panel", () => {
       );
 
       cy.getBySelector("StudioOpenInNewTab").should("have.value", "_blank");
+      selectDisplay("StudioOpenInNewTab").should("have.text", "Yes");
 
       // A fragment can't open a tab, but the target is still SET — hiding the
       // row would keep saving a value the user can neither see nor clear.
