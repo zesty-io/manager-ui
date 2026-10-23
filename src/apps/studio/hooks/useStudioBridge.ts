@@ -1,5 +1,6 @@
-import { MutableRefObject, useCallback, useEffect } from "react";
+import { MutableRefObject, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { alpha, useTheme } from "@mui/material/styles";
 import { notify } from "shell/store/notifications";
 import { Sentry } from "utility/sentry";
 import {
@@ -7,65 +8,6 @@ import {
   usesContentEditing,
   usesLayoutGrammar,
 } from "./studioTypes";
-
-const bridgeInjectedCss = `
-  .studio-hover {
-    outline: 1px dashed #00bcd4;
-    outline-offset: 2px;
-    cursor: pointer;
-  }
-  .studio-selected {
-    outline: 2px solid #ff9800;
-    outline-offset: 2px;
-  }
-  .studio-layout-mode [data-layout-id] {
-    cursor: pointer;
-  }
-  .studio-layout-mode [data-layout-id][draggable="true"] {
-    cursor: move;
-  }
-  .studio-dragging {
-    background-color: rgba(255, 152, 0, 0.18);
-    outline: 2px solid #ff9800;
-    color: transparent !important;
-  }
-  .studio-dragging * {
-    visibility: hidden !important;
-  }
-  [data-layout-id].studio-drop-before {
-    box-shadow:
-      inset 0 4px 0 #ff9800,
-      0 0 0 1px rgba(255, 152, 0, 0.35);
-  }
-  [data-layout-id].studio-drop-before-horizontal {
-    box-shadow:
-      inset 4px 0 0 #ff9800,
-      0 0 0 1px rgba(255, 152, 0, 0.35);
-  }
-  [data-layout-id].studio-drop-after {
-    box-shadow:
-      inset 0 -4px 0 #ff9800,
-      0 0 0 1px rgba(255, 152, 0, 0.35);
-  }
-  [data-layout-id].studio-drop-after-horizontal {
-    box-shadow:
-      inset -4px 0 0 #ff9800,
-      0 0 0 1px rgba(255, 152, 0, 0.35);
-  }
-  [data-layout-id].studio-drop-inside {
-    background-color: rgba(255, 152, 0, 0.18);
-    outline: 2px dashed #ff9800;
-    outline-offset: 2px;
-  }
-  .studio-static-editing {
-    outline: 2px solid #ff9800 !important;
-    outline-offset: 2px;
-    cursor: text !important;
-  }
-  .studio-static-editing * {
-    cursor: text !important;
-  }
-`;
 
 type Args = {
   dispatch: (action: any) => any;
@@ -139,6 +81,69 @@ export const useStudioBridge = ({
   onStaticEditImage,
 }: Args) => {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const bridgeInjectedCss = useMemo(() => {
+    const { hoverOutline, selectionOutline } = theme.palette.studio;
+    return `
+  .studio-hover {
+    outline: 1px dashed ${hoverOutline};
+    outline-offset: 2px;
+    cursor: pointer;
+  }
+  .studio-selected {
+    outline: 2px solid ${selectionOutline};
+    outline-offset: 2px;
+  }
+  .studio-layout-mode [data-layout-id] {
+    cursor: pointer;
+  }
+  .studio-layout-mode [data-layout-id][draggable="true"] {
+    cursor: move;
+  }
+  .studio-dragging {
+    background-color: ${alpha(selectionOutline, 0.18)};
+    outline: 2px solid ${selectionOutline};
+    color: transparent !important;
+  }
+  .studio-dragging * {
+    visibility: hidden !important;
+  }
+  [data-layout-id].studio-drop-before {
+    box-shadow:
+      inset 0 4px 0 ${selectionOutline},
+      0 0 0 1px ${alpha(selectionOutline, 0.35)};
+  }
+  [data-layout-id].studio-drop-before-horizontal {
+    box-shadow:
+      inset 4px 0 0 ${selectionOutline},
+      0 0 0 1px ${alpha(selectionOutline, 0.35)};
+  }
+  [data-layout-id].studio-drop-after {
+    box-shadow:
+      inset 0 -4px 0 ${selectionOutline},
+      0 0 0 1px ${alpha(selectionOutline, 0.35)};
+  }
+  [data-layout-id].studio-drop-after-horizontal {
+    box-shadow:
+      inset -4px 0 0 ${selectionOutline},
+      0 0 0 1px ${alpha(selectionOutline, 0.35)};
+  }
+  [data-layout-id].studio-drop-inside {
+    background-color: ${alpha(selectionOutline, 0.18)};
+    outline: 2px dashed ${selectionOutline};
+    outline-offset: 2px;
+  }
+  .studio-static-editing {
+    outline: 2px solid ${selectionOutline} !important;
+    outline-offset: 2px;
+    cursor: text !important;
+  }
+  .studio-static-editing * {
+    cursor: text !important;
+  }
+`;
+  }, [theme]);
+
   const handleBridgeReady = useCallback(() => {
     postCommandToBridge({
       action: "injectCss",
@@ -146,7 +151,12 @@ export const useStudioBridge = ({
     });
     syncBridgeInteractionMode(interactionMode);
     postCommandToBridge({ action: "requestLayersTree" });
-  }, [interactionMode, postCommandToBridge, syncBridgeInteractionMode]);
+  }, [
+    bridgeInjectedCss,
+    interactionMode,
+    postCommandToBridge,
+    syncBridgeInteractionMode,
+  ]);
 
   const handleBridgeError = useCallback(
     (msg: any) => {
