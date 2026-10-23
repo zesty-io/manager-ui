@@ -41,6 +41,19 @@ module.exports = (on, config) => {
       }
       return null;
     },
+    // Resolves (never rejects) so a dead host is a result, not a hook failure.
+    async "probe:url"({ url, timeout, marker }) {
+      try {
+        const res = await fetch(url, { signal: AbortSignal.timeout(timeout) });
+        const body = marker ? await res.text() : "";
+        return {
+          status: res.status,
+          hasMarker: marker ? body.includes(marker) : true,
+        };
+      } catch (e) {
+        return { error: e.cause?.code || e.cause?.message || e.name };
+      }
+    },
     ...content(config),
     ...code(config),
   });
