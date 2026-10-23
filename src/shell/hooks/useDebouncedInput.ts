@@ -1,5 +1,6 @@
 import { debounce } from "lodash";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 
 export function useDebouncedInput(
   externalValue: string | number | null | undefined,
@@ -38,9 +39,12 @@ export function useDebouncedInput(
     debouncedRef.current!(v);
   }, []);
 
-  // Synchronously commits any pending debounced value (no-op if none).
   const flush = useCallback(() => {
-    debouncedRef.current?.flush();
+    // flushSync: a synchronous mousedown→click (e.g. Cypress .click()) would
+    // otherwise run Save's handler before the blur's commit renders.
+    flushSync(() => {
+      debouncedRef.current!.flush();
+    });
   }, []);
 
   return { local, onLocalChange, flush };
