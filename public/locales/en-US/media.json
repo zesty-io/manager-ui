@@ -24,6 +24,7 @@
   "dropAreaUploadPrompt": "Upload files to {{location}}",
   "editedFile": "Edited file {{filename}}",
   "emptyStateDescription": "You can drag and drop files here or use the \"Upload\" button.",
+  "emptyStateImageAlt": "Illustration of uploading files",
   "emptyStateTitle": "Start Uploading Now",
   "failedCreatingGroup": "Failed creating group",
   "failedDeletingFile": "Failed deleting file",

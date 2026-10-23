@@ -8,6 +8,7 @@
   "deltaLabel_one": "VS Prior {{count}} Day",
   "deltaLabel_other": "VS Prior {{count}} Days",
   "emptyStateDescription": "There are no new items or edits made in the last 30 days. Start creating or editing content or models or code files to see recent files listed here.",
+  "emptyStateImageAlt": "Illustration of a growing instance",
   "emptyStateTitle": "Start Growing your Instance Today",
   "greeting": "Good Morning, {{name}}",
   "instanceSummary": "Here is your instance summary of the",
