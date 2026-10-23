@@ -117,7 +117,7 @@ export const Field = memo(
     const fieldData = fields?.find((field) => field.ZUID === ZUID);
     const [rerenderKey, setRerenderKey] = useState(0);
 
-    const { local, onLocalChange } = useDebouncedInput(value, (v) => {
+    const { local, onLocalChange, flush } = useDebouncedInput(value, (v) => {
       onChange(v, name);
     });
 
@@ -282,6 +282,10 @@ export const Field = memo(
             <TextField
               value={local}
               onChange={(e) => onLocalChange(e.target.value)}
+              // Clicking Save blurs this input first, so flushing here lands
+              // the pending value (and Editor.js's Meta Title/Meta Link
+              // Text/pathPart auto-population) before the save handler runs.
+              onBlur={flush}
               fullWidth
               inputProps={{
                 name: fieldData?.name || name,
