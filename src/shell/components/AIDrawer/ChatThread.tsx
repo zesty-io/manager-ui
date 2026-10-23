@@ -409,6 +409,7 @@ export const ChatThread = ({
           <Button
             disabled={isLoading || isLoadingChatSessionLog}
             data-cy="AIDrawerGenerateSuggestions"
+            data-amp-track-id="ai-drawer-generate-suggestions-button"
             size="large"
             variant="outlined"
             fullWidth
@@ -437,6 +438,7 @@ export const ChatThread = ({
       >
         <Button
           data-cy="AIDrawerClearChat"
+          data-amp-track-id="ai-drawer-clear-chat-button"
           variant="text"
           color="inherit"
           onClick={onClearChat}
@@ -446,6 +448,7 @@ export const ChatThread = ({
         <Box display="flex" gap={1}>
           <IconButton
             data-cy="AIDrawerSettings"
+            data-amp-track-id="ai-drawer-settings-button"
             onClick={() => setSettingsOpen(!settingsOpen)}
             size="small"
           >
@@ -454,6 +457,7 @@ export const ChatThread = ({
 
           <Button
             data-cy="AIDrawerSend"
+            data-amp-track-id="ai-drawer-submit-button"
             variant="contained"
             onClick={() => composerRef.current?.submit()}
             disabled={!hasComposerValue || isLoading || isLoadingChatSessionLog}
@@ -496,6 +500,10 @@ export const ChatThread = ({
             control={
               <Switch
                 data-cy="AIDrawerAutoApplyToggle"
+                inputProps={{
+                  // @ts-expect-error data attribute
+                  "data-amp-track-id": "ai-drawer-auto-apply-toggle",
+                }}
                 size="small"
                 checked={autoApply}
                 onChange={(e) => setAutoApply(e.target.checked)}
@@ -528,6 +536,10 @@ export const ChatThread = ({
             <TextField
               {...params}
               data-cy="AIDrawerLanguageSelect"
+              inputProps={{
+                ...params.inputProps,
+                "data-amp-track-id": "ai-drawer-language-selector",
+              }}
               fullWidth
               InputProps={{
                 ...params.InputProps,
@@ -557,7 +569,15 @@ export const ChatThread = ({
           value={selectedTone}
           options={toneOptions}
           renderInput={(params: any) => (
-            <TextField {...params} data-cy="AIDrawerToneSelect" fullWidth />
+            <TextField
+              {...params}
+              data-cy="AIDrawerToneSelect"
+              inputProps={{
+                ...params.inputProps,
+                "data-amp-track-id": "ai-drawer-tone-selector",
+              }}
+              fullWidth
+            />
           )}
         />
       </Collapse>
