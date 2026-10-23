@@ -23,7 +23,7 @@ describe("Studio Full Mode", () => {
   const reloadAsStaff = () => {
     cy.stubStaffUser();
     cy.waitOn("/v1/content/models**", () => {
-      cy.visit(`/studio?path=${studioPath}`);
+      cy.visitStudio(studioPath);
     });
     cy.getBySelector("StudioHeader").should("exist");
   };
@@ -95,6 +95,7 @@ describe("Studio Full Mode", () => {
       expect(seededViewZUID, "seed:content returned a disposable view").to.be.a(
         "string"
       ).and.not.be.empty;
+      cy.waitForBridgeTemplateMap();
       return cb({ ZUID: seededViewZUID, version: seededViewVersion });
     });
 
@@ -115,7 +116,7 @@ describe("Studio Full Mode", () => {
       query: { field: "path" },
     }).as("resolveItemByPath");
     cy.waitOn("/v1/content/models**", () => {
-      cy.visit(`/studio?path=${studioPath}`);
+      cy.visitStudio(studioPath);
     });
     cy.getBySelector("StudioHeader").should("exist");
   });
@@ -254,14 +255,27 @@ describe("Studio Full Mode", () => {
     });
   });
 
-  it("tells the user why an inline edit was refused, without naming a mode that does not exist here", () => {
-    // The bridge rejects a leaf that is neither statically editable nor bound
-    // to one field. Full mode IS content plus layout, so the old copy sent the
-    // user to a "Content mode" that full mode already contains.
+  // The refusal must not blame a connected field or send the user to another mode.
+  it("tells the user why an inline edit was refused, in full mode", () => {
     postBridgeMessage({ type: "STATIC_EDIT_REJECTED", layoutId: "2" });
 
     cy.getBySelector("toast")
-      .should("contain.text", "not a single connected field")
+      .should("contain.text", "doesn't match its template")
+      .and("contain.text", "Layers")
+      .and("not.contain.text", "connected field")
+      .and("not.contain.text", "Switch to Content mode");
+  });
+
+  it("gives the same refusal reason in layout mode", () => {
+    reloadAsStaff();
+    cy.getBySelector("StudioModeToggleOption-layout").click();
+
+    postBridgeMessage({ type: "STATIC_EDIT_REJECTED", layoutId: "2" });
+
+    cy.getBySelector("toast")
+      .should("contain.text", "doesn't match its template")
+      .and("contain.text", "Layers")
+      .and("not.contain.text", "dynamic content")
       .and("not.contain.text", "Switch to Content mode");
   });
 
@@ -367,40 +381,47 @@ describe("Studio Full Mode", () => {
   // closes it in ~970ms. `runMergedSave` and `closeModalUnlessFailed` behave as
   // documented; the gap is coverage here, not correctness there.
 
-  it("keeps the modal open with only the failed half when content save fails", () => {
-    // The layout half has to actually succeed for this test to say anything,
-    // which means addressing a real web view — a fabricated code id fails the
-    // PUT and leaves BOTH halves pending, which is a different assertion.
-    withSeededView((webView) => {
-      expect(webView?.ZUID, "a web view to stage a layout change against").to
-        .exist;
+  // Skipped when the preview is down: these wait on the real bridge's TEMPLATE_SOURCE_MAP.
+  describe("with the live preview bridge", () => {
+    before(function () {
+      cy.skipIfPreviewDown(this, studioPath);
+    });
 
-      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`, {
-        statusCode: 200,
-        body: { data: { ZUID: webView.ZUID, version: 1 } },
-      }).as("saveWebView");
-      cy.intercept(
-        { method: "PUT", url: `**/items/${itemZUID}` },
-        { statusCode: 500, body: { error: "forced failure" } }
-      ).as("saveItemFails");
+    it("keeps the modal open with only the failed half when content save fails", () => {
+      // The layout half has to actually succeed for this test to say anything,
+      // which means addressing a real web view — a fabricated code id fails the
+      // PUT and leaves BOTH halves pending, which is a different assertion.
+      withSeededView((webView) => {
+        expect(webView?.ZUID, "a web view to stage a layout change against").to
+          .exist;
 
-      stageContentChange();
-      stageLayoutChange(webView.ZUID);
+        cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`, {
+          statusCode: 200,
+          body: { data: { ZUID: webView.ZUID, version: 1 } },
+        }).as("saveWebView");
+        cy.intercept(
+          { method: "PUT", url: `**/items/${itemZUID}` },
+          { statusCode: 500, body: { error: "forced failure" } }
+        ).as("saveItemFails");
 
-      cy.getBySelector("StudioContentSaveChangesButton").click();
-      cy.getBySelector("StudioSaveChangesModal").should("exist");
-      cy.getBySelector("StudioSaveChangeSection-Layout").should("exist");
-      cy.getBySelector("StudioSaveAllButton").click();
+        stageContentChange();
+        stageLayoutChange(webView.ZUID);
 
-      cy.wait("@saveItemFails");
-      cy.wait("@saveWebView");
+        cy.getBySelector("StudioContentSaveChangesButton").click();
+        cy.getBySelector("StudioSaveChangesModal").should("exist");
+        cy.getBySelector("StudioSaveChangeSection-Layout").should("exist");
+        cy.getBySelector("StudioSaveAllButton").click();
 
-      // The modal stays open, and the layout half — which did save — drops out
-      // of the list, because the rows derive from what is still pending rather
-      // than from a snapshot taken when the modal opened.
-      cy.getBySelector("StudioSaveChangesModal").should("exist");
-      cy.getBySelector("StudioSaveChangeRow").should("exist");
-      cy.getBySelector("StudioSaveChangeSection-Layout").should("not.exist");
+        cy.wait("@saveItemFails");
+        cy.wait("@saveWebView");
+
+        // The modal stays open, and the layout half — which did save — drops out
+        // of the list, because the rows derive from what is still pending rather
+        // than from a snapshot taken when the modal opened.
+        cy.getBySelector("StudioSaveChangesModal").should("exist");
+        cy.getBySelector("StudioSaveChangeRow").should("exist");
+        cy.getBySelector("StudioSaveChangeSection-Layout").should("not.exist");
+      });
     });
   });
 });
