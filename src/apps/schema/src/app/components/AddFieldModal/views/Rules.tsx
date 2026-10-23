@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import { Stack } from "@mui/material";
 import { FieldSettingsOptions } from "../../../../../../../shell/services/types";
 
-import { FieldType, getFormConfig } from "../../configs";
+import { getFormConfig } from "../../configs";
+import { FieldType } from "shell/fieldTypes";
 import { CustomGroup } from "../../hooks/useMediaRules";
 import { CharacterLimit } from "../CharacterLimit";
 import { ComingSoon } from "../ComingSoon";
