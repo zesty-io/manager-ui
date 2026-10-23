@@ -21,7 +21,6 @@ export const NoResultsState: FC<Props> = ({ filetype }) => {
   const [params, setParams] = useParams();
   return (
     <Box
-      component="main"
       sx={{
         flex: 1,
         display: "flex",

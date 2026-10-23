@@ -33,6 +33,7 @@
   "appErrorBody": "यह त्रुटि हमारी टीम को भेज दी गई है। जारी रखने के लिए कृपया एप्लिकेशन फिर से लोड करें।",
   "appErrorHeading": "ओह, कुछ गलत हो गया",
   "appLoadingFailure": "ऐप लोड विफलता: {{message}}",
+  "appNavigation": "ऐप नेविगेशन",
   "applyAiSuggestion": "लागू करें",
   "audiencePlaceholder": "उदा. Freelancers, Designers, .....",
   "autoApply": "स्वतः लागू करें",

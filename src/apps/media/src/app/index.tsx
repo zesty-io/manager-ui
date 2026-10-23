@@ -140,7 +140,6 @@ const MediaAppContent = ({
               if (isFileModalError) {
                 return (
                   <Box
-                    component="main"
                     sx={{
                       flex: 1,
                       display: "flex",
@@ -170,7 +169,6 @@ const MediaAppContent = ({
               if (isFileModalError) {
                 return (
                   <Box
-                    component="main"
                     sx={{
                       flex: 1,
                       display: "flex",
@@ -201,7 +199,6 @@ const MediaAppContent = ({
               if (isFileModalError) {
                 return (
                   <Box
-                    component="main"
                     sx={{
                       flex: 1,
                       display: "flex",

@@ -27,6 +27,7 @@ export const GlobalTopbar = memo(({ onShowAiDrawerToggle }: Props) => {
 
   return (
     <Stack
+      component="header"
       direction="row"
       justifyContent="flex-start"
       alignItems="flex-end"
