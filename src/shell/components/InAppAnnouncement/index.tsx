@@ -147,7 +147,7 @@ export const InAppAnnouncement = () => {
     return <></>;
   }
 
-  const featureImageUrl = latestAnnouncement?.feature_image?.data[0]?.url;
+  const featureImageUrl = latestAnnouncement?.feature_image?.data?.[0]?.url;
 
   return (
     <Dialog

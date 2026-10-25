@@ -37,4 +37,11 @@ describe("Shell: Announcements", () => {
 
     cy.getBySelector("AnnouncementPopup").should("be.visible");
   });
+
+  it("Shows the popup without crashing when feature_image has no data array", () => {
+    visitWith("activeNoFeatureImageData");
+
+    cy.getBySelector("InstanceMenuButton").should("exist");
+    cy.getBySelector("AnnouncementPopup").should("be.visible");
+  });
 });
