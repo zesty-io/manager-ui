@@ -306,6 +306,7 @@ export const Field = memo(
             <TextField
               value={local}
               onChange={(e) => onLocalChange(e.target.value)}
+              onBlur={flush}
               fullWidth
               error={errors && Object.values(errors)?.some((error) => !!error)}
             />
@@ -324,6 +325,7 @@ export const Field = memo(
             <TextField
               value={local}
               onChange={(e) => onLocalChange(e.target.value)}
+              onBlur={flush}
               fullWidth
               type="url"
               error={errors && Object.values(errors)?.some((error) => !!error)}
@@ -370,6 +372,7 @@ export const Field = memo(
             <TextField
               value={local}
               onChange={(e) => onLocalChange(e.target.value)}
+              onBlur={flush}
               fullWidth
               multiline
               minRows={6}
@@ -410,6 +413,7 @@ export const Field = memo(
                 value={local}
                 version={version}
                 onChange={(value) => onLocalChange(value)}
+                onBlur={flush}
                 onSave={onSave}
                 onCharacterCountChange={(charCount: number) =>
                   setCharacterCount(charCount)
@@ -453,6 +457,7 @@ export const Field = memo(
                 value={local}
                 version={version}
                 onChange={(value: string) => onLocalChange(value)}
+                onBlur={flush}
                 datatype={datatype}
                 mediaBrowser={(opts: any) => {
                   setImageModal(opts);
