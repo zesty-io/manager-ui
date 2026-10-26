@@ -320,6 +320,64 @@ describe("Studio AI Assistant", () => {
     cy.get("@mcp").its("request.body").should("not.have.property", "chatZuid");
   });
 
+  // The server replays a session's earlier turns to the model, so a session
+  // that holds a discarded edit would bring it back.
+  it("starts a new chat session after a discarded edit", () => {
+    const sessions = ["e2e-chat-one", "e2e-chat-one", "e2e-chat-two"];
+    stubMcp(
+      ...sessions.map((chatZuid) => (body) => ({
+        ...mcpReply([setValue(editSource(body.code))]),
+        chatZuid,
+      }))
+    );
+    stubPvl({ statusCode: 200, body: "<p>preview</p>" });
+    openAiPanel();
+
+    sendPrompt("First");
+    expectPreviewing(true);
+    // A staged edit keeps the session.
+    sendPrompt("Second");
+    cy.get("@mcp").its("request.body.chatZuid").should("eq", "e2e-chat-one");
+
+    cy.getBySelector("StudioLayoutCancelButton").click();
+    expectPreviewing(false);
+    sendPrompt("Third");
+    cy.get("@mcp").its("request.body").should("not.have.property", "chatZuid");
+    sendPrompt("Fourth");
+    cy.get("@mcp").its("request.body.chatZuid").should("eq", "e2e-chat-two");
+  });
+
+  it("does not continue a session a discard ended while its turn was out", () => {
+    let call = 0;
+    cy.intercept({ method: "POST", url: MCP_CLIENT }, (req) => {
+      call++;
+      req.reply({
+        statusCode: 200,
+        body: {
+          ...mcpReply([setValue(editSource(req.body.code))]),
+          chatZuid: "e2e-chat-one",
+        },
+        // The second turn is still out when the first edit is cancelled.
+        delay: call === 2 ? 4000 : 0,
+      });
+    }).as("mcp");
+    stubPvl({ statusCode: 200, body: "<p>preview</p>" });
+    openAiPanel();
+
+    sendPrompt("First");
+    expectPreviewing(true);
+    cy.get('[data-cy="AIDrawerComposer"] textarea:not([aria-hidden])').type(
+      "Second"
+    );
+    cy.getBySelector("AIDrawerSend").click();
+    cy.getBySelector("StudioLayoutCancelButton").click();
+    cy.wait("@mcp");
+    // The late reply stages its edit, but not its old session.
+    expectPreviewing(true);
+    sendPrompt("Third");
+    cy.get("@mcp").its("request.body").should("not.have.property", "chatZuid");
+  });
+
   it("stages an edit, describes it and previews it through PVL", () => {
     stubMcp((body) =>
       liveReply([setValue(editSource(body.code)), systemOutput(DESCRIPTION)])

@@ -6,6 +6,7 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { useRenderParsleyPreviewMutation } from "shell/services/mcp";
 import { WebView } from "shell/services/types";
 import { useRegisterRef } from "../../../engine/useRegisterRef";
+import { endStudioChatSession } from "../components/StudioAIPanel";
 
 // The load balancer in front of PVL answers 413 at 1 MiB. The margin covers
 // the multipart framing and the zuid field.
@@ -380,6 +381,7 @@ export const useStudioAiEdit = ({
     setStagedCodeId(null);
     setPreview(null);
     if (!savedRef.current) {
+      endStudioChatSession(stagedPageRef.current);
       setLastDiscard({
         id: ++discardSeq,
         pageItemZUID: stagedPageRef.current,
