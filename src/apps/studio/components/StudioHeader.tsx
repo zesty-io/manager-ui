@@ -8,6 +8,8 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import { Brain } from "@zesty-io/material";
 import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "../../content-editor/src/app/views/ItemEdit/components/ItemEditHeader/LanguageSelector";
 import { InteractionMode, usesLayoutGrammar } from "../hooks/studioTypes";
@@ -35,6 +37,9 @@ type StudioHeaderProps = {
   pageItemZUID: string;
   unresolvedPath: boolean;
   logoSrc: string;
+  showAiButton: boolean;
+  isAiPanelOpen: boolean;
+  onToggleAiPanel: () => void;
   onFeedbackClick: () => void;
 };
 
@@ -72,6 +77,9 @@ export const StudioHeader = ({
   pageItemZUID,
   unresolvedPath,
   logoSrc,
+  showAiButton,
+  isAiPanelOpen,
+  onToggleAiPanel,
   onFeedbackClick,
 }: StudioHeaderProps) => {
   const { t } = useTranslation();
@@ -223,6 +231,27 @@ export const StudioHeader = ({
               </ToggleButton>
             ))}
           </ToggleButtonGroup>
+        ) : null}
+        {showAiButton ? (
+          <Button
+            data-cy="StudioAIButton"
+            size="small"
+            aria-pressed={isAiPanelOpen}
+            endIcon={<Brain fontSize="small" />}
+            onClick={onToggleAiPanel}
+            sx={{
+              fontWeight: 500,
+              color: isAiPanelOpen ? "primary.main" : "text.secondary",
+              ...(isAiPanelOpen && {
+                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+                "&:hover": {
+                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+                },
+              }),
+            }}
+          >
+            {t("content.studioAiButton")}
+          </Button>
         ) : null}
       </Box>
     </Box>
