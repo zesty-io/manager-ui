@@ -727,7 +727,7 @@ describe("Studio Undo / Redo", () => {
 
   // Stubs the MCP reply (append a line to the view) and PVL. Returns a
   // function that releases the PVL reply when `holdPvl` is set.
-  const stubAiTurn = ({ holdPvl = false } = {}) => {
+  const stubAiTurn = ({ holdPvl = false, chatZuid } = {}) => {
     let releasePvl = () => {};
     const pvlGate = holdPvl
       ? new Promise((resolve) => {
@@ -749,6 +749,7 @@ describe("Studio Undo / Redo", () => {
           ],
           message: "",
           tools: [],
+          chatZuid,
         },
       })
     ).as("mcp");
@@ -844,6 +845,23 @@ describe("Studio Undo / Redo", () => {
           locked: true,
         });
       });
+  });
+
+  // The server replays a session's earlier turns, the undone one included.
+  it("starts a new AI chat session after an AI turn is undone", () => {
+    stubAiTurn({ chatZuid: "e2e-chat-one" });
+    bridgeReady(["history"]);
+    sendAiPrompt();
+    answerPaint();
+    previewing(true);
+    cy.getBySelector("StudioUndoButton").should("not.be.disabled").click();
+    previewing(false);
+
+    cy.get('[data-cy="AIDrawerComposer"] textarea:not([aria-hidden])').type(
+      "Add another line"
+    );
+    cy.getBySelector("AIDrawerSend").click();
+    cy.wait("@mcp").its("request.body").should("not.have.property", "chatZuid");
   });
 
   it("puts back the canvas lock when a redo into an AI change fails", () => {

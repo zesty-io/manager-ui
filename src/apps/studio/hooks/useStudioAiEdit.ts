@@ -448,6 +448,8 @@ export const useStudioAiEdit = ({
   // is rendered or painted here.
   const restoreAiState = useCallback(
     (state: StudioAiState) => {
+      // The server session still holds the AI turn this undo or redo crosses.
+      endStudioChatSession(pageItemZUID);
       previewRequestRef.current++;
       clearPendingPaint();
       reloadedFromRef.current = null;
