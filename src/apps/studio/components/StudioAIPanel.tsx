@@ -44,7 +44,7 @@ type StudioAITurnCallbacks = {
 
 type StudioChat = {
   responses: Record<string, ChatResponse[]>;
-  // The server session the first turn created, reused by every later turn.
+  // The server session the first turn created, reused until a discard.
   chatZUID?: string;
   // The discard this transcript already notes.
   noticeId?: number;
@@ -60,6 +60,12 @@ type StudioChat = {
 // is never restored here, since it would show edits that were discarded.
 const studioChats = new Map<string, StudioChat>();
 let turnSeq = 0;
+
+// The model replays a session's earlier turns, discarded edits included.
+export const endStudioChatSession = (pageItemZUID: string) => {
+  const chat = studioChats.get(pageItemZUID);
+  if (chat) chat.chatZUID = undefined;
+};
 
 // Adds to a page's transcript whether or not its panel is open now.
 const appendToChat = (
@@ -258,8 +264,6 @@ const StudioAIChat = ({
 
   const handleReply = useCallback(
     (turnZUID: string, reply: GeminiResponse) => {
-      if (reply.chatZuid) chat.chatZUID = reply.chatZuid;
-
       // No reply at all is a failure the user should see.
       const parsed: ChatResponse[] =
         reply.data == null
@@ -328,20 +332,14 @@ const StudioAIChat = ({
       appendToTurn(turnZUID, entries);
       setLatestPromptZUIDs(new Set([turnZUID]));
     },
-    [
-      chat,
-      applySetValue,
-      appendToTurn,
-      onAfterReplyApplied,
-      onBeforeReplyApplied,
-      t,
-    ]
+    [applySetValue, appendToTurn, onAfterReplyApplied, onBeforeReplyApplied, t]
   );
 
   const sendTurn = useCallback(
     (prompt: string, body: Record<string, unknown>) => {
       const turnZUID = `turn-${++turnSeq}`;
       const clears = chat.clears;
+      const sessionZUID = chat.chatZUID;
       const failed: ChatResponse = {
         type: "ERROR",
         payload: { value: t("shell.errorGeneratingAiResponse") },
@@ -354,13 +352,16 @@ const StudioAIChat = ({
         .unwrap()
         .then((reply) => {
           if (clears !== chat.clears) return;
+          // Kept even if the panel closed meanwhile, but not past a discard:
+          // that ended the session this turn was sent in.
+          if (reply.chatZuid && chat.chatZUID === sessionZUID) {
+            chat.chatZUID = reply.chatZuid;
+          }
           if (isMountedRef.current) {
             handleReply(turnZUID, reply);
             return;
           }
-          // Closed or moved to another page: the session is kept, so the
-          // next turn continues it, but the edit is not applied.
-          if (reply.chatZuid) chat.chatZUID = reply.chatZuid;
+          // Closed or moved to another page: the edit is not applied.
           appendToChat(chat, turnZUID, [failed]);
         })
         .catch(() => {
