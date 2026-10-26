@@ -33,7 +33,7 @@ import { useCrossModelConnectField } from "../hooks/useCrossModelConnectField";
 import { StudioLinkItemDialog } from "./StudioLinkItemDialog";
 
 // Title shown for a supported element tag.
-const getTagTitles = (t: TFunction): Record<string, string> => ({
+export const getTagTitles = (t: TFunction): Record<string, string> => ({
   img: t("shell.tinymceSlashImage"),
   video: t("shell.tinymceSlashVideo"),
   // Intentionally absent from TAG_FAMILIES: swapping a link to a div/span would
@@ -681,6 +681,7 @@ const SlotField = ({
             fullWidth
             disabled
             inputProps={{ "data-cy": dataCy }}
+            SelectProps={{ displayEmpty: isNewTabAttr }}
           >
             {selectOptions.map((option) => (
               <MenuItem key={option.value} value={option.value}>
@@ -744,6 +745,9 @@ const SlotField = ({
           fullWidth
           disabled={!slot.layoutEditable}
           onChange={(evt) => onChangeSlot(slot, evt.target.value)}
+          // "No" is the empty string (no `target` attribute), and MUI only
+          // renders a selected label for a non-empty value unless told to.
+          SelectProps={{ displayEmpty: isNewTabAttr }}
           inputProps={{ "data-cy": dataCy }}
         >
           {selectOptions.map((option) => (
@@ -940,6 +944,8 @@ const LinkFields = ({
               value={target}
               fullWidth
               onChange={(evt) => handleTargetChange(evt.target.value)}
+              // "No" is the empty string — see the note on the slot select.
+              SelectProps={{ displayEmpty: true }}
               inputProps={{ "data-cy": "StudioOpenInNewTab" }}
             >
               {getNewTabOptions(t).map((option) => (
@@ -1088,7 +1094,6 @@ export const StudioInspectorPanel = ({
     setValues(Object.fromEntries(slots.map((s) => [s.key, s.value])));
     setTag(tagName);
     // Keyed on the element id only so in-progress typing isn't clobbered.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [elementKey]);
 
   // Reflect external changes to media-URL slots (src, poster) — e.g. from the
@@ -1105,7 +1110,6 @@ export const StudioInspectorPanel = ({
       });
       return next;
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaSeed]);
 
   // Seed values for slots that newly appear (e.g. after a tag swap) without

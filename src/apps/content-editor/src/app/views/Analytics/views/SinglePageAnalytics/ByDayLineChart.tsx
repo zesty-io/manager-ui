@@ -541,7 +541,7 @@ export const ByDayLineChart = ({
                       addDays(startDate, tooltipModel?.dataIndex ?? 0),
                       "eee d LLL"
                     )}{" "}
-                vs{" "}
+                {t("content.analyticsVsLabel")}{" "}
                 {shouldCompare
                   ? dateRange1Label
                   : formatLocalized(

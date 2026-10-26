@@ -61,7 +61,9 @@ const getTemplates = (t) => ({
   iphone14: {
     option: (
       <Box display="flex" justifyContent="space-between" width="100%">
+        {/* eslint-disable-next-line i18next/no-literal-string -- device name, brand token */}
         <Box>iPhone 14</Box>
+        {/* eslint-disable-next-line i18next/no-literal-string -- pixel dimensions, not prose */}
         <Box>437 x 883</Box>
       </Box>
     ),
@@ -114,7 +116,9 @@ const getTemplates = (t) => ({
   iphone14pro: {
     option: (
       <Box display="flex" justifyContent="space-between" width="100%">
+        {/* eslint-disable-next-line i18next/no-literal-string -- device name, brand token */}
         <Box>iPhone 14 Pro</Box>
+        {/* eslint-disable-next-line i18next/no-literal-string -- pixel dimensions, not prose */}
         <Box>437 x 883</Box>
       </Box>
     ),
@@ -167,7 +171,9 @@ const getTemplates = (t) => ({
   ipad: {
     option: (
       <Box display="flex" justifyContent="space-between" width="100%">
+        {/* eslint-disable-next-line i18next/no-literal-string -- device name, brand token */}
         <Box>iPad Pro</Box>
+        {/* eslint-disable-next-line i18next/no-literal-string -- pixel dimensions, not prose */}
         <Box>1158 x 1494</Box>
       </Box>
     ),
@@ -213,7 +219,9 @@ const getTemplates = (t) => ({
   pixel7: {
     option: (
       <Box display="flex" justifyContent="space-between" width="100%">
+        {/* eslint-disable-next-line i18next/no-literal-string -- device name, brand token */}
         <Box>Pixel 7</Box>
+        {/* eslint-disable-next-line i18next/no-literal-string -- pixel dimensions, not prose */}
         <Box>648 x 1373</Box>
       </Box>
     ),

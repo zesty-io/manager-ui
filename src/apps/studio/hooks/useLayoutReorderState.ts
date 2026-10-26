@@ -1159,7 +1159,6 @@ export const useLayoutReorderState = ({
     },
     // The template cache is a ref, so this version counter is what gives the
     // reader a new identity when the source changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [templateSourceVersion]
   );
 
