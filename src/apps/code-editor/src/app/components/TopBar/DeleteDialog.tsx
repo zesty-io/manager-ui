@@ -49,7 +49,13 @@ export const DeleteDialog = memo(function DeleteDialog(
     }
   }, [dispatch, fileZUID, status, history, onClose]);
   return (
-    <Dialog open={open} fullWidth maxWidth="xs" onClose={onClose}>
+    <Dialog
+      data-cy="code-app-delete-dialog"
+      open={open}
+      fullWidth
+      maxWidth="xs"
+      onClose={onClose}
+    >
       <DialogTitle>
         <Box
           sx={{
@@ -92,7 +98,12 @@ export const DeleteDialog = memo(function DeleteDialog(
         </Typography>
       </DialogTitle>
       <DialogActions>
-        <Button variant="text" color="inherit" onClick={onClose}>
+        <Button
+          data-cy="code-app-delete-dialog-cancel-button"
+          variant="text"
+          color="inherit"
+          onClick={onClose}
+        >
           {t("common.cancel")}
         </Button>
         <Button
