@@ -1,12 +1,16 @@
 import AutoAwesomeMosaicRoundedIcon from "@mui/icons-material/AutoAwesomeMosaicRounded";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import RedoRoundedIcon from "@mui/icons-material/RedoRounded";
+import UndoRoundedIcon from "@mui/icons-material/UndoRounded";
 import {
   Box,
   Button,
   Chip,
+  IconButton,
   ToggleButton,
   ToggleButtonGroup,
+  Tooltip,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { Brain } from "@zesty-io/material";
@@ -41,7 +45,20 @@ type StudioHeaderProps = {
   isAiPanelOpen: boolean;
   onToggleAiPanel: () => void;
   onFeedbackClick: () => void;
+  /** Undo/redo render only when the canvas's bridge supports history. */
+  showHistoryControls: boolean;
+  canUndo: boolean;
+  canRedo: boolean;
+  onUndo: () => void;
+  onRedo: () => void;
 };
+
+// Shortcut hints for the undo/redo tooltips. Key symbols, not copy.
+const IS_MAC =
+  typeof navigator !== "undefined" &&
+  /Mac|iPhone|iPad/.test(navigator.userAgent);
+const UNDO_SHORTCUT = IS_MAC ? "⌘Z" : "Ctrl+Z";
+const REDO_SHORTCUT = IS_MAC ? "⇧⌘Z" : "Ctrl+Y";
 
 const MODE_OPTIONS: {
   mode: InteractionMode;
@@ -81,6 +98,11 @@ export const StudioHeader = ({
   isAiPanelOpen,
   onToggleAiPanel,
   onFeedbackClick,
+  showHistoryControls,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
 }: StudioHeaderProps) => {
   const { t } = useTranslation();
   const [codeIdSegment, ...pathSegments] = selectedLayoutBreadcrumb;
@@ -184,6 +206,38 @@ export const StudioHeader = ({
         ) : null}
       </Box>
       <Box display="flex" alignItems="center" gap={1.5}>
+        {showHistoryControls ? (
+          <Box display="flex" alignItems="center">
+            {/* The span keeps the tooltip working while the button is
+                disabled, which MUI otherwise drops. */}
+            <Tooltip title={`${t("content.studioUndo")} (${UNDO_SHORTCUT})`}>
+              <span>
+                <IconButton
+                  data-cy="StudioUndoButton"
+                  size="small"
+                  aria-label={t("content.studioUndo")}
+                  disabled={!canUndo}
+                  onClick={onUndo}
+                >
+                  <UndoRoundedIcon fontSize="small" />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Tooltip title={`${t("content.studioRedo")} (${REDO_SHORTCUT})`}>
+              <span>
+                <IconButton
+                  data-cy="StudioRedoButton"
+                  size="small"
+                  aria-label={t("content.studioRedo")}
+                  disabled={!canRedo}
+                  onClick={onRedo}
+                >
+                  <RedoRoundedIcon fontSize="small" />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </Box>
+        ) : null}
         <Button
           data-cy="StudioFeedbackButton"
           color="inherit"
