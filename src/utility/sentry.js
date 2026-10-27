@@ -10,6 +10,13 @@ const N1_IGNORED_ENDPOINTS = [
   /\/v1\/content\/models\/[^/]+\/items/,
 ];
 
+// Preview URLs carry the instance's preview password in `zpw`.
+const PREVIEW_PASSWORD = /([?&]zpw=)[^&#]*/g;
+const redactPreviewPassword = (value) =>
+  typeof value === "string"
+    ? value.replace(PREVIEW_PASSWORD, "$1REDACTED")
+    : value;
+
 // window.CONFIG not available so we use the webpack injected variable
 if (["stage", "production"].includes(__CONFIG__?.ENV)) {
   Sentry.init({
@@ -22,6 +29,13 @@ if (["stage", "production"].includes(__CONFIG__?.ENV)) {
     normalizeDepth: 10, // increases depth of redux state tree sent
     maxBreadcrumbs: 50, // reduce for performance purposes
     beforeBreadcrumb: (breadcrumb, hint) => {
+      if (
+        (breadcrumb.category === "fetch" || breadcrumb.category === "xhr") &&
+        breadcrumb.data
+      ) {
+        breadcrumb.data.url = redactPreviewPassword(breadcrumb.data.url);
+      }
+
       if (
         hint?.event?.target &&
         (breadcrumb.category === "ui.click" ||
@@ -95,6 +109,24 @@ if (["stage", "production"].includes(__CONFIG__?.ENV)) {
         seenPatterns.add(matchedPattern);
         return true;
       });
+
+      // Spans are sent as this JSON. Request spans name their URL in the
+      // description and in `url` and `http.url`.
+      event.spans = event.spans?.map((span) => {
+        const json = spanToJSON(span);
+        return {
+          ...json,
+          description: redactPreviewPassword(json.description),
+          data: json.data && {
+            ...json.data,
+            url: redactPreviewPassword(json.data.url),
+            "http.url": redactPreviewPassword(json.data["http.url"]),
+          },
+        };
+      });
+      if (event.request) {
+        event.request.url = redactPreviewPassword(event.request.url);
+      }
 
       return event;
     },
