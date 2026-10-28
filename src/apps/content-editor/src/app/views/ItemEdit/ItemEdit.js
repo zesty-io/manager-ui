@@ -22,6 +22,7 @@ import { cloneDeep } from "lodash";
 import { useTranslation } from "react-i18next";
 
 import { notify } from "shell/store/notifications";
+import { isRequestFailed, notifyFailure } from "utility/request";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
 import { fetchFields } from "shell/store/fields";
 import {
@@ -258,8 +259,11 @@ export default function ItemEdit() {
     try {
       const itemResponse = await dispatch(fetchItem(modelZUID, itemZUID));
 
-      if (itemResponse.status === 404 || itemResponse.status === 400) {
-        setNotFound(itemResponse.message || itemResponse.error);
+      if (isRequestFailed(itemResponse)) {
+        // Not-found screen plus the error toast
+        notifyFailure(dispatch, itemResponse);
+        setNotFound(itemResponse.error);
+        return;
       }
 
       if (itemResponse.data === null) {
@@ -343,6 +347,19 @@ export default function ItemEdit() {
             location?.pathname?.split("/")?.pop() === "meta",
         })
       );
+
+      if (isRequestFailed(res) && res.status !== 400) {
+        notifyFailure(
+          dispatch,
+          res,
+          t("content.itemEditCannotSaveWithError", {
+            title: item.web.metaTitle,
+            error: res.error,
+          })
+        );
+        throw new Error(res.error);
+      }
+
       if (res.err === "VALIDATION_ERROR") {
         const missingRequiredFieldNames = res.missingRequired?.reduce(
           (acc, curr) => {
@@ -473,6 +490,16 @@ export default function ItemEdit() {
         );
       }
 
+      if (res.refetchFailure) {
+        notifyFailure(
+          dispatch,
+          res.refetchFailure,
+          t("content.itemEditRefreshFailed", {
+            error: res.refetchFailure.error,
+          })
+        );
+      }
+
       dispatch(
         notify({
           message: t("content.itemEditSavedNotification", {
@@ -512,7 +539,12 @@ export default function ItemEdit() {
       items: [itemZUID],
     });
     // Keep promise chain
-    return dispatch(fetchItem(modelZUID, itemZUID));
+    return dispatch(fetchItem(modelZUID, itemZUID)).then((res) => {
+      if (isRequestFailed(res)) {
+        notifyFailure(dispatch, res);
+      }
+      return res;
+    });
   }
 
   const isLocked =

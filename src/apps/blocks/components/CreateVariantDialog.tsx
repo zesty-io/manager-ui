@@ -13,9 +13,20 @@ import {
 import { ModeEditRounded } from "@mui/icons-material";
 import { ContentModel } from "../../../shell/services/types";
 import { createItem, generateItem } from "../../../shell/store/content";
+import {
+  isRequestFailed,
+  notifyFailure,
+  type RequestFailure,
+} from "../../../utility/request";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import { useGetContentModelFieldsQuery } from "../../../shell/services/instance";
+
+// What createItem resolves: created item, client validation or request failure
+type CreateItemResult =
+  | RequestFailure
+  | { err: string }
+  | { data?: { ZUID?: string } };
 
 export const CreateVariantDialog = ({
   onClose,
@@ -36,6 +47,7 @@ export const CreateVariantDialog = ({
     if (!model?.ZUID) {
       return;
     }
+
     setIsLoading(true);
     const initialData: { [key: string]: any } = fields?.reduce((accu, curr) => {
       if (!curr.deletedAt) {
@@ -52,7 +64,8 @@ export const CreateVariantDialog = ({
         metaTitle: variantName,
       })
     );
-    const res = await Promise.resolve(
+    // dispatch isn't thunk-typed, so assert the result shape
+    const res = (await Promise.resolve(
       dispatch(
         createItem({
           modelZUID: model.ZUID,
@@ -60,9 +73,20 @@ export const CreateVariantDialog = ({
           skipPathPartValidation: true,
         })
       )
-    );
-    // @ts-ignore
-    history.push(`/blocks/${model.ZUID}/${res?.data?.ZUID}`);
+    )) as CreateItemResult;
+
+    if (isRequestFailed(res) || "err" in res || !res.data?.ZUID) {
+      // Stay in the dialog so the user can retry
+      notifyFailure(
+        dispatch,
+        res,
+        t("blocks.createVariantFailed", { variantName })
+      );
+      setIsLoading(false);
+      return;
+    }
+
+    history.push(`/blocks/${model.ZUID}/${res.data.ZUID}`);
     setIsLoading(false);
     onClose();
   };

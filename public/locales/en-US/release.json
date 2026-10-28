@@ -13,6 +13,7 @@
   "failedActivateReleases": "Failed to activate releases",
   "failedCreatingRelease": "Failed creating a release",
   "failedDeletingRelease": "Failed deleting release {{name}}",
+  "failedFetchingReleases": "Failed to load releases: {{error}}",
   "fieldReleaseDescription": "Release Description",
   "fieldReleaseName": "Release Name",
   "instructionBeginSearch": "Begin by searching for content you want to include in this release",

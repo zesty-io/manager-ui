@@ -13,6 +13,7 @@
   "failedActivateReleases": "Не удалось активировать релизы",
   "failedCreatingRelease": "Не удалось создать релиз",
   "failedDeletingRelease": "Не удалось удалить релиз {{name}}",
+  "failedFetchingReleases": "Не удалось загрузить релизы: {{error}}",
   "fieldReleaseDescription": "Описание релиза",
   "fieldReleaseName": "Название релиза",
   "instructionBeginSearch": "Начните с поиска контента, который вы хотите включить в этот релиз",

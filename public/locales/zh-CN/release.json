@@ -13,6 +13,7 @@
   "failedActivateReleases": "激活发布失败",
   "failedCreatingRelease": "创建发布失败",
   "failedDeletingRelease": "删除发布 {{name}} 失败",
+  "failedFetchingReleases": "无法加载发布：{{error}}",
   "fieldReleaseDescription": "发布说明",
   "fieldReleaseName": "发布名称",
   "instructionBeginSearch": "首先搜索您想要包含在此次发布中的内容",

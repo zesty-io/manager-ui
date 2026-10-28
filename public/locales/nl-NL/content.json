@@ -389,6 +389,7 @@
   "itemEditPublishRelatedItemsDescription": "Dit publiceert alle items die in de onderstaande lijst zijn geselecteerd",
   "itemEditQuickShareTitle": "Snel delen",
   "itemEditRefreshCachedItem": "Gecachet item vernieuwen",
+  "itemEditRefreshFailed": "Opgeslagen, maar het item kon niet worden vernieuwd: {{error}}",
   "itemEditRefreshingCachedItem": "Gecachet item wordt vernieuwd",
   "itemEditRenameVariant": "Variant hernoemen",
   "itemEditRenameVariantDescription": "Dit werkt de varianttitel bij die aan contenteditors wordt getoond",

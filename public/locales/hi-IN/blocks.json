@@ -4,6 +4,7 @@
   "allBlocksTitle": "सभी ब्लॉक्स",
   "blockImageAlt": "ब्लॉक इमेज",
   "createBlock": "ब्लॉक बनाएं",
+  "createVariantFailed": "वेरिएंट बनाने में विफल: {{variantName}}",
   "createVariantOf": "{{label}} का वेरिएंट बनाएं",
   "documentation": "दस्तावेज़ (Documentation)",
   "emptyItemsListAlt": "खाली आइटम सूची",

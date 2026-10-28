@@ -399,6 +399,7 @@
   "itemEditPublishRelatedItemsDescription": "Будут опубликованы все элементы, выбранные в списке ниже",
   "itemEditQuickShareTitle": "Быстрая отправка",
   "itemEditRefreshCachedItem": "Обновить кэшированный элемент",
+  "itemEditRefreshFailed": "Сохранено, но не удалось обновить элемент: {{error}}",
   "itemEditRefreshingCachedItem": "Обновление кэшированного элемента",
   "itemEditRenameVariant": "Переименовать вариант",
   "itemEditRenameVariantDescription": "Это обновит заголовок варианта, который показывается редакторам контента",

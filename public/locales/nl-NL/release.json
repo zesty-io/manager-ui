@@ -13,6 +13,7 @@
   "failedActivateReleases": "Activeren van releases mislukt",
   "failedCreatingRelease": "Aanmaken van een release mislukt",
   "failedDeletingRelease": "Verwijderen van release {{name}} mislukt",
+  "failedFetchingReleases": "Releases laden mislukt: {{error}}",
   "fieldReleaseDescription": "Releasebeschrijving",
   "fieldReleaseName": "Reasenaam",
   "instructionBeginSearch": "Begin met het zoeken naar inhoud die je in deze release wilt opnemen",

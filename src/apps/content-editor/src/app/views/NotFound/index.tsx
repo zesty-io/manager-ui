@@ -15,6 +15,7 @@ const NotFound = () => {
   const history = useHistory();
   return (
     <Container
+      data-cy="ItemNotFound"
       maxWidth="lg"
       disableGutters
       sx={{

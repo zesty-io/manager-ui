@@ -21,6 +21,7 @@ import { TopBar } from "../../components/TopBar";
 import { FieldWrapper, MainWrapper } from "../../components/Containers";
 import Box from "@mui/material/Box";
 import { notify } from "../../../../../../shell/store/notifications";
+import { isRequestFailed, notifyFailure } from "utility/request";
 import { saveStyleVariable } from "../../../../../../shell/store/settings";
 import { useInstalledFonts } from "../Fonts/Installed";
 import { getStyleCategoryLabel } from "../../utils/categoryLabels";
@@ -92,54 +93,62 @@ export default connect((state, props) => {
     setDirtyFields([...dirtyFields, name]);
   }
 
-  function saveSettings(callback) {
+  async function saveSettings(callback) {
     setSaving(true);
 
-    const requests = fields
-      .filter((field) => {
-        if (dirtyFields.some((item) => field.referenceName === item)) {
-          return field;
-        }
-      })
-      .map((field) => {
-        return props.dispatch(
-          saveStyleVariable(field.ZUID, {
-            ZUID: field.ZUID,
-            category: field.category,
-            name: field.name,
-            referenceName: field.referenceName,
-            value: fieldValues[field.referenceName],
-            options: field.options,
-            tips: field.tips,
-            type: field.type,
-          })
-        );
-      });
+    const dirtyList = fields.filter((field) =>
+      dirtyFields.some((item) => field.referenceName === item)
+    );
+    const requests = dirtyList.map((field) => {
+      return props.dispatch(
+        saveStyleVariable(field.ZUID, {
+          ZUID: field.ZUID,
+          category: field.category,
+          name: field.name,
+          referenceName: field.referenceName,
+          value: fieldValues[field.referenceName],
+          options: field.options,
+          tips: field.tips,
+          type: field.type,
+        })
+      );
+    });
 
-    Promise.all(requests)
-      .then(() => {
-        setSaving(false);
-        setDirtyFields([]);
-        callback && callback();
-        props.dispatch(
-          notify({
-            kind: "success",
-            message: t("settings.categorySettingsSaved", {
-              categoryLabel: props?.category?.label,
-            }),
-          })
-        );
+    const responses = await Promise.all(requests);
+    const failed = responses
+      .map((res, idx) => (isRequestFailed(res) ? idx : -1))
+      .filter((idx) => idx !== -1);
+
+    setSaving(false);
+    callback && callback();
+
+    if (failed.length) {
+      // Keep failed fields dirty so the user can retry
+      setDirtyFields(
+        dirtyList
+          .filter((_, idx) => failed.includes(idx))
+          .map((field) => field.referenceName)
+      );
+      notifyFailure(
+        props.dispatch,
+        responses[failed[0]],
+        t("settings.categorySettingsSaveFailed", {
+          category: props?.category?.label,
+          error: responses[failed[0]].error,
+        })
+      );
+      return;
+    }
+
+    setDirtyFields([]);
+    props.dispatch(
+      notify({
+        kind: "success",
+        message: t("settings.categorySettingsSaved", {
+          categoryLabel: props?.category?.label,
+        }),
       })
-      .catch((err) => {
-        setSaving(false);
-        callback && callback();
-        props.dispatch(
-          notify({
-            kind: "warn",
-            message: err.message,
-          })
-        );
-      });
+    );
   }
 
   function parseFamily(font) {
