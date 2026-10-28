@@ -252,7 +252,7 @@ export const ChatThread = ({
               </>
             ) : (
               Object.entries(responses).map(([promptZUID, promptResponses]) => {
-                return promptResponses.map((response, responseIndex) => {
+                const turn = promptResponses.map((response, responseIndex) => {
                   const shouldAnimate =
                     latestPromptZUIDs.has(promptZUID) &&
                     response.type !== "USER_INPUT";
@@ -391,34 +391,7 @@ export const ChatThread = ({
                         </Typography>
                       )}
                       {response.payload?.value?.startsWith("3-") ? (
-                        <>
-                          <GeneratedImage src={response.payload.value} />
-                          {onGenerateAltText &&
-                            response.type === "SET_VALUE" && (
-                              <Box mt={1.25}>
-                                <SuggestionChip
-                                  dataCy="AIDrawerGenerateAltText"
-                                  disabled={isLoading}
-                                  onClick={() => {
-                                    const promptInput = promptResponses.find(
-                                      (
-                                        entry
-                                      ): entry is Extract<
-                                        ChatResponse,
-                                        { type: "USER_INPUT" }
-                                      > => entry.type === "USER_INPUT"
-                                    );
-                                    onGenerateAltText(
-                                      response.payload.value,
-                                      promptInput?.payload.value ?? ""
-                                    );
-                                  }}
-                                >
-                                  {t("shell.generateAltText")}
-                                </SuggestionChip>
-                              </Box>
-                            )}
-                        </>
+                        <GeneratedImage src={response.payload.value} />
                       ) : (
                         <AnimatedText
                           key={`${promptZUID}-${responseIndex}`}
@@ -479,6 +452,40 @@ export const ChatThread = ({
                     </Box>
                   );
                 });
+                if (!onGenerateAltText) return turn;
+
+                // Follow-up chips come last in the turn, after its text.
+                const promptInput = promptResponses.find(
+                  (
+                    entry
+                  ): entry is Extract<ChatResponse, { type: "USER_INPUT" }> =>
+                    entry.type === "USER_INPUT"
+                );
+                const altTextChips = promptResponses
+                  .filter(
+                    (
+                      entry
+                    ): entry is Extract<ChatResponse, { type: "SET_VALUE" }> =>
+                      entry.type === "SET_VALUE" &&
+                      !!entry.payload.value?.startsWith("3-")
+                  )
+                  .map((entry, imageIndex) => (
+                    <SuggestionChip
+                      dataCy="AIDrawerGenerateAltText"
+                      key={`${promptZUID}-alt-${imageIndex}`}
+                      disabled={isLoading}
+                      onClick={() =>
+                        onGenerateAltText(
+                          entry.payload.value,
+                          promptInput?.payload.value ?? ""
+                        )
+                      }
+                    >
+                      {t("shell.generateAltText")}
+                    </SuggestionChip>
+                  ));
+
+                return [...turn, ...altTextChips];
               })
             )}
             {isLoading && (
