@@ -588,8 +588,9 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     [geminiGenerate, urlChatZUID, userRole, t]
   );
 
-  // The server logs the turn to the chat, so a refetch shows it. A turn it
-  // did not log, or a failure, is shown locally until the next refetch.
+  // Shown locally at once. When the server logged the turn, a refetch then
+  // replaces the transcript with its copy; if the refetch fails, the local
+  // turn stays.
   const handleGenerateAltText = useCallback(
     async (fileZuid: string, prompt: string) => {
       const chatZUID = urlChatZUID;
@@ -599,13 +600,6 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
         chatZuid: chatZUID,
       });
       if (urlChatZUIDRef.current !== chatZUID) return;
-
-      if (result.ok && chatZUID && !result.chatError) {
-        dispatch(
-          mcpApi.util.invalidateTags([{ type: "ChatSessionLog", id: chatZUID }])
-        );
-        return;
-      }
 
       setResponses((prev) => ({
         ...prev,
@@ -620,6 +614,12 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
             : { type: "SYSTEM_OUTPUT", payload: { value: result.altText } },
         ],
       }));
+
+      if (result.ok && chatZUID && !result.chatError) {
+        dispatch(
+          mcpApi.util.invalidateTags([{ type: "ChatSessionLog", id: chatZUID }])
+        );
+      }
     },
     [dispatch, generateAltText, urlChatZUID, t]
   );

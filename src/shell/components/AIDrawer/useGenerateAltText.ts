@@ -40,8 +40,8 @@ export const useGenerateAltText = () => {
           context: context?.slice(0, MAX_CONTEXT_LENGTH) || undefined,
           chatZuid,
         }).unwrap();
-        altText = response.data.altText;
-        chatError = response.chatError;
+        altText = response?.data?.altText;
+        chatError = response?.chatError;
       } catch (error) {
         const serverMessage = (error as { data?: { message?: unknown } })?.data
           ?.message;
@@ -52,6 +52,11 @@ export const useGenerateAltText = () => {
               ? serverMessage
               : t("shell.altTextGenerateFailed"),
         };
+      }
+
+      // A blank result must not wipe the file's existing alt text.
+      if (typeof altText !== "string" || !altText.trim()) {
+        return { ok: false, message: t("shell.altTextGenerateFailed") };
       }
 
       try {
