@@ -37,7 +37,8 @@ export const DeleteDialog = memo(function DeleteDialog(
       open={open}
       onClose={onClose}
       onConfirm={handleDeleteFile}
-      confirmDataCy="DeleteCodeFileConfirmButton"
+      dialogDataCy="code-app-delete-dialog"
+      confirmDataCy="DeleteContentItemConfirmButton"
       confirmLabel={t("common.delete")}
       title={
         <>
