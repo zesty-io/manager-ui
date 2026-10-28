@@ -38,10 +38,11 @@ import { AnimatedText } from "./AnimatedText";
 import { GeneratedImage } from "./GeneratedImage";
 import { PromptComposer, PromptComposerHandle } from "./PromptComposer";
 import { useUpdatePromptApprovalStatusMutation } from "../../services/mcp";
+import { useApplySetValue } from "./useApplySetValue";
 
 // `value` is the tone instruction sent to the model (do not translate);
 // `label` is the short UI name, resolved with t() at the render site.
-const TONE_VALUES = {
+export const TONE_VALUES = {
   intriguing: "Intriguing - Curious, mysterious, and thought-provoking",
   professional: "Professional - Serious, formal, and authoritative",
   playful: "Playful - Fun, light-hearted, and whimsical",
@@ -74,11 +75,25 @@ export type ChatResponse = { approval?: string } & (
   | { type: "USER_INPUT"; payload: { value: string } }
   | { type: "NAVIGATE"; payload: { path: string } }
   | { type: "SET_VALUE"; payload: { refKey: string; value: string } }
+  // A prose reply.
+  | { type: "MESSAGE"; payload: { value: string } }
+  // Built by a host, not sent by the server: an applied code edit's line
+  // counts, and a line of its own.
   | {
-      type: "SYSTEM_SUGGESTION" | "ERROR";
+      type: "CODE_EDIT";
+      payload: { fileName: string; added: number; removed: number };
+    }
+  | { type: "NOTICE"; payload: { value: string } }
+  | {
+      type: "SYSTEM_SUGGESTION" | "SYSTEM_OUTPUT" | "ERROR";
       payload: { refKey?: string; value: string };
     }
 );
+
+// Scrolls only the transcript. `scrollIntoView` would also scroll every
+// ancestor that overflows, moving the host's own layout.
+export const scrollToEnd = (container: HTMLElement | null) =>
+  container?.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
 
 export type ChatThreadProps = {
   responses: Record<string, ChatResponse[]>;
@@ -102,7 +117,11 @@ export type ChatThreadProps = {
   setSelectedTone: (tone: ToneOption) => void;
   handlePrompt: (value: string) => boolean;
   handleGenerateSuggestions: (sourcePrompt: string) => void;
-  responsesEndRef: MutableRefObject<HTMLDivElement | null>;
+  // The transcript's own scroll box; scroll it with `scrollToEnd`.
+  scrollContainerRef: MutableRefObject<HTMLDivElement | null>;
+  // For a host that applies every suggestion itself.
+  hideAutoApply?: boolean;
+  placeholder?: string;
 };
 
 export const ChatThread = ({
@@ -125,7 +144,9 @@ export const ChatThread = ({
   setSelectedTone,
   handlePrompt,
   handleGenerateSuggestions,
-  responsesEndRef,
+  scrollContainerRef,
+  hideAutoApply = false,
+  placeholder,
 }: ChatThreadProps) => {
   const { t } = useTranslation();
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -133,6 +154,7 @@ export const ChatThread = ({
   const [hasComposerValue, setHasComposerValue] = useState(false);
   const composerRef = useRef<PromptComposerHandle>(null);
   const { data: langMappings } = useGetLangsMappingQuery();
+  const applySetValue = useApplySetValue();
   const toneOptions = getToneOptions(t);
   const generateSuggestionsPromptPrefix = t("shell.generateSuggestionsPrompt", {
     prompt: "",
@@ -152,6 +174,7 @@ export const ChatThread = ({
     <>
       <Box display="flex" flexGrow={1} overflow="auto">
         <Box
+          ref={scrollContainerRef}
           display="block"
           overflow="auto"
           width="100%"
@@ -171,6 +194,7 @@ export const ChatThread = ({
               boxSizing: "border-box",
               minHeight: "100%",
               width: "100%",
+              pb: 2,
             }}
           >
             {isLoadingChatSessionLog ? (
@@ -254,13 +278,7 @@ export const ChatThread = ({
                         <AnimatedText
                           text={response.payload.value}
                           animate={shouldAnimate}
-                          onGrow={() => {
-                            if (responsesEndRef.current) {
-                              responsesEndRef.current.scrollIntoView({
-                                behavior: "smooth",
-                              });
-                            }
-                          }}
+                          onGrow={() => scrollToEnd(scrollContainerRef.current)}
                         />
                       </Button>
                     );
@@ -283,6 +301,45 @@ export const ChatThread = ({
                       >
                         {t("shell.navigate")}
                       </Button>
+                    );
+                  } else if (response.type === "MESSAGE") {
+                    return (
+                      <Box
+                        data-cy="AIDrawerMessage"
+                        key={`${promptZUID}-${responseIndex}`}
+                      >
+                        <AnimatedText
+                          text={response.payload.value}
+                          animate={shouldAnimate}
+                          onGrow={() => scrollToEnd(scrollContainerRef.current)}
+                        />
+                      </Box>
+                    );
+                  } else if (response.type === "CODE_EDIT") {
+                    return (
+                      <Box
+                        data-cy="AIDrawerCodeEdit"
+                        key={`${promptZUID}-${responseIndex}`}
+                      >
+                        <Typography variant="body2">
+                          {t("shell.aiCodeEditSummary", {
+                            fileName: response.payload.fileName,
+                            added: response.payload.added,
+                            removed: response.payload.removed,
+                          })}
+                        </Typography>
+                      </Box>
+                    );
+                  } else if (response.type === "NOTICE") {
+                    return (
+                      <Typography
+                        data-cy="AIDrawerNotice"
+                        key={`${promptZUID}-${responseIndex}`}
+                        variant="caption"
+                        color="text.secondary"
+                      >
+                        {response.payload.value}
+                      </Typography>
                     );
                   }
 
@@ -314,13 +371,7 @@ export const ChatThread = ({
                           key={`${promptZUID}-${responseIndex}`}
                           text={response.payload.value}
                           animate={shouldAnimate && !isInCodeApp}
-                          onGrow={() => {
-                            if (responsesEndRef.current) {
-                              responsesEndRef.current.scrollIntoView({
-                                behavior: "smooth",
-                              });
-                            }
-                          }}
+                          onGrow={() => scrollToEnd(scrollContainerRef.current)}
                         />
                       )}
                       {!autoApply && response.type === "SET_VALUE" && (
@@ -331,14 +382,16 @@ export const ChatThread = ({
                           disabled={response.approval === "1"}
                           onClick={() => {
                             if (!urlChatZUID) return;
+                            // Stays applicable when the ref is not on the page.
+                            if (
+                              !applySetValue(
+                                response.payload.refKey,
+                                response.payload.value
+                              )
+                            ) {
+                              return;
+                            }
 
-                            enqueueAction({
-                              type: response.type,
-                              payload: {
-                                refKey: response.payload.refKey,
-                                value: response.payload.value,
-                              },
-                            });
                             updatePromptApprovalStatus({
                               chatZUID: urlChatZUID,
                               promptZUID,
@@ -375,7 +428,6 @@ export const ChatThread = ({
                 });
               })
             )}
-            <div ref={responsesEndRef} />
             {isLoading && (
               <Box
                 display="flex"
@@ -409,6 +461,7 @@ export const ChatThread = ({
           <Button
             disabled={isLoading || isLoadingChatSessionLog}
             data-cy="AIDrawerGenerateSuggestions"
+            data-amp-track-id="ai-drawer-generate-suggestions-button"
             size="large"
             variant="outlined"
             fullWidth
@@ -425,6 +478,7 @@ export const ChatThread = ({
           disabled={isLoading || isLoadingChatSessionLog}
           onSubmit={handlePrompt}
           onHasValueChange={setHasComposerValue}
+          placeholder={placeholder}
         />
       </Box>
       <Box
@@ -437,6 +491,7 @@ export const ChatThread = ({
       >
         <Button
           data-cy="AIDrawerClearChat"
+          data-amp-track-id="ai-drawer-clear-chat-button"
           variant="text"
           color="inherit"
           onClick={onClearChat}
@@ -446,6 +501,7 @@ export const ChatThread = ({
         <Box display="flex" gap={1}>
           <IconButton
             data-cy="AIDrawerSettings"
+            data-amp-track-id="ai-drawer-settings-button"
             onClick={() => setSettingsOpen(!settingsOpen)}
             size="small"
           >
@@ -454,6 +510,7 @@ export const ChatThread = ({
 
           <Button
             data-cy="AIDrawerSend"
+            data-amp-track-id="ai-drawer-submit-button"
             variant="contained"
             onClick={() => composerRef.current?.submit()}
             disabled={!hasComposerValue || isLoading || isLoadingChatSessionLog}
@@ -488,26 +545,32 @@ export const ChatThread = ({
         }}
         in={settingsOpen}
       >
-        <FormGroup>
-          <FormControlLabel
-            sx={{
-              mx: 0,
-            }}
-            control={
-              <Switch
-                data-cy="AIDrawerAutoApplyToggle"
-                size="small"
-                checked={autoApply}
-                onChange={(e) => setAutoApply(e.target.checked)}
-              />
-            }
-            label={
-              <Typography variant="subtitle2" color="text.secondary">
-                {t("shell.autoApply")}
-              </Typography>
-            }
-          />
-        </FormGroup>
+        {!hideAutoApply && (
+          <FormGroup>
+            <FormControlLabel
+              sx={{
+                mx: 0,
+              }}
+              control={
+                <Switch
+                  data-cy="AIDrawerAutoApplyToggle"
+                  inputProps={{
+                    // @ts-expect-error data attribute
+                    "data-amp-track-id": "ai-drawer-auto-apply-toggle",
+                  }}
+                  size="small"
+                  checked={autoApply}
+                  onChange={(e) => setAutoApply(e.target.checked)}
+                />
+              }
+              label={
+                <Typography variant="subtitle2" color="text.secondary">
+                  {t("shell.autoApply")}
+                </Typography>
+              }
+            />
+          </FormGroup>
+        )}
 
         <Stack direction="row" gap={1} alignItems="center" mt={1}>
           <InputLabel sx={{ mb: 0 }}>{t("shell.language")}</InputLabel>
@@ -528,6 +591,10 @@ export const ChatThread = ({
             <TextField
               {...params}
               data-cy="AIDrawerLanguageSelect"
+              inputProps={{
+                ...params.inputProps,
+                "data-amp-track-id": "ai-drawer-language-selector",
+              }}
               fullWidth
               InputProps={{
                 ...params.InputProps,
@@ -557,7 +624,15 @@ export const ChatThread = ({
           value={selectedTone}
           options={toneOptions}
           renderInput={(params: any) => (
-            <TextField {...params} data-cy="AIDrawerToneSelect" fullWidth />
+            <TextField
+              {...params}
+              data-cy="AIDrawerToneSelect"
+              inputProps={{
+                ...params.inputProps,
+                "data-amp-track-id": "ai-drawer-tone-selector",
+              }}
+              fullWidth
+            />
           )}
         />
       </Collapse>
