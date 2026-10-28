@@ -40,12 +40,19 @@ describe("Used Blocks", () => {
     cy.intercept("GET", "**/v1/web/views**").as("getViews");
     cy.intercept("GET", "**/v1/web/scripts").as("getScripts");
     cy.intercept("GET", "**/v1/web/stylesheets").as("getStylesheets");
+    cy.intercept("GET", "**/undefined", cy.spy().as("undefinedImgReq"));
 
     cy.visit(`/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`);
 
     cy.wait(["@models", "@getViews", "@getScripts", "@getStylesheets"]);
 
     cy.getBySelector("UsedBlockPreview").should("exist");
+    // Preview image must never resolve to String(undefined)
+    cy.getBySelector("UsedBlockPreview")
+      .find("img")
+      .should("have.attr", "src")
+      .and("not.match", /undefined$/);
+    cy.get("@undefinedImgReq").should("not.have.been.called");
   });
 
   it("should be able to take you to the block edit page", () => {
