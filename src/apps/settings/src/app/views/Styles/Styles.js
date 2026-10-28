@@ -133,7 +133,7 @@ export default connect((state, props) => {
         props.dispatch,
         responses[failed[0]],
         t("settings.categorySettingsSaveFailed", {
-          category: props?.category?.label,
+          category: getStyleCategoryLabel(props?.category?.label, t),
           error: responses[failed[0]].error,
         })
       );
@@ -145,7 +145,7 @@ export default connect((state, props) => {
       notify({
         kind: "success",
         message: t("settings.categorySettingsSaved", {
-          categoryLabel: props?.category?.label,
+          category: getStyleCategoryLabel(props?.category?.label, t),
         }),
       })
     );
