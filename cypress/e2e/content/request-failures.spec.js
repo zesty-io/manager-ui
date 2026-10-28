@@ -1,6 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
 
-const SAVE_URL = "**/v1/content/models/*/items/*";
+// Anchored to the seeded item so sibling endpoints (items/publishings,
+// items/batch) are never stubbed
+const itemUrl = () =>
+  new RegExp(
+    `/content/models/[^/]+/items/${Cypress.env("failItemZUID")}(\\?.*)?$`
+  );
 
 describe("Failed requests are surfaced", () => {
   before(() => {
@@ -37,7 +42,7 @@ describe("Failed requests are surfaced", () => {
 
   [403, 404, 409, 503].forEach((statusCode) => {
     it(`Item save shows one error toast on ${statusCode} and stays dirty`, () => {
-      cy.intercept("PUT", SAVE_URL, {
+      cy.intercept("PUT", itemUrl(), {
         statusCode,
         body: { error: "Injected failure" },
       }).as("saveItem");
@@ -55,7 +60,7 @@ describe("Failed requests are surfaced", () => {
   });
 
   it("Item save shows an error on network failure and stays dirty", () => {
-    cy.intercept("PUT", SAVE_URL, { forceNetworkError: true }).as("saveItem");
+    cy.intercept("PUT", itemUrl(), { forceNetworkError: true }).as("saveItem");
 
     visitItem();
     makeDirty();
@@ -68,7 +73,7 @@ describe("Failed requests are surfaced", () => {
 
   [400, 403, 404, 503].forEach((statusCode) => {
     it(`Item load shows the not-found screen and an error toast on ${statusCode}`, () => {
-      cy.intercept("GET", SAVE_URL, {
+      cy.intercept("GET", itemUrl(), {
         statusCode,
         body: { error: "Injected failure" },
       }).as("loadItem");
@@ -81,7 +86,7 @@ describe("Failed requests are surfaced", () => {
   });
 
   it("Item load shows the not-found screen and an error toast on network failure", () => {
-    cy.intercept("GET", SAVE_URL, { forceNetworkError: true }).as("loadItem");
+    cy.intercept("GET", itemUrl(), { forceNetworkError: true }).as("loadItem");
 
     visitItem();
     cy.wait("@loadItem");
