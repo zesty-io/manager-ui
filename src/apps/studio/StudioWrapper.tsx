@@ -2827,14 +2827,17 @@ export const StudioWrapper = () => {
                 logoSrc={contentOneLogo}
               />
             ) : (
-              // Every mode: the content editor while a field is edited, else
-              // the item details.
+              // The content editor while a field is edited, else the item details.
               <StudioSidePanel
                 headerTitle={headerTitle}
                 selectedItemLabel={selectedItemLabel}
                 pageItemVersion={pageItemVersion}
                 unresolvedPath={unresolvedPath}
-                panelMode={panelMode === "edit" ? "edit" : "info"}
+                panelMode={
+                  panelMode === "edit" && usesContentEditing(interactionMode)
+                    ? "edit"
+                    : "info"
+                }
                 clearSelection={requestClearSelection}
                 activeVersion={activeVersion}
                 selectedModelZUID={selectedModelZUID}

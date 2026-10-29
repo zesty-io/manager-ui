@@ -2382,7 +2382,7 @@ describe("Studio Inspector Panel", () => {
   });
 
   // #4374 — the layout grammar keeps a right panel mounted whatever is selected.
-  describe("empty panel in layout mode", () => {
+  describe("right panel in layout mode", () => {
     // The bridge emits no `slots` for a tag outside its SUPPORTED_ELEMENTS.
     const siblingNode = (codeId, layoutId, tagName, slots) => ({
       id: `${codeId}:${layoutId}`,
