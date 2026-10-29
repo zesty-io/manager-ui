@@ -1,7 +1,7 @@
 name: "Claude: Code Review"
 
 # Code-level review on every non-draft PR into dev: bugs, security, performance, and CLAUDE.md
-# "Review red flags" only. The "Claude: Acceptance Criteria QA" workflow owns "what does this
+# "Review red flags" only. The "Claude: QA" workflow owns "what does this
 # change do" and acceptance-criteria QA — this workflow must never duplicate that. Findings
 # land as inline comments; each run posts a fresh single-line verdict comment (deliberately
 # NOT updated in place) so the PR timeline shows the review history: "1 blocker" → fix

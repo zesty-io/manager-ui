@@ -23,8 +23,9 @@ skills-lock.json
 .claude/worktrees
 .zed
 
-# negative-QA workflow runtime output (auth-state.json holds a session token)
+# QA workflow runtime output (auth-state.json holds a session token)
 auth-state.json
 qa-artifacts/
-negative-qa-comment.md
+qa-comment.md
+browser-qa-comment.md
 devserver.log

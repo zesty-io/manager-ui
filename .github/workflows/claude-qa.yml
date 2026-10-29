@@ -1,7 +1,9 @@
-name: "Claude: Adversarial Browser QA"
+name: "Claude: QA"
 
-# Drives the real app in a browser and attacks the PR's changed surface, as the dynamic
-# counterpart to "Claude: Acceptance Criteria QA". Advisory only — it never fails the build.
+# Two agents, one advisory comment per run. The AC agent grades the PR against its linked issue
+# from the code alone, before the dev server boots, so a setup failure cannot cost the verdict.
+# The browser agent then attacks the changed surface in the real app. A red check means QA did
+# not run; a ❌ criterion is an annotation, never a failure.
 
 # Runs on every push: a once-per-PR report goes stale silently and a stale finding reads
 # exactly like a live one. Costs ~9 min of agent time per push, serialized; advisory, so a
@@ -10,7 +12,13 @@ name: "Claude: Adversarial Browser QA"
 on:
   pull_request:
     branches: [dev]
-    types: [opened, ready_for_review, synchronize]
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - "README*"
+      - "**/CHANGELOG*"
+      - "docs/**"
+      - "LICENSE*"
+      - ".gitignore"
   workflow_dispatch:
     inputs:
       pr_number:
@@ -23,22 +31,23 @@ on:
 # non-cancelling now pushes trigger runs — cancelling a global group would let one PR's push
 # kill another's run.
 concurrency:
-  group: manager-ui-negative-qa
+  group: manager-ui-qa
   cancel-in-progress: false
 
 jobs:
-  negative-qa:
-    name: Claude Adversarial Browser QA (advisory)
+  qa:
+    name: Claude QA (advisory)
     # Fork PRs get neither secret; pull_request (not _target) means no path to leak them.
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event.pull_request.draft == false &&
        github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     permissions:
       contents: read
       pull-requests: write
+      issues: read
     env:
       PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
       # INTERNAL-NEGATIVE-QA, not the Cypress instance. Fixtures are authored in production and
@@ -54,6 +63,131 @@ jobs:
         with:
           # Needs full history to diff the branch against origin/dev.
           fetch-depth: 0
+
+      # Resolve the linked issue: branch name `<issue#>-slug`, then closing refs.
+      - name: Resolve Linked Issue
+        id: issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          HEAD_REF: ${{ github.head_ref || github.ref_name }}
+        run: |
+          set -euo pipefail
+          NUM=$(printf '%s' "$HEAD_REF" | grep -oE '(^|/)[0-9]+-' | grep -oE '[0-9]+' | head -1 || true)
+          if [ -z "$NUM" ]; then
+            NUM=$(gh api graphql \
+              -f query='query($o:String!,$r:String!,$p:Int!){repository(owner:$o,name:$r){pullRequest(number:$p){closingIssuesReferences(first:1){nodes{number}}}}}' \
+              -F o="${REPO%/*}" -F r="${REPO#*/}" -F p="$PR_NUMBER" \
+              --jq '.data.repository.pullRequest.closingIssuesReferences.nodes[0].number // empty' 2>/dev/null || true)
+          fi
+          echo "issue_number=${NUM:-}" >> "$GITHUB_OUTPUT"
+          echo "Linked issue: ${NUM:-<none> (change-only mode)}"
+
+      - name: Acceptance Criteria Agent
+        id: ac
+        uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
+        continue-on-error: true
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Allow Sentry Handler auto-fix PRs (opened by github-actions[bot])
+          allowed_bots: "github-actions"
+          claude_args: |
+            --model claude-sonnet-5
+            --max-turns 50
+            --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh issue view:*),Read,Write,Grep,Glob"
+          prompt: |
+            You are a senior QA engineer reviewing a pull request from the code only — the PR diff and
+            the checked-out source. There is no running app or browser, so never claim to have observed
+            runtime behavior.
+
+            A separate "Claude: Code Review" workflow already reviews this PR for bugs, security,
+            performance, and code conventions. Do not duplicate it: your only job is to judge the
+            change against the linked issue's acceptance criteria. Mention a code-level problem
+            only when it directly causes a criterion to fail.
+
+            Inputs:
+              REPO         = ${{ github.repository }}
+              PR_NUMBER    = ${{ env.PR_NUMBER }}
+              ISSUE_NUMBER = ${{ steps.issue.outputs.issue_number }}   (empty = no linked issue)
+              REPORT_FILE  = ${{ github.workspace }}/qa-comment.md
+
+            1. Establish the criteria.
+               If ISSUE_NUMBER is set, read it (gh issue view <ISSUE_NUMBER> --repo <REPO>
+               --json title,body,comments,labels) and derive the criteria. Where the issue states its
+               acceptance criteria explicitly, take its bullets one-to-one rather than merging or
+               paraphrasing them. If ISSUE_NUMBER is empty, run change-only mode: the criteria are the
+               checks you judge worth performing on this change.
+
+            2. Partition the criteria into exactly two groups, BEFORE judging any of them:
+                 A. CHECKABLE — you can settle it from the diff and the source alone.
+                 B. NEEDS A RUNNING APP — settling it means observing the app: rendered output,
+                    timing, network behavior, anything you would have to click.
+               A criterion goes in B whenever checking it honestly would mean running something. B is
+               a normal, expected outcome for UI work — a report where everything landed in A is more
+               suspicious than one where half did.
+
+            3. Read the diff (gh pr diff <PR_NUMBER> --repo <REPO>) and open the changed files to
+               understand what the change does. This is for your judgment only — the report does not
+               include a change summary.
+
+            4. Grade group A, and grade every one of them as exactly one of:
+                 ✅ Satisfied — the code clearly implements it.
+                 ❌ Not met   — the code clearly fails it (give evidence).
+               There is no third mark and no "couldn't confirm" here. If you cannot settle a criterion
+               from the code, it was group B and belongs there instead — do not grade it. Equally, do
+               not soften a failure you can see in the diff: a missing attribute, a doc the change
+               left stale, a criterion the change simply does not address is ❌.
+               Group B is NOT graded. List each one with what would have to be observed to settle it,
+               and never guess at its outcome.
+
+            5. Do NOT write an overall verdict. A later step computes it from your marks. There is no
+               PASS or FAIL line anywhere in the report for you to write.
+
+            6. Suggest Cypress coverage in prose (no code): find the real spec under cypress/e2e/<area>/
+               and describe the cases that would lock in the behavior.
+
+            Write the report to REPORT_FILE with the Write tool, in exactly this shape. Keep the marker
+            line verbatim and leave the "## Acceptance Criteria QA" heading exactly as written — a later step
+            completes it. Do not post a comment or reply in chat.
+
+              <!-- cv-verifier -->
+              ## Acceptance Criteria QA
+              <If an issue: "Validates #<n>: <title>". Else: "No linked issue found — change-only QA.">
+
+              1. ✅ <criterion in one line>
+              2. ❌ <criterion in one line> — <why it fails, one clause>
+
+              <details>
+              <summary>Not checkable from the code — needs a running app</summary>
+
+              - <criterion> — <what would have to be observed to settle it>
+
+              </details>
+
+              <details>
+              <summary>Suggested Cypress coverage</summary>
+
+              <real spec file name + prose cases>
+              </details>
+
+            FORMAT RULES. A later step parses this file to compute the verdict, so these are not
+            stylistic preferences:
+              - The graded criteria are the ONLY numbered list in the report. Each is a single line
+                beginning exactly `N. ✅ ` or `N. ❌ `, with nothing before the number.
+              - Every group-B criterion is a `- ` bullet inside the "Not checkable from the code"
+                details block, and appears nowhere else.
+              - Never use ✅ or ❌ anywhere else in the report, and never use 🔴 or 🟡 at all.
+              - Omit the "Not checkable" block if group B is empty; omit the numbered list if group A
+                is empty. Never emit both empty.
+              - Keep the blank lines after each <summary> and before each </details> — GitHub will not
+                render the markdown inside without them.
+
+            Rules: the report contains nothing beyond this template — no summary, no extra sections.
+            The "— why" clause on a ❌ line is the only place for explanation; ✅ lines get none. In
+            change-only mode the numbered list is the checks you performed. Never write `#<n>` except
+            in the "Validates #<n>" line (GitHub auto-links it), and never quote the `<!-- cv-verifier -->`
+            marker anywhere but the first line.
 
       - name: Set up Node
         uses: actions/setup-node@v4.1.0
@@ -107,8 +241,9 @@ jobs:
 
       # Advisory: the action exits non-zero on turn exhaustion, which is "cut short", not
       # "failed". Swallow it and report whatever was written.
-      - uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
-        id: agent
+      - name: Browser Agent
+        id: browser
+        uses: anthropics/claude-code-action@1dc994ee7a008f0ecc866d9ac23ef036b7229f84 # v1.0.127
         continue-on-error: true
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -123,19 +258,25 @@ jobs:
               REPO        = ${{ github.repository }}
               PR_NUMBER   = ${{ env.PR_NUMBER }}
               BASE_URL    = http://${{ env.QA_INSTANCE_ZUID }}.manager.dev.zesty.io:8080
-              REPORT_FILE = ${{ github.workspace }}/negative-qa-comment.md
+              AC_REPORT   = ${{ github.workspace }}/qa-comment.md
+              REPORT_FILE = ${{ github.workspace }}/browser-qa-comment.md
 
-            A separate "Claude: Acceptance Criteria QA" workflow already validates this PR
-            against its issue's acceptance criteria from the code. Do not duplicate it: no
-            change summary, no restating the diff, no judging whether the PR satisfies its
-            issue, no test suggestions. Your job is to find inputs and sequences that break it.
+            An earlier step already judged this PR against its issue's acceptance criteria from
+            the code, in AC_REPORT; never edit that file. Do not duplicate it: no change summary,
+            no restating the diff, no test suggestions. Your job is to find inputs and sequences
+            that break it.
 
             STEP 1 — Scope.
             Read the diff (gh pr diff <PR_NUMBER> --repo <REPO>) and the checked-out source.
             Map the changed files to the routes that render them; src/shell/views/Shell/Shell.tsx
             is the top-level router and src/apps/<name>/ are the sub-apps. Probe ONLY surfaces
-            the diff actually touches. If the diff is docs/config/CI only, write an empty
-            report and stop — that is a correct outcome, not a failure.
+            the diff actually touches. If the diff is docs/config/CI only, write a report that is
+            the heading from STEP 5 and the single line "Nothing in this diff renders in the
+            app." and stop — that is a correct outcome, not a failure.
+
+            AC_REPORT's "Not checkable from the code" list, if it has one, holds criteria that
+            need a running app. When your probing observes one, write what you saw as a finding,
+            with a severity emoji only if it is broken. Do not grade it: grading is not yours.
 
             STEP 2 — The instance is yours.
             BASE_URL is INTERNAL-NEGATIVE-QA, an instance that exists only for this workflow.
@@ -201,12 +342,12 @@ jobs:
             STEP 5 — Report.
             Write REPORT_FILE with the Write tool. First line must be exactly:
 
-              <!-- negative-qa -->
+              ## Adversarial Browser QA
 
-            Then "## Adversarial Browser QA", then STRAIGHT INTO THE FINDINGS. Do NOT write
-            an overview, preamble, or summary paragraph — no recap of what the diff changes, no description
-            of what you attacked, no verdict sentence. A reviewer opens this to see what broke;
-            anything above the first finding pushes that off the screen. One section each:
+            Then STRAIGHT INTO THE FINDINGS. Do NOT write an overview, preamble, or summary
+            paragraph — no recap of what the diff changes, no description of what you attacked,
+            no verdict sentence. A reviewer opens this to see what broke; anything above the
+            first finding pushes that off the screen. One section each:
 
               ### <emoji> <one-line finding>
               **Type:** regression from this PR | pre-existing on the touched surface
@@ -215,7 +356,8 @@ jobs:
               **Console/network:** anything relevant, or "clean"
               ![<caption>](SCREENSHOT:<your-filename>.png)
 
-            Severity emoji: 🔴 breaks the feature · 🟡 degrades it · 🔵 cosmetic.
+            Severity emoji: 🔴 breaks the feature · 🟡 degrades it · 🔵 cosmetic. Never use ✅ or
+            ❌ anywhere in the report.
             Reference screenshots ONLY as SCREENSHOT:<filename>.png — a later step rewrites
             those into real URLs. Do not invent paths or URLs for them.
 
@@ -235,9 +377,8 @@ jobs:
             Keep the blank lines after <summary> and before </details> — GitHub will not render
             the markdown inside without them.
 
-            If you found nothing, the report is the marker line, "## Adversarial Browser QA",
-            the single line "No reproducible edge-case failures found on the surfaces this PR
-            changes.",
+            If you found nothing, the report is "## Adversarial Browser QA", the single line
+            "No reproducible edge-case failures found on the surfaces this PR changes.",
             and the collapsed details block. AN EMPTY REPORT IS A VALID AND COMMON OUTCOME.
             Never pad it with speculative or unreproduced findings, and never report a finding
             you did not screenshot.
@@ -254,19 +395,101 @@ jobs:
       # continue-on-error also turns the step green, making a truncated run look complete.
       # Say so on the run and in the comment.
       - name: Note Incomplete Run
-        if: always() && steps.agent.outcome == 'failure'
+        if: always() && steps.browser.outcome == 'failure'
         run: |
-          echo "::warning::The QA agent did not run to completion (turn limit or error). Findings are real but coverage is partial."
-          FILE="negative-qa-comment.md"
+          echo "::warning::The browser agent did not run to completion (turn limit or error). Browser coverage is partial; the AC verdict stands."
+          FILE="browser-qa-comment.md"
           if [ -s "$FILE" ]; then
             # Also flag it under the heading: a footer alone is below the fold.
-            sed -i '0,/^## Adversarial Browser QA/s/^## Adversarial Browser QA.*$/&\n\n> ⚠️ **Incomplete pass** — coverage is partial; see the note at the end.\n/' "$FILE"
-            printf '\n\n---\n_⚠️ This pass did not run to completion — the agent stopped before finishing. Anything reported above still stands, but coverage is partial and the summary may read as provisional._\n' >> "$FILE"
+            sed -i '0,/^## Adversarial Browser QA/s/^## Adversarial Browser QA.*$/&\n\n> ⚠️ **Incomplete pass** — browser coverage is partial; the acceptance-criteria verdict above stands.\n/' "$FILE"
+            printf '\n\n---\n_⚠️ The browser pass did not run to completion. Its findings above still stand, but its coverage is partial; the acceptance-criteria verdict is unaffected._\n' >> "$FILE"
+          fi
+
+      # The verdict is arithmetic on the AC agent's marks, so the same marks always give the same
+      # verdict; then both sections are joined into the one comment.
+      - name: Compute Verdict and Assemble Comment
+        id: qa
+        if: always()
+        env:
+          BROWSER_OUTCOME: ${{ steps.browser.outcome }}
+        run: |
+          set -euo pipefail
+          FILE="$GITHUB_WORKSPACE/qa-comment.md"
+          BROWSER="$GITHUB_WORKSPACE/browser-qa-comment.md"
+          PASSED=0 FAILED=0 RUNTIME=0
+          # Graded criteria are the report's only numbered list; group B are bullets inside the
+          # details block. That separation is what makes both countable.
+          if [ -s "$FILE" ] && grep -q '<!-- cv-verifier -->' "$FILE"; then
+            PASSED=$(grep -cE '^[0-9]+\. ✅' "$FILE" || true)
+            FAILED=$(grep -cE '^[0-9]+\. ❌' "$FILE" || true)
+            RUNTIME=$(sed -n '/<summary>Not checkable from the code/,/<\/details>/p' "$FILE" | grep -cE '^- ' || true)
+          fi
+          GRADED=$((PASSED + FAILED))
+          if [ "$GRADED" -eq 0 ] && [ "$RUNTIME" -eq 0 ]; then
+            VERDICT=NO_REPORT
+            SUMMARY="NO REPORT"
+          elif [ "$FAILED" -gt 0 ]; then
+            VERDICT=FAIL
+            SUMMARY="❌ FAIL — ${FAILED} of ${GRADED} code-checkable criteria not met"
+          elif [ "$GRADED" -eq 0 ]; then
+            VERDICT=PASS
+            SUMMARY="✅ PASS — nothing in this change was checkable from the code"
+          else
+            VERDICT=PASS
+            SUMMARY="✅ PASS — ${PASSED}/${GRADED} code-checkable criteria confirmed"
+          fi
+          if [ "$RUNTIME" -eq 1 ]; then
+            SUMMARY="${SUMMARY}, 1 needs a running app"
+          elif [ "$RUNTIME" -gt 1 ]; then
+            SUMMARY="${SUMMARY}, ${RUNTIME} need a running app"
+          fi
+          echo "Counts: passed=$PASSED failed=$FAILED runtime=$RUNTIME -> $VERDICT"
+          BROWSER_OK=false
+          if [ -s "$BROWSER" ] && grep -q '^## Adversarial Browser QA' "$BROWSER"; then
+            BROWSER_OK=true
+          fi
+          if [ "$VERDICT" = NO_REPORT ] && [ "$BROWSER_OK" = false ]; then
+            echo "::warning::Neither agent wrote a report; no comment posted."
+            exit 0
+          fi
+          # We write both markers, the headings' completion and the verdict marker; any copies
+          # the agents wrote are dropped, so ours are the only ones.
+          python3 - "$FILE" "$BROWSER" "$SUMMARY" "$VERDICT" "$BROWSER_OK" <<'PY'
+          import io, os, sys
+          path, browser, summary, verdict, browser_ok = sys.argv[1:6]
+          MARKERS = ("<!-- cv-verifier", "<!-- negative-qa", "<!-- qa-verdict:")
+
+          def body(p):
+              text = io.open(p, encoding="utf-8").read().rstrip("\n")
+              return [l for l in text.split("\n") if not l.startswith(MARKERS)]
+
+          if verdict == "NO_REPORT":
+              ac = ["## Acceptance Criteria QA — NO REPORT", "",
+                    "The acceptance-criteria agent wrote no criteria; see the workflow logs."]
+          else:
+              ac = ["## Acceptance Criteria QA — " + summary
+                    if l.strip().startswith("## Acceptance Criteria QA") else l for l in body(path)]
+          if browser_ok == "true":
+              qa = body(browser)
+          elif os.environ.get("BROWSER_OUTCOME") in ("", "skipped"):
+              qa = ["## Adversarial Browser QA", "",
+                    "The browser pass did not run: setup failed before it started. See the workflow logs."]
+          else:
+              qa = ["## Adversarial Browser QA", "", "The browser agent wrote no report; see the workflow logs."]
+          out = ["<!-- cv-verifier -->", "<!-- negative-qa -->"] + ac + [""] + qa
+          out += ["", "<!-- qa-verdict: %s -->" % verdict]
+          io.open(path, "w", encoding="utf-8").write("\n".join(out) + "\n")
+          PY
+          echo "post=true" >> "$GITHUB_OUTPUT"
+          if [ "$VERDICT" = FAIL ]; then
+            echo "::error::QA found an unmet criterion — see the QA comment."
+          elif [ "$VERDICT" = NO_REPORT ]; then
+            echo "::warning::The acceptance-criteria agent wrote no criteria; the comment says so."
           fi
 
       - name: Publish Screenshots and Rewrite Links
         if: always()
-        run: python3 ci/scripts/publish_qa_screenshots.py qa-artifacts negative-qa-comment.md
+        run: python3 ci/scripts/publish_qa_screenshots.py qa-artifacts qa-comment.md
 
       # Durable copy: the GCS bucket is shared and periodically purged.
       - name: Upload QA Artifacts
@@ -276,27 +499,22 @@ jobs:
           name: negative-qa-artifacts
           path: |
             qa-artifacts/
-            negative-qa-comment.md
+            qa-comment.md
             devserver.log
           if-no-files-found: ignore
 
       # A new comment per run, so earlier reports stay readable.
-      - name: Post QA Findings
-        if: always()
+      - name: Post QA Comment
+        if: always() && steps.qa.outputs.post == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           PR: ${{ env.PR_NUMBER }}
         run: |
           set -euo pipefail
-          FILE="$GITHUB_WORKSPACE/negative-qa-comment.md"
-          if [ ! -s "$FILE" ] || ! grep -q '<!-- negative-qa -->' "$FILE"; then
-            echo "::warning::negative-qa-comment.md missing or malformed; skipping comment."
-            exit 0
-          fi
-          BODY=$(cat "$FILE")
+          BODY=$(cat "$GITHUB_WORKSPACE/qa-comment.md")
           PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
           printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
-          echo "Posted negative-QA comment."
+          echo "Posted QA comment."
 
       # No cleanup step: the nightly sync resets the instance wholesale.
