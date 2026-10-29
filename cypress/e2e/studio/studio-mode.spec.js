@@ -133,6 +133,14 @@ describe("Studio Full Mode", () => {
   });
 
   it("shows the item details, not the empty panel, until something is selected", () => {
+    // Content mode also shows the item details, so wait for the promotion
+    // to full mode before asserting. Only staff see the toggle.
+    reloadAsStaff();
+    cy.getBySelector("StudioModeToggleOption-full").should(
+      "have.attr",
+      "aria-pressed",
+      "true"
+    );
     cy.getBySelector("StudioPreviewFrame").should("exist");
     cy.getBySelector("StudioSidePanel").should("exist");
     // The close button renders only in the content editor.
