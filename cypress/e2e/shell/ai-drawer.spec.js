@@ -399,13 +399,21 @@ describe("AI drawer", () => {
     });
 
     it("does not auto-apply a generated image", () => {
-      openDrawerWithReply(GENERATED_IMAGE_REPLY, () => {
+      // The code-editor warning shows that auto-apply ran over the reply.
+      // Only the last of one pass's warnings is shown, so the image goes last.
+      const reply = JSON.stringify([
+        ...JSON.parse(CODE_EDITOR_REPLY),
+        ...JSON.parse(GENERATED_IMAGE_REPLY),
+      ]);
+      openDrawerWithReply(reply, () => {
         cy.getBySelector("AIDrawerSettings").click();
         cy.getBySelector("AIDrawerAutoApplyToggle").find("input").check();
       });
 
       cy.getBySelector("AIDrawerGeneratedImage").should("exist");
-      cy.getBySelector("toast").should("not.exist");
+      cy.getBySelector("toast")
+        .should("contain.text", '"code-editor"')
+        .and("not.contain.text", '"generated-image"');
       cy.get("@approve.all").should("have.length", 0);
     });
   });
