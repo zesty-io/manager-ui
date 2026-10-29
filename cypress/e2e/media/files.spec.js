@@ -1,205 +1,166 @@
+import { v4 as uuidv4 } from "uuid";
+
 const CIRCLE_SVG = `
   <svg viewBox="0 0 2 2" xmlns="http://www.w3.org/2000/svg">
     <circle cx="1" cy="1" r="1" />
   </svg>
 `;
 
-const getRandomFileName = () =>
-  `cypress_upload_test_${Math.floor(Math.random() * 1_000_000)}.svg`;
+const MEDIA_MANAGER_URL = Cypress.env("MEDIA_MANAGER_URL");
 
-let currentFileId = "";
+const getUploadFixture = () => ({
+  contents: Cypress.Buffer.from(CIRCLE_SVG),
+  fileName: `cypress_upload_test_${uuidv4()}.svg`,
+  mimeType: "image/svg+xml",
+  lastModified: Date.now(),
+});
 
-// Skipping since upload non-signed url flow cannot be performed in http environment
-describe.skip("Media Files", () => {
-  before(() => {
-    cy.waitOn("**/files", () => {
-      cy.visit("/media");
-    });
+// Uploads a fresh fixture to All Media and opens its file modal, aliasing
+// the uploaded file's id and bin id for the calling test.
+const uploadAndOpenFile = () => {
+  // All Media lists every file on the instance through a virtualized grid;
+  // sorting newest-first keeps our freshly uploaded file within the
+  // initially rendered rows regardless of how many other files exist.
+  cy.waitOn("**/bins", () => {
+    cy.visit("/media?sort=dateadded");
   });
 
-  it("Uploads a file to All Media", () => {
-    const fileName = getRandomFileName();
-    cy.get("input[type=file]")
-      .first()
-      .selectFile(
-        {
-          contents: Cypress.Buffer.from(CIRCLE_SVG),
-          fileName,
-          mimeType: "image/svg+xml",
-          lastModified: Date.now(),
-        },
-        {
-          // force:true is valid because we use hidden file inputs to do uploads
-          force: true,
-        }
-      );
-    // Wait for upload to complete
-    cy.intercept("POST", "/file*").as("upload");
-    cy.wait("@upload", { timeout: 10_000 });
-    // // Click "Done" button to close upload modal
-    cy.get('button:enabled:contains("Done")').click();
-  });
+  cy.intercept("POST", "**/upload/**").as("upload");
+  cy.get("input[type=file]")
+    .first()
+    .selectFile(getUploadFixture(), { force: true });
 
-  it("Displays skeleton loading when fetching images", () => {
-    cy.wait(2000);
-    cy.get(".MuiBox-root").then(($body) => {
-      if ($body.get(".Load--0FE27")) {
-        cy.get(".Load--0FE27").should("exist");
-      }
-    });
-  });
+  return cy.wait("@upload", { timeout: 30_000 }).then(({ response }) => {
+    expect(response.statusCode).to.eq(201);
+    const file = response.body.data[0];
 
-  it("Displays file preview", () => {
-    cy.get(".ThumbnailContainer").first().click();
-    cy.get(".MuiInputLabel-root")
-      .contains("ZUID")
-      .next()
-      .within(() => {
-        cy.get("input")
-          .invoke("val")
-          .then((sometext) => (currentFileId = sometext));
+    cy.getBySelector("upload-modal-done-btn").click();
+    cy.getBySelector(file.id).click();
+
+    return file;
+  });
+};
+
+describe("Media Files", () => {
+  describe("file actions", () => {
+    let fileId;
+    let fileBinId;
+
+    beforeEach(() => {
+      uploadAndOpenFile().then((file) => {
+        fileId = file.id;
+        fileBinId = file.bin_id;
       });
-    cy.get('[data-cy="file-preview"]');
-  });
-
-  it("Renames filename", () => {
-    cy.get("[aria-label='Open settings menu']").click();
-    cy.contains("Rename").click();
-
-    // type inside "New File Name" textfield
-    cy.contains("New File Name").next().clear().type("CYPRESS TEST NEW FILE");
-
-    // update endpoint
-    cy.waitOn(`**/file/${currentFileId}`, () => {
-      // check if the textfield has the updated value
-      cy.contains("Update").click();
     });
-    cy.get(".MuiTypography-body1")
-      .contains("CYPRESS TEST NEW FILE")
-      .should("exist");
-  });
 
-  it("Updates title", () => {
-    cy.get("[aria-label='Title TextField']")
-      .clear()
-      .type("CYPRESS TEST NEW TITLE");
+    afterEach(() => {
+      cy.deleteMediaFile(fileId);
+    });
 
-    // trigger save button
-    cy.get(".MuiBox-root").then(($body) => {
-      if ($body.find("[aria-label='Save Title Button']").length) {
-        cy.get("[aria-label='Save Title Button']").click();
+    it("renames the file", () => {
+      const newFilename = `cypress-renamed-${uuidv4()}`;
 
-        // NOTE: have to remove waitOn for now since it's causing an intermittent issue on this update
-        // check if Title textfield has the updated value
-        cy.get("[aria-label='Title TextField']").within(() => {
-          cy.get(".MuiInputBase-input").should(
-            "have.value",
-            "CYPRESS TEST NEW TITLE"
-          );
+      cy.getBySelector("file-modal-settings-btn").click();
+      cy.getBySelector("file-modal-rename-menu-item").click();
+
+      cy.getBySelector("rename-file-field")
+        .find("input")
+        .clear()
+        .type(newFilename);
+
+      cy.waitOn(`**/file/${fileId}`, () => {
+        cy.getBySelector("rename-file-update-btn").click();
+      });
+
+      cy.contains(newFilename).should("exist");
+    });
+
+    it("updates the title", () => {
+      const newTitle = `Cypress Test Title ${uuidv4()}`;
+
+      // The title field is multiline, which renders a hidden `aria-hidden`
+      // shadow textarea (for autosizing) alongside the real one — exclude it.
+      cy.getBySelector("file-modal-title-field")
+        .find("textarea:not([aria-hidden])")
+        .clear()
+        .type(newTitle);
+
+      cy.getBySelector("file-modal-save-title-btn").click();
+
+      cy.getBySelector("file-modal-title-field")
+        .find("textarea:not([aria-hidden])")
+        .should("have.value", newTitle);
+    });
+
+    it("copies the file URL", () => {
+      cy.getBySelector("file-url-field")
+        .find("input")
+        .invoke("val")
+        .then((fileUrl) => {
+          cy.getBySelector("copy-file-url-btn").click();
+          cy.assertClipboardValue(fileUrl);
         });
-      }
+    });
+
+    it("copies the file ZUID", () => {
+      cy.getBySelector("copy-zuid-btn").click();
+      cy.assertClipboardValue(fileId);
+    });
+
+    describe("drags the file onto a sidebar folder", () => {
+      let folderId;
+
+      afterEach(() => {
+        if (!folderId) return;
+        cy.apiRequest({
+          method: "DELETE",
+          url: `${MEDIA_MANAGER_URL}/group/${folderId}`,
+        });
+      });
+
+      it("moves the file into the dropped folder", () => {
+        cy.getBySelector("file-modal-close-btn").click();
+
+        cy.apiRequest({
+          method: "POST",
+          url: `${MEDIA_MANAGER_URL}/group`,
+          body: {
+            name: `cypress_drag_folder_${uuidv4()}`,
+            bin_id: fileBinId,
+            group_id: fileBinId,
+          },
+        }).then((response) => {
+          folderId = response.data[0].id;
+
+          const dataTransfer = new DataTransfer();
+
+          cy.getBySelector(fileId)
+            .should("be.visible")
+            .trigger("dragstart", { dataTransfer });
+
+          cy.getBySelector(folderId).trigger("drop", { dataTransfer });
+
+          cy.getBySelector(folderId).click();
+          cy.getBySelector(fileId).should("exist");
+        });
+      });
+    });
+
+    it("deletes the file", () => {
+      cy.getBySelector("file-modal-delete-btn").click();
+      cy.getBySelector("delete-file-confirm-btn").click();
+
+      cy.getBySelector(fileId).should("not.exist");
     });
   });
 
-  it("Copies File URL", () => {
-    let fileUrl = "";
-    cy.contains("File URL")
-      .next()
-      .within(() => {
-        cy.get("input")
-          .invoke("val")
-          .then((val) => (fileUrl = val));
+  describe("missing file", () => {
+    it("shows the 404 state", () => {
+      cy.visit("/media?fileId=bogus");
+
+      cy.getBySelector("media-not-found-state").within(() => {
+        cy.contains("File Not Found").should("exist");
       });
-
-    cy.get('[data-cy="copy-file-url-btn"]').click();
-    cy.assertClipboardValue(fileUrl);
-  });
-
-  it("Copies file ZUID", () => {
-    cy.get('[data-cy="copy-zuid-btn"]').click();
-    cy.assertClipboardValue(currentFileId);
-  });
-
-  it("Creates new folder for dragging files", () => {
-    // visit all media first
-    cy.visit("/media");
-    cy.wait(3000);
-
-    cy.get("[aria-label='Create New Folder']").click();
-
-    cy.get(".MuiDialog-container").within(() => {
-      cy.contains("Folder Name").next().type("CYPRESS TEST FILE DRAG FOLDER");
-      cy.contains("Create").click();
-    });
-
-    cy.intercept("POST", "/groups");
-
-    cy.get(".MuiTreeView-root")
-      .contains("CYPRESS TEST FILE DRAG FOLDER")
-      .should("exist");
-  });
-
-  it("Drag and drop files on sidebar folder", () => {
-    const dataTransfer = new DataTransfer();
-    cy.wait(2000);
-
-    // drag the thumbnail
-    cy.get(`[data-cy="${currentFileId}"]`)
-      .should("be.visible")
-      .trigger("dragstart", {
-        dataTransfer,
-      });
-
-    // drop it to the new folder
-    cy.get(".MuiTreeView-root")
-      .contains("CYPRESS TEST FILE DRAG FOLDER")
-      .trigger("drop", {
-        dataTransfer,
-      });
-
-    // visit the folder and check if the thumbnail is there
-    cy.get(".MuiTreeView-root")
-      .contains("CYPRESS TEST FILE DRAG FOLDER")
-      .click();
-
-    cy.get(".MuiBox-root").within(() => {
-      cy.get(`[data-cy="${currentFileId}"]`).should("exist");
-    });
-  });
-
-  it("Deletes folder", () => {
-    cy.get(".MuiTreeView-root")
-      .contains("CYPRESS TEST FILE DRAG FOLDER")
-      .click();
-
-    cy.get("[aria-label='Open folder menu']").click();
-
-    cy.contains("Delete").click();
-
-    cy.get(".MuiButton-containedError").click();
-
-    cy.intercept("DELETE", "/groups");
-
-    cy.get(".MuiTreeView-root")
-      .contains("CYPRESS TEST FILE DRAG FOLDER")
-      .should("not.exist");
-  });
-
-  it("Deletes file", () => {
-    // click trash and delete modal button
-    cy.visit(`/media?fileId=${currentFileId}`);
-    cy.get("[aria-label='Trash Button']").click();
-    cy.get("[aria-label='Delete Button']").click();
-
-    // call delete endpoint
-    cy.intercept("DELETE", `/file/${currentFileId}`);
-  });
-
-  it("Shows 404 Page", () => {
-    // test invalid fileId
-    cy.visit(`/media?fileId=${currentFileId}12`);
-    cy.get(".NotFoundState").within(() => {
-      cy.get(".MuiTypography-h4").contains("File Not Found").should("exist");
     });
   });
 });

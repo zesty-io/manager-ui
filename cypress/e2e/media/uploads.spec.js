@@ -1,198 +1,120 @@
+import { v4 as uuidv4 } from "uuid";
+
 const CIRCLE_SVG = `
   <svg viewBox="0 0 2 2" xmlns="http://www.w3.org/2000/svg">
     <circle cx="1" cy="1" r="1" />
   </svg>
 `;
 
-const getRandomFileName = () =>
-  `cypress_upload_test_${Math.floor(Math.random() * 1_000_000)}.svg`;
+const BIN_ZUID = "1-6c9618c-r26pt";
+const FOLDER_ZUID = "2-eaaaca5-p1nggr";
 
-// Skipping since upload non-signed url flow cannot be performed in http environment
-describe.skip("Media uploads", () => {
-  before(() => {
-    cy.waitOn("**/groups", () => {
-      cy.visit("/media");
-      //cy.visit("/media/2-eaaaca5-p1nggr")
+const getUploadFixture = () => ({
+  contents: Cypress.Buffer.from(CIRCLE_SVG),
+  fileName: `cypress_upload_test_${uuidv4()}.svg`,
+  mimeType: "image/svg+xml",
+  lastModified: Date.now(),
+});
+
+describe("Media uploads", () => {
+  let uploadedFileId;
+
+  beforeEach(() => {
+    uploadedFileId = undefined;
+  });
+
+  afterEach(() => {
+    cy.deleteMediaFile(uploadedFileId);
+  });
+
+  it("uploads a file to All Media", () => {
+    // All Media lists every file on the instance through a virtualized grid;
+    // sorting newest-first keeps our freshly uploaded file within the
+    // initially rendered rows regardless of how many other files exist.
+    cy.waitOn("**/bins", () => {
+      cy.visit("/media?sort=dateadded");
+    });
+
+    cy.intercept("POST", "**/upload/**").as("upload");
+    cy.get("input[type=file]")
+      .first()
+      .selectFile(getUploadFixture(), { force: true });
+
+    cy.wait("@upload", { timeout: 30_000 }).then(({ response }) => {
+      expect(response.statusCode).to.eq(201);
+      uploadedFileId = response.body.data[0].id;
+
+      cy.getBySelector("upload-modal-done-btn").click();
+      cy.getBySelector(uploadedFileId).should("exist");
     });
   });
 
-  it("uploads a file to a All Media", () => {
-    const fileName = getRandomFileName();
-    cy.get("input[type=file]")
-      .first()
-      .selectFile(
-        {
-          contents: Cypress.Buffer.from(CIRCLE_SVG),
-          fileName,
-          mimeType: "image/svg+xml",
-          lastModified: Date.now(),
-        },
-        {
-          // force:true is valid because we use hidden file inputs to do uploads
-          force: true,
-        }
-      );
-    // Wait for upload to complete
-    cy.intercept("POST", "/file*").as("upload");
-    cy.wait("@upload", { timeout: 30_000 });
-    // Click "Done" button to close upload modal
-    cy.get('button:enabled:contains("Done")').click();
-    // Assert file exists
-    cy.get(`div.MuiCardContent-root:contains("${fileName}")`).should("exist");
-    // CLEANUP
-    // Click filename to open file modal
-    cy.get(`div.MuiCardContent-root:contains("${fileName}")`).click();
-    // Click delete button
-    cy.get('[data-testid="DeleteIcon"]').click();
-    // Click delete confirmation
-    cy.get('button:enabled:contains("Delete")').click();
-  });
+  it("uploads a file to a folder", () => {
+    cy.waitOn(`**/group/${FOLDER_ZUID}`, () => {
+      cy.visit(`/media/folder/${FOLDER_ZUID}`);
+    });
 
-  it.skip("uploads a file to a folder", () => {
-    cy.visit("/media/folder/2-eaaaca5-p1nggr");
-    cy.intercept("*instance*").as("instance");
-    cy.intercept("**/groups").as("groups");
-    cy.intercept("**/bins").as("bins");
-    cy.intercept("**/bin/1-6c9618c-r26pt").as("binZuid");
-    cy.intercept("**/group/2-eaaaca5-p1nggr").as("groupZuid");
-    cy.wait("@groups")
-      .wait("@bins")
-      .wait("@groupZuid")
-      .wait("@binZuid")
-      .wait("@instance");
-    const fileName = getRandomFileName();
+    cy.intercept("POST", "**/upload/**").as("upload");
     cy.get("input[type=file]")
       .first()
-      .selectFile(
-        {
-          contents: Cypress.Buffer.from(CIRCLE_SVG),
-          fileName,
-          mimeType: "image/svg+xml",
-          lastModified: Date.now(),
-        },
-        {
-          // force:true is valid because we use hidden file inputs to do uploads
-          force: true,
-        }
-      );
-    // Wait for upload to complete
-    cy.intercept("POST", "/file*").as("upload");
-    cy.wait("@upload", { timeout: 40_000 });
-    // Click "Done" button to close upload modal
-    cy.get('button:enabled:contains("Done")').click();
-    // Assert file exists
-    cy.get(`div.MuiCardContent-root:contains("${fileName}")`).should("exist");
-    // CLEANUP
-    // Click filename to open file modal
-    cy.get(`div.MuiCardContent-root:contains("${fileName}")`).click();
-    // Click delete button
-    cy.get('[data-testid="DeleteIcon"]').click();
-    // Click delete confirmation
-    cy.get('button:enabled:contains("Delete")').click();
+      .selectFile(getUploadFixture(), { force: true });
+
+    cy.wait("@upload", { timeout: 40_000 }).then(({ response }) => {
+      expect(response.statusCode).to.eq(201);
+      uploadedFileId = response.body.data[0].id;
+
+      cy.getBySelector("upload-modal-done-btn").click();
+      cy.getBySelector(uploadedFileId).should("exist");
+    });
   });
 
   it("uploads a file to a bin", () => {
-    cy.visit("/media/folder/1-6c9618c-r26pt");
-    cy.intercept("*instance*").as("instance");
-    cy.intercept("**/groups").as("groups");
-    cy.intercept("**/bins").as("bins");
-    cy.intercept("**/bin/1-6c9618c-r26pt").as("binZuid");
-    cy.intercept("**/bin/1-6c9618c-r26pt/files").as("binFiles");
-    cy.wait("@groups")
-      .wait("@bins")
-      .wait("@binZuid")
-      .wait("@instance")
-      .wait("@binFiles");
-    const fileName = getRandomFileName();
+    cy.waitOn(`**/bin/${BIN_ZUID}/files`, () => {
+      cy.visit(`/media/folder/${BIN_ZUID}`);
+    });
+
+    cy.intercept("POST", "**/upload/**").as("upload");
     cy.get("input[type=file]")
       .first()
-      .selectFile(
-        {
-          contents: Cypress.Buffer.from(CIRCLE_SVG),
-          fileName,
-          mimeType: "image/svg+xml",
-          lastModified: Date.now(),
-        },
-        {
-          // force:true is valid because we use hidden file inputs to do uploads
-          force: true,
-        }
-      );
-    // Wait for upload to complete
-    cy.intercept("POST", "/file*").as("upload");
-    cy.wait("@upload", { timeout: 30_000 });
-    // Click "Done" button to close upload modal
-    cy.get('button:enabled:contains("Done")').click();
-    // Assert file exists
-    cy.get(`div.MuiCardContent-root:contains("${fileName}")`).should("exist");
-    // CLEANUP
-    // Click filename to open file modal
-    cy.get(`div.MuiCardContent-root:contains("${fileName}")`).click();
-    // Click delete button
-    cy.get('[data-testid="DeleteIcon"]').click();
-    // Click delete confirmation
-    cy.get('button:enabled:contains("Delete")').click();
+      .selectFile(getUploadFixture(), { force: true });
+
+    cy.wait("@upload", { timeout: 30_000 }).then(({ response }) => {
+      expect(response.statusCode).to.eq(201);
+      uploadedFileId = response.body.data[0].id;
+
+      cy.getBySelector("upload-modal-done-btn").click();
+      cy.getBySelector(uploadedFileId).should("exist");
+    });
   });
 
-  it.skip("uploads a file via drag 'n drop", () => {
-    cy.visit("/media/folder/2-eaaaca5-p1nggr");
-    cy.intercept("*instance*").as("instance");
-    cy.intercept("**/groups").as("groups");
-    cy.intercept("**/bins").as("bins");
-    cy.intercept("**/bin/1-6c9618c-r26pt").as("binZuid");
-    cy.intercept("**/group/2-eaaaca5-p1nggr").as("groupZuid");
-    cy.wait("@groups")
-      .wait("@bins")
-      .wait("@groupZuid")
-      .wait("@binZuid")
-      .wait("@instance");
-    const fileName = getRandomFileName();
-    cy.get("input[type=file]")
-      .first()
-      .selectFile(
-        {
-          contents: Cypress.Buffer.from(CIRCLE_SVG),
-          fileName,
-          mimeType: "image/svg+xml",
-          lastModified: Date.now(),
-        },
-        {
-          // TODO is this a sufficient test of drag-n-drop?
-          subject: "drag-n-drop",
-          // force:true is valid because we use hidden file inputs to do uploads
-          force: true,
-        }
-      );
-    // Wait for upload to complete
-    cy.intercept("POST", "/file*").as("upload");
-    cy.wait("@upload", { timeout: 30_000 });
-    // Click "Done" button to close upload modal
-    cy.get('button:contains("Done")').click();
-    // Assert file exists
-    cy.get(`div.MuiCardContent-root:contains("${fileName}")`).should("exist");
-    // CLEANUP
-    // Click filename to open file modal
-    cy.get(`div.MuiCardContent-root:contains("${fileName}")`).click();
-    // Click delete button
-    cy.get('[data-testid="DeleteIcon"]').click();
-    // Click delete confirmation
-    cy.get('button:enabled:contains("Delete")').click();
+  it("uploads a file via drag 'n drop", () => {
+    cy.waitOn(`**/group/${FOLDER_ZUID}`, () => {
+      cy.visit(`/media/folder/${FOLDER_ZUID}`);
+    });
+
+    cy.intercept("POST", "**/upload/**").as("upload");
+    // Drop onto the dropzone root (not the hidden file input) so react-dropzone's
+    // drag listeners, which are attached to the root element, actually fire.
+    cy.getBySelector("dnd-provider-box").selectFile(getUploadFixture(), {
+      action: "drag-drop",
+      force: true,
+    });
+
+    cy.wait("@upload", { timeout: 30_000 }).then(({ response }) => {
+      expect(response.statusCode).to.eq(201);
+      uploadedFileId = response.body.data[0].id;
+
+      cy.getBySelector("upload-modal-done-btn").click();
+      cy.getBySelector(uploadedFileId).should("exist");
+    });
   });
 
-  it.skip("displays upload message when dragging a file into the grid", () => {
-    cy.visit("/media/folder/2-eaaaca5-p1nggr");
-    cy.intercept("*instance*").as("instance");
-    cy.intercept("**groups**").as("groups");
-    cy.intercept("**bins**").as("bins");
-    cy.intercept("*bin/1-6c9618c-r26pt").as("binZuid");
-    cy.intercept("*group/2-eaaaca5-p1nggr").as("groupZuid");
-    cy.wait("@groups")
-      .wait("@bins")
-      .wait("@groupZuid")
-      .wait("@binZuid")
-      .wait("@instance");
-    const fileName = getRandomFileName();
-    cy.get('[data-testid="dnd-provider-box"]')
+  it("displays upload message when dragging a file into the grid", () => {
+    cy.waitOn(`**/group/${FOLDER_ZUID}`, () => {
+      cy.visit(`/media/folder/${FOLDER_ZUID}`);
+    });
+
+    cy.getBySelector("dnd-provider-box")
       .trigger("dragover")
       .contains("Upload files to");
   });
