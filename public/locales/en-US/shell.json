@@ -61,6 +61,7 @@
   "collapseSidebar": "Collapse Sidebar",
   "commentAddError": "Unable to add comment. Please check your internet connection and try again.",
   "commentPlaceholder": "Reply or add others with @",
+  "confirmDialogGenericError": "Something went wrong. Please try again.",
   "confirmPublishBody": "This will immediately make v{{version}} of the {{item}} available on all of your platforms. You can always unpublish this item later if needed.",
   "confirmPublishTitle": "Publish {{item}}",
   "contactSupport": "Contact Support",

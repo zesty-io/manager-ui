@@ -90,7 +90,6 @@
   "fontInstallSuccess": "फ़ॉन्ट \"{{family}} ({{variants}})\" इंस्टॉल हो गया है",
   "fontPreviewText": "यह टेक्स्ट का एक उदाहरण है",
   "fontUninstalled": "फ़ॉन्ट \"{{fontLabel}}\" अनइंस्टॉल कर दिया गया है",
-  "fontUninstallFailed": "{{fontLabel}} को अनइंस्टॉल करने में विफल: {{error}}",
   "FriendlyPagination": "फ्रेंडली पेजिनेशन (Friendly Pagination)",
   "GoogleAutoLinker": "Google Auto Linker",
   "GoogleUrchinId": "Google Analytics ID",

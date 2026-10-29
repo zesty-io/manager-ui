@@ -1,18 +1,10 @@
-import { memo, useState, useCallback } from "react";
+import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  Typography,
-  Stack,
-  Box,
-} from "@mui/material";
-import { DeleteRounded } from "@mui/icons-material";
+import { Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { deleteFile } from "../../../store/files";
+import { ConfirmDialog } from "../../../../../../shell/components/ConfirmDialog";
 
 interface DeleteDialogProps {
   open: boolean;
@@ -28,94 +20,41 @@ export const DeleteDialog = memo(function DeleteDialog(
   const { open, onClose, fileZUID, fileName, status } = props;
   const { t } = useTranslation();
 
-  const [deleting, setDeleting] = useState(false);
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const handleDeleteFile = useCallback(async () => {
-    if (!fileZUID || !status) return;
-    setDeleting(true);
+  const handleDeleteFile = async () => {
+    // No message: the dialog then shows its translated generic error rather
+    // than closing as if the delete had succeeded.
+    if (!fileZUID || !status) throw new Error();
 
-    try {
-      const res: any = await dispatch(deleteFile(fileZUID, status));
-      setDeleting(false);
-      if (res.status === 200) {
-        onClose();
-        history.push("/code");
-      }
-    } catch (err) {
-      setDeleting(false);
-      console.error("Failed to delete file:", err);
-    }
-  }, [dispatch, fileZUID, status, history, onClose]);
+    await dispatch(deleteFile(fileZUID, status));
+    history.push("/code");
+  };
+
   return (
-    <Dialog
-      data-cy="code-app-delete-dialog"
+    <ConfirmDialog
       open={open}
-      fullWidth
-      maxWidth="xs"
       onClose={onClose}
-    >
-      <DialogTitle>
-        <Box
-          sx={{
-            backgroundColor: "red.100",
-            borderRadius: "100%",
-            width: "40px",
-            height: "40px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            mb: 1.5,
-          }}
-        >
-          <DeleteRounded color="error" />
-        </Box>
-        <Stack
-          display="flex"
-          flexDirection="row"
-          justifyContent="flex-start"
-          alignItems="center"
-          columnGap={1}
-          overflow="hidden"
-          textOverflow="ellipsis"
-        >
+      onConfirm={handleDeleteFile}
+      dialogDataCy="code-app-delete-dialog"
+      confirmDataCy="DeleteContentItemConfirmButton"
+      confirmLabel={t("common.delete")}
+      title={
+        <>
+          {t("code.deleteFileLabel")}
+          {":"}{" "}
           <Typography
+            component="span"
             variant="inherit"
-            fontWeight={700}
-            flexGrow={0}
-            flexShrink={0}
+            fontWeight={600}
+            sx={{ wordBreak: "break-word" }}
           >
-            {t("code.deleteFileLabel")}
-            {":"}
+            {fileName}
           </Typography>
-          <Typography variant="inherit" fontWeight={600} noWrap flexGrow={0}>
-            {`${fileName}`}
-          </Typography>
-        </Stack>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          {t("code.deleteFileCdnWarning")}
-        </Typography>
-      </DialogTitle>
-      <DialogActions>
-        <Button
-          data-cy="code-app-delete-dialog-cancel-button"
-          variant="text"
-          color="inherit"
-          onClick={onClose}
-        >
-          {t("common.cancel")}
-        </Button>
-        <Button
-          data-cy="DeleteContentItemConfirmButton"
-          variant="contained"
-          color="error"
-          onClick={handleDeleteFile}
-          loading={deleting}
-        >
-          {t("common.delete")}
-        </Button>
-      </DialogActions>
-    </Dialog>
+        </>
+      }
+      description={t("code.deleteFileCdnWarning")}
+    />
   );
 });

@@ -90,7 +90,6 @@
   "fontInstallSuccess": "Lettertype \"{{family}} ({{variants}})\" is geïnstalleerd",
   "fontPreviewText": "Dit is een voorbeeldtekst",
   "fontUninstalled": "Lettertype \"{{fontLabel}}\" is gedeïnstalleerd",
-  "fontUninstallFailed": "Deïnstalleren van {{fontLabel}} mislukt: {{error}}",
   "FriendlyPagination": "Vriendelijke paginering",
   "GoogleAutoLinker": "Google Auto Linker",
   "GoogleUrchinId": "Google Analytics ID",
