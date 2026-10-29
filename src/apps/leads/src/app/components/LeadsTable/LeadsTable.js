@@ -167,8 +167,8 @@ class LeadsTable extends Component {
               },
             },
             "& tbody tr:hover": {
-              backgroundColor: theme.palette.leads.rowHover,
-              borderRight: `1px solid ${theme.palette.leads.rowHoverBorder}`,
+              backgroundColor: theme.palette.grey[200],
+              borderRight: `1px solid ${theme.palette.border}`,
               cursor: "pointer",
             },
           })}
