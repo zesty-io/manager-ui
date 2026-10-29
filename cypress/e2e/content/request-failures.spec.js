@@ -92,6 +92,28 @@ describe("Failed requests are surfaced", () => {
     cy.getBySelector("SaveItemButton").should("be.enabled");
   });
 
+  it("Item save shows both the saved and refresh error toasts when only the refetch fails", () => {
+    cy.intercept("PUT", itemUrl(), {
+      statusCode: 200,
+      body: { data: {}, meta: {} },
+    }).as("saveItem");
+
+    visitItem();
+    makeDirty();
+    // Stub after load so only the post-save refetch fails
+    cy.intercept("GET", itemUrl(), {
+      statusCode: 503,
+      body: { error: "Injected failure" },
+    }).as("refetchItem");
+    cy.getBySelector("SaveItemButton").click();
+    cy.wait("@saveItem");
+    cy.wait("@refetchItem");
+
+    cy.getBySelector("toast").should("have.length", 2);
+    cy.getBySelector("toast").contains("Item Saved");
+    cy.getBySelector("toast").contains("could not be refreshed");
+  });
+
   it("Item save shows an error on network failure and stays dirty", () => {
     cy.intercept("PUT", itemUrl(), { forceNetworkError: true }).as("saveItem");
 
@@ -114,7 +136,8 @@ describe("Failed requests are surfaced", () => {
       visitItem();
       cy.wait("@loadItem");
       cy.getBySelector("ItemNotFound").should("exist");
-      cy.getBySelector("toast").should("have.length", 1);
+      // Text instead of a count, StrictMode double-runs the load in dev
+      cy.getBySelector("toast").contains("Injected failure");
     });
   });
 
@@ -124,7 +147,7 @@ describe("Failed requests are surfaced", () => {
     visitItem();
     cy.wait("@loadItem");
     cy.getBySelector("ItemNotFound").should("exist");
-    cy.getBySelector("toast").should("have.length", 1);
+    cy.getBySelector("toast").contains("Failed to fetch");
   });
 
   it("Instance settings save shows a single error toast on failure", () => {
