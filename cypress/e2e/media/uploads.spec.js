@@ -7,7 +7,7 @@ const CIRCLE_SVG = `
 `;
 
 const BIN_ZUID = "1-6c9618c-r26pt";
-const FOLDER_ZUID = "2-eaaaca5-p1nggr";
+const MEDIA_MANAGER_URL = Cypress.env("MEDIA_MANAGER_URL");
 
 const getUploadFixture = () => ({
   contents: Cypress.Buffer.from(CIRCLE_SVG),
@@ -18,6 +18,31 @@ const getUploadFixture = () => ({
 
 describe("Media uploads", () => {
   let uploadedFileId;
+  let folderId;
+
+  before(() => {
+    // Create a scratch folder instead of relying on a hardcoded ZUID, which
+    // drifts whenever the dev instance snapshot is re-seeded.
+    cy.apiRequest({
+      method: "POST",
+      url: `${MEDIA_MANAGER_URL}/group`,
+      body: {
+        name: `cypress_upload_folder_${uuidv4()}`,
+        bin_id: BIN_ZUID,
+        group_id: BIN_ZUID,
+      },
+    }).then((response) => {
+      folderId = response.data[0].id;
+    });
+  });
+
+  after(() => {
+    if (!folderId) return;
+    cy.apiRequest({
+      method: "DELETE",
+      url: `${MEDIA_MANAGER_URL}/group/${folderId}`,
+    });
+  });
 
   beforeEach(() => {
     uploadedFileId = undefined;
@@ -50,8 +75,8 @@ describe("Media uploads", () => {
   });
 
   it("uploads a file to a folder", () => {
-    cy.waitOn(`**/group/${FOLDER_ZUID}`, () => {
-      cy.visit(`/media/folder/${FOLDER_ZUID}`);
+    cy.waitOn(`**/group/${folderId}`, () => {
+      cy.visit(`/media/folder/${folderId}`);
     });
 
     cy.intercept("POST", "**/upload/**").as("upload");
@@ -88,8 +113,8 @@ describe("Media uploads", () => {
   });
 
   it("uploads a file via drag 'n drop", () => {
-    cy.waitOn(`**/group/${FOLDER_ZUID}`, () => {
-      cy.visit(`/media/folder/${FOLDER_ZUID}`);
+    cy.waitOn(`**/group/${folderId}`, () => {
+      cy.visit(`/media/folder/${folderId}`);
     });
 
     cy.intercept("POST", "**/upload/**").as("upload");
@@ -110,8 +135,8 @@ describe("Media uploads", () => {
   });
 
   it("displays upload message when dragging a file into the grid", () => {
-    cy.waitOn(`**/group/${FOLDER_ZUID}`, () => {
-      cy.visit(`/media/folder/${FOLDER_ZUID}`);
+    cy.waitOn(`**/group/${folderId}`, () => {
+      cy.visit(`/media/folder/${folderId}`);
     });
 
     // react-dropzone only flips `isDragActive` on `dragenter` (not
