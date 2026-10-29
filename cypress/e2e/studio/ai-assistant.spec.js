@@ -1382,4 +1382,66 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
     cy.getBySelector("AIDrawerNotice").should("not.exist");
   });
+
+  // An image reply. `hero_image` is the seeded model's images field.
+  const imageReply = (refKey) =>
+    mcpReply([
+      { type: "SET_VALUE", payload: { refKey, value: "3-e2e000-stub00" } },
+    ]);
+
+  it("shows an image with no field to fill, with no Apply and no warning", () => {
+    // The warning for a ref not on the page shows the reply was handled. Only
+    // the last of one pass's warnings is shown, so the image goes last.
+    stubMcp(() =>
+      mcpReply([
+        {
+          type: "SET_VALUE",
+          payload: { refKey: "e2e-not-on-page", value: "Text" },
+        },
+        {
+          type: "SET_VALUE",
+          payload: { refKey: "generated-image", value: "3-e2e000-stub00" },
+        },
+      ])
+    );
+    openAiPanel();
+    sendPrompt("Generate an image of a harbor");
+
+    cy.getBySelector("AIDrawerGeneratedImage").should("exist");
+    cy.getBySelector("AIDrawerSetValue").should("not.exist");
+    cy.getBySelector("toast")
+      .should("contain.text", '"e2e-not-on-page"')
+      .and("not.contain.text", '"generated-image"');
+    cy.getBySelector("StudioContentSaveBar").should("not.exist");
+  });
+
+  it("applies an image to a page image field only on Apply", () => {
+    serveEchoCanvas();
+    stubMcp(() => imageReply("hero_image"));
+    visitStudio();
+    recordHostCommands();
+    awaitEchoCanvas();
+    openAiPanel();
+    sendPrompt("Generate a hero image");
+
+    cy.get("@mcp")
+      .its("request.body.registryKeys")
+      .should("include", "hero_image");
+    cy.getBySelector("AIDrawerGeneratedImage").should("exist");
+    cy.getBySelector("StudioContentSaveBar").should("not.exist");
+
+    cy.getBySelector("AIDrawerSetValue").should("not.be.disabled").click();
+    cy.getBySelector("AIDrawerSetValue").should("be.disabled");
+    cy.getBySelector("StudioContentSaveBar").should("exist");
+    cy.window()
+      .its("__hostCommands")
+      .should((commands) => {
+        const repaint = commands.find((c) => c.action === "setAttrByField");
+        expect(repaint).to.include({ itemZuid: itemZUID, attr: "src" });
+        expect(repaint.value).to.match(/\/resolve\/3-e2e000-stub00\/getimage$/);
+      });
+
+    cy.getBySelector("StudioContentCancelButton").click();
+    cy.getBySelector("StudioContentSaveBar").should("not.exist");
+  });
 });
