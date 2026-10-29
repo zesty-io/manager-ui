@@ -15,8 +15,8 @@ const getUploadFixture = () => ({
   lastModified: Date.now(),
 });
 
-// Uploads a fresh fixture to All Media and opens its file modal, aliasing
-// the uploaded file's id and bin id for the calling test.
+// Uploads a fresh fixture to All Media and opens its file modal, returning
+// the uploaded file for the calling test.
 const uploadAndOpenFile = () => {
   // All Media lists every file on the instance through a virtualized grid;
   // sorting newest-first keeps our freshly uploaded file within the
@@ -44,12 +44,10 @@ const uploadAndOpenFile = () => {
 describe("Media Files", () => {
   describe("file actions", () => {
     let fileId;
-    let fileBinId;
 
     beforeEach(() => {
       uploadAndOpenFile().then((file) => {
         fileId = file.id;
-        fileBinId = file.bin_id;
       });
     });
 
@@ -121,16 +119,25 @@ describe("Media Files", () => {
       it("moves the file into the dropped folder", () => {
         cy.getBySelector("file-modal-close-btn").click();
 
-        cy.apiRequest({
-          method: "POST",
-          url: `${MEDIA_MANAGER_URL}/group`,
-          body: {
-            name: `cypress_drag_folder_${uuidv4()}`,
-            bin_id: fileBinId,
-            group_id: fileBinId,
-          },
-        }).then((response) => {
-          folderId = response.data[0].id;
+        // Create the target folder through the UI (not a raw apiRequest) so
+        // the createGroup RTK Query mutation fires and invalidates the
+        // sidebar's cached folder list — a folder created via a bare HTTP
+        // call never shows up in the sidebar's tree.
+        const folderName = `cypress_drag_folder_${uuidv4()}`;
+
+        cy.getBySelector("createNewMediaFolder").click();
+        cy.getBySelector("new-folder-name-field")
+          .find("input")
+          .clear()
+          .type(folderName);
+
+        cy.intercept("POST", "**/group").as("createGroup");
+        cy.getBySelector("new-folder-create-btn")
+          .should("not.be.disabled")
+          .click();
+
+        cy.wait("@createGroup").then(({ response }) => {
+          folderId = response.body.data[0].id;
 
           const dataTransfer = new DataTransfer();
 
@@ -138,7 +145,9 @@ describe("Media Files", () => {
             .should("be.visible")
             .trigger("dragstart", { dataTransfer });
 
-          cy.getBySelector(folderId).trigger("drop", { dataTransfer });
+          cy.getBySelector(folderId, { timeout: 15_000 }).trigger("drop", {
+            dataTransfer,
+          });
 
           cy.getBySelector(folderId).click();
           cy.getBySelector(fileId).should("exist");

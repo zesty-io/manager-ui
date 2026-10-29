@@ -114,8 +114,18 @@ describe("Media uploads", () => {
       cy.visit(`/media/folder/${FOLDER_ZUID}`);
     });
 
+    // react-dropzone only flips `isDragActive` on `dragenter` (not
+    // `dragover`), and only when the drag's dataTransfer advertises a
+    // "Files" type, so the dataTransfer needs a real file item attached.
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(
+      new File([CIRCLE_SVG], "cypress_dragover_test.svg", {
+        type: "image/svg+xml",
+      })
+    );
+
     cy.getBySelector("dnd-provider-box")
-      .trigger("dragover")
+      .trigger("dragenter", { dataTransfer })
       .contains("Upload files to");
   });
 });
