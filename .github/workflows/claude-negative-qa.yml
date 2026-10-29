@@ -259,6 +259,8 @@ jobs:
           echo "::warning::The QA agent did not run to completion (turn limit or error). Findings are real but coverage is partial."
           FILE="negative-qa-comment.md"
           if [ -s "$FILE" ]; then
+            # Also flag it under the heading: a footer alone is below the fold.
+            sed -i '0,/^## Adversarial Browser QA/s/^## Adversarial Browser QA.*$/&\n\n> ⚠️ **Incomplete pass** — coverage is partial; see the note at the end./' "$FILE"
             printf '\n\n---\n_⚠️ This pass did not run to completion — the agent stopped before finishing. Anything reported above still stands, but coverage is partial and the summary may read as provisional._\n' >> "$FILE"
           fi
 
@@ -278,7 +280,7 @@ jobs:
             devserver.log
           if-no-files-found: ignore
 
-      # Upsert: these findings are long, so a comment per push would bury the conversation.
+      # A new comment per run, so earlier reports stay readable.
       - name: Post QA Findings
         if: always()
         env:
@@ -294,14 +296,7 @@ jobs:
           fi
           BODY=$(cat "$FILE")
           PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
-          CID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
-            --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | startswith("<!-- negative-qa -->")) | .id' | head -n1)
-          if [ -n "${CID:-}" ]; then
-            printf '%s' "$PAYLOAD" | gh api -X PATCH "repos/$REPO/issues/comments/$CID" --input - --silent
-            echo "Updated existing negative-QA comment."
-          else
-            printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
-            echo "Posted negative-QA comment."
-          fi
+          printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
+          echo "Posted negative-QA comment."
 
       # No cleanup step: the nightly sync resets the instance wholesale.
