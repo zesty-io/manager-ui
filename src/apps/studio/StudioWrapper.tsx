@@ -81,7 +81,12 @@ import {
 } from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
 import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
-import { CodeRegionReplaced, useStudioAiEdit } from "./hooks/useStudioAiEdit";
+import {
+  CodeRegionReplaced,
+  aiImageFields,
+  useStudioAiEdit,
+} from "./hooks/useStudioAiEdit";
+import { buildAiSelection } from "./utils/aiSelection";
 import { contentKey, useStudioHistory } from "./hooks/useStudioHistory";
 import { getRefRegistry } from "../../engine/refRegistry";
 import { useMultiPermission } from "shell/hooks/use-permissions";
@@ -2403,6 +2408,20 @@ export const StudioWrapper = () => {
   const isAiRendering = isAiPreviewing && aiPreview?.status === "loading";
   const canUseAi = aiAllowed && !!aiPageView;
   const showAiPanel = isAiPanelOpen && canUseAi;
+  const aiImageFieldNames = useMemo(
+    () => aiImageFields(pageFields).map((field) => field.name as string),
+    [pageFields]
+  );
+  // Read when a prompt is sent, so the panel needs no selection state.
+  const getAiSelection = useCallback(
+    () =>
+      buildAiSelection(
+        inspectorSelection,
+        (codeId) => getLayoutRegionSnapshot(codeId).source,
+        (fieldZUID) => fieldsState[fieldZUID]?.name
+      ),
+    [fieldsState, getLayoutRegionSnapshot, inspectorSelection]
+  );
 
   useEffect(() => {
     if (!canUseAi) setIsAiPanelOpen(false);
@@ -2786,6 +2805,8 @@ export const StudioWrapper = () => {
                 pageItemZUID={pageItemZUID}
                 drawerWidth={drawerWidth}
                 lastDiscard={aiLastDiscard}
+                imageFieldNames={aiImageFieldNames}
+                getSelection={getAiSelection}
                 onRequestPendingChange={setIsAiRequestPending}
                 onBeforeReplyApplied={handleBeforeAiReplyApplied}
                 onAfterReplyApplied={handleAfterAiReplyApplied}

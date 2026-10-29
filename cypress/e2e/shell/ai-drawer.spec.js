@@ -316,6 +316,14 @@ describe("AI drawer", () => {
       },
     ]);
 
+    // An image with no field to fill: shown, never applied.
+    const GENERATED_IMAGE_REPLY = JSON.stringify([
+      {
+        type: "SET_VALUE",
+        payload: { refKey: "generated-image", value: "3-e2e000-stub00" },
+      },
+    ]);
+
     const openDrawerWithReply = (response, beforePrompt = () => {}) => {
       cy.intercept("GET", "**/chats", { body: { data: [] } });
       cy.intercept("POST", "**/client", {
@@ -379,6 +387,25 @@ describe("AI drawer", () => {
       });
 
       cy.getBySelector("toast").should("contain.text", '"code-editor"');
+      cy.get("@approve.all").should("have.length", 0);
+    });
+
+    it("shows a generated image with no Apply and no warning", () => {
+      openDrawerWithReply(GENERATED_IMAGE_REPLY);
+
+      cy.getBySelector("AIDrawerGeneratedImage").should("exist");
+      cy.getBySelector("AIDrawerSetValue").should("not.exist");
+      cy.getBySelector("toast").should("not.exist");
+    });
+
+    it("does not auto-apply a generated image", () => {
+      openDrawerWithReply(GENERATED_IMAGE_REPLY, () => {
+        cy.getBySelector("AIDrawerSettings").click();
+        cy.getBySelector("AIDrawerAutoApplyToggle").find("input").check();
+      });
+
+      cy.getBySelector("AIDrawerGeneratedImage").should("exist");
+      cy.getBySelector("toast").should("not.exist");
       cy.get("@approve.all").should("have.length", 0);
     });
   });
