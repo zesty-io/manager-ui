@@ -2817,10 +2817,18 @@ export const StudioWrapper = () => {
                 drawerWidth={drawerWidth}
                 logoSrc={contentOneLogo}
               />
-            ) : interactionMode === "content" ||
-              (interactionMode === "full" && panelMode === "edit") ? (
-              // Full mode: the content editor only while a field is edited,
-              // else the empty panel below — never panelMode's "info" default.
+            ) : selectedLayoutTag && panelMode !== "edit" ? (
+              // A selected layout element with no editable properties names
+              // itself here, at the same width as the details panel.
+              <StudioEmptyPanel
+                title={getTagTitles(t)[selectedLayoutTag] || selectedLayoutTag}
+                message={t("content.studioEmptyPanelNoProperties")}
+                drawerWidth={drawerWidth}
+                logoSrc={contentOneLogo}
+              />
+            ) : (
+              // Every mode: the content editor while a field is edited, else
+              // the item details.
               <StudioSidePanel
                 headerTitle={headerTitle}
                 selectedItemLabel={selectedItemLabel}
@@ -2843,7 +2851,8 @@ export const StudioWrapper = () => {
                 drawerWidth={drawerWidth}
                 logoSrc={contentOneLogo}
                 alertSlot={
-                  showFreestyleAlert ? (
+                  // Layout-grammar modes show this alert on the canvas instead.
+                  showFreestyleAlert && !usesLayoutGrammar(interactionMode) ? (
                     <StudioFreestyleAlert
                       onEditInFreestyle={handleEditInFreestyle}
                       onDismiss={dismissFreestyleAlert}
@@ -2851,23 +2860,7 @@ export const StudioWrapper = () => {
                   ) : null
                 }
               />
-            ) : usesLayoutGrammar(interactionMode) ? (
-              // Layout grammar always reserves the right panel; see #4374.
-              <StudioEmptyPanel
-                title={
-                  selectedLayoutTag
-                    ? getTagTitles(t)[selectedLayoutTag] || selectedLayoutTag
-                    : t("content.studioEmptyPanelTitle")
-                }
-                message={
-                  selectedLayoutTag
-                    ? t("content.studioEmptyPanelNoProperties")
-                    : t("content.studioEmptyPanelNoSelection")
-                }
-                drawerWidth={drawerWidth}
-                logoSrc={contentOneLogo}
-              />
-            ) : null}
+            )}
           </Box>
           {showSaveBar && !showSaveChangesModal ? (
             <Box
