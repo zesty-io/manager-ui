@@ -260,7 +260,7 @@ jobs:
           FILE="negative-qa-comment.md"
           if [ -s "$FILE" ]; then
             # Also flag it under the heading: a footer alone is below the fold.
-            sed -i '0,/^## Adversarial Browser QA/s/^## Adversarial Browser QA.*$/&\n\n> ⚠️ **Incomplete pass** — coverage is partial; see the note at the end./' "$FILE"
+            sed -i '0,/^## Adversarial Browser QA/s/^## Adversarial Browser QA.*$/&\n\n> ⚠️ **Incomplete pass** — coverage is partial; see the note at the end.\n/' "$FILE"
             printf '\n\n---\n_⚠️ This pass did not run to completion — the agent stopped before finishing. Anything reported above still stands, but coverage is partial and the summary may read as provisional._\n' >> "$FILE"
           fi
 

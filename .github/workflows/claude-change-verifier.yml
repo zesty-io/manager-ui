@@ -2,7 +2,7 @@ name: "Claude: Acceptance Criteria QA"
 
 # Static QA on every non-draft, same-repo PR into dev. Reads the PR diff, the changed source, and
 # the linked issue, judges the change against the issue's acceptance criteria from the code, and
-# posts (or updates) one QA sign-off comment. It never boots the app or drives a browser.
+# posts a QA sign-off comment on each run. It never boots the app or drives a browser.
 #
 # The agent grades criteria; it does NOT write the verdict. The verdict is arithmetic on its marks,
 # computed in the post step, so the same marks always produce the same verdict. Criteria that need
