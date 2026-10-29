@@ -1,9 +1,9 @@
 name: "Claude: QA"
 
-# Two agents, one advisory comment per run. The AC agent grades the PR against its linked issue
-# from the code alone, before the dev server boots, so a setup failure cannot cost the verdict.
-# The browser agent then attacks the changed surface in the real app. A red check means QA did
-# not run; a ❌ criterion is an annotation, never a failure.
+# Two agents, one advisory comment per run. `ac` grades the PR against its linked issue from the
+# code alone, in a job holding no secrets beyond the two the agent needs, since it reads public
+# issue text. `browser` attacks the changed surface in the real app. `post` computes the verdict
+# and comments. A red job means its half did not run; a ❌ criterion is only an annotation.
 
 # Runs on every push: a once-per-PR report goes stale silently and a stale finding reads
 # exactly like a live one. Costs ~9 min of agent time per push, serialized; advisory, so a
@@ -25,44 +25,27 @@ on:
         description: "PR number to QA"
         required: true
 
-# Its own group, not ci.yaml's — sharing that one meant losing the single pending slot to
-# every PR's Cypress run and being cancelled before starting. Only stops two QA agents
-# mutating the same fixtures at once; isolation from Cypress comes from the instance. Stays
-# non-cancelling now pushes trigger runs — cancelling a global group would let one PR's push
-# kill another's run.
-concurrency:
-  group: manager-ui-qa
-  cancel-in-progress: false
-
 jobs:
-  qa:
-    name: Claude QA (advisory)
-    # Fork PRs get neither secret; pull_request (not _target) means no path to leak them.
+  ac:
+    name: Claude QA — acceptance criteria
+    # Fork PRs get no secrets; pull_request (not _target) means no path to leak them.
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event.pull_request.draft == false &&
        github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 15
+    concurrency:
+      group: claude-qa-ac-${{ github.event.pull_request.number || inputs.pr_number }}
+      cancel-in-progress: true
     permissions:
       contents: read
       pull-requests: write
       issues: read
     env:
       PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
-      # INTERNAL-NEGATIVE-QA, not the Cypress instance. Fixtures are authored in production and
-      # reach dev via the nightly sync, which doubles as the cleanup.
-      QA_INSTANCE_ZUID: 8-acabf6a8d6-bj9tr2
-      # Pinned: --storage-state is load-bearing, and a silent rename would look like the app
-      # being behind a login screen rather than a bug.
-      PLAYWRIGHT_MCP_VERSION: 0.0.78
-
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-        with:
-          # Needs full history to diff the branch against origin/dev.
-          fetch-depth: 0
+      - uses: actions/checkout@v4
 
       # Resolve the linked issue: branch name `<issue#>-slug`, then closing refs.
       - name: Resolve Linked Issue
@@ -189,6 +172,51 @@ jobs:
             in the "Validates #<n>" line (GitHub auto-links it), and never quote the `<!-- cv-verifier -->`
             marker anywhere but the first line.
 
+      - name: Upload AC Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-ac-report
+          path: qa-comment.md
+          if-no-files-found: ignore
+
+  browser:
+    name: Claude QA — browser (advisory)
+    needs: ac
+    if: >-
+      always() && needs.ac.result != 'cancelled' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.pull_request.draft == false &&
+        github.event.pull_request.head.repo.full_name == github.repository))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Its own group, not ci.yaml's — sharing that one meant losing the single pending slot to
+    # every PR's Cypress run and being cancelled before starting. Only stops two QA agents
+    # mutating the same fixtures at once; isolation from Cypress comes from the instance. Stays
+    # non-cancelling now pushes trigger runs — cancelling a global group would let one PR's push
+    # kill another's run.
+    concurrency:
+      group: manager-ui-qa
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+      # INTERNAL-NEGATIVE-QA, not the Cypress instance. Fixtures are authored in production and
+      # reach dev via the nightly sync, which doubles as the cleanup.
+      QA_INSTANCE_ZUID: 8-acabf6a8d6-bj9tr2
+      # Pinned: --storage-state is load-bearing, and a silent rename would look like the app
+      # being behind a login screen rather than a bug.
+      PLAYWRIGHT_MCP_VERSION: 0.0.78
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          # Needs full history to diff the branch against origin/dev.
+          fetch-depth: 0
+
       - name: Set up Node
         uses: actions/setup-node@v4.1.0
         with:
@@ -258,13 +286,11 @@ jobs:
               REPO        = ${{ github.repository }}
               PR_NUMBER   = ${{ env.PR_NUMBER }}
               BASE_URL    = http://${{ env.QA_INSTANCE_ZUID }}.manager.dev.zesty.io:8080
-              AC_REPORT   = ${{ github.workspace }}/qa-comment.md
               REPORT_FILE = ${{ github.workspace }}/browser-qa-comment.md
 
-            An earlier step already judged this PR against its issue's acceptance criteria from
-            the code, in AC_REPORT; never edit that file. Do not duplicate it: no change summary,
-            no restating the diff, no test suggestions. Your job is to find inputs and sequences
-            that break it.
+            A separate job judges this PR against its issue's acceptance criteria from the
+            code. Do not duplicate it: no change summary, no restating the diff, no test
+            suggestions. Your job is to find inputs and sequences that break it.
 
             STEP 1 — Scope.
             Read the diff (gh pr diff <PR_NUMBER> --repo <REPO>) and the checked-out source.
@@ -273,10 +299,6 @@ jobs:
             the diff actually touches. If the diff is docs/config/CI only, write a report that is
             the heading from STEP 5 and the single line "Nothing in this diff renders in the
             app." and stop — that is a correct outcome, not a failure.
-
-            AC_REPORT's "Not checkable from the code" list, if it has one, holds criteria that
-            need a running app. When your probing observes one, write what you saw as a finding,
-            with a severity emoji only if it is broken. Do not grade it: grading is not yours.
 
             STEP 2 — The instance is yours.
             BASE_URL is INTERNAL-NEGATIVE-QA, an instance that exists only for this workflow.
@@ -405,17 +427,59 @@ jobs:
             printf '\n\n---\n_⚠️ The browser pass did not run to completion. Its findings above still stand, but its coverage is partial; the acceptance-criteria verdict is unaffected._\n' >> "$FILE"
           fi
 
+      # Here rather than in `post`: the upload needs this job's gcloud credentials.
+      - name: Publish Screenshots and Rewrite Links
+        if: always()
+        run: python3 ci/scripts/publish_qa_screenshots.py qa-artifacts browser-qa-comment.md
+
+      # Durable copy: the GCS bucket is shared and periodically purged. `post` reads the report.
+      - name: Upload QA Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: negative-qa-artifacts
+          path: |
+            qa-artifacts/
+            browser-qa-comment.md
+            devserver.log
+          if-no-files-found: ignore
+
+      # No cleanup step: the nightly sync resets the instance wholesale.
+
+  post:
+    name: Claude QA — comment
+    needs: [ac, browser]
+    # A cancelled `ac` means a newer push superseded this run; a skipped one is a draft or fork.
+    if: always() && needs.ac.result != 'cancelled' && needs.ac.result != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write
+    steps:
+      # Either artifact is missing when its half wrote nothing; the next step says so.
+      - name: Download AC Report
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: qa-ac-report
+
+      - name: Download Browser Report
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: negative-qa-artifacts
+          path: browser-artifacts
+
       # The verdict is arithmetic on the AC agent's marks, so the same marks always give the same
       # verdict; then both sections are joined into the one comment.
       - name: Compute Verdict and Assemble Comment
         id: qa
-        if: always()
         env:
-          BROWSER_OUTCOME: ${{ steps.browser.outcome }}
+          BROWSER_RESULT: ${{ needs.browser.result }}
         run: |
           set -euo pipefail
           FILE="$GITHUB_WORKSPACE/qa-comment.md"
-          BROWSER="$GITHUB_WORKSPACE/browser-qa-comment.md"
+          BROWSER="$GITHUB_WORKSPACE/browser-artifacts/browser-qa-comment.md"
           PASSED=0 FAILED=0 RUNTIME=0
           # Graded criteria are the report's only numbered list; group B are bullets inside the
           # details block. That separation is what makes both countable.
@@ -449,11 +513,12 @@ jobs:
             BROWSER_OK=true
           fi
           if [ "$VERDICT" = NO_REPORT ] && [ "$BROWSER_OK" = false ]; then
-            echo "::warning::Neither agent wrote a report; no comment posted."
-            exit 0
+            echo "::error::Neither agent wrote a report; no comment posted."
+            exit 1
           fi
-          # We write both markers, the headings' completion and the verdict marker; any copies
-          # the agents wrote are dropped, so ours are the only ones.
+          # A marker is written only for a half that reported, so a parser keyed on it never
+          # mistakes a stub for a report. Copies the agents wrote are dropped; ours are the only
+          # ones. 🔴/🟡 are stripped from the AC half: the scoreboard counts them as browser findings.
           python3 - "$FILE" "$BROWSER" "$SUMMARY" "$VERDICT" "$BROWSER_OK" <<'PY'
           import io, os, sys
           path, browser, summary, verdict, browser_ok = sys.argv[1:6]
@@ -463,20 +528,25 @@ jobs:
               text = io.open(p, encoding="utf-8").read().rstrip("\n")
               return [l for l in text.split("\n") if not l.startswith(MARKERS)]
 
+          out = []
           if verdict == "NO_REPORT":
               ac = ["## Acceptance Criteria QA — NO REPORT", "",
                     "The acceptance-criteria agent wrote no criteria; see the workflow logs."]
           else:
+              out.append("<!-- cv-verifier -->")
               ac = ["## Acceptance Criteria QA — " + summary
-                    if l.strip().startswith("## Acceptance Criteria QA") else l for l in body(path)]
+                    if l.strip().startswith("## Acceptance Criteria QA")
+                    else l.replace("🔴", "").replace("🟡", "") for l in body(path)]
           if browser_ok == "true":
+              out.append("<!-- negative-qa -->")
               qa = body(browser)
-          elif os.environ.get("BROWSER_OUTCOME") in ("", "skipped"):
-              qa = ["## Adversarial Browser QA", "",
-                    "The browser pass did not run: setup failed before it started. See the workflow logs."]
-          else:
+          elif os.environ.get("BROWSER_RESULT") == "success":
               qa = ["## Adversarial Browser QA", "", "The browser agent wrote no report; see the workflow logs."]
-          out = ["<!-- cv-verifier -->", "<!-- negative-qa -->"] + ac + [""] + qa
+          else:
+              qa = ["## Adversarial Browser QA", "",
+                    "The browser pass did not run (job %s). See the workflow logs."
+                    % (os.environ.get("BROWSER_RESULT") or "not started")]
+          out += ac + [""] + qa
           out += ["", "<!-- qa-verdict: %s -->" % verdict]
           io.open(path, "w", encoding="utf-8").write("\n".join(out) + "\n")
           PY
@@ -487,34 +557,16 @@ jobs:
             echo "::warning::The acceptance-criteria agent wrote no criteria; the comment says so."
           fi
 
-      - name: Publish Screenshots and Rewrite Links
-        if: always()
-        run: python3 ci/scripts/publish_qa_screenshots.py qa-artifacts qa-comment.md
-
-      # Durable copy: the GCS bucket is shared and periodically purged.
-      - name: Upload QA Artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: negative-qa-artifacts
-          path: |
-            qa-artifacts/
-            qa-comment.md
-            devserver.log
-          if-no-files-found: ignore
-
       # A new comment per run, so earlier reports stay readable.
       - name: Post QA Comment
-        if: always() && steps.qa.outputs.post == 'true'
+        if: steps.qa.outputs.post == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
-          PR: ${{ env.PR_NUMBER }}
+          PR: ${{ github.event.pull_request.number || inputs.pr_number }}
         run: |
           set -euo pipefail
           BODY=$(cat "$GITHUB_WORKSPACE/qa-comment.md")
           PAYLOAD=$(BODY="$BODY" python3 -c 'import os,json,sys; sys.stdout.write(json.dumps({"body": os.environ["BODY"]}))')
           printf '%s' "$PAYLOAD" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - --silent
           echo "Posted QA comment."
-
-      # No cleanup step: the nightly sync resets the instance wholesale.
