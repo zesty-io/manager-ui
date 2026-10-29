@@ -11,6 +11,7 @@ interface Props {
 export const NotFound: FC<Props> = ({ title, message, button }) => {
   return (
     <Box
+      data-cy="NotFound"
       display="flex"
       justifyContent="center"
       alignItems="center"
