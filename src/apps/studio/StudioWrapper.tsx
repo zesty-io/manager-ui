@@ -2417,10 +2417,17 @@ export const StudioWrapper = () => {
     () =>
       buildAiSelection(
         inspectorSelection,
+        { viewZUID: aiPageView?.ZUID, itemZUID: pageItemZUID },
         (codeId) => getLayoutRegionSnapshot(codeId).source,
         (fieldZUID) => fieldsState[fieldZUID]?.name
       ),
-    [fieldsState, getLayoutRegionSnapshot, inspectorSelection]
+    [
+      aiPageView?.ZUID,
+      fieldsState,
+      getLayoutRegionSnapshot,
+      inspectorSelection,
+      pageItemZUID,
+    ]
   );
 
   useEffect(() => {

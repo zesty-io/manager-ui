@@ -1444,4 +1444,134 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("StudioContentCancelButton").click();
     cy.getBySelector("StudioContentSaveBar").should("not.exist");
   });
+
+  describe("canvas selection", () => {
+    // The page's view as the bridge maps it: a repeated <img>, a text
+    // element, and a background repeated in two inline styles.
+    const TEMPLATE =
+      '<div data-layout-id="1"><img src="a.jpg" alt="first">' +
+      '<img src="{{this.hero_image.getImage()}}">' +
+      '<img src="a.jpg" data-layout-id="2"></div>' +
+      '<p data-layout-id="3">Hello <b>there</b></p>' +
+      '<div style="background: url(bg.jpg)">first</div>' +
+      '<section data-layout-id="4" style="background-image: url(\'bg.jpg\')">' +
+      "Second</section>";
+    const patch = (layoutId, tagName) => ({
+      codeId: viewZUID,
+      layoutId,
+      isSelf: true,
+      tagName,
+      elementIndex: 0,
+    });
+    const attrSlot = (attr, value) => ({
+      kind: "attribute",
+      key: attr,
+      attr,
+      isDynamic: false,
+      value,
+      sourceValue: value,
+      layoutEditable: true,
+      control: "text",
+    });
+    const element = (layoutId, tagName, slots, children = []) => ({
+      id: `${viewZUID}:${layoutId}`,
+      kind: "element",
+      tagName,
+      codeId: viewZUID,
+      layoutId,
+      layoutPatch: patch(layoutId, tagName),
+      slots,
+      children,
+    });
+    // A text row: no tag of its own, addressed through its <p>.
+    const textRow = () => ({
+      id: `${viewZUID}:textOf:3:0`,
+      kind: "text",
+      tagName: null,
+      codeId: viewZUID,
+      layoutId: null,
+      label: "Hello",
+      layoutPatch: patch("3", "p"),
+      slots: [
+        {
+          kind: "text",
+          key: "text",
+          control: "text",
+          isDynamic: false,
+          value: "Hello",
+          sourceValue: "Hello",
+          layoutEditable: true,
+          textIndex: 0,
+        },
+      ],
+      children: [],
+    });
+
+    // Selects a row on a canvas whose template is TEMPLATE, then sends a
+    // prompt and yields the request's selection.
+    const sendWithSelected = (rowId) => {
+      serveEchoCanvas();
+      stubMcp(() => mcpReply([]));
+      // The page's path lookup; its response triggers clearSelection.
+      cy.intercept({
+        method: "GET",
+        pathname: "**/search/items",
+        query: { field: "path" },
+      }).as("pathSearch");
+      visitStudio();
+      cy.wait("@pathSearch");
+      recordHostCommands();
+      awaitEchoCanvas();
+      // Layout mode, where a row opens the Inspector, is set in an effect.
+      cy.getBySelector("StudioAIButton").should("exist");
+      replyFromBridge({
+        type: "TEMPLATE_SOURCE_MAP",
+        templateSourceByCodeId: { [viewZUID]: TEMPLATE },
+      });
+      replyFromBridge({
+        type: "LAYERS_TREE",
+        tree: [
+          element("2", "img", [
+            attrSlot("src", "a.jpg"),
+            attrSlot("alt", "hero"),
+          ]),
+          element("3", "p", [], [textRow()]),
+          element("4", "section", []),
+        ],
+      });
+      cy.get(`[data-cy="StudioLayersRow"][data-node-id="${rowId}"]`).click();
+      cy.getBySelector("StudioInspectorPanel").should("exist");
+      openAiPanel();
+      sendPrompt("Replace this image");
+      return cy.get("@mcp").its("request.body.selection");
+    };
+
+    it("sends a selected image by its src and which copy it is", () => {
+      sendWithSelected(`${viewZUID}:2`).should("deep.equal", {
+        tagName: "img",
+        outerHTML: '<img src="a.jpg" alt="hero">',
+        occurrence: 1,
+        boundField: null,
+      });
+    });
+
+    it("sends a selected text row as its element", () => {
+      sendWithSelected(`${viewZUID}:textOf:3:0`).should("deep.equal", {
+        tagName: "p",
+        outerHTML: "<p>Hello <b>there</b></p>",
+        occurrence: 0,
+        boundField: null,
+      });
+    });
+
+    it("sends which copy of an inline background a selection is", () => {
+      sendWithSelected(`${viewZUID}:4`).should("deep.equal", {
+        tagName: "section",
+        outerHTML:
+          "<section style=\"background-image: url('bg.jpg')\">Second</section>",
+        occurrence: 1,
+        boundField: null,
+      });
+    });
+  });
 });

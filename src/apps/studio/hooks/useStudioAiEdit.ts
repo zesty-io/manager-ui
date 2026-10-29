@@ -55,6 +55,10 @@ const isNotPageCode = (next: string, current: string) => {
   );
 };
 
+// Fields the AI is never offered: the code editor's own refKey, and the
+// SEO image, which a request that offers it lets the server set.
+const NOT_AI_IMAGE_FIELDS = ["code-editor", "og_image"];
+
 // The page model's image fields the AI may fill. Their names are the refKeys
 // the server targets. `any` because the fields store is untyped (see
 // AppState's TODO).
@@ -63,7 +67,7 @@ export const aiImageFields = (pageFields: any[]) =>
     (field) =>
       field?.datatype === "images" &&
       typeof field?.name === "string" &&
-      field.name !== "code-editor"
+      !NOT_AI_IMAGE_FIELDS.includes(field.name)
   );
 
 // What an images field shows: the media resolver's URL for a file ZUID, the

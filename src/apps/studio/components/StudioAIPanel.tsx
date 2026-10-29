@@ -372,16 +372,22 @@ const StudioAIChat = ({
     ]
   );
 
-  // Apply on a page image field: one undo step, like a reply.
+  // Apply on a page image field: one undo step, like a reply. The write is
+  // made inside the step, not queued past its end.
   const handleManualApply = useCallback(
     (response: ChatResponse, turnZUID: string) => {
       if (response.type !== "SET_VALUE") return;
       onBeforeReplyApplied?.();
-      const applied = applySetValue(
-        response.payload.refKey,
-        response.payload.value
-      );
-      onAfterReplyApplied?.();
+      let applied = false;
+      try {
+        applied = applySetValue(
+          response.payload.refKey,
+          response.payload.value,
+          { immediate: true }
+        );
+      } finally {
+        onAfterReplyApplied?.();
+      }
       if (!applied) return;
       setResponses((prev) => {
         const turnResponses = prev[turnZUID];

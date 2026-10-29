@@ -8,13 +8,15 @@ import { getRefRegistry } from "../../../engine/refRegistry";
 // Applies a SET_VALUE only when its ref has a handle on this page. Otherwise
 // the action queue logs the failure and moves on, so the caller would record
 // the suggestion as applied when nothing changed. A handle can also refuse a
-// value it would not apply. Returns whether it applied.
+// value it would not apply. Returns whether it applied. `immediate` writes
+// now instead of through the action queue, whose pacing can hold a write
+// for seconds, for a caller that must see it land before it returns.
 export const useApplySetValue = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
   return useCallback(
-    (refKey: string, value: string) => {
+    (refKey: string, value: string, { immediate = false } = {}) => {
       const handle = getRefRegistry()[refKey]?.handle;
       if (typeof handle?.setValue !== "function") {
         dispatch(
@@ -32,7 +34,11 @@ export const useApplySetValue = () => {
         return false;
       }
 
-      enqueueAction({ type: "SET_VALUE", payload: { refKey, value } });
+      if (immediate) {
+        handle.setValue(value);
+      } else {
+        enqueueAction({ type: "SET_VALUE", payload: { refKey, value } });
+      }
       return true;
     },
     [dispatch, t]
