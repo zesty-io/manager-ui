@@ -2520,7 +2520,15 @@ export const StudioWrapper = () => {
                 onEditInManager={handleEditInManager}
                 isFreestyleLayout={isFreestyleLayout}
                 onEditInFreestyle={handleEditInFreestyle}
-                onSave={handleSave}
+                onSave={async () => {
+                  try {
+                    const res = await handleSave();
+                    // false tells the header to drop a queued publish
+                    return !!res && !(res as any).error && !(res as any).err;
+                  } catch {
+                    return false;
+                  }
+                }}
                 editorPanel={renderEditorPanel()}
                 infoPanel={renderInfoPanel()}
                 drawerWidth={drawerWidth}

@@ -551,9 +551,13 @@ export default function ItemEdit() {
     isMounted.current && !checkingLock && lockState.userZUID !== user.ZUID;
 
   const handleSave = useCallback(() => {
-    return save().catch((err) => {
-      console.error("ItemEdit:onSave:error", err);
-    });
+    // Resolves a boolean so callers can chain work only after a successful save
+    return save()
+      .then(() => true)
+      .catch((err) => {
+        console.error("ItemEdit:onSave:error", err);
+        return false;
+      });
   }, [save]);
   return (
     <Fragment>
@@ -600,7 +604,7 @@ export default function ItemEdit() {
               }}
             >
               <ItemEditHeader
-                onSave={() => save().catch((err) => console.error(err))}
+                onSave={handleSave}
                 saving={saving}
                 hasError={Object.keys(fieldErrors)?.length}
                 isLoadingItem={loading || isLoadingFields}

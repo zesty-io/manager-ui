@@ -59,6 +59,39 @@ describe("Failed requests are surfaced", () => {
     });
   });
 
+  it("Save and Publish does not open the publish modal when the save fails", () => {
+    cy.intercept("PUT", itemUrl(), {
+      statusCode: 503,
+      body: { error: "Injected failure" },
+    }).as("saveItem");
+
+    visitItem();
+    makeDirty();
+    cy.getBySelector("PublishButton").click();
+    cy.wait("@saveItem");
+
+    cy.getBySelector("toast").should("have.length", 1);
+    cy.getBySelector("ConfirmPublishModal").should("not.exist");
+    cy.getBySelector("SaveItemButton").should("be.enabled");
+  });
+
+  it("Save and Schedule Publish does not open the schedule modal when the save fails", () => {
+    cy.intercept("PUT", itemUrl(), {
+      statusCode: 503,
+      body: { error: "Injected failure" },
+    }).as("saveItem");
+
+    visitItem();
+    makeDirty();
+    cy.getBySelector("PublishMenuButton").click();
+    cy.getBySelector("PublishScheduleButton").click();
+    cy.wait("@saveItem");
+
+    cy.getBySelector("toast").should("have.length", 1);
+    cy.getBySelector("SchedulePublishModal").should("not.exist");
+    cy.getBySelector("SaveItemButton").should("be.enabled");
+  });
+
   it("Item save shows an error on network failure and stays dirty", () => {
     cy.intercept("PUT", itemUrl(), { forceNetworkError: true }).as("saveItem");
 
