@@ -13,6 +13,7 @@
   "failedActivateReleases": "रिलीज़ सक्रिय करने में विफल",
   "failedCreatingRelease": "रिलीज़ बनाने में विफल",
   "failedDeletingRelease": "रिलीज़ {{name}} हटाने में विफल",
+  "failedFetchingReleases": "रिलीज़ लोड करने में विफल: {{error}}",
   "fieldReleaseDescription": "रिलीज़ का विवरण",
   "fieldReleaseName": "रिलीज़ का नाम",
   "instructionBeginSearch": "उस कंटेंट को खोजकर शुरुआत करें जिसे आप इस रिलीज़ में शामिल करना चाहते हैं",

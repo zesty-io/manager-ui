@@ -13,6 +13,7 @@
   "failedActivateReleases": "Error al activar las versiones",
   "failedCreatingRelease": "Error al crear la versión",
   "failedDeletingRelease": "Error al eliminar la versión {{name}}",
+  "failedFetchingReleases": "No se pudieron cargar las versiones: {{error}}",
   "fieldReleaseDescription": "Descripción del lanzamiento",
   "fieldReleaseName": "Nombre del lanzamiento",
   "instructionBeginSearch": "Comienza buscando el contenido que deseas incluir en este lanzamiento",

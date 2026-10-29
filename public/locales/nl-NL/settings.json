@@ -42,6 +42,7 @@
   "categorySecurity": "Beveiliging",
   "categorySeo": "SEO",
   "categorySettingsSaved": "{{category}}-instellingen opgeslagen",
+  "categorySettingsSaveFailed": "Instellingen voor {{category}} opslaan mislukt: {{error}}",
   "categorySitelink": "Sitelink",
   "categorySocialLinks": "Sociale links",
   "categoryStripe": "Stripe",

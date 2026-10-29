@@ -24,6 +24,7 @@ import {
 import { fetchModel } from "shell/store/models";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
 import { notify } from "shell/store/notifications";
+import { notifyIfResponseFailed, notifyFailure } from "utility/request";
 import { fetchFields } from "shell/store/fields";
 import { ContentInfo } from "../content-editor/src/app/views/ItemEdit/Content/Actions/Widgets/ContentInfo";
 import Editor from "../content-editor/src/app/components/Editor/Editor";
@@ -677,9 +678,9 @@ export const StudioWrapper = () => {
     if (!pageModelZUID || !pageItemZUID) return;
     const hasWarmCopy = Boolean(getContentItems()[pageItemZUID]?.meta?.ZUID);
     if (!hasWarmCopy) setIsFetchingItem(true);
-    Promise.resolve(dispatch(fetchItem(pageModelZUID, pageItemZUID))).finally(
-      () => setIsFetchingItem(false)
-    );
+    Promise.resolve(dispatch(fetchItem(pageModelZUID, pageItemZUID)))
+      .then((res) => notifyIfResponseFailed(dispatch, res))
+      .finally(() => setIsFetchingItem(false));
   }, [dispatch, getContentItems, pageItemZUID, pageModelZUID]);
 
   useEffect(() => {
@@ -1705,6 +1706,15 @@ export const StudioWrapper = () => {
 
       // Any 2xx is a successful save (saveItem resolves 201 on version create).
       if (res?.status >= 200 && res?.status < 300) {
+        if (res.refetchFailure) {
+          notifyFailure(
+            dispatch,
+            res.refetchFailure,
+            t("content.itemEditRefreshFailed", {
+              error: res.refetchFailure.error,
+            })
+          );
+        }
         dispatch(
           notify({
             kind: "success",
@@ -1757,7 +1767,9 @@ export const StudioWrapper = () => {
     if (!hasWarmCopy) setIsFetchingItem(true);
     Promise.resolve(
       dispatch(fetchItem(selectedItemModelZuid, selectedItemZuid))
-    ).finally(() => setIsFetchingItem(false));
+    )
+      .then((res) => notifyIfResponseFailed(dispatch, res))
+      .finally(() => setIsFetchingItem(false));
   }, [dispatch, getContentItems, selectedItemModelZuid, selectedItemZuid]);
 
   useEffect(() => {
@@ -2128,7 +2140,8 @@ export const StudioWrapper = () => {
         const refModelZUID = modelZUIDByName[ref!.source!.modelName];
         if (refModelZUID) {
           Promise.resolve(dispatch(fetchItem(refModelZUID, refItemZUID))).then(
-            () => {
+            (res) => {
+              notifyIfResponseFailed(dispatch, res);
               // The replay closes over `value`, so it must not fire if the user
               // has since changed this slot — disconnecting and typing a
               // replacement inside the fetch window would otherwise repaint the
@@ -2837,7 +2850,15 @@ export const StudioWrapper = () => {
                 onEditInManager={handleEditInManager}
                 isFreestyleLayout={isFreestyleLayout}
                 onEditInFreestyle={handleEditInFreestyle}
-                onSave={handleSave}
+                onSave={async () => {
+                  try {
+                    const res = await handleSave();
+                    // false tells the header to drop a queued publish
+                    return !!res && !(res as any).error && !(res as any).err;
+                  } catch {
+                    return false;
+                  }
+                }}
                 editorPanel={renderEditorPanel()}
                 infoPanel={renderInfoPanel()}
                 drawerWidth={drawerWidth}

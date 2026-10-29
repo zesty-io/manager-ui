@@ -42,6 +42,7 @@
   "categorySecurity": "सुरक्षा (Security)",
   "categorySeo": "एसईओ (SEO)",
   "categorySettingsSaved": "{{category}} सेटिंग्स सहेज ली गईं",
+  "categorySettingsSaveFailed": "{{category}} सेटिंग्स सहेजने में विफल: {{error}}",
   "categorySitelink": "Sitelink",
   "categorySocialLinks": "सोशल लिंक्स (Social Links)",
   "categoryStripe": "Stripe",

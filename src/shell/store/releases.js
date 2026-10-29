@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import chunk from "lodash/chunk";
 
-import { request } from "utility/request";
+import { request, toRequestFailure } from "utility/request";
 
 import { publish } from "shell/store/content";
 import { notify } from "shell/store/notifications";
@@ -228,25 +228,27 @@ export function activate() {
  */
 export function fetchReleases() {
   return (dispatch) => {
-    return request(`${CONFIG.API_INSTANCE}/releases`)
+    return request(`${CONFIG.API_INSTANCE}/releases`, { rejectOnError: true })
       .then((res) => {
-        if (res.status === 200) {
-          const sorted = res.data.sort((a, b) => {
-            if (a.createdAt > b.createdAt) {
-              return -1;
-            }
-            if (a.createdAt < b.createdAt) {
-              return 1;
-            } else {
-              return 0;
-            }
-          });
+        const sorted = (res.data || []).sort((a, b) => {
+          if (a.createdAt > b.createdAt) {
+            return -1;
+          }
+          if (a.createdAt < b.createdAt) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
 
-          dispatch(actions.fetchReleasesSuccess(sorted));
-        }
+        dispatch(actions.fetchReleasesSuccess(sorted));
         return res;
       })
-      .catch((err) => console.error("Failed to fetch releases:", err));
+      .catch((err) => {
+        console.error("Failed to fetch releases:", err);
+        // Resolves { error, status }, 412 means releases are not activated
+        return toRequestFailure(err);
+      });
   };
 }
 
@@ -272,76 +274,30 @@ export function createRelease(payload) {
       method: "POST",
       body: payload,
       json: true,
-    })
-      .then((res) => {
-        if (res.status === 201) {
-          dispatch(
-            notify({
-              kind: "success",
-              message: i18n.t("release.createdRelease", {
-                name: res.data.name,
-              }),
-            })
-          );
-        } else {
-          dispatch(
-            notify({
-              kind: "warn",
-              message: res.error,
-            })
-          );
-        }
-        return res;
-      })
-      .catch((err) => {
-        console.error(err);
-        dispatch(
-          notify({
-            kind: "warn",
-            message: i18n.t("release.failedCreatingRelease"),
-          })
-        );
-      });
+      rejectOnError: true,
+    }).catch((err) => {
+      console.error("Failed to create release:", err);
+      // Resolves { error, status }
+      return toRequestFailure(err);
+    });
   };
 }
 
 export function deleteRelease(zuid) {
-  return (dispatch, getState) => {
-    const state = getState();
-    const release = state.releases.data.find(
-      (release) => release.ZUID === zuid
-    );
-
+  return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/releases/${zuid}`, {
       method: "delete",
-    }).then((res) => {
-      // Update store
-      return dispatch(fetchReleases())
-        .then(() => {
-          if (res.status !== 200) {
-            dispatch(
-              notify({
-                message: i18n.t("release.failedDeletingRelease", {
-                  name: release?.name,
-                }),
-                type: "warn",
-              })
-            );
-          } else {
-            dispatch(
-              notify({
-                message: i18n.t("release.deletedRelease", {
-                  name: release?.name,
-                }),
-                type: "success",
-              })
-            );
-          }
-
-          // Return delete request response
-          return res;
-        })
-        .catch((err) => console.error("Failed to delete release:", err));
-    });
+      rejectOnError: true,
+    })
+      .then(async (res) => {
+        // Update store
+        await dispatch(fetchReleases());
+        return res;
+      })
+      .catch((err) => {
+        console.error("Failed to delete release:", err);
+        // Resolves { error, status }
+        return toRequestFailure(err);
+      });
   };
 }

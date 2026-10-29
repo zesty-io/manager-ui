@@ -18,6 +18,7 @@ import { TopBar } from "../../components/TopBar";
 import { FieldWrapper, MainWrapper } from "../../components/Containers";
 import { Typography } from "@mui/material";
 import { notify } from "../../../../../../shell/store/notifications";
+import { isRequestFailed, notifyFailure } from "utility/request";
 import { updateSettings } from "../../../../../../shell/store/settings";
 import { getCategoryLabel } from "../../utils/categoryLabels";
 
@@ -124,50 +125,57 @@ export default connect((state) => {
   async function saveFields(callback) {
     setSaving(true);
 
-    const requests = fields
-      .filter((field) => {
-        if (dirtyFields.some((item) => field.key === item)) {
-          return field;
-        }
-      })
-      .map(async (field) => {
-        const value =
-          fieldValues[field.key] === null
-            ? null
-            : fieldValues[field.key].toString();
-        return await props.dispatch(
-          updateSettings(field.ZUID, {
-            ...field,
-            value,
-          })
-        );
-      });
+    const dirtyList = fields.filter((field) =>
+      dirtyFields.some((item) => field.key === item)
+    );
+    const requests = dirtyList.map(async (field) => {
+      const value =
+        fieldValues[field.key] === null
+          ? null
+          : fieldValues[field.key].toString();
+      return await props.dispatch(
+        updateSettings(field.ZUID, {
+          ...field,
+          value,
+        })
+      );
+    });
 
-    Promise.all(requests)
-      .then((responses) => {
-        setSaving(false);
-        setDirtyFields([]);
-        callback && callback();
-        props.dispatch(
-          notify({
-            kind: "success",
-            message: t("settings.categorySettingsSaved", {
-              category: getCategoryLabel(props.match.params.category, t),
-            }),
-          })
-        );
+    const responses = await Promise.all(requests);
+    const failed = responses
+      .map((res, idx) => (isRequestFailed(res) ? idx : -1))
+      .filter((idx) => idx !== -1);
+
+    setSaving(false);
+    callback && callback();
+
+    if (failed.length) {
+      // Keep failed fields dirty so the user can retry
+      setDirtyFields(
+        dirtyList
+          .filter((_, idx) => failed.includes(idx))
+          .map((field) => field.key)
+      );
+      notifyFailure(
+        props.dispatch,
+        responses[failed[0]],
+        t("settings.categorySettingsSaveFailed", {
+          category: getCategoryLabel(props.match.params.category, t),
+          error: responses[failed[0]].error,
+        })
+      );
+      return;
+    }
+
+    setDirtyFields([]);
+    props.dispatch(
+      notify({
+        kind: "success",
+        message: t("settings.categorySettingsSaved", {
+          category: getCategoryLabel(props.match.params.category, t),
+        }),
       })
-      .catch((err) => {
-        setSaving(false);
-        callback && callback();
-        setDirtyFields([]);
-        props.dispatch(
-          notify({
-            kind: "warn",
-            message: err.message,
-          })
-        );
-      });
+    );
   }
   let i = 0;
   return (
@@ -299,6 +307,7 @@ export default connect((state) => {
                     <FieldTypeText
                       key={field.ZUID}
                       name={field.key}
+                      data-cy={`SettingTextarea-${field.key}`}
                       value={fieldValues[field.key]}
                       onChange={(evt) => setValue(evt.target.value, field.key)}
                       multiline
