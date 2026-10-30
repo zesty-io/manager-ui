@@ -395,7 +395,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     textLike: false,
     richText: false,
     inlineEditable: false,
-    filterable: false,
+    filterable: true,
     studioSlot: null,
   },
   repeater: {
