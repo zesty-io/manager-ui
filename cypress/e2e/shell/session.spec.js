@@ -27,7 +27,7 @@ describe("Shell: Logout and session expiry", () => {
     restoreSession();
   });
 
-  it("shows only the login screen after logging out and revisiting a protected route", () => {
+  it("keeps only the login screen usable after logging out and revisiting a protected route", () => {
     cy.visit("/content");
 
     cy.getBySelector("globalAccountAvatar").should("exist").click();
@@ -36,6 +36,11 @@ describe("Shell: Logout and session expiry", () => {
 
     cy.visit("/content");
 
+    // PrivateRoute (out of scope for this task) never unmounts Shell when
+    // auth is invalid - it layers a higher z-index Backdrop containing Login
+    // on top instead. So the sidebar (globalAccountAvatar) stays mounted and
+    // dimmed behind the backdrop rather than disappearing; assert the outcome
+    // that does hold: the login screen is the only usable surface.
     cy.getBySelector("loginScreen").should("be.visible");
     cy.getBySelector("loginEmail").should("be.visible");
     cy.getBySelector("loginPassword").should("be.visible");
