@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { connect, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { alpha } from "@mui/material/styles";
@@ -43,8 +43,9 @@ export default connect((state) => {
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
-    // Login stays mounted while the session is valid, so the SSO listener
-    // below reads the latest value through a ref instead of re-subscribing.
+    // Login stays mounted while the session is valid, so onSSOSuccess/
+    // onSSOError below read the latest value through a ref to ignore stray
+    // SSO messages instead of overwriting an already-valid session.
     const isSessionValid = useRef(props.auth.valid);
     isSessionValid.current = props.auth.valid;
 
@@ -86,41 +87,33 @@ export default connect((state) => {
         .finally(() => setLoading(false));
     };
 
-    // useSSO (@zesty-io/material) latches isAuthenticated/error after the first
-    // message, so SSOButtonGroup's onSuccess/onError never fire again. Listen to
-    // the auth service's postMessage directly so every SSO login verifies.
-    useEffect(() => {
-      const handleSSOMessage = (event) => {
-        if (
-          event.origin !== CONFIG.SERVICE_AUTH ||
-          event.data?.source !== "zesty" ||
-          isSessionValid.current
-        ) {
-          return;
-        }
+    const handleSSOSuccess = (message) => {
+      if (isSessionValid.current) {
+        return;
+      }
 
-        if (event.data.status === "200") {
-          setError("");
-          dispatch({
-            type: "FETCH_LOGIN_SUCCESS",
-            payload: {
-              // The auth service posts status as the string "200", but the
-              // auth reducer only treats the number 200 as a valid session.
-              code: 200,
-              meta: {
-                token: event.data.token,
-              },
-            },
-          });
-          dispatch(verify());
-        } else {
-          setError(event.data.error_message);
-        }
-      };
+      setError("");
+      dispatch({
+        type: "FETCH_LOGIN_SUCCESS",
+        payload: {
+          // The auth service posts status as the string "200", but the
+          // auth reducer only treats the number 200 as a valid session.
+          code: 200,
+          meta: {
+            token: message.token,
+          },
+        },
+      });
+      dispatch(verify());
+    };
 
-      window.addEventListener("message", handleSSOMessage);
-      return () => window.removeEventListener("message", handleSSOMessage);
-    }, []);
+    const handleSSOError = (errorMessage) => {
+      if (isSessionValid.current) {
+        return;
+      }
+
+      setError(errorMessage);
+    };
 
     return (
       <Box
@@ -207,7 +200,11 @@ export default connect((state) => {
                   {t("shell.loginSubtitle")}
                 </Typography>
               </Box>
-              <SSOButtonGroup authServiceUrl={CONFIG.SERVICE_AUTH}>
+              <SSOButtonGroup
+                authServiceUrl={CONFIG.SERVICE_AUTH}
+                onSuccess={handleSSOSuccess}
+                onError={handleSSOError}
+              >
                 <SSOButton
                   service="google"
                   label={t("shell.continueWith", { service: "Google" })}

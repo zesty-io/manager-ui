@@ -56,7 +56,7 @@
     "@sentry/tracing": "^7.120.4",
     "@tinymce/tinymce-react": "^4.3.0",
     "@welldone-software/why-did-you-render": "^6.1.1",
-    "@zesty-io/material": "^0.16.3",
+    "@zesty-io/material": "github:zesty-io/material#a8a162cb69ba9ec0ed8f00daf5f33bbff27a40ce",
     "chart.js": "^3.8.0",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-datalabels": "^2.0.0",
