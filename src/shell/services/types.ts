@@ -1,3 +1,5 @@
+import { FieldType } from "../fieldTypes";
+
 export interface Publishing {
   ZUID: string;
   createdAt: string;
@@ -270,31 +272,7 @@ export type ContentModelFieldValue =
   | FieldSettingsOptions[]
   | IntegrationFieldConfig;
 
-export type ContentModelFieldDataType =
-  | "text"
-  | "wysiwyg_basic"
-  | "wysiwyg_advanced"
-  | "article_writer"
-  | "markdown"
-  | "textarea"
-  | "one_to_many"
-  | "one_to_one"
-  | "uuid"
-  | "number"
-  | "currency"
-  | "date"
-  | "datetime"
-  | "images"
-  | "yes_no"
-  | "dropdown"
-  | "link"
-  | "internal_link"
-  | "yes_no"
-  | "color"
-  | "sort"
-  | "integration"
-  | "block_selector"
-  | "repeater";
+export type ContentModelFieldDataType = FieldType;
 
 export interface ContentModelField {
   ZUID: string;

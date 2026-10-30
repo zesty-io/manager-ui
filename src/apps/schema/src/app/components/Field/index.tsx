@@ -28,7 +28,8 @@ import {
   useDeleteContentModelFieldMutation,
   useUndeleteContentModelFieldMutation,
 } from "../../../../../../shell/services/instance";
-import { getTypeText, SystemField, FieldType } from "../configs";
+import { getTypeText, SystemField } from "../configs";
+import { FieldType } from "shell/fieldTypes";
 import { notify } from "../../../../../../shell/store/notifications";
 
 type Params = {

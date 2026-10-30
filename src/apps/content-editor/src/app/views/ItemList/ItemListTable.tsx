@@ -37,6 +37,7 @@ import { TableSortContext } from "./TableSortProvider";
 import { FIELD_SKELETON_MAP, gridLoadingStyles } from "./Loader";
 import { Skeleton } from "@mui/material";
 import DataGridSkeletonCell from "../../../../../../shell/components/DataGridSkeletonCell";
+import { FIELD_TYPES, isFilterableFieldType } from "shell/fieldTypes";
 
 type ItemListTableProps = {
   loading: boolean;
@@ -118,55 +119,42 @@ const fieldTypeColumnConfigMap: Partial<
 > = {
   text: {
     width: 360,
-    filterable: true,
   },
   wysiwyg_basic: {
     width: 360,
     valueFormatter: (value: any) => getHtmlText(value),
-    filterable: true,
   },
   wysiwyg_advanced: {
     width: 360,
     valueFormatter: (value: any) => getHtmlText(value),
-    filterable: true,
   },
   article_writer: {
     width: 360,
     valueFormatter: (value: any) => getHtmlText(value),
-    filterable: true,
   },
   markdown: {
     width: 360,
-    filterable: true,
   },
   textarea: {
     width: 360,
-    filterable: true,
   },
   one_to_many: {
     width: 240,
-    filterable: true,
     renderCell: (params: GridRenderCellParams) => {
       return <OneToManyCell items={params.value?.split(",")} />;
     },
   },
   one_to_one: {
     width: 240,
-    filterable: true,
     renderCell: (params: any) =>
       params.value && <SingleRelationshipCell params={params} />,
   },
   uuid: {
     width: 280,
-    filterable: true,
   },
   number: {
     width: 160,
-    valueFormatter: (value: any) => {
-      if (!value) return null;
-      return new Intl.NumberFormat("en-US").format(value);
-    },
-    filterable: true,
+    valueFormatter: (value: any) => FIELD_TYPES.number.formatForDisplay!(value),
     align: "right",
   },
   currency: {
@@ -190,22 +178,18 @@ const fieldTypeColumnConfigMap: Partial<
   },
   dropdown: {
     width: 240,
-    filterable: true,
     renderCell: (params: GridRenderCellParams) => (
       <DropDownCell params={params} />
     ),
   },
   date: {
     width: 160,
-    filterable: true,
   },
   datetime: {
     width: 200,
-    filterable: true,
   },
   link: {
     width: 360,
-    filterable: true,
     renderCell: (params: any) => {
       return (
         <Link
@@ -227,20 +211,17 @@ const fieldTypeColumnConfigMap: Partial<
   },
   internal_link: {
     width: 240,
-    filterable: true,
     renderCell: (params: any) =>
       params.value && <SingleRelationshipCell params={params} />,
   },
   yes_no: {
     width: 120,
-    filterable: true,
     renderCell: (params: GridRenderCellParams) => (
       <BooleanCell params={params} />
     ),
   },
   color: {
     width: 140,
-    filterable: true,
     renderCell: (params: GridRenderCellParams) => {
       return (
         <Box display="flex" alignItems="center" gap={1.5} height="100%">
@@ -263,12 +244,10 @@ const fieldTypeColumnConfigMap: Partial<
   },
   sort: {
     width: 112,
-    filterable: true,
     renderCell: (params: GridRenderCellParams) => <SortCell params={params} />,
   },
   integration: {
     width: 240,
-    filterable: true,
     renderCell: (params: any) =>
       params.value && (
         <Box
@@ -287,7 +266,6 @@ const fieldTypeColumnConfigMap: Partial<
   },
   block_selector: {
     width: 200,
-    filterable: true,
   },
 } as const;
 
@@ -377,7 +355,6 @@ export const ItemListTable = memo(
             ?.map((field) => ({
               field: field.name,
               headerName: field.label,
-              filterable: false,
               cellClassName: field?.datatype,
               valueGetter: (params: any, row: any) => {
                 if (field.datatype === "currency") {
@@ -390,6 +367,7 @@ export const ItemListTable = memo(
                 return row.data[field.name];
               },
               ...(fieldTypeColumnConfigMap[field.datatype] ?? {}),
+              filterable: isFilterableFieldType(field.datatype),
               // if field is yes_no but it has custom options increase the width
               ...(field.datatype === "yes_no" &&
                 field?.settings?.options?.[0] !== "No" &&

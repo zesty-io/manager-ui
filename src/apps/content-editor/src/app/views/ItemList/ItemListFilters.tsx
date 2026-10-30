@@ -31,6 +31,7 @@ import { TableSortContext } from "./TableSortProvider";
 import { selectLang } from "../../../../../../shell/store/user";
 import { useDispatch } from "react-redux";
 import { Flag, getCountryCode } from "shell/components/Flag";
+import { isFilterableFieldType } from "shell/fieldTypes";
 
 // Values are i18next keys (content namespace); translated at render time.
 const SORT_ORDER = {
@@ -45,29 +46,6 @@ const STATUS_FILTER = {
   scheduled: "content.itemListStatusScheduled",
   notPublished: "content.itemListStatusNotPublished",
 } as const;
-
-const FILTERABLE_DATA_TYPES = [
-  "text",
-  "wysiwyg_basic",
-  "wysiwyg_advanced",
-  "article_writer",
-  "markdown",
-  "textarea",
-  "number",
-  "images",
-  "date",
-  "datetime",
-  "one_to_many",
-  "one_to_one",
-  "uuid",
-  "number",
-  "currency",
-  "date",
-  "datetime",
-  "link",
-  "internal_link",
-  "sort",
-] as const;
 
 export const ItemListFilters = () => {
   const { t } = useTranslation();
@@ -223,9 +201,7 @@ export const ItemListFilters = () => {
           {t("content.itemListFieldsLabel")}
         </Typography>
         {fields
-          ?.filter((field) =>
-            FILTERABLE_DATA_TYPES.includes(field.datatype as any)
-          )
+          ?.filter((field) => isFilterableFieldType(field.datatype))
           ?.map((field) => (
             <MenuItem
               key={field.ZUID}

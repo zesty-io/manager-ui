@@ -13,9 +13,9 @@ import {
   getFieldCopyConfig,
   getFieldCategoryLabels,
   FieldListData,
-  FieldType,
 } from "../../../configs";
 import { FieldItem } from "../../FieldItem";
+import { FieldType } from "shell/fieldTypes";
 
 const ALLOWED_REPEATER_FIELD_TYPES = new Set<FieldType>([
   "text",

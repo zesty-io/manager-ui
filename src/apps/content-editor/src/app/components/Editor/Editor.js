@@ -17,6 +17,7 @@ import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 import { FieldsLoader } from "./FieldsLoader";
 import { useResizeObserver } from "shell/hooks/useResizeObserver";
+import { isTextLikeFieldType } from "shell/fieldTypes";
 
 const COMPACT_MAX_WIDTH = 390;
 
@@ -120,10 +121,7 @@ export default memo(function Editor({
     if (activeFields?.length) {
       return activeFields.find(
         (field) =>
-          field.datatype === "textarea" ||
-          field.datatype === "article_writer" ||
-          field.datatype === "markdown" ||
-          field.datatype.includes("wysiwyg")
+          isTextLikeFieldType(field.datatype) && field.datatype !== "text"
       );
     }
   });

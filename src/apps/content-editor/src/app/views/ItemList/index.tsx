@@ -44,39 +44,7 @@ import { fetchFields } from "../../../../../../shell/store/fields";
 import { debounce } from "lodash";
 import { SkeletonContentHeader, SkeletonItemListFilters } from "./Loader";
 import { NotFound } from "../../../../../../shell/components/NotFound";
-
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-  timeZone: "UTC",
-});
-
-const timeFormatter = new Intl.DateTimeFormat("en-US", {
-  hour: "numeric",
-  minute: "numeric",
-});
-
-const formatDateTime = (source: string) => {
-  if (!source) return "";
-
-  const dateObj = new Date(source);
-  if (isNaN(dateObj.getTime())) return "";
-
-  const date = dateFormatter.format(dateObj);
-  const time = timeFormatter.format(dateObj);
-
-  return `${date} ${time}`;
-};
-
-const formatDate = (source: string) => {
-  if (!source) return "";
-
-  const dateObj = new Date(source);
-  if (isNaN(dateObj.getTime())) return "";
-
-  return dateFormatter.format(dateObj);
-};
+import { formatDate, formatDateTime } from "shell/fieldTypes";
 
 export const ItemList = () => {
   const { t } = useTranslation();
@@ -484,13 +452,21 @@ export const ItemList = () => {
         }
 
         if (dataType === "yes_no") {
-          if (!a.data[sort]) {
-            return 1;
-          } else if (!b.data[sort]) {
-            return -1;
-          } else {
-            return sortOrder === "asc" ? a - b : b - a;
-          }
+          const aBoolValue = a.data[sort];
+          const bBoolValue = b.data[sort];
+          const aBlank =
+            aBoolValue === null ||
+            aBoolValue === undefined ||
+            aBoolValue === "";
+          const bBlank =
+            bBoolValue === null ||
+            bBoolValue === undefined ||
+            bBoolValue === "";
+          if (aBlank) return 1;
+          if (bBlank) return -1;
+          return sortOrder === "asc"
+            ? Number(aBoolValue) - Number(bBoolValue)
+            : Number(bBoolValue) - Number(aBoolValue);
         }
 
         const aValue =
