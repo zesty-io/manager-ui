@@ -127,6 +127,7 @@ describe("Studio Wrapper", () => {
       expect(seededViewZUID, "seed:content returned a disposable view").to.be.a(
         "string"
       ).and.not.be.empty;
+      cy.waitForBridgeTemplateMap();
       return cb({ ZUID: seededViewZUID, version: seededViewVersion });
     });
 
@@ -193,7 +194,7 @@ describe("Studio Wrapper", () => {
   beforeEach(() => {
     cy.stubStaffUser();
     cy.waitOn("/v1/content/models**", () => {
-      cy.visit(`/studio?path=${studioPath}`);
+      cy.visitStudio(studioPath);
     });
   });
 
@@ -321,51 +322,6 @@ describe("Studio Wrapper", () => {
       .should("not.exist");
   });
 
-  it("saves sanitized mapped source for a pending layout draft", () => {
-    setStudioMode("layout");
-    withSeededView((webView) => {
-      expect(webView?.ZUID).to.exist;
-
-      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
-
-      createPendingLayoutSave(webView.ZUID);
-
-      saveAllViaModal("layout");
-
-      cy.wait("@updateWebView").then(({ request }) => {
-        // Order and sanitization are what this asserts. The adjacency was
-        // incidental: a reorder used to strip every whitespace-only text node
-        // from the region, so the saved source came back on one line. It now
-        // keeps the author's formatting, hence the tolerant match — reversing
-        // the order still fails it.
-        expect(request.body.code).to.match(/<div>Two<\/div>\s*<div>One<\/div>/);
-        expect(request.body.code).not.to.contain("data-layout-id");
-      });
-    });
-  });
-
-  it("keeps nested code-region layout nodes out of outer mapped source", () => {
-    setStudioMode("layout");
-    withSeededView((webView) => {
-      expect(webView?.ZUID).to.exist;
-
-      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
-
-      createNestedPendingLayoutSave(webView.ZUID);
-
-      saveAllViaModal("layout");
-
-      cy.wait("@updateWebView").then(({ request }) => {
-        expect(request.body.code).to.contain(
-          "{{include a_new_single_page_model_is_here}}"
-        );
-        expect(request.body.code).to.contain("<div>goodbye world</div>");
-        expect(request.body.code).to.contain("<div>hello world</div>");
-        expect(request.body.code).not.to.contain("<form");
-      });
-    });
-  });
-
   it("updates the preview path when the language selector changes", () => {
     cy.getBySelector("StudioPreviewFrame")
       .invoke("attr", "src")
@@ -412,132 +368,6 @@ describe("Studio Wrapper", () => {
     cy.getBySelector("StudioLayoutSaveChangesButton").should("exist");
   });
 
-  it("saves static content edit with updated text and no layout-id attributes", () => {
-    setStudioMode("layout");
-    withSeededView((webView) => {
-      expect(webView?.ZUID).to.exist;
-
-      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
-
-      postBridgeMessage({
-        type: "TEMPLATE_SOURCE_MAP",
-        templateSourceByCodeId: {
-          [webView.ZUID]: `<div data-layout-id="leaf-1">Original text</div>`,
-        },
-      });
-
-      postBridgeMessage({
-        type: "LAYOUT_CONTENT_UPDATE",
-        codeId: webView.ZUID,
-        layoutId: "leaf-1",
-        innerHtml: "Updated text",
-      });
-
-      saveAllViaModal("layout");
-
-      cy.wait("@updateWebView").then(({ request }) => {
-        expect(request.body.code).to.contain("Updated text");
-        expect(request.body.code).not.to.contain("Original text");
-        expect(request.body.code).not.to.contain("data-layout-id");
-      });
-    });
-  });
-
-  it("accumulates multiple static edits and saves the latest", () => {
-    setStudioMode("layout");
-    withSeededView((webView) => {
-      expect(webView?.ZUID).to.exist;
-
-      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
-
-      postBridgeMessage({
-        type: "TEMPLATE_SOURCE_MAP",
-        templateSourceByCodeId: {
-          [webView.ZUID]: `<div data-layout-id="leaf-1">Original text</div>`,
-        },
-      });
-
-      postBridgeMessage({
-        type: "LAYOUT_CONTENT_UPDATE",
-        codeId: webView.ZUID,
-        layoutId: "leaf-1",
-        innerHtml: "First edit",
-      });
-
-      postBridgeMessage({
-        type: "LAYOUT_CONTENT_UPDATE",
-        codeId: webView.ZUID,
-        layoutId: "leaf-1",
-        innerHtml: "Second edit",
-      });
-
-      saveAllViaModal("layout");
-
-      cy.wait("@updateWebView").then(({ request }) => {
-        expect(request.body.code).to.contain("Second edit");
-        expect(request.body.code).not.to.contain("First edit");
-      });
-    });
-  });
-
-  it("applies static edit on top of a pending reorder without repositioning the block", () => {
-    setStudioMode("layout");
-    withSeededView((webView) => {
-      expect(webView?.ZUID).to.exist;
-
-      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
-
-      // Establish template with two blocks
-      postBridgeMessage({
-        type: "TEMPLATE_SOURCE_MAP",
-        templateSourceByCodeId: {
-          [webView.ZUID]: `<div data-layout-id="1">One</div><div data-layout-id="2">Two</div>`,
-        },
-      });
-
-      // Reorder: swap block 2 before block 1
-      postBridgeMessage({
-        type: "REORDER_OUTPUT",
-        regions: [
-          {
-            codeId: webView.ZUID,
-            selector: "[data-layout-id]",
-            orderedLayoutIds: ["2", "1"],
-            layoutStructure: [
-              { layoutId: "2", parentLayoutId: null },
-              { layoutId: "1", parentLayoutId: null },
-            ],
-            outputHtml:
-              '<div data-layout-id="2">Two</div><div data-layout-id="1">One</div>',
-          },
-        ],
-        primaryCodeId: webView.ZUID,
-        selectedLayoutId: "2",
-        selectedLayoutBreadcrumb: [],
-        selector: "[data-layout-id]",
-      });
-
-      // Static edit on block 2 after reorder
-      postBridgeMessage({
-        type: "LAYOUT_CONTENT_UPDATE",
-        codeId: webView.ZUID,
-        layoutId: "2",
-        innerHtml: "Two (edited)",
-      });
-
-      saveAllViaModal("layout");
-
-      cy.wait("@updateWebView").then(({ request }) => {
-        // Reorder order preserved: block 2 still before block 1
-        const code = request.body.code;
-        expect(code.indexOf("Two (edited)")).to.be.lessThan(
-          code.indexOf("One")
-        );
-        expect(code).not.to.contain("data-layout-id");
-      });
-    });
-  });
-
   // ── Image src replacement via MediaDam ──────────────────────────────────────
 
   it("opens MediaDam dialog when STATIC_EDIT_IMAGE bridge message is received", () => {
@@ -572,135 +402,6 @@ describe("Studio Wrapper", () => {
 
     cy.getBySelector("appSidebarHeaderTitle").should("not.exist");
     cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
-  });
-
-  it("saves updated image src after selecting from MediaDam", () => {
-    setStudioMode("layout");
-    withSeededView((webView) => {
-      expect(webView?.ZUID).to.exist;
-
-      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
-
-      postBridgeMessage({
-        type: "TEMPLATE_SOURCE_MAP",
-        templateSourceByCodeId: {
-          [webView.ZUID]: `<img data-layout-id="img-1" src="https://example.com/old.jpg" />`,
-        },
-      });
-
-      postBridgeMessage({
-        type: "STATIC_EDIT_IMAGE",
-        codeId: webView.ZUID,
-        layoutId: "img-1",
-        isLeafImg: true,
-        imgIndex: 0,
-        currentSrc: "https://example.com/old.jpg",
-      });
-
-      cy.getBySelector("appSidebarHeaderTitle").should("exist");
-
-      // Select the first available media thumbnail
-      cy.waitOn(`**/bin/**`, () => {
-        cy.get("[data-testid='media-thumbnail-content']")
-          .first()
-          .parent()
-          .find("input[type=checkbox]")
-          .first()
-          .click({ force: true });
-      });
-
-      cy.contains("Done").click();
-
-      cy.getBySelector("StudioLayoutSaveBar").should("exist");
-
-      saveAllViaModal("layout");
-
-      cy.wait("@updateWebView").then(({ request }) => {
-        expect(request.body.code).not.to.contain("old.jpg");
-        expect(request.body.code).not.to.contain("data-layout-id");
-        // The src attribute should be a valid URL
-        expect(request.body.code).to.match(/<img src="https?:\/\/.+"/);
-      });
-    });
-  });
-
-  it("saves updated src for an img nested inside a layout leaf", () => {
-    setStudioMode("layout");
-    withSeededView((webView) => {
-      expect(webView?.ZUID).to.exist;
-
-      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
-
-      postBridgeMessage({
-        type: "TEMPLATE_SOURCE_MAP",
-        templateSourceByCodeId: {
-          [webView.ZUID]: `<div data-layout-id="wrap-1"><img src="https://example.com/old.jpg" /><p>Caption</p></div>`,
-        },
-      });
-
-      postBridgeMessage({
-        type: "STATIC_EDIT_IMAGE",
-        codeId: webView.ZUID,
-        layoutId: "wrap-1",
-        isLeafImg: false,
-        imgIndex: 0,
-        currentSrc: "https://example.com/old.jpg",
-      });
-
-      cy.getBySelector("appSidebarHeaderTitle").should("exist");
-
-      cy.waitOn(`**/bin/**`, () => {
-        cy.get("[data-testid='media-thumbnail-content']")
-          .first()
-          .parent()
-          .find("input[type=checkbox]")
-          .first()
-          .click({ force: true });
-      });
-
-      cy.contains("Done").click();
-
-      saveAllViaModal("layout");
-
-      cy.wait("@updateWebView").then(({ request }) => {
-        expect(request.body.code).not.to.contain("old.jpg");
-        expect(request.body.code).to.contain("<p>Caption</p>");
-        expect(request.body.code).not.to.contain("data-layout-id");
-      });
-    });
-  });
-
-  it("saves and publishes a pending layout draft", () => {
-    setStudioMode("layout");
-    withSeededView((webView) => {
-      expect(webView?.ZUID).to.exist;
-      expect(webView?.version).to.be.a("number");
-
-      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as("updateWebView");
-      // Any version, for THIS view. What matters is that a publish was issued
-      // for the view under test; pinning `version + 1` only worked while the
-      // spec read a live view immediately beforehand, and a seeded view's
-      // version is already one behind by the time the save bumps it.
-      cy.intercept("POST", `/v1/web/views/${webView.ZUID}/versions/*`).as(
-        "publishWebView"
-      );
-
-      createPendingLayoutSave(webView.ZUID);
-
-      savePublishAllViaModal("layout");
-
-      cy.wait("@updateWebView").then(({ request }) => {
-        // Order and sanitization are what this asserts. The adjacency was
-        // incidental: a reorder used to strip every whitespace-only text node
-        // from the region, so the saved source came back on one line. It now
-        // keeps the author's formatting, hence the tolerant match — reversing
-        // the order still fails it.
-        expect(request.body.code).to.match(/<div>Two<\/div>\s*<div>One<\/div>/);
-        expect(request.body.code).not.to.contain("data-layout-id");
-      });
-
-      cy.wait("@publishWebView");
-    });
   });
 
   // ── Content staging (multi-item save) ───────────────────────────────────────
@@ -808,5 +509,358 @@ describe("Studio Wrapper", () => {
 
     cy.getBySelector("PendingEditsModal").should("not.exist");
     cy.getBySelector("StudioContentSaveBar").should("exist");
+  });
+
+  // Skipped when the preview is down: these wait on the real bridge's TEMPLATE_SOURCE_MAP.
+  describe("with the live preview bridge", () => {
+    before(function () {
+      cy.skipIfPreviewDown(this, studioPath);
+    });
+
+    it("saves sanitized mapped source for a pending layout draft", () => {
+      setStudioMode("layout");
+      withSeededView((webView) => {
+        expect(webView?.ZUID).to.exist;
+
+        cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as(
+          "updateWebView"
+        );
+
+        createPendingLayoutSave(webView.ZUID);
+
+        saveAllViaModal("layout");
+
+        cy.wait("@updateWebView").then(({ request }) => {
+          // Order and sanitization are what this asserts. The adjacency was
+          // incidental: a reorder used to strip every whitespace-only text node
+          // from the region, so the saved source came back on one line. It now
+          // keeps the author's formatting, hence the tolerant match — reversing
+          // the order still fails it.
+          expect(request.body.code).to.match(
+            /<div>Two<\/div>\s*<div>One<\/div>/
+          );
+          expect(request.body.code).not.to.contain("data-layout-id");
+        });
+      });
+    });
+
+    it("keeps a pending reorder when the preview re-sends its template map", () => {
+      setStudioMode("layout");
+      withSeededView((webView) => {
+        cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as(
+          "updateWebView"
+        );
+
+        createPendingLayoutSave(webView.ZUID);
+        cy.getBySelector("StudioLayoutSaveBar").should("exist");
+
+        // A preview reload re-sends the as-rendered, pre-reorder template.
+        postBridgeMessage({
+          type: "TEMPLATE_SOURCE_MAP",
+          templateSourceByCodeId: { [webView.ZUID]: templateSource },
+        });
+
+        saveAllViaModal("layout");
+
+        cy.wait("@updateWebView").then(({ request }) => {
+          expect(request.body.code).to.match(
+            /<div>Two<\/div>\s*<div>One<\/div>/
+          );
+        });
+      });
+    });
+
+    it("keeps nested code-region layout nodes out of outer mapped source", () => {
+      setStudioMode("layout");
+      withSeededView((webView) => {
+        expect(webView?.ZUID).to.exist;
+
+        cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as(
+          "updateWebView"
+        );
+
+        createNestedPendingLayoutSave(webView.ZUID);
+
+        saveAllViaModal("layout");
+
+        cy.wait("@updateWebView").then(({ request }) => {
+          expect(request.body.code).to.contain(
+            "{{include a_new_single_page_model_is_here}}"
+          );
+          expect(request.body.code).to.contain("<div>goodbye world</div>");
+          expect(request.body.code).to.contain("<div>hello world</div>");
+          expect(request.body.code).not.to.contain("<form");
+        });
+      });
+    });
+
+    it("saves static content edit with updated text and no layout-id attributes", () => {
+      setStudioMode("layout");
+      withSeededView((webView) => {
+        expect(webView?.ZUID).to.exist;
+
+        cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as(
+          "updateWebView"
+        );
+
+        postBridgeMessage({
+          type: "TEMPLATE_SOURCE_MAP",
+          templateSourceByCodeId: {
+            [webView.ZUID]: `<div data-layout-id="leaf-1">Original text</div>`,
+          },
+        });
+
+        postBridgeMessage({
+          type: "LAYOUT_CONTENT_UPDATE",
+          codeId: webView.ZUID,
+          layoutId: "leaf-1",
+          innerHtml: "Updated text",
+        });
+
+        saveAllViaModal("layout");
+
+        cy.wait("@updateWebView").then(({ request }) => {
+          expect(request.body.code).to.contain("Updated text");
+          expect(request.body.code).not.to.contain("Original text");
+          expect(request.body.code).not.to.contain("data-layout-id");
+        });
+      });
+    });
+
+    it("accumulates multiple static edits and saves the latest", () => {
+      setStudioMode("layout");
+      withSeededView((webView) => {
+        expect(webView?.ZUID).to.exist;
+
+        cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as(
+          "updateWebView"
+        );
+
+        postBridgeMessage({
+          type: "TEMPLATE_SOURCE_MAP",
+          templateSourceByCodeId: {
+            [webView.ZUID]: `<div data-layout-id="leaf-1">Original text</div>`,
+          },
+        });
+
+        postBridgeMessage({
+          type: "LAYOUT_CONTENT_UPDATE",
+          codeId: webView.ZUID,
+          layoutId: "leaf-1",
+          innerHtml: "First edit",
+        });
+
+        postBridgeMessage({
+          type: "LAYOUT_CONTENT_UPDATE",
+          codeId: webView.ZUID,
+          layoutId: "leaf-1",
+          innerHtml: "Second edit",
+        });
+
+        saveAllViaModal("layout");
+
+        cy.wait("@updateWebView").then(({ request }) => {
+          expect(request.body.code).to.contain("Second edit");
+          expect(request.body.code).not.to.contain("First edit");
+        });
+      });
+    });
+
+    it("applies static edit on top of a pending reorder without repositioning the block", () => {
+      setStudioMode("layout");
+      withSeededView((webView) => {
+        expect(webView?.ZUID).to.exist;
+
+        cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as(
+          "updateWebView"
+        );
+
+        // Establish template with two blocks
+        postBridgeMessage({
+          type: "TEMPLATE_SOURCE_MAP",
+          templateSourceByCodeId: {
+            [webView.ZUID]: `<div data-layout-id="1">One</div><div data-layout-id="2">Two</div>`,
+          },
+        });
+
+        // Reorder: swap block 2 before block 1
+        postBridgeMessage({
+          type: "REORDER_OUTPUT",
+          regions: [
+            {
+              codeId: webView.ZUID,
+              selector: "[data-layout-id]",
+              orderedLayoutIds: ["2", "1"],
+              layoutStructure: [
+                { layoutId: "2", parentLayoutId: null },
+                { layoutId: "1", parentLayoutId: null },
+              ],
+              outputHtml:
+                '<div data-layout-id="2">Two</div><div data-layout-id="1">One</div>',
+            },
+          ],
+          primaryCodeId: webView.ZUID,
+          selectedLayoutId: "2",
+          selectedLayoutBreadcrumb: [],
+          selector: "[data-layout-id]",
+        });
+
+        // Static edit on block 2 after reorder
+        postBridgeMessage({
+          type: "LAYOUT_CONTENT_UPDATE",
+          codeId: webView.ZUID,
+          layoutId: "2",
+          innerHtml: "Two (edited)",
+        });
+
+        saveAllViaModal("layout");
+
+        cy.wait("@updateWebView").then(({ request }) => {
+          // Reorder order preserved: block 2 still before block 1
+          const code = request.body.code;
+          expect(code.indexOf("Two (edited)")).to.be.lessThan(
+            code.indexOf("One")
+          );
+          expect(code).not.to.contain("data-layout-id");
+        });
+      });
+    });
+
+    it("saves updated image src after selecting from MediaDam", () => {
+      setStudioMode("layout");
+      withSeededView((webView) => {
+        expect(webView?.ZUID).to.exist;
+
+        cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as(
+          "updateWebView"
+        );
+
+        postBridgeMessage({
+          type: "TEMPLATE_SOURCE_MAP",
+          templateSourceByCodeId: {
+            [webView.ZUID]: `<img data-layout-id="img-1" src="https://example.com/old.jpg" />`,
+          },
+        });
+
+        postBridgeMessage({
+          type: "STATIC_EDIT_IMAGE",
+          codeId: webView.ZUID,
+          layoutId: "img-1",
+          isLeafImg: true,
+          imgIndex: 0,
+          currentSrc: "https://example.com/old.jpg",
+        });
+
+        cy.getBySelector("appSidebarHeaderTitle").should("exist");
+
+        // Select the first available media thumbnail
+        cy.waitOn(`**/bin/**`, () => {
+          cy.get("[data-testid='media-thumbnail-content']")
+            .first()
+            .parent()
+            .find("input[type=checkbox]")
+            .first()
+            .click({ force: true });
+        });
+
+        cy.contains("Done").click();
+
+        cy.getBySelector("StudioLayoutSaveBar").should("exist");
+
+        saveAllViaModal("layout");
+
+        cy.wait("@updateWebView").then(({ request }) => {
+          expect(request.body.code).not.to.contain("old.jpg");
+          expect(request.body.code).not.to.contain("data-layout-id");
+          // The src attribute should be a valid URL
+          expect(request.body.code).to.match(/<img src="https?:\/\/.+"/);
+        });
+      });
+    });
+
+    it("saves updated src for an img nested inside a layout leaf", () => {
+      setStudioMode("layout");
+      withSeededView((webView) => {
+        expect(webView?.ZUID).to.exist;
+
+        cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as(
+          "updateWebView"
+        );
+
+        postBridgeMessage({
+          type: "TEMPLATE_SOURCE_MAP",
+          templateSourceByCodeId: {
+            [webView.ZUID]: `<div data-layout-id="wrap-1"><img src="https://example.com/old.jpg" /><p>Caption</p></div>`,
+          },
+        });
+
+        postBridgeMessage({
+          type: "STATIC_EDIT_IMAGE",
+          codeId: webView.ZUID,
+          layoutId: "wrap-1",
+          isLeafImg: false,
+          imgIndex: 0,
+          currentSrc: "https://example.com/old.jpg",
+        });
+
+        cy.getBySelector("appSidebarHeaderTitle").should("exist");
+
+        cy.waitOn(`**/bin/**`, () => {
+          cy.get("[data-testid='media-thumbnail-content']")
+            .first()
+            .parent()
+            .find("input[type=checkbox]")
+            .first()
+            .click({ force: true });
+        });
+
+        cy.contains("Done").click();
+
+        saveAllViaModal("layout");
+
+        cy.wait("@updateWebView").then(({ request }) => {
+          expect(request.body.code).not.to.contain("old.jpg");
+          expect(request.body.code).to.contain("<p>Caption</p>");
+          expect(request.body.code).not.to.contain("data-layout-id");
+        });
+      });
+    });
+
+    it("saves and publishes a pending layout draft", () => {
+      setStudioMode("layout");
+      withSeededView((webView) => {
+        expect(webView?.ZUID).to.exist;
+        expect(webView?.version).to.be.a("number");
+
+        cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`).as(
+          "updateWebView"
+        );
+        // Any version, for THIS view. What matters is that a publish was issued
+        // for the view under test; pinning `version + 1` only worked while the
+        // spec read a live view immediately beforehand, and a seeded view's
+        // version is already one behind by the time the save bumps it.
+        cy.intercept("POST", `/v1/web/views/${webView.ZUID}/versions/*`).as(
+          "publishWebView"
+        );
+
+        createPendingLayoutSave(webView.ZUID);
+
+        savePublishAllViaModal("layout");
+
+        cy.wait("@updateWebView").then(({ request }) => {
+          // Order and sanitization are what this asserts. The adjacency was
+          // incidental: a reorder used to strip every whitespace-only text node
+          // from the region, so the saved source came back on one line. It now
+          // keeps the author's formatting, hence the tolerant match — reversing
+          // the order still fails it.
+          expect(request.body.code).to.match(
+            /<div>Two<\/div>\s*<div>One<\/div>/
+          );
+          expect(request.body.code).not.to.contain("data-layout-id");
+        });
+
+        cy.wait("@publishWebView");
+      });
+    });
   });
 });
