@@ -24,6 +24,7 @@
   "dropAreaUploadPrompt": "Upload bestanden naar {{location}}",
   "editedFile": "Bestand {{filename}} bewerkt",
   "emptyStateDescription": "U kunt hier bestanden naartoe slepen of de knop \"Uploaden\" gebruiken.",
+  "emptyStateImageAlt": "Illustratie van het uploaden van bestanden",
   "emptyStateTitle": "Begin nu met uploaden",
   "failedCreatingGroup": "Aanmaken van groep mislukt",
   "failedDeletingFile": "Verwijderen van bestand mislukt",

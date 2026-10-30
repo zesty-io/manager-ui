@@ -26,6 +26,7 @@
   "dropAreaUploadPrompt": "Subir archivos a {{location}}",
   "editedFile": "Archivo editado: {{filename}}",
   "emptyStateDescription": "Puedes arrastrar y soltar archivos aquí o usar el botón \"Subir\".",
+  "emptyStateImageAlt": "Ilustración de la carga de archivos",
   "emptyStateTitle": "Comienza a subir ahora",
   "failedCreatingGroup": "Error al crear el grupo",
   "failedDeletingFile": "Error al eliminar el archivo",

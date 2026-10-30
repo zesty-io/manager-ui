@@ -5,7 +5,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { TopBar } from "../../../components/TopBar";
 import Box from "@mui/material/Box";
 import { Portal, Typography } from "@mui/material";
-import { NoResults } from "../../../../../../schema/src/app/components/NoResults";
+import { EmptyResults } from "shell/components/EmptyResults";
 import SearchBox from "../../../../../../../shell/components/SearchBox";
 import WebFontCard from "./WebFontCard";
 import { useDispatch, useSelector } from "react-redux";
@@ -200,10 +200,11 @@ const Installed = () => {
                     {t("settings.noInstalledFonts")}
                   </Typography>
                 ) : (
-                  <NoResults
-                    type="search"
-                    searchTerm={search}
-                    onButtonClick={() => {
+                  <EmptyResults
+                    dataCy="NoResults"
+                    variant="search"
+                    query={search}
+                    onAction={() => {
                       setSearch("");
                       searchInputRef?.current?.focus();
                     }}

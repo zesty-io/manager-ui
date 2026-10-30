@@ -22,6 +22,7 @@
   "dropAreaUploadPrompt": "上传文件到 {{location}}",
   "editedFile": "已编辑文件 {{filename}}",
   "emptyStateDescription": "您可以将文件拖放到此处，或使用“上传”按钮。",
+  "emptyStateImageAlt": "上传文件的插图",
   "emptyStateTitle": "立即开始上传",
   "failedCreatingGroup": "创建分组失败",
   "failedDeletingFile": "删除文件失败",
