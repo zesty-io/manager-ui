@@ -36,6 +36,7 @@
   "appErrorBody": "This error has been sent to our team. Please reload our application to continue.",
   "appErrorHeading": "Oops, something went wrong",
   "appLoadingFailure": "App loading failure: {{message}}",
+  "appNavigation": "App navigation",
   "applyAiSuggestion": "Apply",
   "audiencePlaceholder": "e.g. Freelancers, Designers, .....",
   "autoApply": "Auto apply",

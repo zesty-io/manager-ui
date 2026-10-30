@@ -78,7 +78,6 @@ export const InsightsMedia: FC = () => {
 
   return (
     <Box
-      component="main"
       sx={{
         flex: 1,
         display: "flex",

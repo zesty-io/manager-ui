@@ -36,6 +36,7 @@
   "appErrorBody": "此错误已发送给我们的团队。请重新加载应用程序以继续。",
   "appErrorHeading": "糟糕，出了点问题",
   "appLoadingFailure": "应用加载失败：{{message}}",
+  "appNavigation": "应用导航",
   "applyAiSuggestion": "应用",
   "audiencePlaceholder": "例如 Freelancers、Designers……",
   "autoApply": "自动应用",

@@ -48,7 +48,7 @@ export default function ReleaseApp() {
 
   return (
     <section className={cx(styles.ReleaseApp, styles.bodyText)}>
-      <main>
+      <div className={styles.Body}>
         <WithLoader
           condition={!loading}
           message={t("release.startingRelease")}
@@ -83,7 +83,7 @@ export default function ReleaseApp() {
             />
           </Switch>
         </WithLoader>
-      </main>
+      </div>
     </section>
   );
 }
