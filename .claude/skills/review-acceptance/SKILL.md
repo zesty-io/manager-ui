@@ -22,7 +22,7 @@ Run `gh auth status`.
 - Linked issue, in CI's order: branch name `<issue#>-slug` (regex `(^|/)[0-9]+-`, using the checked-out branch in local mode or the PR's `headRefName`), then the PR's closing issue references: in PR mode `gh pr view <n> --json closingIssuesReferences`; in local mode `gh pr view --json closingIssuesReferences` for the checked-out branch, if it has an open PR (used only to find the issue, the diff stays local). Neither → empty (change-only mode).
 - Local mode without a working `gh`: if the branch name yields an issue number, the sub-agent could not read that issue and would silently fall back to change-only QA. Before any review work, tell the user the issue #N can't be read without `gh`, and that change-only mode means the agent invents its own criteria and the report is NOT graded against the issue. Ask with AskUserQuestion, with exactly these options: "Continue in change-only mode" (pass an empty issue number, and state in the final output that the report is not graded against issue #N) and "Cancel so I can set up gh" (stop, repeating the install and `gh auth login` instructions). If the branch name has no issue number, proceed in change-only mode and note that closing-issue references couldn't be checked.
 
-`OUT=.reviews/acceptance-<n or branch name>`; `mkdir -p $OUT`. Create an empty `$OUT/prior-qa-comment.md` (a local run has no prior report).
+`OUT=.reviews/<branch>/acceptance`, where `<branch>` is `git branch --show-current` with `/` replaced by `-` (in PR mode the checkout matches the PR head, so this is the PR's branch); `mkdir -p $OUT`, then `rm -f $OUT/qa-comment.md` so a failed run can't leave a stale report behind. Create an empty `$OUT/prior-qa-comment.md` (a local run has no prior report).
 
 ## 2. Build the prompt
 
@@ -44,7 +44,7 @@ Spawn one `general-purpose` Agent. Its prompt is this preamble, verbatim, follow
 
 ## 4. Verdict and show
 
-CI computes the verdict in a post step, not the agent, so do the same arithmetic on the report's marks:
+If `$OUT/qa-comment.md` doesn't exist, the run failed: say so and stop. CI computes the verdict in a post step, not the agent, so do the same arithmetic on the report's marks:
 
 - Count `^[0-9]+\. ✅` (passed), `^[0-9]+\. ❌` (failed), and `- ` bullets inside the "Not checkable from the code" details block (runtime).
 - Any ❌ → `❌ FAIL — X of N code-checkable criteria not met`. Otherwise `✅ PASS — P/N code-checkable criteria confirmed` (or `✅ PASS — nothing in this change was checkable from the code` when N is 0).

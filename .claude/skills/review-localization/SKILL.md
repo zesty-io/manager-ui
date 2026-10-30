@@ -20,7 +20,7 @@ Run `gh auth status`.
 - Local mode only: run `git fetch origin dev` first so the merge-base can't resolve against a stale `origin/dev`.
 - Local mode only: run `git ls-files --others --exclude-standard`. If it lists files, do this BEFORE any review work; never review first and mention it afterward. Tell the user, in plain text, that untracked files were found, list them, and say that untracked files are NOT included in the review and must be added with `git add <file>` first to be reviewed. Then ask with AskUserQuestion, with exactly these options: "Ignore them and continue" (review proceeds without them) and "Cancel so I can git add them" (stop here and make no further tool calls). If they cancel, end by repeating the `git add` instruction and that they can re-run the skill after.
 
-`OUT=.reviews/localization-<n or branch name>`; `mkdir -p $OUT`.
+`OUT=.reviews/<branch>/localization`, where `<branch>` is `git branch --show-current` with `/` replaced by `-` (in PR mode the checkout matches the PR head, so this is the PR's branch); `mkdir -p $OUT`, then `rm -f $OUT/i18n-comment.md` so a failed run can't leave a stale report behind.
 
 ## 2. Gather inputs
 
@@ -65,4 +65,4 @@ Spawn one `general-purpose` Agent. Its prompt is this preamble, verbatim, follow
 
 ## 5. Show
 
-Print the sub-agent's report in the session as-is. Tell the user it's saved at `$OUT/i18n-comment.md`.
+If `$OUT/i18n-comment.md` doesn't exist, the run failed: say so and don't show anything as a result. Otherwise print the sub-agent's report in the session as-is. Tell the user it's saved at `$OUT/i18n-comment.md`.
