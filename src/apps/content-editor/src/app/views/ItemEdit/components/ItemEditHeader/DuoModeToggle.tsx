@@ -57,7 +57,7 @@ const IOSSwitch = styled((props: SwitchProps) => (
     transitionDuration: "300ms",
     "&.Mui-checked": {
       transform: "translateX(28px)",
-      color: "#fff",
+      color: theme.palette.common.white,
       "& + .MuiSwitch-track": {
         backgroundColor: theme.palette.grey[100],
         opacity: 1,
@@ -72,7 +72,7 @@ const IOSSwitch = styled((props: SwitchProps) => (
     },
     "&.Mui-focusVisible .MuiSwitch-thumb": {
       color: theme.palette.grey[300],
-      border: "6px solid #fff",
+      border: `6px solid ${theme.palette.common.white}`,
     },
   },
   "& .MuiSwitch-thumb": {

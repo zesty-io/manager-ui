@@ -10,25 +10,9 @@ concurrency:
   cancel-in-progress: false
 
 # Job flow:
-#   setup (install + typecheck) -> run_tests -> run_global_tests
-#   localization_lint runs independently
+#   setup (install + lint + typecheck) -> run_tests -> run_global_tests
 #   all_tests_passed / backend_health / merge_timings / coverage aggregate at the end
 jobs:
-  localization_lint:
-    name: "Lint: Localization"
-    runs-on: ubuntu-latest
-    # Own concurrency group — lint shouldn't queue behind another PR's e2e run.
-    concurrency:
-      group: manager-ui-localization-lint-${{ github.ref }}
-      cancel-in-progress: true
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-      - name: Install Dependencies
-        uses: ./.github/actions/install-deps
-      - name: Run Lint
-        run: npm run lint
-
   setup:
     runs-on: ubuntu-latest
     steps:
@@ -45,6 +29,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Install Dependencies
         uses: ./.github/actions/install-deps
+      # ESLint (design-system + i18n rules) and locale-JSON checks. A failure here fails setup,
+      # which gates all e2e jobs below.
+      - name: lint
+        run: npm run lint
       # Repo-wide TypeScript check. A failure here fails setup, which gates all e2e jobs below.
       - name: Run TypeScript check
         run: npx tsc --noEmit
@@ -201,13 +189,13 @@ jobs:
   # Branch protection should require this job, not run_tests, because matrix jobs
   # produce individual checks (run_tests (0), run_tests (1), …) — never a single run_tests check.
   all_tests_passed:
-    needs: [localization_lint, setup, run_tests, run_global_tests]
+    needs: [setup, run_tests, run_global_tests]
     runs-on: ubuntu-latest
     if: always()
     steps:
       - name: Check results
         run: |
-          if [ "${{ needs.localization_lint.result }}" != "success" ] || [ "${{ needs.run_tests.result }}" != "success" ] || [ "${{ needs.run_global_tests.result }}" != "success" ] || [ "${{ needs.setup.result }}" != "success" ]; then
+          if [ "${{ needs.run_tests.result }}" != "success" ] || [ "${{ needs.run_global_tests.result }}" != "success" ] || [ "${{ needs.setup.result }}" != "success" ]; then
             echo "One or more test runners failed or were cancelled"
             exit 1
           fi
