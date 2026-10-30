@@ -130,7 +130,9 @@ describe("Studio two-way binding", () => {
   // mounted and the item hydrated in the store. Dispatching before either is
   // true produces a green-looking no-op.
   const editInPanel = (name, value) => {
-    cy.getBySelector("StudioSidePanel").should("exist");
+    cy.getBySelector("StudioSidePanel")
+      .find('button[aria-label="Close Studio preview"]')
+      .should("exist");
     cy.window().should((win) => {
       expect(
         win.zestyStore.getState().content[itemZUID]?.meta?.ZUID,
