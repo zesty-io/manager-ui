@@ -93,12 +93,11 @@ export function content(state = {}, action) {
           ...state[action.payload.itemZUID],
           ...action.payload.data[action.payload.itemZUID],
         };
-      } else {
-        if (state[action.payload.itemZUID]) {
-          // no publish or schedule records so remove them from the item
-          delete state[action.payload.itemZUID].publishing;
-          delete state[action.payload.itemZUID].scheduling;
-        }
+      } else if (state[action.payload.itemZUID]) {
+        // no publish or schedule records so remove them from the item
+        const { publishing, scheduling, ...rest } =
+          state[action.payload.itemZUID];
+        state[action.payload.itemZUID] = rest;
       }
 
       return { ...state };

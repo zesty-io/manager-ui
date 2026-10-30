@@ -501,6 +501,57 @@ describe("Actions in content editor", () => {
     cy.getBySelector("ContentScheduledIndicator").should("not.exist");
   });
 
+  it("Unschedules a Publish for a never-published item", () => {
+    const { items, publishItem, deletePublishedItem, publishings } =
+      awaitRequests();
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[3]?.meta?.ZUID}`
+    );
+    cy.wait([items, publishings], { requestTimeout });
+
+    cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
+    cy.getBySelector("PublishMenuButton").click();
+
+    cy.getBySelector("publishingMenu")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("PublishScheduleButton").should("exist");
+        cy.getBySelector("PublishScheduleButton").click();
+      });
+
+    cy.getBySelector("SchedulePublishModal")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("SchedulePublishButton").should("exist");
+        cy.getBySelector("SchedulePublishButton").click();
+      });
+
+    cy.wait([publishItem, publishings], { requestTimeout });
+
+    cy.getBySelector("ContentScheduledIndicator").should("exist");
+
+    cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
+    cy.getBySelector("PublishMenuButton").click();
+
+    cy.getBySelector("publishingMenu")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("PublishScheduleButton").should("exist");
+        cy.getBySelector("PublishScheduleButton").click();
+      });
+
+    cy.getBySelector("SchedulePublishModal")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnschedulePublishButton").should("exist");
+        cy.getBySelector("UnschedulePublishButton").click();
+      });
+
+    cy.wait([deletePublishedItem, publishings], { requestTimeout });
+
+    cy.getBySelector("ContentScheduledIndicator").should("not.exist");
+  });
+
   it("Only allows future dates to be scheduled for publish", () => {
     cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
     cy.getBySelector("PublishMenuButton").click();
