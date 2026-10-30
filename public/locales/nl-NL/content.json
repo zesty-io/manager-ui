@@ -676,8 +676,6 @@
   "studioEditInManager": "Bewerken in Zesty Manager",
   "studioEditorAriaLabel": "Studio-editor",
   "studioEmptyPanelNoProperties": "Dit element heeft geen bewerkbare eigenschappen.",
-  "studioEmptyPanelNoSelection": "Selecteer een element op het canvas of in Lagen om het te bewerken.",
-  "studioEmptyPanelTitle": "Inspector",
   "studioFreestyleAlertBody": "Bewerken alleen mogelijk in Freestyle",
   "studioFreestyleAlertDismissAriaLabel": "Freestyle-melding sluiten",
   "studioFreestyleAlertTitle": "Deze lay-out is gemaakt in Freestyle",
