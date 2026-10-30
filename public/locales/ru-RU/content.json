@@ -708,8 +708,6 @@
   "studioEditInManager": "Редактировать в Zesty Manager",
   "studioEditorAriaLabel": "Редактор Studio",
   "studioEmptyPanelNoProperties": "У этого элемента нет редактируемых свойств.",
-  "studioEmptyPanelNoSelection": "Выберите элемент на холсте или в панели «Слои», чтобы отредактировать его.",
-  "studioEmptyPanelTitle": "Инспектор",
   "studioFreestyleAlertBody": "Редактирование доступно только в Freestyle",
   "studioFreestyleAlertDismissAriaLabel": "Закрыть уведомление о Freestyle",
   "studioFreestyleAlertTitle": "Этот макет был создан в Freestyle",
