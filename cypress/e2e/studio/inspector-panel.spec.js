@@ -2382,7 +2382,7 @@ describe("Studio Inspector Panel", () => {
   });
 
   // #4374 — the layout grammar keeps a right panel mounted whatever is selected.
-  describe("empty panel in layout mode", () => {
+  describe("right panel in layout mode", () => {
     // The bridge emits no `slots` for a tag outside its SUPPORTED_ELEMENTS.
     const siblingNode = (codeId, layoutId, tagName, slots) => ({
       id: `${codeId}:${layoutId}`,
@@ -2429,16 +2429,9 @@ describe("Studio Inspector Panel", () => {
       setStudioMode("layout");
     });
 
-    it("shows the select-an-element empty state with nothing selected", () => {
-      cy.getBySelector("StudioEmptyPanel").should("exist");
-      cy.getBySelector("StudioEmptyPanelTitle").should(
-        "have.text",
-        "Inspector"
-      );
-      cy.getBySelector("StudioEmptyPanelMessage").should(
-        "have.text",
-        "Select an element on the canvas or in Layers to edit it."
-      );
+    it("shows the item details with nothing selected", () => {
+      cy.getBySelector("StudioSidePanel").should("exist");
+      cy.getBySelector("StudioEmptyPanel").should("not.exist");
       cy.getBySelector("StudioInspectorPanel").should("not.exist");
     });
 
@@ -2537,7 +2530,7 @@ describe("Studio Inspector Panel", () => {
       });
     });
 
-    it("shows the neutral copy, not 'no editable properties', when the Inspector is closed", () => {
+    it("shows the item details, not 'no editable properties', when the Inspector is closed", () => {
       feedSiblings();
       selectRow(paragraph);
       cy.getBySelector("StudioInspectorPanel").should("exist");
@@ -2547,14 +2540,8 @@ describe("Studio Inspector Panel", () => {
       // The layout selection outlives the close; the <p> is still editable.
       cy.getBySelector("StudioInspectorPanel").should("not.exist");
       cy.getBySelector("StudioBreadcrumbChip").last().should("have.text", "p");
-      cy.getBySelector("StudioEmptyPanelTitle").should(
-        "have.text",
-        "Inspector"
-      );
-      cy.getBySelector("StudioEmptyPanelMessage").should(
-        "have.text",
-        "Select an element on the canvas or in Layers to edit it."
-      );
+      cy.getBySelector("StudioSidePanel").should("exist");
+      cy.getBySelector("StudioEmptyPanel").should("not.exist");
     });
   });
 });
