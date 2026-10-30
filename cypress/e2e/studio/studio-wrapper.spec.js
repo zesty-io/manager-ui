@@ -206,15 +206,15 @@ describe("Studio Wrapper", () => {
       .and("have.attr", "src")
       .and("include", "studio=bridge");
 
-    // Studio is the default for a role with both capabilities, and it shows no
-    // right panel until something is selected — matching layout, not content.
-    cy.getBySelector("StudioSidePanel").should("not.exist");
+    // Studio is the default for a role with both capabilities. Every mode
+    // shows the item details until something is selected.
+    cy.getBySelector("StudioSidePanel").should("exist");
 
     setStudioMode("content");
     cy.getBySelector("StudioSidePanel").should("exist");
 
     setStudioMode("layout");
-    cy.getBySelector("StudioSidePanel").should("not.exist");
+    cy.getBySelector("StudioSidePanel").should("exist");
 
     setStudioMode("content");
     cy.getBySelector("StudioSidePanel").should("exist");
