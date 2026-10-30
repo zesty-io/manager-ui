@@ -316,6 +316,18 @@ describe("AI drawer", () => {
       },
     ]);
 
+    const IMAGE_ZUID = "3-e2e-stub-image";
+    const IMAGE_REPLY = JSON.stringify([
+      {
+        type: "SET_VALUE",
+        payload: { refKey: "generated-image", value: IMAGE_ZUID },
+      },
+      {
+        type: "SYSTEM_OUTPUT",
+        payload: { value: "Generated an image of the alps." },
+      },
+    ]);
+
     const openDrawerWithReply = (response, beforePrompt = () => {}) => {
       cy.intercept("GET", "**/chats", { body: { data: [] } });
       cy.intercept("POST", "**/client", {
@@ -380,6 +392,47 @@ describe("AI drawer", () => {
 
       cy.getBySelector("toast").should("contain.text", '"code-editor"');
       cy.get("@approve.all").should("have.length", 0);
+    });
+
+    it("generates alt text for a generated image and saves it to the file", () => {
+      openDrawerWithReply(IMAGE_REPLY);
+      cy.intercept("POST", "**/api/alt-text", {
+        body: { data: { altText: "A stubbed alt text" }, message: "ok" },
+      }).as("altText");
+      cy.intercept("PATCH", `**/file/${IMAGE_ZUID}`, { body: {} }).as(
+        "saveAltText"
+      );
+
+      // Follows the reply's text, as the last entry of the turn.
+      cy.contains("Generated an image of the alps.");
+      cy.getBySelector("AIDrawerGenerateAltText").should("be.visible").click();
+
+      cy.wait("@altText")
+        .its("request.body")
+        .should((body) => {
+          expect(body.fileZuid).to.equal(IMAGE_ZUID);
+          expect(body.context).to.equal("Stubbed prompt");
+        });
+      cy.wait("@saveAltText")
+        .its("request.body")
+        .should("deep.equal", { title: "A stubbed alt text" });
+      cy.contains("A stubbed alt text").should("be.visible");
+    });
+
+    it("shows the server's message and saves nothing when alt text fails", () => {
+      openDrawerWithReply(IMAGE_REPLY);
+      cy.intercept("POST", "**/api/alt-text", {
+        statusCode: 400,
+        body: { message: "Media file not found" },
+      }).as("altText");
+      cy.intercept("PATCH", `**/file/${IMAGE_ZUID}`, { body: {} }).as(
+        "saveAltText"
+      );
+
+      cy.getBySelector("AIDrawerGenerateAltText").click();
+      cy.wait("@altText");
+      cy.contains("Media file not found").should("be.visible");
+      cy.get("@saveAltText.all").should("have.length", 0);
     });
   });
 });

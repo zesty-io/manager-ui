@@ -38,6 +38,25 @@ export const mcpApi = createApi({
       invalidatesTags: (result, error, { chatZuid }) =>
         error ? [] : [{ type: "ChatSessionLog", id: chatZuid }],
     }),
+    // The whole body, not `getResponseData`: `chatError` sits beside `data`.
+    // The server only generates the text; the caller writes it to the file.
+    generateAltText: builder.mutation<
+      {
+        data: { altText: string };
+        message: string;
+        chatZuid?: string;
+        chatError?: string;
+      },
+      { fileZuid: string; context?: string; chatZuid?: string }
+    >({
+      query: (body) => {
+        return {
+          url: `api/alt-text`,
+          method: "POST",
+          body,
+        };
+      },
+    }),
     getChatSessions: builder.query<ChatSession[], void>({
       query: () => {
         return {
@@ -118,6 +137,7 @@ export const mcpApi = createApi({
 
 export const {
   useGeminiGenerationMutation,
+  useGenerateAltTextMutation,
   useGetChatSessionLogQuery,
   useUpdatePromptApprovalStatusMutation,
   useGetChatSessionsQuery,

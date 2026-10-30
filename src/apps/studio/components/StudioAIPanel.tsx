@@ -22,6 +22,7 @@ import {
   buildSuggestionsRequest,
 } from "shell/components/AIDrawer/promptRequest";
 import { useApplySetValue } from "shell/components/AIDrawer/useApplySetValue";
+import { useGenerateAltText } from "shell/components/AIDrawer/useGenerateAltText";
 import { getRefRegistry } from "../../../engine/refRegistry";
 import { countLineChanges } from "../../../utility/countLineChanges";
 
@@ -174,6 +175,8 @@ const StudioAIChat = ({
   const { data: roles } = useGetUsersRolesQuery();
   const roleZUID = roles?.find((role) => role.ZUID === user.ZUID)?.role?.ZUID;
   const [geminiGenerate, { isLoading }] = useGeminiGenerationMutation();
+  const { generate: generateAltText, isLoading: isGeneratingAltText } =
+    useGenerateAltText();
   // A reply that lands after this unmounts is not applied, so a request only
   // counts as pending while the chat is open.
   useEffect(() => {
@@ -418,6 +421,31 @@ const StudioAIChat = ({
     [chat, sendTurn, roleZUID, t]
   );
 
+  // Logged to the current server session, but never adopts one: a session
+  // starts with a prompt turn, and a discard must still end it.
+  const handleGenerateAltText = useCallback(
+    async (fileZuid: string, prompt: string) => {
+      const turnZUID = `turn-${++turnSeq}`;
+      const clears = chat.clears;
+      appendToTurn(turnZUID, [
+        { type: "USER_INPUT", payload: { value: t("shell.generateAltText") } },
+      ]);
+      const result = await generateAltText({
+        fileZuid,
+        context: prompt,
+        chatZuid: chat.chatZUID,
+      });
+      if (clears !== chat.clears) return;
+      appendToChat(chat, turnZUID, [
+        // No `strictNullChecks` here, so only `=== false` narrows.
+        result.ok === false
+          ? { type: "ERROR", payload: { value: result.message } }
+          : { type: "SYSTEM_OUTPUT", payload: { value: result.altText } },
+      ]);
+    },
+    [chat, appendToTurn, generateAltText, t]
+  );
+
   // The next turn starts a new server session.
   const handleClearChat = useCallback(() => {
     chat.clears++;
@@ -436,7 +464,7 @@ const StudioAIChat = ({
       setAutoApply={() => {}}
       hideAutoApply
       isInCodeApp={false}
-      isLoading={isLoading}
+      isLoading={isLoading || isGeneratingAltText}
       isLoadingChatSessionLog={false}
       urlChatZUID={chat.chatZUID}
       onClearChat={handleClearChat}
@@ -451,6 +479,7 @@ const StudioAIChat = ({
       handleGenerateSuggestions={handleGenerateSuggestions}
       scrollContainerRef={scrollContainerRef}
       placeholder={t("content.studioAiPlaceholder")}
+      onGenerateAltText={handleGenerateAltText}
     />
   );
 };
