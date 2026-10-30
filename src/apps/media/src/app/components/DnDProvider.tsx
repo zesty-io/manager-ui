@@ -66,7 +66,7 @@ export const DnDProvider = ({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   return (
     <Box
-      data-testid="dnd-provider-box"
+      data-cy="dnd-provider-box"
       sx={{
         display: "flex",
         flex: 1,

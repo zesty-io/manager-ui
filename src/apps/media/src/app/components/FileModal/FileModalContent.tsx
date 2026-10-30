@@ -295,6 +295,7 @@ export const FileModalContent: FC<Props> = ({
         <Box sx={{ display: "flex", flexDirection: "row" }}>
           <Tooltip placement="bottom-start" title={t("common.more")}>
             <IconButton
+              data-cy="file-modal-settings-btn"
               onClick={(evt) => setShowSettingsDropdown(evt.currentTarget)}
               aria-controls={openSettings ? "settingsMenu" : undefined}
               aria-haspopup="true"
@@ -333,6 +334,7 @@ export const FileModalContent: FC<Props> = ({
             title={t("media.fileModalContentDeleteTooltip")}
           >
             <IconButton
+              data-cy="file-modal-delete-btn"
               size="small"
               aria-label={t("media.fileModalContentDeleteAria")}
               onClick={() => setShowDeleteFileModal(true)}
@@ -345,6 +347,7 @@ export const FileModalContent: FC<Props> = ({
             title={t("media.fileModalContentCloseTooltip")}
           >
             <IconButton
+              data-cy="file-modal-close-btn"
               size="small"
               onClick={() => handleCloseModal()}
               aria-label={t("media.fileModalContentCloseAria")}
@@ -369,6 +372,7 @@ export const FileModalContent: FC<Props> = ({
             }}
           >
             <MenuItem
+              data-cy="file-modal-rename-menu-item"
               onClick={() => {
                 setShowRenameFileModal(true);
                 setShowSettingsDropdown(null);
@@ -411,6 +415,7 @@ export const FileModalContent: FC<Props> = ({
             {t("media.fileModalContentTitleHelper")}
           </InputLabel>
           <TextField
+            data-cy="file-modal-title-field"
             placeholder={t("media.fileModalContentTitlePlaceholder")}
             aria-label={t("media.fileModalContentTitleAria")}
             value={newTitle}
@@ -435,6 +440,7 @@ export const FileModalContent: FC<Props> = ({
           </Typography>
           {newTitle !== title && (
             <Button
+              data-cy="file-modal-save-title-btn"
               disabled={isLoadingUpdateAltText}
               size="small"
               sx={{ mt: 1 }}
@@ -453,6 +459,7 @@ export const FileModalContent: FC<Props> = ({
         <Box sx={{ mt: 3 }}>
           <InputLabel>{t("media.fileModalContentFileUrlLabel")}</InputLabel>
           <TextField
+            data-cy="file-url-field"
             fullWidth
             value={src}
             InputProps={{

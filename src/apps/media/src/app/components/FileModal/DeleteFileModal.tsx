@@ -73,6 +73,7 @@ export const DeleteFileModal: FC<Props> = ({
           {t("common.cancel")}
         </Button>
         <Button
+          data-cy="delete-file-confirm-btn"
           variant="contained"
           color="error"
           aria-label={t("media.deleteFileModalDeleteButtonAria")}
