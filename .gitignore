@@ -28,3 +28,6 @@ auth-state.json
 qa-artifacts/
 negative-qa-comment.md
 devserver.log
+
+# local /review-* skill output
+.reviews/
