@@ -74,7 +74,11 @@ type ToneOption = { label: string; value: string };
 export type ChatResponse = { approval?: string } & (
   | { type: "USER_INPUT"; payload: { value: string } }
   | { type: "NAVIGATE"; payload: { path: string } }
-  | { type: "SET_VALUE"; payload: { refKey: string; value: string } }
+  // `url`: a generated file's public URL, sent next to its ZUID.
+  | {
+      type: "SET_VALUE";
+      payload: { refKey: string; value: string; url?: string };
+    }
   // A prose reply.
   | { type: "MESSAGE"; payload: { value: string } }
   // Built by a host, not sent by the server: an applied code edit's line

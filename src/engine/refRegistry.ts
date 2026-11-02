@@ -1,5 +1,6 @@
 export interface RefHandle {
-  setValue?(value: string): void;
+  // `url` is where a file value can be shown, when the sender knows it.
+  setValue?(value: string, options?: { url?: string }): void;
   // False when setValue would refuse this value; absent means it takes any.
   accepts?(value: string): boolean;
   click?(): void;

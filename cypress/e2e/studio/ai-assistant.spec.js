@@ -1384,9 +1384,13 @@ describe("Studio AI Assistant", () => {
   });
 
   // An image reply. `hero_image` is the seeded model's images field.
+  const IMAGE_URL = "https://e2e.media.example/hero.png";
   const imageReply = (refKey) =>
     mcpReply([
-      { type: "SET_VALUE", payload: { refKey, value: "3-e2e000-stub00" } },
+      {
+        type: "SET_VALUE",
+        payload: { refKey, value: "3-e2e000-stub00", url: IMAGE_URL },
+      },
     ]);
 
   it("shows an image with no field to fill, with no Apply and no warning", () => {
@@ -1437,11 +1441,39 @@ describe("Studio AI Assistant", () => {
       .its("__hostCommands")
       .should((commands) => {
         const repaint = commands.find((c) => c.action === "setAttrByField");
-        expect(repaint).to.include({ itemZuid: itemZUID, attr: "src" });
-        expect(repaint.value).to.match(/\/resolve\/3-e2e000-stub00\/getimage$/);
+        // The server's public URL: the resolver's needs a session.
+        expect(repaint).to.include({
+          itemZuid: itemZUID,
+          attr: "src",
+          value: IMAGE_URL,
+        });
       });
 
     cy.getBySelector("StudioContentCancelButton").click();
+    cy.getBySelector("StudioContentSaveBar").should("not.exist");
+    // The field no longer holds the image, so it can be applied again.
+    cy.getBySelector("AIDrawerSetValue").should("not.be.disabled");
+  });
+
+  it("offers no Apply for an image field value that is not a file", () => {
+    // The generated image shows the reply was handled.
+    stubMcp(() =>
+      mcpReply([
+        {
+          type: "SET_VALUE",
+          payload: { refKey: "hero_image", value: "undefined" },
+        },
+        {
+          type: "SET_VALUE",
+          payload: { refKey: "generated-image", value: "3-e2e000-stub00" },
+        },
+      ])
+    );
+    openAiPanel();
+    sendPrompt("Generate a hero image");
+
+    cy.getBySelector("AIDrawerGeneratedImage").should("exist");
+    cy.getBySelector("AIDrawerSetValue").should("not.exist");
     cy.getBySelector("StudioContentSaveBar").should("not.exist");
   });
 

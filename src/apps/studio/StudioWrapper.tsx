@@ -2522,6 +2522,17 @@ export const StudioWrapper = () => {
     // A reply that staged a change closes its step when the preview settles.
     if (!isAiRenderPending()) historyRef.current?.endStep();
   }, [isAiRenderPending]);
+  // An image's Apply is a field write like the media picker's, not an AI
+  // turn, so undoing it leaves the chat session alone. During a render it
+  // joins that turn's step.
+  const handleBeforeAiImageApplied = useCallback(
+    () => historyRef.current?.beginStep("image"),
+    []
+  );
+  const handleAfterAiImageApplied = useCallback(
+    () => historyRef.current?.endStep(),
+    []
+  );
 
   // Cancel discards by undoing back to the saved state when the history can
   // reach it: nothing reloads, and redo still works afterwards. Anything
@@ -2817,6 +2828,8 @@ export const StudioWrapper = () => {
                 onRequestPendingChange={setIsAiRequestPending}
                 onBeforeReplyApplied={handleBeforeAiReplyApplied}
                 onAfterReplyApplied={handleAfterAiReplyApplied}
+                onBeforeImageApplied={handleBeforeAiImageApplied}
+                onAfterImageApplied={handleAfterAiImageApplied}
               />
             ) : panelMode === "inspector" && inspectorSelection ? (
               <StudioInspectorPanel

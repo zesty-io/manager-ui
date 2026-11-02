@@ -1,8 +1,8 @@
 import { Box, Drawer, IconButton, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import {
   useGeminiGenerationMutation,
   useUpdatePromptApprovalStatusMutation,
@@ -47,11 +47,14 @@ type StudioAIPageContext = {
 };
 
 // How Studio's undo history hears about a turn: whether a request is in
-// flight, and the bracket around applying a reply's actions.
+// flight, the bracket around applying a reply's actions, and the one around
+// an image's Apply, which is not an AI turn: undoing it keeps the session.
 type StudioAITurnCallbacks = {
   onRequestPendingChange?: (pending: boolean) => void;
   onBeforeReplyApplied?: () => void;
   onAfterReplyApplied?: () => void;
+  onBeforeImageApplied?: () => void;
+  onAfterImageApplied?: () => void;
 };
 
 type StudioChat = {
@@ -107,6 +110,8 @@ export const StudioAIPanel = ({
   onRequestPendingChange,
   onBeforeReplyApplied,
   onAfterReplyApplied,
+  onBeforeImageApplied,
+  onAfterImageApplied,
 }: StudioAIPanelProps) => {
   const { t } = useTranslation();
 
@@ -162,6 +167,8 @@ export const StudioAIPanel = ({
           onRequestPendingChange={onRequestPendingChange}
           onBeforeReplyApplied={onBeforeReplyApplied}
           onAfterReplyApplied={onAfterReplyApplied}
+          onBeforeImageApplied={onBeforeImageApplied}
+          onAfterImageApplied={onAfterImageApplied}
         />
       </Box>
     </Drawer>
@@ -187,6 +194,8 @@ const StudioAIChat = ({
   onRequestPendingChange,
   onBeforeReplyApplied,
   onAfterReplyApplied,
+  onBeforeImageApplied,
+  onAfterImageApplied,
 }: StudioAIChatProps) => {
   const { t } = useTranslation();
   const applySetValue = useApplySetValue();
@@ -372,42 +381,57 @@ const StudioAIChat = ({
     ]
   );
 
-  // Apply on a page image field: one undo step, like a reply. The write is
-  // made inside the step, not queued past its end.
+  // Apply on a page image field: one undo step, made inside the step rather
+  // than queued past its end.
   const handleManualApply = useCallback(
-    (response: ChatResponse, turnZUID: string) => {
+    (response: ChatResponse) => {
       if (response.type !== "SET_VALUE") return;
-      onBeforeReplyApplied?.();
-      let applied = false;
+      const { refKey, value, url } = response.payload;
+      onBeforeImageApplied?.();
       try {
-        applied = applySetValue(
-          response.payload.refKey,
-          response.payload.value,
-          { immediate: true }
-        );
+        applySetValue(refKey, value, {
+          immediate: true,
+          url: typeof url === "string" ? url : undefined,
+        });
       } finally {
-        onAfterReplyApplied?.();
+        onAfterImageApplied?.();
       }
-      if (!applied) return;
-      setResponses((prev) => {
-        const turnResponses = prev[turnZUID];
-        if (!turnResponses) return prev;
-        return {
-          ...prev,
-          [turnZUID]: turnResponses.map((entry) =>
-            entry === response ? { ...entry, approval: "1" } : entry
-          ),
-        };
-      });
     },
-    [applySetValue, onAfterReplyApplied, onBeforeReplyApplied]
+    [applySetValue, onAfterImageApplied, onBeforeImageApplied]
   );
   const manualApplyFor = useCallback(
     (response: ChatResponse) =>
       response.type === "SET_VALUE" &&
-      imageFieldNames.includes(response.payload.refKey),
+      imageFieldNames.includes(response.payload.refKey) &&
+      /^3-/.test(response.payload.value),
     [imageFieldNames]
   );
+
+  // Apply is off while its field holds that file, so a Cancel or an undo
+  // offers it again.
+  const imageFieldValues = useSelector(
+    (state: AppState) =>
+      imageFieldNames.map(
+        (name) => state.content?.[pageItemZUID]?.data?.[name] as unknown
+      ),
+    shallowEqual
+  );
+  const shownResponses = useMemo(() => {
+    const isApplied = (entry: ChatResponse) =>
+      entry.type === "SET_VALUE" &&
+      imageFieldValues[imageFieldNames.indexOf(entry.payload.refKey)] ===
+        entry.payload.value;
+    return Object.fromEntries(
+      Object.entries(responses).map(([turnZUID, entries]) => [
+        turnZUID,
+        entries.map((entry) =>
+          manualApplyFor(entry)
+            ? { ...entry, approval: isApplied(entry) ? "1" : undefined }
+            : entry
+        ),
+      ])
+    );
+  }, [imageFieldNames, imageFieldValues, manualApplyFor, responses]);
 
   const sendTurn = useCallback(
     (prompt: string, body: Record<string, unknown>) => {
@@ -504,7 +528,7 @@ const StudioAIChat = ({
 
   return (
     <ChatThread
-      responses={responses}
+      responses={shownResponses}
       setResponses={setResponses}
       latestPromptZUIDs={latestPromptZUIDs}
       autoApply

@@ -59,26 +59,30 @@ const isNotPageCode = (next: string, current: string) => {
 // SEO image, which a request that offers it lets the server set.
 const NOT_AI_IMAGE_FIELDS = ["code-editor", "og_image"];
 
-// The page model's image fields the AI may fill. Their names are the refKeys
-// the server targets. `any` because the fields store is untyped (see
+// The page model's live image fields the AI may fill. Their names are the
+// refKeys the server targets. `any` because the fields store is untyped (see
 // AppState's TODO).
 export const aiImageFields = (pageFields: any[]) =>
   pageFields.filter(
     (field) =>
       field?.datatype === "images" &&
+      !field.deletedAt &&
       typeof field?.name === "string" &&
       !NOT_AI_IMAGE_FIELDS.includes(field.name)
   );
 
-// What an images field shows: the media resolver's URL for a file ZUID, the
-// first of several. Anything else (an external URL, nothing) as it is.
-const imageFieldSrc = (value: unknown) => {
+// What an images field shows, for its first file: the public URL the server
+// sent for that file, else the media resolver's URL for its ZUID. Anything
+// else (an external URL, nothing) as it is.
+const imageFieldSrc = (value: unknown, publicUrls: Map<string, string>) => {
   const first = String(value ?? "")
     .split(",")[0]
     .trim();
-  return /^3-/.test(first)
-    ? `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${first}/getimage`
-    : first;
+  if (!/^3-/.test(first)) return first;
+  return (
+    publicUrls.get(first) ??
+    `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${first}/getimage`
+  );
 };
 
 // What the preview is doing. Once painted, the live canvas shows it.
@@ -445,6 +449,8 @@ export const useStudioAiEdit = ({
   useEffect(() => {
     if (!imageFieldsKey) return;
     const registered: Record<string, RefRegistryEntry> = {};
+    // By file ZUID, so undo and redo show a generated file the same way.
+    const publicUrls = new Map<string, string>();
     imageFieldsRef.current.forEach((field) => {
       const showValue = (value: string) => {
         const { pageItemZUID: itemZuid, postCommandToBridge: post } =
@@ -454,12 +460,15 @@ export const useStudioAiEdit = ({
           fieldZuid: field.ZUID,
           itemZuid,
           attr: "src",
-          value: imageFieldSrc(value),
+          value: imageFieldSrc(value, publicUrls),
         });
       };
       const handle: RefHandle = {
         accepts: (value: string) => /^3-/.test(value),
-        setValue: (value: string) => {
+        // `url` is the file's public URL, when the server sent one: the
+        // resolver's needs a session the canvas may not have.
+        setValue: (value: string, { url } = {}) => {
+          if (url && /^https?:\/\//.test(url)) publicUrls.set(value, url);
           dispatch({
             type: "SET_ITEM_DATA",
             itemZUID: latestRef.current.pageItemZUID,

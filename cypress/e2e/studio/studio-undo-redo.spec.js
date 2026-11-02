@@ -864,6 +864,57 @@ describe("Studio Undo / Redo", () => {
     cy.wait("@mcp").its("request.body").should("not.have.property", "chatZuid");
   });
 
+  // Apply writes a field, as the media picker does: undoing it is not
+  // undoing an AI turn, so the session goes on.
+  it("undoes an applied AI image in one step and keeps the AI chat session", () => {
+    const imageZuid = "3-e2e000-stub00";
+    cy.intercept({ method: "POST", url: MCP_CLIENT }, (req) =>
+      req.reply({
+        statusCode: 200,
+        body: {
+          data: [
+            {
+              type: "SET_VALUE",
+              payload: {
+                refKey: "hero_image",
+                value: imageZuid,
+                url: "https://e2e.media.example/hero.png",
+              },
+            },
+          ],
+          message: "",
+          tools: [],
+          chatZuid: "e2e-chat-image",
+        },
+      })
+    ).as("mcp");
+    bridgeReady(["history"]);
+    waitForPageHydrated();
+    // The field may be absent from the item, so read it with a retrying
+    // assertion rather than `its`.
+    const readImage = (win) =>
+      win.zestyStore.getState().content[itemZUID]?.data?.hero_image;
+    let imageBefore;
+    cy.window().then((win) => {
+      imageBefore = readImage(win);
+      expect(imageBefore, "seeded image").not.to.eq(imageZuid);
+    });
+    sendAiPrompt();
+
+    cy.getBySelector("AIDrawerSetValue").should("not.be.disabled").click();
+    cy.window().should((win) => expect(readImage(win)).to.eq(imageZuid));
+    cy.getBySelector("StudioUndoButton").should("not.be.disabled").click();
+    cy.window().should((win) => expect(readImage(win)).to.eq(imageBefore));
+    hostCommands("historyRestore").should("have.length", 1);
+    cy.getBySelector("StudioUndoButton").should("be.disabled");
+
+    cy.get('[data-cy="AIDrawerComposer"] textarea:not([aria-hidden])').type(
+      "Generate another"
+    );
+    cy.getBySelector("AIDrawerSend").click();
+    cy.wait("@mcp").its("request.body.chatZuid").should("eq", "e2e-chat-image");
+  });
+
   it("puts back the canvas lock when a redo into an AI change fails", () => {
     stubAiTurn();
     bridgeReady(["history"]);
