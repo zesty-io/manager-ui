@@ -657,8 +657,6 @@
   "studioEditInManager": "在 Zesty Manager 中编辑",
   "studioEditorAriaLabel": "Studio 编辑器",
   "studioEmptyPanelNoProperties": "此元素没有可编辑的属性。",
-  "studioEmptyPanelNoSelection": "在画布或图层中选择一个元素进行编辑。",
-  "studioEmptyPanelTitle": "检查器",
   "studioFreestyleAlertBody": "仅可在 Freestyle 中编辑",
   "studioFreestyleAlertDismissAriaLabel": "关闭 Freestyle 提示",
   "studioFreestyleAlertTitle": "此布局是在 Freestyle 中创建的",

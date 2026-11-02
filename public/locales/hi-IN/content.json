@@ -674,8 +674,6 @@
   "studioEditInManager": "Zesty Manager में संपादित करें",
   "studioEditorAriaLabel": "Studio एडिटर",
   "studioEmptyPanelNoProperties": "इस एलिमेंट में संपादन योग्य कोई प्रॉपर्टी नहीं है।",
-  "studioEmptyPanelNoSelection": "संपादित करने के लिए कैनवास पर या लेयर्स में एक एलिमेंट चुनें।",
-  "studioEmptyPanelTitle": "इंस्पेक्टर",
   "studioFreestyleAlertBody": "संपादन केवल Freestyle में उपलब्ध है",
   "studioFreestyleAlertDismissAriaLabel": "Freestyle सूचना खारिज करें",
   "studioFreestyleAlertTitle": "यह लेआउट Freestyle में बनाया गया था",
