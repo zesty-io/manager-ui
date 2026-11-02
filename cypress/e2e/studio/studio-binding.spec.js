@@ -20,13 +20,14 @@ describe("Studio two-way binding", () => {
   let studioPath = "/";
   let fieldByName = {};
 
-  before(() => {
+  before(function () {
     cy.task("seed:content", "fixtures/studio-complex.json", {
       timeout: 120000,
     }).then(({ items, fields }) => {
       itemZUID = items[0].meta.ZUID;
       studioPath = `/${items[0].web.pathPart}`;
       fieldByName = Object.fromEntries(fields.map((f) => [f.name, f]));
+      cy.skipIfPreviewDown(this, studioPath);
     });
   });
 

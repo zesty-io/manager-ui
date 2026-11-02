@@ -80,6 +80,10 @@ const selectItemHeadTags = createSelector(
 
 export const ItemLockContext = createContext();
 
+// Per-item lock count so a slow release can't unlock an item that was since re-locked.
+// Module scope so it survives ItemEdit unmounting and remounting (e.g. item -> list -> item)
+const lockEpochs = {};
+
 export default function ItemEdit() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -157,6 +161,7 @@ export default function ItemEdit() {
 
     // on mount and modelZUID/itemZUID update,
     // lock item and load all item data
+    lockEpochs[itemZUID] = (lockEpochs[itemZUID] ?? 0) + 1;
     lockItem(itemZUID);
     load(modelZUID, itemZUID);
     setSaveClicked(false);
@@ -290,8 +295,15 @@ export default function ItemEdit() {
     }
   }
 
-  function releaseLock(itemZUID) {
-    if (lockState.userZUID === user.ZUID) {
+  async function releaseLock(itemZUID) {
+    // Local lockState is stale in the unmount cleanup, so ask the server who holds the lock
+    const epoch = lockEpochs[itemZUID];
+    const current = await dispatch(checkLock(itemZUID));
+    if (
+      current?.userZUID &&
+      current.userZUID === user.ZUID &&
+      epoch === lockEpochs[itemZUID]
+    ) {
       dispatch(unlock(itemZUID));
     }
   }

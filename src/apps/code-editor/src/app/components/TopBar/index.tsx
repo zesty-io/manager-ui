@@ -120,6 +120,7 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
             )}
           </Box>
           <Typography
+            data-cy="code-editor-file-name"
             variant="h6"
             color="grey.300"
             overflow="hidden"
@@ -130,7 +131,12 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
             {`/${props.fileName?.trim()?.replace(/^\/+/, "")}`}
           </Typography>
           {props?.version && (
-            <Typography variant="h6" color="grey.400" fontWeight={600}>
+            <Typography
+              data-cy="code-editor-file-version"
+              variant="h6"
+              color="grey.400"
+              fontWeight={600}
+            >
               {`(v${props?.version})`}
             </Typography>
           )}
@@ -222,6 +228,7 @@ const TopBar = memo(function TopBar(props: TopBarProps) {
                     placement="bottom"
                   >
                     <IconButton
+                      data-cy="code-app-diff-versions-button"
                       size="small"
                       sx={{ color: "grey.400" }}
                       onClick={() => {
@@ -320,6 +327,7 @@ const MoreOptions = (props: MoreOptionsProps) => {
   return (
     <>
       <IconButton
+        data-cy="code-app-more-options-button"
         size="small"
         sx={{ color: "grey.400" }}
         id="more-options"
@@ -351,6 +359,7 @@ const MoreOptions = (props: MoreOptionsProps) => {
       >
         <MenuList>
           <MenuItem
+            data-cy="code-app-delete-file-menuitem"
             onClick={() => {
               handleClose();
               props.openDeleteDialog();

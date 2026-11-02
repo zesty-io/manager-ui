@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import { createBrowserHistory } from "history";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
@@ -18,8 +19,6 @@ function filterLeadsData(leads, filter) {
   filteredLeads = FilterService.filterByFuzzyText(filteredLeads, filter);
   return filteredLeads;
 }
-
-import styles from "./LeadsTable.less";
 
 class LeadsTable extends Component {
   history = createBrowserHistory();
@@ -107,37 +106,6 @@ class LeadsTable extends Component {
   };
 
   /**
-   * Renders all of the form data of the lead
-   *
-   * Used in the Modal
-   * @param {FormData} data The Lead's formData object
-   */
-  renderModalFormData(data) {
-    const { t } = this.props;
-    const keysInData = Object.keys(data);
-    const keysToDisplay = this.generateFormDataKeysToDisplay(keysInData);
-    const dataList = keysToDisplay.map((key, index) => {
-      return (
-        <tr key={index}>
-          <td>{keysToDisplay[index]}</td>
-          <td>{data[keysToDisplay[index]]}</td>
-        </tr>
-      );
-    });
-    return (
-      <table className={styles.TableInfo}>
-        <thead className={styles.TableHead}>
-          <tr>
-            <th>{t("leads.modalTableHeaderKey")}</th>
-            <th>{t("leads.modalTableHeaderValue")}</th>
-          </tr>
-        </thead>
-        <tbody className={styles.TableBody}>{dataList}</tbody>
-      </table>
-    );
-  }
-
-  /**
    * Renders the first X items in the form data of the lead
    *
    * Used in the Leads Table
@@ -152,9 +120,9 @@ class LeadsTable extends Component {
     );
     const dataList = keysToDisplay.map((key, index) => {
       return (
-        <li className={styles.List} key={index}>
+        <Box component="li" sx={{ mb: 0.5 }} key={index}>
           {keysToDisplay[index]}: {data[keysToDisplay[index]]}
-        </li>
+        </Box>
       );
     });
     // Display an ellipsis if there are extra fields
@@ -174,7 +142,37 @@ class LeadsTable extends Component {
     const { t } = this.props;
     return (
       <div>
-        <table className={`table-auto ${styles.leadsTable}`}>
+        <Box
+          component="table"
+          className="table-auto"
+          data-cy="leadsTable"
+          sx={(theme) => ({
+            width: "100%",
+            "& thead tr th": {
+              textAlign: "left",
+              pt: 2,
+              px: 1,
+              pb: 1,
+              "&:first-of-type": { pl: 4 },
+              "&:last-child": { pr: 4 },
+            },
+            "& tbody tr td": {
+              p: 1,
+              border: "none",
+              "&:first-of-type": { pl: 4 },
+              "&:last-child": { pr: 4 },
+              "& ul": {
+                listStyleType: "none",
+                m: 0,
+              },
+            },
+            "& tbody tr:hover": {
+              backgroundColor: theme.palette.leads.rowHover,
+              borderRight: `1px solid ${theme.palette.leads.rowHoverBorder}`,
+              cursor: "pointer",
+            },
+          })}
+        >
           <thead>
             <tr>
               <th>{t("leads.tableHeaderDate")}</th>
@@ -188,6 +186,7 @@ class LeadsTable extends Component {
               return (
                 <tr
                   key={`${data.zuid}-${data.dateCreated}`}
+                  data-cy="leadsTableRow"
                   onClick={() => this.openModalAndUpdateRoute(data)}
                 >
                   <td>{data.dateCreated || t("leads.notAvailable")}</td>
@@ -198,15 +197,17 @@ class LeadsTable extends Component {
               );
             })}
           </tbody>
-        </table>
+        </Box>
         <ConfirmDialog
-          className={styles.LeadModal}
           open={this.state.modalIsOpen}
           sx={{ width: "100%" }}
           title={
-            <div className={styles.ModalContent}>
+            <div>
               {this.state.currentLead ? (
-                <ul className={styles.LeadData}>
+                <Box
+                  component="ul"
+                  sx={{ listStyleType: "none", "& li": { mb: 0.5 } }}
+                >
                   <li>
                     <strong>{t("leads.dateCreated")}</strong>:{" "}
                     {this.state.currentLead.dateCreated}
@@ -216,14 +217,17 @@ class LeadsTable extends Component {
                     Object.keys(this.state.currentLead.formData).map((key) => {
                       return (
                         <li key={key}>
-                          <span className={styles.Key}>{key}:</span>
-                          <span className={styles.Value}>
-                            {this.state.currentLead.formData[key]}
-                          </span>
+                          <Box
+                            component="span"
+                            sx={{ fontWeight: "bold", mr: 1 }}
+                          >
+                            {key}:
+                          </Box>
+                          <span>{this.state.currentLead.formData[key]}</span>
                         </li>
                       );
                     })}
-                </ul>
+                </Box>
               ) : (
                 ""
               )}
@@ -238,6 +242,7 @@ class LeadsTable extends Component {
                 <>
                   <Button
                     variant="outlined"
+                    data-cy="deleteLeadCancel"
                     onClick={() => {
                       this.setState({
                         modalIsOpen: false,
@@ -251,7 +256,7 @@ class LeadsTable extends Component {
                   <Button
                     variant="contained"
                     color="error"
-                    className={styles.btnDanger}
+                    data-cy="deleteLeadConfirm"
                     disabled={this.state.loading}
                     onClick={() => this.deleteLead(this.state.currentLead.zuid)}
                     startIcon={<DeleteIcon />}

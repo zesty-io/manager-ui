@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from "react";
+import { memo, useState, useEffect, HTMLAttributes } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useHistory } from "react-router";
@@ -201,6 +201,13 @@ export const DifferActions = memo(function DifferActions(
             }}
           >
             <Select
+              // MUI's `SelectDisplayProps` type (`React.HTMLAttributes<HTMLDivElement>`)
+              // has no `data-*` index signature, so the cast is needed to pass `data-cy`.
+              SelectDisplayProps={
+                {
+                  "data-cy": "code-app-differ-version-select-one",
+                } as HTMLAttributes<HTMLDivElement>
+              }
               id="codeOne"
               name="codeOne"
               defaultValue="local"
@@ -234,6 +241,11 @@ export const DifferActions = memo(function DifferActions(
             <EastIcon fontSize="small" />
 
             <Select
+              SelectDisplayProps={
+                {
+                  "data-cy": "code-app-differ-version-select-two",
+                } as HTMLAttributes<HTMLDivElement>
+              }
               id="codeTwo"
               name="codeTwo"
               value={selectedVersion}
@@ -259,6 +271,7 @@ export const DifferActions = memo(function DifferActions(
           {props.synced ? (
             <>
               <Button
+                data-cy="code-app-differ-load-version-button"
                 variant="contained"
                 color="success"
                 size="small"
@@ -282,6 +295,7 @@ export const DifferActions = memo(function DifferActions(
             </>
           ) : (
             <Button
+              data-cy="code-app-differ-save-version-button"
               variant="contained"
               loadingPosition="start"
               size="small"

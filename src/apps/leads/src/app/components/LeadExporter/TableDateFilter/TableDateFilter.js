@@ -1,7 +1,7 @@
 import { Component } from "react";
 import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
-import { FormControl, FormLabel, Select, MenuItem } from "@mui/material";
+import { Box, FormControl, FormLabel, Select, MenuItem } from "@mui/material";
 import { format, subDays, parseISO, isValid } from "date-fns";
 
 import { DATE_PRESETS } from "./TableDateFilter.model";
@@ -11,7 +11,6 @@ import {
   setFilterStartDate,
 } from "../../../../store/filter";
 
-import styles from "./TableDateFilter.less";
 import { FieldTypeDate } from "../../../../../../../shell/components/FieldTypeDate";
 
 const getDatePresets = (t) => [
@@ -124,7 +123,7 @@ export default connect((state) => {
         return (
           <div>
             <FormControl fullWidth size="small">
-              <FormLabel sx={{ color: "#c3cddf" }}>
+              <FormLabel sx={{ color: "leads.toolbarLabel" }}>
                 {t("shell.dateRange")}
               </FormLabel>
               <Select
@@ -141,11 +140,16 @@ export default connect((state) => {
               </Select>
             </FormControl>
 
-            <div
-              className={styles.customDateWrapper}
+            <Box
+              data-cy="leadsCustomDateRange"
+              sx={{
+                mt: 1,
+                "& > div + div": { mt: 1 },
+                "& label": { color: "leads.toolbarLabel" },
+              }}
               style={this.state.datePickerIsVisible ? {} : { display: "none" }}
             >
-              <div className={styles.customDate}>
+              <div>
                 <FieldTypeDate
                   name="start-date"
                   label={t("leads.startDate")}
@@ -154,7 +158,7 @@ export default connect((state) => {
                 />
               </div>
 
-              <div className={styles.customDate}>
+              <div>
                 <FieldTypeDate
                   name="end-date"
                   label={t("leads.endDate")}
@@ -162,7 +166,7 @@ export default connect((state) => {
                   onChange={this.setEndDate}
                 />
               </div>
-            </div>
+            </Box>
           </div>
         );
       }
