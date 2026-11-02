@@ -7,6 +7,7 @@ import {
   usesContentEditing,
   usesLayoutGrammar,
 } from "./studioTypes";
+import { CodeRegionReplaced } from "./useStudioAiEdit";
 
 const bridgeInjectedCss = `
   .studio-hover {
@@ -114,7 +115,43 @@ type Args = {
     imgIndex: number;
     currentSrc: string;
   }) => void;
+  /** True while an AI change is staged: the canvas is then its preview. */
+  canvasLockedRef?: MutableRefObject<boolean>;
+  /** The bridge's answer to a replaceCodeRegion command. */
+  onCodeRegionReplaced?: (msg: CodeRegionReplaced) => void;
+  /**
+   * A freshly loaded canvas is ready, after the host's own setup posts.
+   * `capabilities` lists optional bridge features; an older bridge sends none.
+   */
+  onBridgeReady?: (path?: string, capabilities?: string[]) => void;
+  /**
+   * A canvas keystroke in a bound field, before it is written to the store.
+   * The canvas already shows it.
+   */
+  onBeforeBridgeContentInput?: (itemZuid: string, fieldName: string) => void;
+  /** Escape on the canvas: an edit in progress there has ended. */
+  onEscape?: () => void;
+  /** Undo/redo pressed while focus was in the canvas. */
+  onHistoryKey?: (action: "undo" | "redo") => void;
+  /** The bridge's answer to historyRestore. */
+  onHistoryRestored?: (msg: {
+    stepId?: number;
+    direction?: string;
+    ok?: boolean;
+    reason?: string;
+  }) => void;
 };
+
+// Canvas gestures and the edits they stage. While an AI preview is showing,
+// they would act on markup that is not the page's, so they are dropped.
+const CANVAS_INPUT_MESSAGES = new Set([
+  "DOM_EVENT",
+  "REORDER_OUTPUT",
+  "LAYOUT_CONTENT_UPDATE",
+  "DYNAMIC_EDIT_REQUEST",
+  "STATIC_EDIT_REJECTED",
+  "STATIC_EDIT_IMAGE",
+]);
 
 export const useStudioBridge = ({
   dispatch,
@@ -137,16 +174,32 @@ export const useStudioBridge = ({
   setIsNavigating,
   onBridgeFieldInput,
   onStaticEditImage,
+  canvasLockedRef,
+  onCodeRegionReplaced,
+  onBridgeReady,
+  onBeforeBridgeContentInput,
+  onEscape,
+  onHistoryKey,
+  onHistoryRestored,
 }: Args) => {
   const { t } = useTranslation();
-  const handleBridgeReady = useCallback(() => {
-    postCommandToBridge({
-      action: "injectCss",
-      css: bridgeInjectedCss,
-    });
-    syncBridgeInteractionMode(interactionMode);
-    postCommandToBridge({ action: "requestLayersTree" });
-  }, [interactionMode, postCommandToBridge, syncBridgeInteractionMode]);
+  const handleBridgeReady = useCallback(
+    (path?: string, capabilities?: string[]) => {
+      postCommandToBridge({
+        action: "injectCss",
+        css: bridgeInjectedCss,
+      });
+      syncBridgeInteractionMode(interactionMode);
+      postCommandToBridge({ action: "requestLayersTree" });
+      onBridgeReady?.(path, capabilities);
+    },
+    [
+      interactionMode,
+      onBridgeReady,
+      postCommandToBridge,
+      syncBridgeInteractionMode,
+    ]
+  );
 
   const handleBridgeError = useCallback(
     (msg: any) => {
@@ -205,6 +258,7 @@ export const useStudioBridge = ({
         }
 
         case "escape": {
+          onEscape?.();
           if (usesLayoutGrammar(interactionMode)) {
             clearLayoutSelection();
             return;
@@ -233,6 +287,7 @@ export const useStudioBridge = ({
           const fieldName = fieldNameByZuid.get(fieldZuid);
           if (!fieldName) return;
 
+          onBeforeBridgeContentInput?.(itemZuid, fieldName);
           dispatch({
             type: "SET_ITEM_DATA",
             itemZUID: itemZuid,
@@ -281,6 +336,8 @@ export const useStudioBridge = ({
       interactionMode,
       postCommandToBridge,
       onBridgeFieldInput,
+      onBeforeBridgeContentInput,
+      onEscape,
     ]
   );
 
@@ -301,13 +358,44 @@ export const useStudioBridge = ({
       const msg = data.message;
       if (!msg) return;
 
+      if (msg.type === "CODE_REGION_REPLACED") {
+        onCodeRegionReplaced?.(msg);
+        return;
+      }
+
+      // Not canvas input: the bridge sends both while a preview is locked
+      // too, and undo is how a locked AI preview is taken back.
+      if (msg.type === "HISTORY_KEY") {
+        if (msg.action === "undo" || msg.action === "redo") {
+          onHistoryKey?.(msg.action);
+        }
+        return;
+      }
+
+      if (msg.type === "HISTORY_RESTORED") {
+        onHistoryRestored?.(msg);
+        return;
+      }
+
+      if (canvasLockedRef?.current && CANVAS_INPUT_MESSAGES.has(msg.type)) {
+        return;
+      }
+
       if (msg.type === "TEMPLATE_SOURCE_MAP") {
         handleTemplateSourceMap(msg);
         return;
       }
 
       if (msg.type === "BRIDGE_READY") {
-        handleBridgeReady();
+        handleBridgeReady(
+          typeof msg.path === "string" ? msg.path : undefined,
+          Array.isArray(msg.capabilities)
+            ? msg.capabilities.filter(
+                (capability: unknown): capability is string =>
+                  typeof capability === "string"
+              )
+            : undefined
+        );
         return;
       }
 
@@ -411,7 +499,11 @@ export const useStudioBridge = ({
     handleReorderOutput,
     handleTemplateSourceMap,
     interactionMode,
+    onCodeRegionReplaced,
+    onHistoryKey,
+    onHistoryRestored,
     onStaticEditImage,
+    canvasLockedRef,
     t,
   ]);
 

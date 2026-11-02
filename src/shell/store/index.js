@@ -10,6 +10,7 @@ import { localStorage } from "./middleware/local-storage";
 import { session } from "./middleware/session";
 import { appBus } from "./middleware/app-bus";
 import { nav } from "./middleware/nav";
+import { studioHistory } from "./middleware/studioHistory";
 
 import { auth } from "./auth";
 import { products } from "./products";
@@ -48,6 +49,7 @@ const middlewares = [
   session,
   appBus,
   nav,
+  studioHistory,
   fetchResource,
   resolveFieldOptions,
   thunkMiddleware,

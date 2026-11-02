@@ -19,6 +19,7 @@ type PromptComposerProps = {
   // because required data, like the user's role, hasn't loaded yet).
   onSubmit: (value: string) => boolean;
   onHasValueChange: (hasValue: boolean) => void;
+  placeholder?: string;
 };
 
 export type PromptComposerHandle = {
@@ -28,7 +29,7 @@ export type PromptComposerHandle = {
 
 export const PromptComposer = memo(
   forwardRef<PromptComposerHandle, PromptComposerProps>(
-    ({ seed, disabled, onSubmit, onHasValueChange }, ref) => {
+    ({ seed, disabled, onSubmit, onHasValueChange, placeholder }, ref) => {
       const { t } = useTranslation();
       const [draft, setDraft] = useState(seed);
       const inputRef = useRef<HTMLInputElement>(null);
@@ -71,7 +72,7 @@ export const PromptComposer = memo(
           data-cy="AIDrawerComposer"
           inputRef={inputRef}
           disabled={disabled}
-          placeholder={t("shell.aiDrawerPlaceholder")}
+          placeholder={placeholder ?? t("shell.aiDrawerPlaceholder")}
           variant="outlined"
           fullWidth
           multiline
