@@ -45,7 +45,7 @@ window.CONFIG = {
 import * as amplitude from "@amplitude/analytics-browser";
 import { isContentOne } from "../utility/isContentOne";
 
-// needed for Breadcrumbs in Shell
+// needed for the content nav tree
 injectReducer(store, "navContent", navContent);
 
 // Some legacy code refers to this global which is an observable
@@ -93,6 +93,7 @@ const themeOverrides = {
       editor: "#0F0F0F",
       shimmer: "#EFF1F3",
       shimmerSweep: "#E2E2E2",
+      noticeBackground: "#fffde2",
     },
 
     // Off-system colours carried by the leads app. None of them matches a step
@@ -103,6 +104,15 @@ const themeOverrides = {
       toolbarLabel: "#C3CDDF",
       rowHover: "#DAE2F1",
       rowHoverBorder: "#F7F7F7",
+    },
+
+    // Studio's canvas hover/selection outlines, injected as CSS into the
+    // preview iframe (see useStudioBridge.ts). Neither matches a ramp step,
+    // so minted here rather than snapped onto a nearby token - see
+    // docs/design-system.md section 4, step 5.
+    studio: {
+      hoverOutline: "#00bcd4",
+      selectionOutline: "#ff9800",
     },
   },
 
