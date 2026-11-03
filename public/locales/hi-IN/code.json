@@ -26,7 +26,7 @@
   "deleteFile": "फ़ाइल डिलीट करें",
   "deleteFileCdnWarning": "किसी फ़ाइल को डिलीट करने से वह हट जाएगी और CDN पर्ज (purge) सक्रिय हो जाएगा, जिससे प्रोडक्शन तुरंत अपडेट हो जाएगा।",
   "deleteFileError": "फ़ाइल {{fileName}} को डिलीट करने में विफल। {{error}}",
-  "deleteFileLabel": "फ़ाइल डिलीट करें",
+  "deleteFileTitleRich": "फ़ाइल डिलीट करें: <name>{{fileName}}</name>",
   "developerResources": "डेवलपर रिसोर्सेज",
   "diffVersions": "वर्ज़न की तुलना करें (Diff)",
   "editItemContent": "आइटम सामग्री संपादित करें",
