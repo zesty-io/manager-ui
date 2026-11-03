@@ -467,8 +467,10 @@ export const useStudioAiEdit = ({
       };
       // Undo and redo: the store already holds the value. The step's
       // snapshot names this field, and the bridge restores the bound <img>
-      // from the snapshot of the region holding it. Only a file shown by its
-      // public URL is repainted; anything else would override the restore.
+      // from the snapshot of the region holding it. Only a file with a known
+      // public URL is repainted: that is the same file the restore shows,
+      // minus the srcset / <source> the paint drops. Anything else would
+      // override the restore.
       const showValue = (value: string) => {
         const first = firstFile(value);
         const url = /^3-/.test(first) ? publicUrls.get(first) : undefined;
