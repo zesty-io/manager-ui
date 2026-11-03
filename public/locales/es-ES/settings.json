@@ -124,7 +124,7 @@
   "publishRequiresStatus": "Para publicar elementos de contenido se requiere aplicar este estado.",
   "publishRequiresStatusDescription": "Esta es una configuración global y significa que los elementos de contenido no se pueden publicar a menos que se haya aplicado este estado.",
   "ReferrerPolicy": "Referrer-Policy",
-  "removeFontLabel": "Eliminar fuente",
+  "removeFontTitleRich": "Eliminar fuente: <name>{{fontLabel}}</name>",
   "removeFontVariant": "Eliminar {{variant}}",
   "removeStatusNotification": "Se notificará a los usuarios que puedan eliminar este estado.",
   "robotsFailedFetchSettings": "Error al obtener la configuración",

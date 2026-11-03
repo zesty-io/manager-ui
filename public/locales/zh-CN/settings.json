@@ -124,7 +124,7 @@
   "publishRequiresStatus": "发布内容项必须应用此状态。",
   "publishRequiresStatusDescription": "这是一项全局设置，意味着除非已应用此状态，否则内容项无法被发布。",
   "ReferrerPolicy": "Referrer-Policy",
-  "removeFontLabel": "移除字体",
+  "removeFontTitleRich": "移除字体：<name>{{fontLabel}}</name>",
   "removeFontVariant": "移除 {{variant}}",
   "removeStatusNotification": "拥有移除此状态权限的用户将会收到通知。",
   "robotsFailedFetchSettings": "获取设置失败",

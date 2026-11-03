@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 import { Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
@@ -41,18 +41,20 @@ export const DeleteDialog = memo(function DeleteDialog(
       confirmDataCy="DeleteContentItemConfirmButton"
       confirmLabel={t("common.delete")}
       title={
-        <>
-          {t("code.deleteFileLabel")}
-          {":"}{" "}
-          <Typography
-            component="span"
-            variant="inherit"
-            fontWeight={600}
-            sx={{ wordBreak: "break-word" }}
-          >
-            {fileName}
-          </Typography>
-        </>
+        <Trans
+          i18nKey="code.deleteFileTitleRich"
+          values={{ fileName }}
+          components={{
+            name: (
+              <Typography
+                component="span"
+                variant="inherit"
+                fontWeight={600}
+                sx={{ wordBreak: "break-word" }}
+              />
+            ),
+          }}
+        />
       }
       description={t("code.deleteFileCdnWarning")}
     />

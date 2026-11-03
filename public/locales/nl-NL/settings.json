@@ -124,7 +124,7 @@
   "publishRequiresStatus": "Het publiceren van inhoudsitems vereist dat deze status is toegepast.",
   "publishRequiresStatusDescription": "Dit is een globale instelling. Dit betekent dat inhoudsitems niet kunnen worden gepubliceerd tenzij deze status is toegepast.",
   "ReferrerPolicy": "Referrer-Policy",
-  "removeFontLabel": "Lettertype verwijderen",
+  "removeFontTitleRich": "Lettertype verwijderen: <name>{{fontLabel}}</name>",
   "removeFontVariant": "Verwijder {{variant}}",
   "removeStatusNotification": "Gebruikers die deze status kunnen verwijderen, ontvangen een melding.",
   "robotsFailedFetchSettings": "Ophalen van instellingen mislukt",

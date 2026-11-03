@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { fetchFontsInstalled } from "../../../../../../../shell/store/settings";
@@ -75,19 +75,21 @@ const DeleteFontDialog = ({
       confirmDataCy="DeleteFontDialogConfirmButton"
       confirmLabel={t("common.remove")}
       title={
-        <>
-          {t("settings.removeFontLabel")}
-          {":"}{" "}
-          <Typography
-            data-cy="DeleteFontDialogLabel"
-            component="span"
-            variant="inherit"
-            fontWeight={500}
-            textTransform="capitalize"
-          >
-            {fontLabel}
-          </Typography>
-        </>
+        <Trans
+          i18nKey="settings.removeFontTitleRich"
+          values={{ fontLabel }}
+          components={{
+            name: (
+              <Typography
+                data-cy="DeleteFontDialogLabel"
+                component="span"
+                variant="inherit"
+                fontWeight={500}
+                textTransform="capitalize"
+              />
+            ),
+          }}
+        />
       }
       description={t("settings.deleteFontConfirm")}
     />

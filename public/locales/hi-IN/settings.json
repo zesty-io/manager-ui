@@ -124,7 +124,7 @@
   "publishRequiresStatus": "सामग्री आइटम प्रकाशित करने के लिए यह स्टेटस लागू होना आवश्यक है।",
   "publishRequiresStatusDescription": "यह एक ग्लोबल सेटिंग है और इसका मतलब है कि सामग्री आइटम तब तक प्रकाशित नहीं किए जा सकते जब तक यह स्टेटस लागू नहीं किया जाता।",
   "ReferrerPolicy": "Referrer-Policy",
-  "removeFontLabel": "फ़ॉन्ट हटाएं",
+  "removeFontTitleRich": "फ़ॉन्ट हटाएं: <name>{{fontLabel}}</name>",
   "removeFontVariant": "{{variant}} हटाएं",
   "removeStatusNotification": "जो यूज़र्स इस स्टेटस को हटा सकते हैं, उन्हें सूचित किया जाएगा।",
   "robotsFailedFetchSettings": "सेटिंग्स लोड करने में विफल",
