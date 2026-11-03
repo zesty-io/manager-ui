@@ -115,6 +115,7 @@ export const BlockPreview = ({
             <ModeEditRounded fontSize="small" />
           </IconButton>
           <IconButton
+            data-cy="CopyBlockLink"
             size="small"
             disabled={isLoadingBlockModel || isUnresolved}
             onClick={() => handleCopyLinkClick(url)}
@@ -126,6 +127,7 @@ export const BlockPreview = ({
             )}
           </IconButton>
           <IconButton
+            data-cy="OpenBlockInNewTab"
             size="small"
             disabled={isLoadingBlockModel || isUnresolved}
             onClick={() =>
