@@ -23,7 +23,7 @@ describe("Studio Full Mode", () => {
   const reloadAsStaff = () => {
     cy.stubStaffUser();
     cy.waitOn("/v1/content/models**", () => {
-      cy.visit(`/studio?path=${studioPath}`);
+      cy.visitStudio(studioPath);
     });
     cy.getBySelector("StudioHeader").should("exist");
   };
@@ -95,6 +95,7 @@ describe("Studio Full Mode", () => {
       expect(seededViewZUID, "seed:content returned a disposable view").to.be.a(
         "string"
       ).and.not.be.empty;
+      cy.waitForBridgeTemplateMap();
       return cb({ ZUID: seededViewZUID, version: seededViewVersion });
     });
 
@@ -115,7 +116,7 @@ describe("Studio Full Mode", () => {
       query: { field: "path" },
     }).as("resolveItemByPath");
     cy.waitOn("/v1/content/models**", () => {
-      cy.visit(`/studio?path=${studioPath}`);
+      cy.visitStudio(studioPath);
     });
     cy.getBySelector("StudioHeader").should("exist");
   });
@@ -131,11 +132,22 @@ describe("Studio Full Mode", () => {
     cy.getBySelector("StudioModeToggleOption-layout").should("exist");
   });
 
-  it("shows the empty panel, not the content editor, until something is selected", () => {
+  it("shows the item details, not the empty panel, until something is selected", () => {
+    // Content mode also shows the item details, so wait for the promotion
+    // to full mode before asserting. Only staff see the toggle.
+    reloadAsStaff();
+    cy.getBySelector("StudioModeToggleOption-full").should(
+      "have.attr",
+      "aria-pressed",
+      "true"
+    );
     cy.getBySelector("StudioPreviewFrame").should("exist");
-    // Layout grammar always reserves the right panel (#4374).
-    cy.getBySelector("StudioEmptyPanel").should("exist");
-    cy.getBySelector("StudioSidePanel").should("not.exist");
+    cy.getBySelector("StudioSidePanel").should("exist");
+    // The close button renders only in the content editor.
+    cy.getBySelector("StudioSidePanel")
+      .find('button[aria-label="Close Studio preview"]')
+      .should("not.exist");
+    cy.getBySelector("StudioEmptyPanel").should("not.exist");
   });
 
   it("opens the content editor when the bridge reports a bound leaf", () => {
@@ -149,11 +161,13 @@ describe("Studio Full Mode", () => {
     });
 
     // Selection is what the message drives; the panel switching to "edit" is
-    // the observable consequence.
-    cy.getBySelector("StudioSidePanel").should("exist");
+    // the observable consequence. The close button renders only in edit.
+    cy.getBySelector("StudioSidePanel")
+      .find('button[aria-label="Close Studio preview"]')
+      .should("exist");
   });
 
-  it("shows the neutral empty panel after the content editor closes on a selected element", () => {
+  it("shows the item details after the content editor closes on a selected element", () => {
     // An <h1> the Inspector can edit, selected on the canvas, then its bound
     // field opened in the content editor.
     cy.wait("@resolveItemByPath");
@@ -199,14 +213,14 @@ describe("Studio Full Mode", () => {
       .click();
 
     // The side panel's close clears only the field selection; the layout
-    // selection stays, so the empty panel must not call the <h1> uneditable.
-    cy.getBySelector("StudioSidePanel").should("not.exist");
+    // selection stays, and the panel falls back to the item details rather
+    // than calling the <h1> uneditable.
     cy.getBySelector("StudioBreadcrumbChip").last().should("have.text", "h1");
-    cy.getBySelector("StudioEmptyPanelTitle").should("have.text", "Inspector");
-    cy.getBySelector("StudioEmptyPanelMessage").should(
-      "have.text",
-      "Select an element on the canvas or in Layers to edit it."
-    );
+    cy.getBySelector("StudioSidePanel")
+      .find('button[aria-label="Close Studio preview"]')
+      .should("not.exist");
+    cy.getBySelector("StudioSidePanel").should("exist");
+    cy.getBySelector("StudioEmptyPanel").should("not.exist");
   });
 
   it("writes an inline canvas edit back to the item in full mode", () => {
@@ -293,8 +307,12 @@ describe("Studio Full Mode", () => {
     });
 
     cy.getBySelector("toast").should("contain.text", "Switch to Content mode");
-    // The panel staying shut is what proves the guard still guards.
-    cy.getBySelector("StudioSidePanel").should("not.exist");
+    // The panel staying on the item details, with no content editor close
+    // button, is what proves the guard still guards.
+    cy.getBySelector("StudioSidePanel").should("exist");
+    cy.getBySelector("StudioSidePanel")
+      .find('button[aria-label="Close Studio preview"]')
+      .should("not.exist");
   });
 
   it("shows the layout breadcrumb trail in full mode", () => {
@@ -380,40 +398,47 @@ describe("Studio Full Mode", () => {
   // closes it in ~970ms. `runMergedSave` and `closeModalUnlessFailed` behave as
   // documented; the gap is coverage here, not correctness there.
 
-  it("keeps the modal open with only the failed half when content save fails", () => {
-    // The layout half has to actually succeed for this test to say anything,
-    // which means addressing a real web view — a fabricated code id fails the
-    // PUT and leaves BOTH halves pending, which is a different assertion.
-    withSeededView((webView) => {
-      expect(webView?.ZUID, "a web view to stage a layout change against").to
-        .exist;
+  // Skipped when the preview is down: these wait on the real bridge's TEMPLATE_SOURCE_MAP.
+  describe("with the live preview bridge", () => {
+    before(function () {
+      cy.skipIfPreviewDown(this, studioPath);
+    });
 
-      cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`, {
-        statusCode: 200,
-        body: { data: { ZUID: webView.ZUID, version: 1 } },
-      }).as("saveWebView");
-      cy.intercept(
-        { method: "PUT", url: `**/items/${itemZUID}` },
-        { statusCode: 500, body: { error: "forced failure" } }
-      ).as("saveItemFails");
+    it("keeps the modal open with only the failed half when content save fails", () => {
+      // The layout half has to actually succeed for this test to say anything,
+      // which means addressing a real web view — a fabricated code id fails the
+      // PUT and leaves BOTH halves pending, which is a different assertion.
+      withSeededView((webView) => {
+        expect(webView?.ZUID, "a web view to stage a layout change against").to
+          .exist;
 
-      stageContentChange();
-      stageLayoutChange(webView.ZUID);
+        cy.intercept("PUT", `/v1/web/views/${webView.ZUID}`, {
+          statusCode: 200,
+          body: { data: { ZUID: webView.ZUID, version: 1 } },
+        }).as("saveWebView");
+        cy.intercept(
+          { method: "PUT", url: `**/items/${itemZUID}` },
+          { statusCode: 500, body: { error: "forced failure" } }
+        ).as("saveItemFails");
 
-      cy.getBySelector("StudioContentSaveChangesButton").click();
-      cy.getBySelector("StudioSaveChangesModal").should("exist");
-      cy.getBySelector("StudioSaveChangeSection-Layout").should("exist");
-      cy.getBySelector("StudioSaveAllButton").click();
+        stageContentChange();
+        stageLayoutChange(webView.ZUID);
 
-      cy.wait("@saveItemFails");
-      cy.wait("@saveWebView");
+        cy.getBySelector("StudioContentSaveChangesButton").click();
+        cy.getBySelector("StudioSaveChangesModal").should("exist");
+        cy.getBySelector("StudioSaveChangeSection-Layout").should("exist");
+        cy.getBySelector("StudioSaveAllButton").click();
 
-      // The modal stays open, and the layout half — which did save — drops out
-      // of the list, because the rows derive from what is still pending rather
-      // than from a snapshot taken when the modal opened.
-      cy.getBySelector("StudioSaveChangesModal").should("exist");
-      cy.getBySelector("StudioSaveChangeRow").should("exist");
-      cy.getBySelector("StudioSaveChangeSection-Layout").should("not.exist");
+        cy.wait("@saveItemFails");
+        cy.wait("@saveWebView");
+
+        // The modal stays open, and the layout half — which did save — drops out
+        // of the list, because the rows derive from what is still pending rather
+        // than from a snapshot taken when the modal opened.
+        cy.getBySelector("StudioSaveChangesModal").should("exist");
+        cy.getBySelector("StudioSaveChangeRow").should("exist");
+        cy.getBySelector("StudioSaveChangeSection-Layout").should("not.exist");
+      });
     });
   });
 });

@@ -56,6 +56,12 @@ describe("Studio Inspector Panel", () => {
     cy.get(`[role="option"][data-value="${optionValue}"]`).click();
   };
 
+  // The label a select SHOWS. `data-cy` lands on MUI's hidden input, so
+  // `have.value` passes even while the select renders blank — the label lives
+  // in the sibling display element.
+  const selectDisplay = (dataCy) =>
+    cy.getBySelector(dataCy).siblings('[aria-haspopup="listbox"]');
+
   // Slots mirror exactly what the bridge emits: a STRUCTURAL description, with
   // no human-facing copy (the panel owns labels, keyed off `key`).
   //
@@ -1548,15 +1554,19 @@ describe("Studio Inspector Panel", () => {
 
       cy.getBySelector("StudioAddLink").should("not.exist");
       cy.getBySelector("StudioLinkToInput").should("have.value", "/about/");
+      // No `target` attribute reads as "No", not as a blank select.
+      selectDisplay("StudioOpenInNewTab").should("have.text", "No");
 
       selectMuiOption("StudioOpenInNewTab", "_blank");
       // The select's displayed value is read back off the template, so this
       // only passes once the write has actually landed there.
       cy.getBySelector("StudioOpenInNewTab").should("have.value", "_blank");
+      selectDisplay("StudioOpenInNewTab").should("have.text", "Yes");
 
       // "No" must REMOVE the attribute — `target=""` is noise in saved code.
       selectMuiOption("StudioOpenInNewTab", "");
       cy.getBySelector("StudioOpenInNewTab").should("have.value", "");
+      selectDisplay("StudioOpenInNewTab").should("have.text", "No");
 
       saveAllViaModal("layout");
       cy.wait("@updateWebView").then(({ request }) => {
@@ -1693,6 +1703,7 @@ describe("Studio Inspector Panel", () => {
       cy.getBySelector("StudioSlotInput-href").should("have.value", "/about/");
       // `target` is exposed as the same Yes/No choice, not as a raw string.
       cy.getBySelector("StudioSlotInput-target").should("have.value", "");
+      selectDisplay("StudioSlotInput-target").should("have.text", "No");
       // …and its destination can be bound to an item, like a wrapper's can.
       cy.getBySelector("StudioConnectContent-href").should("exist");
     });
@@ -2361,6 +2372,7 @@ describe("Studio Inspector Panel", () => {
       );
 
       cy.getBySelector("StudioOpenInNewTab").should("have.value", "_blank");
+      selectDisplay("StudioOpenInNewTab").should("have.text", "Yes");
 
       // A fragment can't open a tab, but the target is still SET — hiding the
       // row would keep saving a value the user can neither see nor clear.
@@ -2370,7 +2382,7 @@ describe("Studio Inspector Panel", () => {
   });
 
   // #4374 — the layout grammar keeps a right panel mounted whatever is selected.
-  describe("empty panel in layout mode", () => {
+  describe("right panel in layout mode", () => {
     // The bridge emits no `slots` for a tag outside its SUPPORTED_ELEMENTS.
     const siblingNode = (codeId, layoutId, tagName, slots) => ({
       id: `${codeId}:${layoutId}`,
@@ -2417,16 +2429,9 @@ describe("Studio Inspector Panel", () => {
       setStudioMode("layout");
     });
 
-    it("shows the select-an-element empty state with nothing selected", () => {
-      cy.getBySelector("StudioEmptyPanel").should("exist");
-      cy.getBySelector("StudioEmptyPanelTitle").should(
-        "have.text",
-        "Inspector"
-      );
-      cy.getBySelector("StudioEmptyPanelMessage").should(
-        "have.text",
-        "Select an element on the canvas or in Layers to edit it."
-      );
+    it("shows the item details with nothing selected", () => {
+      cy.getBySelector("StudioSidePanel").should("exist");
+      cy.getBySelector("StudioEmptyPanel").should("not.exist");
       cy.getBySelector("StudioInspectorPanel").should("not.exist");
     });
 
@@ -2525,7 +2530,7 @@ describe("Studio Inspector Panel", () => {
       });
     });
 
-    it("shows the neutral copy, not 'no editable properties', when the Inspector is closed", () => {
+    it("shows the item details, not 'no editable properties', when the Inspector is closed", () => {
       feedSiblings();
       selectRow(paragraph);
       cy.getBySelector("StudioInspectorPanel").should("exist");
@@ -2535,14 +2540,8 @@ describe("Studio Inspector Panel", () => {
       // The layout selection outlives the close; the <p> is still editable.
       cy.getBySelector("StudioInspectorPanel").should("not.exist");
       cy.getBySelector("StudioBreadcrumbChip").last().should("have.text", "p");
-      cy.getBySelector("StudioEmptyPanelTitle").should(
-        "have.text",
-        "Inspector"
-      );
-      cy.getBySelector("StudioEmptyPanelMessage").should(
-        "have.text",
-        "Select an element on the canvas or in Layers to edit it."
-      );
+      cy.getBySelector("StudioSidePanel").should("exist");
+      cy.getBySelector("StudioEmptyPanel").should("not.exist");
     });
   });
 });

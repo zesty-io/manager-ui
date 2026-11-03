@@ -10,18 +10,21 @@ describe("Code Editor Sidebar", { defaultCommandTimeout: 50000 }, () => {
       FILENAME = SIDEBAR?.fileName?.split("/")?.pop()?.trim() || "";
       Cypress.env("fileZUID", res?.ZUID);
       Cypress.env("fileType", res?.type);
+      waitUntilListed("views", res?.ZUID);
     });
 
     cy.task("seed:code", "fixtures/code/script.json").then((res) => {
       SCRIPT_FILENAME = res?.fileName?.split("/")?.pop()?.trim() || "";
       Cypress.env("scriptZUID", res?.ZUID);
       Cypress.env("scriptType", res?.type);
+      waitUntilListed("scripts", res?.ZUID);
     });
 
     cy.task("seed:code", "fixtures/code/stylesheet.json").then((res) => {
       STYLESHEET_FILENAME = res?.fileName?.split("/")?.pop()?.trim() || "";
       Cypress.env("stylesheetZUID", res?.ZUID);
       Cypress.env("stylesheetType", res?.type);
+      waitUntilListed("stylesheets", res?.ZUID);
     });
 
     cy.waitOn("/v1/web/views*", () => {
@@ -123,6 +126,31 @@ describe("Code Editor Sidebar", { defaultCommandTimeout: 50000 }, () => {
       .should("be.visible");
   });
 });
+
+const LIST_POLL_ATTEMPTS = 15;
+const LIST_POLL_INTERVAL_MS = 2000;
+
+// The list API can briefly omit a file right after it is created, and the
+// code editor fetches each list only once, on load. Wait until the seeded file
+// is listed so a stale list fails here instead of as a 50s tree timeout.
+function waitUntilListed(group, zuid, attempt = 1) {
+  cy.apiRequest({
+    url: `${Cypress.env("API_INSTANCE_URL")}/web/${group}?status=dev`,
+  }).then(({ status, data }) => {
+    if (data?.some((file) => file.ZUID === zuid)) return;
+
+    if (attempt >= LIST_POLL_ATTEMPTS) {
+      throw new Error(
+        status === "error"
+          ? `GET /web/${group}?status=dev kept failing after ${LIST_POLL_ATTEMPTS} attempts`
+          : `Seeded ${group} file ${zuid} is still missing from GET /web/${group}?status=dev after ${LIST_POLL_ATTEMPTS} attempts: the list API is serving a stale list`
+      );
+    }
+
+    cy.wait(LIST_POLL_INTERVAL_MS);
+    waitUntilListed(group, zuid, attempt + 1);
+  });
+}
 
 function findSeededFileNode(navId, group, zuid) {
   cy.get(`[data-cy="${navId}"] [id="${navId}-/code/file/${group}/__e2e__"]`).as(

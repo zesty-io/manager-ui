@@ -839,8 +839,8 @@ describe("Content Specs", () => {
         .find("input")
         .clear()
         .type(updatedValue);
-      cy.wait(500);
       cy.getBySelector("SaveRepeaterRowItemBtn").scrollIntoView().click();
+      cy.getBySelector("SaveRepeaterRowItemBtn").should("not.exist");
 
       // Verify updated value
       cy.getBySelector("field:repeater")
@@ -925,6 +925,7 @@ describe("Content Specs", () => {
         .scrollIntoView()
         .should("be.enabled")
         .click();
+      cy.getBySelector("SaveRepeaterRowItemBtn").should("not.exist");
 
       cy.getBySelector("field:repeater")
         .find(".MuiDataGrid-row")

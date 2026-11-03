@@ -186,9 +186,10 @@ function PreviewInner(props) {
   }, []);
 
   useEffect(() => {
-    try {
-      setLoading(true);
-      api(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`).then((json) => {
+    setLoading(true);
+    Promise.resolve()
+      .then(() => api(`${CONFIG.API_ACCOUNTS}/instances/${ZUID}`))
+      .then((json) => {
         setDomain(
           !json?.data?.randomHashID
             ? "error"
@@ -196,16 +197,17 @@ function PreviewInner(props) {
         );
         setAuthenticated(true);
         serDomainError(false);
+      })
+      .catch((error) => {
+        if (error.message === "unauthenticated") {
+          setAuthenticated(false);
+        }
+        setDomain("");
+        serDomainError(true);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    } catch (error) {
-      if (error.message === "unauthenticated") {
-        setAuthenticated(false);
-      }
-      setDomain("");
-      serDomainError(true);
-    } finally {
-      setLoading(false);
-    }
   }, []);
 
   const sendMessage = (action) => {

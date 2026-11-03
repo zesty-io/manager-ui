@@ -40,7 +40,7 @@ const isLayoutBreadcrumbItem = (
       typeof (segment as LayoutBreadcrumbItem).label === "string"
   );
 
-type LayoutRegionState = {
+export type LayoutRegionState = {
   selector: string;
   orderedLayoutIds: string[];
   layoutStructure: LayoutStructureItem[];
@@ -51,6 +51,20 @@ type LayoutRegionState = {
 type LayoutReorderState = {
   regions: Record<string, LayoutRegionState>;
   primaryCodeId: string;
+};
+
+// One region's staged layout state, as undo/redo captures and restores it:
+// the cached template source, and its pending-save entry (null when the
+// region has nothing staged).
+export type LayoutRegionSnapshot = {
+  source: string | null;
+  region: LayoutRegionState | null;
+};
+
+// What a failed layout save adds to the error it rethrows.
+type LayoutSaveFailure = {
+  failedCodeId?: string;
+  savedCount?: number;
 };
 
 // Apply a new layoutStructure to a cached template source. Used both for
@@ -403,6 +417,10 @@ const writeAttribute = (el: HTMLElement, attr: string, value: string) => {
 
 const stripLayoutIdsFromSource = (source: string): string => {
   if (!source) return "";
+  // Nothing to strip, so no DOMParser round trip: re-serializing reformats
+  // markup and foster-parents Parsley text out of tables. Whole-file AI
+  // replacements arrive without layout ids and must be saved verbatim.
+  if (!source.includes("data-layout-id")) return source;
 
   const parser = new DOMParser();
   const doc = parser.parseFromString(
@@ -458,6 +476,12 @@ type Args = {
       breadcrumb: LayoutBreadcrumbItem[];
     } | null
   ) => void;
+  // Called after each region's PUT succeeds.
+  onLayoutRegionSaved?: (codeId: string) => void;
+  // Called at the top of every post-boot template write, before the cache
+  // changes, so undo history can capture what the write replaces. Not called
+  // for the TEMPLATE_SOURCE_MAP merge, which is the page's own state.
+  onBeforeLayoutWrite?: (codeIds: string[]) => void;
 };
 
 export const useLayoutReorderState = ({
@@ -473,6 +497,8 @@ export const useLayoutReorderState = ({
   syncTemplateSourceToBridge,
   withCodeIdBreadcrumbRoot,
   onSelectedLayoutBreadcrumbChange,
+  onLayoutRegionSaved,
+  onBeforeLayoutWrite,
 }: Args) => {
   const { t, i18n } = useTranslation();
   const templateSourceByCodeIdRef = useRef<Record<string, string>>({});
@@ -492,6 +518,7 @@ export const useLayoutReorderState = ({
   // through here keeps them in step by construction.
   const writeTemplateSources = useCallback(
     (patch: Record<string, string>) => {
+      onBeforeLayoutWrite?.(Object.keys(patch));
       templateSourceByCodeIdRef.current = {
         ...templateSourceByCodeIdRef.current,
         ...patch,
@@ -501,16 +528,40 @@ export const useLayoutReorderState = ({
       });
       setTemplateSourceVersion((prev) => prev + 1);
     },
-    [syncTemplateSourceToBridge]
+    [onBeforeLayoutWrite, syncTemplateSourceToBridge]
   );
-  const [pendingLayoutSave, setPendingLayoutSave] =
+  const [pendingLayoutSave, setPendingLayoutSaveState] =
     useState<LayoutReorderState | null>(null);
+  // Mirrors pendingLayoutSave synchronously. Undo history reads a region's
+  // staged state in the same tick as the write that changed it, before React
+  // has applied the update, so every write goes through the setter below and
+  // the ref is never behind.
+  const pendingLayoutSaveRef = useRef<LayoutReorderState | null>(null);
+  const setPendingLayoutSave = useCallback(
+    (
+      update:
+        | LayoutReorderState
+        | null
+        | ((prev: LayoutReorderState | null) => LayoutReorderState | null)
+    ) => {
+      const next =
+        typeof update === "function"
+          ? update(pendingLayoutSaveRef.current)
+          : update;
+      pendingLayoutSaveRef.current = next;
+      setPendingLayoutSaveState(next);
+    },
+    []
+  );
   const [isSavingLayout, setIsSavingLayout] = useState(false);
 
   const pendingLayoutCodeIds = useMemo(
     () => Object.keys(pendingLayoutSave?.regions || {}),
     [pendingLayoutSave]
   );
+  // For handleTemplateSourceMap, which keeps a stable identity.
+  const pendingLayoutCodeIdsRef = useRef(pendingLayoutCodeIds);
+  pendingLayoutCodeIdsRef.current = pendingLayoutCodeIds;
 
   const clearPendingLayoutState = useCallback(() => {
     setPendingLayoutSave(null);
@@ -561,15 +612,19 @@ export const useLayoutReorderState = ({
       for (const codeId of codeIds) {
         const latestSource = templateSourceByCodeIdRef.current[codeId];
         if (typeof latestSource !== "string") {
-          throw new Error(
-            `Unable to resolve cached template for code file ${codeId}.`
+          throw Object.assign(
+            new Error(
+              `Unable to resolve cached template for code file ${codeId}.`
+            ),
+            { savedCount: savedResults.length }
           );
         }
 
         const webView = webViews.find((view) => view.ZUID === codeId);
         if (!webView) {
-          throw new Error(
-            `Unable to resolve code file ${codeId} for layout save.`
+          throw Object.assign(
+            new Error(`Unable to resolve code file ${codeId} for layout save.`),
+            { savedCount: savedResults.length }
           );
         }
 
@@ -585,6 +640,7 @@ export const useLayoutReorderState = ({
           }).unwrap();
 
           savedResults.push({ codeId, webView, updatedWebView });
+          onLayoutRegionSaved?.(codeId);
 
           // Remove the now-saved region from pending state so a retry doesn't
           // re-save it. Functional, so a region the flush staged moments ago is
@@ -602,14 +658,17 @@ export const useLayoutReorderState = ({
             };
           });
         } catch (err) {
-          (err as any).failedCodeId = codeId;
-          throw err;
+          const failure = err as LayoutSaveFailure;
+          failure.failedCodeId = codeId;
+          // The regions written before this one stay written.
+          failure.savedCount = savedResults.length;
+          throw failure;
         }
       }
 
       return savedResults;
     },
-    [pendingLayoutSave, updateWebView, webViews]
+    [onLayoutRegionSaved, pendingLayoutSave, updateWebView, webViews]
   );
 
   const formatSavedFileNames = useCallback(
@@ -672,6 +731,9 @@ export const useLayoutReorderState = ({
                 : t("content.studioLayoutSaveFailed")),
           })
         );
+        // Saved regions left the pending set, an AI preview among them, so
+        // the canvas must reload to show what was written.
+        if (error?.savedCount) refreshPreviewFrame();
         return { failed: true };
       } finally {
         setIsSavingLayout(false);
@@ -761,15 +823,28 @@ export const useLayoutReorderState = ({
     t,
   ]);
 
-  const handleTemplateSourceMap = useCallback((msg: any) => {
-    const incoming =
-      (msg.templateSourceByCodeId as Record<string, string>) || {};
-    templateSourceByCodeIdRef.current = {
-      ...templateSourceByCodeIdRef.current,
-      ...incoming,
-    };
-    setTemplateSourceVersion((prev) => prev + 1);
-  }, []);
+  // A preview reload re-sends the page's as-rendered templates. A region with
+  // an unsaved change keeps the host's copy, and the fresh bridge is given it
+  // again — otherwise the next save would write the pre-edit source.
+  const handleTemplateSourceMap = useCallback(
+    (msg: any) => {
+      const incoming: Record<string, string> = {
+        ...(msg.templateSourceByCodeId || {}),
+      };
+      pendingLayoutCodeIdsRef.current.forEach((codeId) => {
+        const kept = templateSourceByCodeIdRef.current[codeId];
+        if (!(codeId in incoming) || typeof kept !== "string") return;
+        delete incoming[codeId];
+        syncTemplateSourceToBridge(codeId, kept);
+      });
+      templateSourceByCodeIdRef.current = {
+        ...templateSourceByCodeIdRef.current,
+        ...incoming,
+      };
+      setTemplateSourceVersion((prev) => prev + 1);
+    },
+    [syncTemplateSourceToBridge]
+  );
 
   const handleLayoutContentUpdate = useCallback(
     (msg: any) => {
@@ -951,16 +1026,20 @@ export const useLayoutReorderState = ({
 
   // Write a region's patched source into the cache and stage it for save,
   // preserving any pending reorder on that region. Shared by the attribute and
-  // text slot updaters.
+  // text slot updaters. `replacesSource` marks a whole-file replacement written
+  // from the staged source, which already carries any pending reorder — so the
+  // reorder's structure is dropped rather than mapped onto the new file.
   const stageLayoutSourceUpdate = useCallback(
-    (codeId: string, next: string) => {
+    (codeId: string, next: string, options?: { replacesSource?: boolean }) => {
       writeTemplateSources({ [codeId]: next });
 
       setPendingLayoutSave((prev) => {
         const prevRegion = prev?.regions?.[codeId];
-        const hasPendingReorder = Boolean(
-          prevRegion?.layoutStructure && prevRegion.layoutStructure.length
-        );
+        const hasPendingReorder =
+          !options?.replacesSource &&
+          Boolean(
+            prevRegion?.layoutStructure && prevRegion.layoutStructure.length
+          );
         const layoutStructure = hasPendingReorder
           ? prevRegion!.layoutStructure
           : [];
@@ -990,6 +1069,19 @@ export const useLayoutReorderState = ({
       });
     },
     [writeTemplateSources]
+  );
+
+  // What a save would write for `codeId` right now, or null when nothing is
+  // staged for it.
+  const readStagedLayoutSource = useCallback(
+    (codeId: string): string | null => {
+      if (!pendingLayoutSave?.regions?.[codeId]) return null;
+      const cached = templateSourceByCodeIdRef.current[codeId];
+      return typeof cached === "string"
+        ? stripLayoutIdsFromSource(cached)
+        : null;
+    },
+    [pendingLayoutSave]
   );
 
   const handleLayoutElementAttrUpdate = useCallback(
@@ -1277,7 +1369,67 @@ export const useLayoutReorderState = ({
     [handleLayoutElementAttrUpdate]
   );
 
+  // A region's staged state right now, read from refs so it is current in the
+  // same tick as the write that produced it.
+  const getLayoutRegionSnapshot = useCallback(
+    (codeId: string): LayoutRegionSnapshot => {
+      const source = templateSourceByCodeIdRef.current[codeId];
+      return {
+        source: typeof source === "string" ? source : null,
+        region: pendingLayoutSaveRef.current?.regions?.[codeId] || null,
+      };
+    },
+    []
+  );
+
+  // Puts regions back exactly as captured: the source through the one write
+  // funnel, so the bridge's copy follows, and the pending-save entry as it
+  // was — a region captured with nothing staged leaves the pending set.
+  const restoreLayoutRegions = useCallback(
+    (snapshots: Record<string, LayoutRegionSnapshot>) => {
+      const sources: Record<string, string> = {};
+      const removed: string[] = [];
+      Object.keys(snapshots).forEach((codeId) => {
+        const { source } = snapshots[codeId];
+        if (typeof source === "string") sources[codeId] = source;
+        else removed.push(codeId);
+      });
+      if (Object.keys(sources).length) writeTemplateSources(sources);
+      if (removed.length) {
+        const next = { ...templateSourceByCodeIdRef.current };
+        removed.forEach((codeId) => delete next[codeId]);
+        templateSourceByCodeIdRef.current = next;
+        setTemplateSourceVersion((prev) => prev + 1);
+      }
+
+      setPendingLayoutSave((prev) => {
+        const regions = { ...(prev?.regions || {}) };
+        Object.keys(snapshots).forEach((codeId) => {
+          const { region } = snapshots[codeId];
+          if (region) regions[codeId] = region;
+          else delete regions[codeId];
+        });
+        const codeIds = Object.keys(regions);
+        if (!codeIds.length) return null;
+        return {
+          regions,
+          primaryCodeId:
+            prev?.primaryCodeId && regions[prev.primaryCodeId]
+              ? prev.primaryCodeId
+              : codeIds[0],
+        };
+      });
+    },
+    [setPendingLayoutSave, writeTemplateSources]
+  );
+
+  const getPendingLayoutCodeIds = useCallback(
+    () => Object.keys(pendingLayoutSaveRef.current?.regions || {}),
+    []
+  );
+
   return {
+    getPendingLayoutCodeIds,
     pendingLayoutSave,
     pendingLayoutCodeIds,
     isSavingLayout,
@@ -1295,5 +1447,9 @@ export const useLayoutReorderState = ({
     handleLayoutWrapInLink,
     handleLayoutUnwrapLink,
     handleLayoutLinkAttrUpdate,
+    stageLayoutSourceUpdate,
+    readStagedLayoutSource,
+    getLayoutRegionSnapshot,
+    restoreLayoutRegions,
   };
 };
