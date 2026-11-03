@@ -117,7 +117,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 }: FieldTypeTinyMCEProps) {
   const { t } = useTranslation();
   // NOTE: controlled component
-  const [initialValue, setInitialValue] = useState(value);
   const [isSkinLoaded, setIsSkinLoaded] = useState(false);
   const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
 
@@ -132,6 +131,14 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   // item.
   const editorKey = `${effectiveCompact}-${version}`;
   const baselineRef = useRef<{ key: string; content: string } | null>(null);
+
+  // Value the editor instance is created with. Captured once per editor
+  // instance (editorKey) and deliberately NOT refreshed afterwards: changing
+  // the <Editor initialValue> prop after init makes tinymce-react call
+  // editor.setContent(), which fires `setcontent` and dirties the item. This
+  // relies on `value` being current in the render that changes editorKey
+  // (useDebouncedInput syncs during render, not in an effect).
+  const initialValue = useMemo(() => value, [editorKey]);
 
   const EDITOR_HEIGHT = effectiveCompact
     ? COMPACT_EDITOR_HEIGHT
@@ -223,8 +230,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               key: editorKey,
               content: editor.getContent(),
             };
-
-            setInitialValue(value ?? "");
 
             const charCount =
               editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;

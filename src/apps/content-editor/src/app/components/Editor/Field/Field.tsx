@@ -125,7 +125,7 @@ export const Field = memo(
     const fieldData = fields?.find((field) => field.ZUID === ZUID);
     const [rerenderKey, setRerenderKey] = useState(0);
 
-    const { local, onLocalChange, showLocal } = useDebouncedInput(
+    const { local, onLocalChange, showLocal, flush } = useDebouncedInput(
       value,
       (v) => {
         onChange(v, name);
@@ -426,7 +426,12 @@ export const Field = memo(
                 value={local}
                 version={version}
                 onChange={(value) => onLocalChange(value)}
-                onSave={onSave}
+                onBlur={flush}
+                onSave={() => {
+                  // Commit the pending debounced value before saving
+                  flush();
+                  onSave?.();
+                }}
                 onCharacterCountChange={(charCount: number) =>
                   setCharacterCount(charCount)
                 }
