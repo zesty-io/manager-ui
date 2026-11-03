@@ -403,6 +403,44 @@ describe("AI drawer", () => {
         "saveAltText"
       );
 
+      // The save refetches the chat log; the server has logged the alt-text
+      // turn by then. Registered before the click so the refetch cannot
+      // outrun it. The logged text differs from the live one so the restored
+      // turn can be told apart from the local one it replaces.
+      cy.intercept("GET", `**/chats/${CHAT_ZUID}?*`, {
+        body: {
+          data: {
+            chatZuid: CHAT_ZUID,
+            prompts: [
+              {
+                promptZuid: "e2e-stub-prompt",
+                chatZuid: CHAT_ZUID,
+                prompt: "Stubbed prompt",
+                response: IMAGE_REPLY,
+                approval: "0",
+              },
+              {
+                promptZuid: "e2e-stub-alt-prompt",
+                chatZuid: CHAT_ZUID,
+                prompt: "Generate alt text for this image (Stubbed prompt)",
+                response: JSON.stringify([
+                  {
+                    type: "SYSTEM_OUTPUT",
+                    payload: { value: "A restored alt text" },
+                  },
+                ]),
+                metadata: {
+                  fileZuid: IMAGE_ZUID,
+                  context: "Stubbed prompt",
+                  altText: "A restored alt text",
+                },
+                approval: "0",
+              },
+            ],
+          },
+        },
+      }).as("getChatWithAltText");
+
       // Follows the reply's text, as the last entry of the turn.
       cy.contains("Generated an image of the alps.");
       cy.getBySelector("AIDrawerGenerateAltText").should("be.visible").click();
@@ -418,12 +456,29 @@ describe("AI drawer", () => {
         .should("deep.equal", { title: "A stubbed alt text" });
       cy.getBySelector("AIDrawerAltTextSaved")
         .should("contain", "Alt text saved to the image")
-        .and("contain", "A stubbed alt text");
+        .and("contain", "A stubbed alt text")
+        .and("be.visible");
       cy.getBySelector("AIDrawerAltTextOpenInMedia").should(
         "have.attr",
         "href",
         `/media?fileId=${IMAGE_ZUID}`
       );
+
+      // The refetched log replaces the local turn; its metadata rebuilds it.
+      cy.wait("@getChatWithAltText");
+      cy.getBySelector("AIDrawerAltTextSaved")
+        .should("have.length", 1)
+        .and("contain", "A restored alt text")
+        .and("be.visible");
+      cy.getBySelector("AIDrawerAltTextOpenInMedia").should(
+        "have.attr",
+        "href",
+        `/media?fileId=${IMAGE_ZUID}`
+      );
+      cy.getBySelector("AIDrawerUserInput")
+        .last()
+        .should("have.text", "Generate an alt tag for this image");
+      cy.contains("Generate alt text for this image").should("not.exist");
     });
 
     it("shows the server's message and saves nothing when alt text fails", () => {

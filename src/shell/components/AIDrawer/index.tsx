@@ -54,8 +54,11 @@ const normalizeChatSessionLog = (
     const metadata = promptLog.metadata;
     if (
       metadata &&
+      typeof metadata === "object" &&
       "altText" in metadata &&
-      metadata.altText &&
+      typeof metadata.altText === "string" &&
+      metadata.altText.trim() &&
+      typeof metadata.fileZuid === "string" &&
       metadata.fileZuid
     ) {
       promptMap[promptLog.promptZuid] = [

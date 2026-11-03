@@ -383,7 +383,7 @@ export const ChatThread = ({
                         </Typography>
                         <AnimatedText
                           text={response.payload.value}
-                          animate={shouldAnimate}
+                          animate={shouldAnimate && !isInCodeApp}
                           onGrow={() => scrollToEnd(scrollContainerRef.current)}
                         />
                         <Link
