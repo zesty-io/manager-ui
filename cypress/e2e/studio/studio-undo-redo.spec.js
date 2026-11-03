@@ -18,6 +18,7 @@ describe("Studio Undo / Redo", () => {
   let itemZUID = "";
   let modelZUID = "";
   let titleFieldZUID = "";
+  let heroImageFieldZUID = "";
   let viewZUID = "";
   let seededPage = null;
 
@@ -33,6 +34,11 @@ describe("Studio Undo / Redo", () => {
         titleFieldZUID = fields.find((field) => field.name === "title")?.ZUID;
         expect(titleFieldZUID, "seeded title field").to.be.a("string").and.not
           .be.empty;
+        heroImageFieldZUID = fields.find(
+          (field) => field.name === "hero_image"
+        )?.ZUID;
+        expect(heroImageFieldZUID, "seeded hero_image field").to.be.a("string")
+          .and.not.be.empty;
       }
     );
   });
@@ -910,12 +916,27 @@ describe("Studio Undo / Redo", () => {
       );
       paintsBefore = cmds.length;
     });
+    // The bridge finds the <img> bound to the field through this snapshot.
+    hostCommands("historySnapshot").should(
+      (cmds) =>
+        expect(
+          cmds.some((cmd) =>
+            cmd.fields?.some(
+              (field) =>
+                field.fieldZuid === heroImageFieldZUID &&
+                field.itemZuid === itemZUID
+            )
+          ),
+          "snapshot names hero_image"
+        ).to.be.true
+    );
     cy.getBySelector("StudioUndoButton").should("not.be.disabled").click();
     cy.window().should((win) => expect(readImage(win)).to.eq(imageBefore));
     hostCommands("historyRestore").should("have.length", 1);
     cy.getBySelector("StudioUndoButton").should("be.disabled");
-    // The restore put back the canvas; a repaint with no public URL for the
-    // seeded value (the resolver's, or nothing) would override it.
+    // The bridge restores the bound <img> from the field's region snapshot;
+    // a repaint with no public URL for the seeded value (the resolver's, or
+    // nothing) would override it.
     hostCommands("setAttrByField").should((cmds) =>
       expect(cmds, "repaints after undo").to.have.length(paintsBefore)
     );

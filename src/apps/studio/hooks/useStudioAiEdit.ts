@@ -465,8 +465,9 @@ export const useStudioAiEdit = ({
           value: src,
         });
       };
-      // Undo and redo: the store already holds the value, and the bridge's
-      // history restore has put back the canvas. Only a file shown by its
+      // Undo and redo: the store already holds the value. The step's
+      // snapshot names this field, and the bridge restores the bound <img>
+      // from the snapshot of the region holding it. Only a file shown by its
       // public URL is repainted; anything else would override the restore.
       const showValue = (value: string) => {
         const first = firstFile(value);
