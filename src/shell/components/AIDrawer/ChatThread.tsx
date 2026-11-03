@@ -8,6 +8,7 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
+  Link,
   Skeleton,
   Stack,
   Switch,
@@ -24,6 +25,7 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { Link as RouterLink } from "react-router-dom";
 import {
   ArrowForward,
   ArrowUpwardRounded,
@@ -85,6 +87,8 @@ export type ChatResponse = { approval?: string } & (
       payload: { fileName: string; added: number; removed: number };
     }
   | { type: "NOTICE"; payload: { value: string } }
+  // Built by a host: alt text that was written to a media file.
+  | { type: "ALT_TEXT_SAVED"; payload: { value: string; fileZuid: string } }
   | {
       type: "SYSTEM_SUGGESTION" | "SYSTEM_OUTPUT" | "ERROR";
       payload: { refKey?: string; value: string };
@@ -366,6 +370,31 @@ export const ChatThread = ({
                       >
                         {response.payload.value}
                       </Typography>
+                    );
+                  } else if (response.type === "ALT_TEXT_SAVED") {
+                    return (
+                      <Box
+                        data-cy="AIDrawerAltTextSaved"
+                        key={`${promptZUID}-${responseIndex}`}
+                      >
+                        <Typography variant="body2" fontWeight={600}>
+                          {t("shell.altTextSaved")}
+                          {":"}
+                        </Typography>
+                        <AnimatedText
+                          text={response.payload.value}
+                          animate={shouldAnimate}
+                          onGrow={() => scrollToEnd(scrollContainerRef.current)}
+                        />
+                        <Link
+                          data-cy="AIDrawerAltTextOpenInMedia"
+                          component={RouterLink}
+                          to={`/media?fileId=${response.payload.fileZuid}`}
+                          variant="body2"
+                        >
+                          {t("shell.openInMedia")}
+                        </Link>
+                      </Box>
                     );
                   }
 

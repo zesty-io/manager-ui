@@ -440,7 +440,10 @@ const StudioAIChat = ({
         // No `strictNullChecks` here, so only `=== false` narrows.
         result.ok === false
           ? { type: "ERROR", payload: { value: result.message } }
-          : { type: "SYSTEM_OUTPUT", payload: { value: result.altText } },
+          : {
+              type: "ALT_TEXT_SAVED",
+              payload: { value: result.altText, fileZuid },
+            },
       ]);
     },
     [chat, appendToTurn, generateAltText, t]

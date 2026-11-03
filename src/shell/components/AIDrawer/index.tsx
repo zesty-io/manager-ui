@@ -41,10 +41,33 @@ import {
   isCodeAppPath,
 } from "utility/isAIDrawerSupportedPath";
 
-const normalizeChatSessionLog = (prompts: ChatPrompt[] = []) => {
+// `altTextPromptLabel` stands in for the server's own English prompt on a
+// logged alt-text turn.
+const normalizeChatSessionLog = (
+  prompts: ChatPrompt[] = [],
+  altTextPromptLabel: string
+) => {
   const promptMap: Record<string, any[]> = {};
 
   prompts.forEach((promptLog) => {
+    // The server marks an alt-text turn by its metadata, not its wording.
+    const metadata = promptLog.metadata;
+    if (
+      metadata &&
+      "altText" in metadata &&
+      metadata.altText &&
+      metadata.fileZuid
+    ) {
+      promptMap[promptLog.promptZuid] = [
+        { type: "USER_INPUT", payload: { value: altTextPromptLabel } },
+        {
+          type: "ALT_TEXT_SAVED",
+          payload: { value: metadata.altText, fileZuid: metadata.fileZuid },
+        },
+      ];
+      return;
+    }
+
     const parsedResponses = toChatResponses(promptLog.response);
 
     promptMap[promptLog.promptZuid] = [
@@ -451,7 +474,10 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     }
 
     const restoredResponses = chatSessionLog?.prompts?.length
-      ? normalizeChatSessionLog([...chatSessionLog?.prompts])
+      ? normalizeChatSessionLog(
+          [...chatSessionLog?.prompts],
+          t("shell.generateAltText")
+        )
       : {};
 
     // Only animate/auto-apply prompts that just arrived from a live model
@@ -611,7 +637,10 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
           // No `strictNullChecks` here, so only `=== false` narrows.
           result.ok === false
             ? { type: "ERROR", payload: { value: result.message } }
-            : { type: "SYSTEM_OUTPUT", payload: { value: result.altText } },
+            : {
+                type: "ALT_TEXT_SAVED",
+                payload: { value: result.altText, fileZuid },
+              },
         ],
       }));
 

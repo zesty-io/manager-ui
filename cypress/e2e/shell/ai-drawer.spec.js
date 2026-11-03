@@ -416,7 +416,14 @@ describe("AI drawer", () => {
       cy.wait("@saveAltText")
         .its("request.body")
         .should("deep.equal", { title: "A stubbed alt text" });
-      cy.contains("A stubbed alt text").should("be.visible");
+      cy.getBySelector("AIDrawerAltTextSaved")
+        .should("contain", "Alt text saved to the image")
+        .and("contain", "A stubbed alt text");
+      cy.getBySelector("AIDrawerAltTextOpenInMedia").should(
+        "have.attr",
+        "href",
+        `/media?fileId=${IMAGE_ZUID}`
+      );
     });
 
     it("shows the server's message and saves nothing when alt text fails", () => {
