@@ -405,9 +405,14 @@ describe("AI drawer", () => {
 
       // The save refetches the chat log; the server has logged the alt-text
       // turn by then. Registered before the click so the refetch cannot
-      // outrun it. The logged text differs from the live one so the restored
-      // turn can be told apart from the local one it replaces.
-      cy.intercept("GET", `**/chats/${CHAT_ZUID}?*`, {
+      // outrun it, and held until the live turn has been checked so it cannot
+      // replace that turn first. The logged text differs from the live one so
+      // the restored turn can be told apart from the local one it replaces.
+      let releaseChatLog;
+      const chatLogGate = new Promise((resolve) => {
+        releaseChatLog = resolve;
+      });
+      const restoredChatLog = {
         body: {
           data: {
             chatZuid: CHAT_ZUID,
@@ -439,7 +444,10 @@ describe("AI drawer", () => {
             ],
           },
         },
-      }).as("getChatWithAltText");
+      };
+      cy.intercept("GET", `**/chats/${CHAT_ZUID}?*`, (req) =>
+        chatLogGate.then(() => req.reply(restoredChatLog))
+      ).as("getChatWithAltText");
 
       // Follows the reply's text, as the last entry of the turn.
       cy.contains("Generated an image of the alps.");
@@ -465,6 +473,7 @@ describe("AI drawer", () => {
       );
 
       // The refetched log replaces the local turn; its metadata rebuilds it.
+      cy.then(() => releaseChatLog());
       cy.wait("@getChatWithAltText");
       cy.getBySelector("AIDrawerAltTextSaved")
         .should("have.length", 1)
