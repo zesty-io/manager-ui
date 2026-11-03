@@ -36,6 +36,7 @@
   "appErrorBody": "Deze fout is naar ons team verzonden. Laad de applicatie opnieuw om door te gaan.",
   "appErrorHeading": "Oeps, er is iets misgegaan",
   "appLoadingFailure": "App laden mislukt: {{message}}",
+  "appNavigation": "App-navigatie",
   "applyAiSuggestion": "Toepassen",
   "audiencePlaceholder": "bijv. Freelancers, Designers, .....",
   "autoApply": "Automatisch toepassen",

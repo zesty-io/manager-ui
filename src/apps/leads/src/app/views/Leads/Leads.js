@@ -36,9 +36,9 @@ export default connect((state) => state)(function Leads(props) {
       sx={{ height: "calc(100vh - 54px)", overflowY: "auto" }}
     >
       <LeadExporter />
-      <main>
+      <div>
         <Route component={LeadsTable} />
-      </main>
+      </div>
     </Box>
   );
 });

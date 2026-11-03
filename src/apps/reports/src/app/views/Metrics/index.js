@@ -436,7 +436,7 @@ const Content = ({
           </CardContent>
         </Card>
       </section>
-      <main className={styles.TableContainer}>
+      <div className={styles.TableContainer}>
         <section>
           <Card sx={{ m: 2 }}>
             <CardHeader
@@ -660,7 +660,7 @@ const Content = ({
             </CardContent>
           </Card>
         </section>
-      </main>
+      </div>
     </>
   );
 };

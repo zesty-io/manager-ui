@@ -36,6 +36,7 @@
   "appErrorBody": "Эта ошибка отправлена нашей команде. Перезагрузите приложение, чтобы продолжить.",
   "appErrorHeading": "Упс, что-то пошло не так",
   "appLoadingFailure": "Ошибка загрузки приложения: {{message}}",
+  "appNavigation": "Навигация по приложению",
   "applyAiSuggestion": "Применить",
   "audiencePlaceholder": "напр. Freelancers, Designers, .....",
   "autoApply": "Автоприменение",

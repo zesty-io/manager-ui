@@ -553,7 +553,6 @@ export const ItemCreate = () => {
         <Box
           display="grid"
           gridTemplateColumns="1fr minmax(0px, 40%)"
-          component="main"
           className={styles.ItemCreate}
           bgcolor="grey.50"
           alignItems="center"

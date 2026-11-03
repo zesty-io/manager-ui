@@ -101,7 +101,9 @@ const GlobalSidebar: FC<GlobalSidebarProps> = ({ onClick, openNav }) => {
         </ListItem>
 
         <InstanceMenu openNav={openNav} />
-        <GlobalMenu />
+        <Box component="nav" aria-label={t("shell.appNavigation")}>
+          <GlobalMenu />
+        </Box>
 
         {is15DaysFromCreation && openNav && <OnboardingCall />}
         {/* Bottom bar */}
