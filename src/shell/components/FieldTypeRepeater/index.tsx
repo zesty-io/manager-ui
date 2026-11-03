@@ -23,6 +23,7 @@ import { ImageCell } from "../../../apps/content-editor/src/app/views/ItemList/T
 import { Link, Typography } from "@mui/material";
 import { ContentModelField } from "shell/services/types";
 import { RowDialog } from "./RowDialog";
+import { FIELD_TYPES, isFilterableFieldType } from "shell/fieldTypes";
 
 const HEADER_HEIGHT = 56;
 const ROW_HEIGHT = 56;
@@ -30,20 +31,16 @@ const ROW_HEIGHT = 56;
 const fieldTypeColumnConfigMap: Record<string, Partial<GridColDef>> = {
   text: {
     width: 360,
-    filterable: true,
   },
   textarea: {
     width: 360,
-    filterable: true,
   },
   markdown: {
     width: 360,
-    filterable: true,
   },
   wysiwyg_basic: {
     width: 360,
     valueFormatter: (value: any) => getHtmlText(value),
-    filterable: true,
   },
   images: {
     width: 100,
@@ -53,7 +50,6 @@ const fieldTypeColumnConfigMap: Record<string, Partial<GridColDef>> = {
   },
   link: {
     width: 360,
-    filterable: true,
     renderCell: (params: any) => {
       return (
         <Link
@@ -88,20 +84,14 @@ const fieldTypeColumnConfigMap: Record<string, Partial<GridColDef>> = {
   },
   number: {
     width: 160,
-    valueFormatter: (value: any) => {
-      if (!value) return null;
-      return new Intl.NumberFormat("en-US").format(value);
-    },
-    filterable: true,
+    valueFormatter: (value: any) => FIELD_TYPES.number.formatForDisplay!(value),
     align: "right",
   },
   yes_no: {
     width: 120,
-    filterable: true,
   },
   color: {
     width: 140,
-    filterable: true,
     renderCell: (params: GridRenderCellParams) => {
       return (
         <Box display="flex" alignItems="center" gap={1.5} height="100%">
@@ -124,15 +114,21 @@ const fieldTypeColumnConfigMap: Record<string, Partial<GridColDef>> = {
   },
   dropdown: {
     width: 240,
-    filterable: true,
   },
   sort: {
     width: 112,
-    filterable: true,
   },
   uuid: {
     width: 280,
-    filterable: true,
+  },
+  date: {
+    width: 160,
+    valueFormatter: (value: any) => FIELD_TYPES.date.formatForDisplay!(value),
+  },
+  datetime: {
+    width: 200,
+    valueFormatter: (value: any) =>
+      FIELD_TYPES.datetime.formatForDisplay!(value),
   },
 };
 
@@ -197,6 +193,7 @@ export const FieldTypeRepeater = ({
         field: field.name,
         headerName: field.label,
         ...fieldTypeColumnConfigMap[field.datatype],
+        filterable: isFilterableFieldType(field.datatype),
         valueGetter: (value, row) => {
           switch (field.datatype) {
             case "currency":

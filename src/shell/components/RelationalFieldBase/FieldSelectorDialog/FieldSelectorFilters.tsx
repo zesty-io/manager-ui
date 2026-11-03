@@ -21,6 +21,7 @@ import { useGetUsersQuery } from "../../../services/accounts";
 import { DateFilterValue, DateFilter } from "../../Filters/DateFilter";
 import { FieldFilters } from "./index";
 import { DateRangeFilterValue } from "../../Filters/DateFilter/types";
+import { isFilterableFieldType } from "shell/fieldTypes";
 
 // Maps stable filter keys to their i18n key strings. Labels are resolved via
 // t() at render so they localize; do not render these values directly.
@@ -36,29 +37,6 @@ export const STATUS_FILTER = {
   scheduled: "shell.relationalStatusScheduled",
   notPublished: "shell.relationalStatusNotPublished",
 } as const;
-
-const FILTERABLE_DATA_TYPES = [
-  "text",
-  "wysiwyg_basic",
-  "wysiwyg_advanced",
-  "article_writer",
-  "markdown",
-  "textarea",
-  "number",
-  "images",
-  "date",
-  "datetime",
-  "one_to_many",
-  "one_to_one",
-  "uuid",
-  "number",
-  "currency",
-  "date",
-  "datetime",
-  "link",
-  "internal_link",
-  "sort",
-] as const;
 
 const getCountryCode = (langCode: string) => {
   if (!langCode) return "";
@@ -355,9 +333,7 @@ export const FieldSelectorFilters = ({
           {t("shell.relationalFieldsHeading")}
         </Typography>
         {fields
-          ?.filter((field) =>
-            FILTERABLE_DATA_TYPES.includes(field.datatype as any)
-          )
+          ?.filter((field) => isFilterableFieldType(field.datatype))
           ?.map((field) => (
             <MenuItem
               key={field.ZUID}

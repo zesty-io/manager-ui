@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { FIELD_CATEGORY_COLORS, getFieldMeta } from "./studioFieldMeta";
+import { getFieldMeta } from "./studioFieldMeta";
 
 // The small colour-coded field-type square (green text, red number, blue media,
 // pink link, …). Shown in the Connect Item dropdown rows, the connected slot's
@@ -10,8 +10,7 @@ import { FIELD_CATEGORY_COLORS, getFieldMeta } from "./studioFieldMeta";
 // imports the dialog — keeping it here is what stops that becoming a cycle.
 export const FieldIconChip = ({ datatype }: { datatype: string }) => {
   const meta = getFieldMeta(datatype);
-  const colors = FIELD_CATEGORY_COLORS[meta.category];
-  const Icon = meta.Icon;
+  const { color, Icon, rotateIcon } = meta;
   return (
     <Box
       sx={{
@@ -22,12 +21,18 @@ export const FieldIconChip = ({ datatype }: { datatype: string }) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: colors.bg,
-        color: colors.fg,
-        border: `1px solid ${colors.fg}`,
+        bgcolor: color.bg,
+        color: color.fg,
+        border: 1,
+        borderColor: color.fg,
       }}
     >
-      <Icon sx={{ fontSize: 16 }} />
+      <Icon
+        sx={{
+          fontSize: 16,
+          transform: rotateIcon ? "rotate(-45deg)" : undefined,
+        }}
+      />
     </Box>
   );
 };

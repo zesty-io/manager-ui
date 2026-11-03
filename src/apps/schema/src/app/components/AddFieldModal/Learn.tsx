@@ -1,7 +1,8 @@
 import { Box, Typography, Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-import { getTypeText, getFieldCopyConfig, FieldType } from "../configs";
+import { getTypeText, getFieldCopyConfig } from "../configs";
+import { FieldType } from "shell/fieldTypes";
 import { stringStartsWithVowel, getCategory } from "../../utils";
 
 interface Props {

@@ -10,7 +10,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Errors } from "./views/FieldForm";
 import { FieldTypeNumber } from "../../../../../../shell/components/FieldTypeNumber";
-import { FieldType } from "../configs";
+import { FieldType } from "shell/fieldTypes";
 
 type InputRangeProps = {
   type?: "number" | "currency" | "integration";

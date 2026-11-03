@@ -7,6 +7,7 @@ import {
   SelectedElement,
   LayoutSelection,
 } from "./studioTypes";
+import { isInlineEditableFieldType } from "shell/fieldTypes";
 
 type Args = {
   postCommandToBridge: (cmd: any) => void;
@@ -310,18 +311,7 @@ export const useStudioSelection = ({
         className: "studio-selected",
         itemZuid,
       });
-      if (
-        studioId &&
-        fieldType &&
-        [
-          "text",
-          "textarea",
-          "markdown",
-          "wysiwyg_basic",
-          "wysiwyg_advanced",
-          "images",
-        ].includes(fieldType)
-      ) {
+      if (studioId && isInlineEditableFieldType(fieldType)) {
         postCommandToBridge({
           action: "enableEditing",
           studioId,
