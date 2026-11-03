@@ -594,10 +594,15 @@ describe("Actions in content editor", () => {
   });
 
   it("Deletes an item", () => {
+    cy.intercept("DELETE", "**/items/*").as("deleteItem");
+
     cy.contains(TEST_DATA?.new).should("exist").click();
     cy.getBySelector("ContentItemMoreButton").click();
     cy.getBySelector("DeleteContentItem").click();
     cy.getBySelector("DeleteContentItemConfirmButton").should("exist").click();
+    cy.wait("@deleteItem")
+      .its("response.statusCode")
+      .should("be.lessThan", 300);
 
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/content/${Cypress.env("modelZUID")}`);

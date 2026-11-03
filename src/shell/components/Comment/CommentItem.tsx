@@ -31,7 +31,7 @@ import { InputField } from "./InputField";
 import { CommentContext } from "../../contexts/CommentProvider";
 import { AppState } from "../../store/types";
 import { User } from "../../services/types";
-import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
+import { ConfirmDialog } from "../ConfirmDialog";
 import {
   useDeleteCommentMutation,
   useDeleteReplyMutation,
@@ -77,14 +77,8 @@ export const CommentItem = ({
   const location = useLocation();
   const [_, __, commentZUIDtoEdit, setCommentZUIDtoEdit] =
     useContext(CommentContext);
-  const [
-    deleteComment,
-    { isLoading: isDeletingComment, isSuccess: isCommentDeleted },
-  ] = useDeleteCommentMutation();
-  const [
-    deleteReply,
-    { isLoading: isDeletingReply, isSuccess: isReplyDeleted },
-  ] = useDeleteReplyMutation();
+  const [deleteComment] = useDeleteCommentMutation();
+  const [deleteReply] = useDeleteReplyMutation();
   const [updateCommentStatus, { isLoading: isUpdatingCommentStatus }] =
     useUpdateCommentStatusMutation();
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement>();
@@ -129,16 +123,6 @@ export const CommentItem = ({
     }
   }, [body, commentBodyRef, commentZUIDtoEdit]);
 
-  useEffect(() => {
-    if (isCommentDeleted || isReplyDeleted) {
-      setIsDeleteModalOpen(false);
-
-      if (commentZUID.startsWith("24")) {
-        onParentCommentDeleted();
-      }
-    }
-  }, [isCommentDeleted, isReplyDeleted]);
-
   const handleCopyClick = () => {
     navigator?.clipboard
       ?.writeText(
@@ -155,18 +139,19 @@ export const CommentItem = ({
       });
   };
 
-  const handleDeleteComment = () => {
+  const handleDeleteComment = async () => {
     if (commentZUID.startsWith("24")) {
-      deleteComment({
+      await deleteComment({
         resourceZUID,
         commentZUID,
-      });
+      }).unwrap();
+      onParentCommentDeleted();
     } else {
-      deleteReply({
+      await deleteReply({
         resourceZUID,
         commentZUID,
         parentCommentZUID,
-      });
+      }).unwrap();
     }
   };
 
@@ -335,10 +320,13 @@ export const CommentItem = ({
         )}
       </Box>
       {isDeleteModalOpen && (
-        <ConfirmDeleteModal
-          isDeletingComment={isDeletingComment || isDeletingReply}
+        <ConfirmDialog
+          title={t("shell.deleteCommentTitle")}
+          description={t("shell.deleteCommentBody")}
+          confirmLabel={t("shell.deleteForever")}
+          confirmDataCy="ConfirmDeleteCommentButton"
+          onConfirm={handleDeleteComment}
           onClose={() => setIsDeleteModalOpen(false)}
-          onConfirmDelete={handleDeleteComment}
         />
       )}
     </>
