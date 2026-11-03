@@ -13,7 +13,6 @@
   "howToUseBlocks": "Как использовать Блоки",
   "introToWebComponents": "Введение в Web Components",
   "noResultsAvailable": "Нет результатов по запросу \"{{filter}}\"",
-  "noSearchResultsAlt": "Ничего не найдено",
   "onboardingStep1Description": "Создавайте и добавляйте редактируемые блоки (например, баннеры (Hero), отзывы, формы и т. д.) на любую существующую страницу вашего сайта всего в несколько кликов",
   "onboardingStep1Title": "Представляем Блоки",
   "onboardingStep2Description": "Создайте модель блока в Schema и определите редактируемые поля. Затем свяжите эти поля в шаблоне кода вашего блока.",

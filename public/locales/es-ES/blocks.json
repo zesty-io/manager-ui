@@ -13,7 +13,6 @@
   "howToUseBlocks": "Cómo usar los Bloques",
   "introToWebComponents": "Introducción a los Web Components",
   "noResultsAvailable": "No hay resultados disponibles para \"{{filter}}\"",
-  "noSearchResultsAlt": "No hay resultados de búsqueda",
   "onboardingStep1Description": "Crea y añade bloques editables (por ejemplo, Hero, Testimonios, Formularios, etc.) a cualquier página existente de tu sitio web con unos pocos clics",
   "onboardingStep1Title": "Presentamos los Bloques",
   "onboardingStep2Description": "Crea un modelo de bloque en Schema y define los campos editables. Luego, conecta estos campos en la plantilla de código de tu bloque.",
