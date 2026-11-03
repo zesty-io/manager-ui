@@ -90,6 +90,7 @@ export default connect((state) => {
 
     return (
       <Box
+        data-cy="loginScreen"
         width="100vw"
         height="100vh"
         display="flex"
@@ -247,6 +248,7 @@ export default connect((state) => {
                 <Box>
                   <InputLabel>{t("shell.emailAddress")}</InputLabel>
                   <TextField
+                    data-cy="loginEmail"
                     name="email"
                     type="email"
                     InputProps={{
@@ -267,6 +269,7 @@ export default connect((state) => {
                 <Box>
                   <InputLabel>{t("shell.password")}</InputLabel>
                   <TextField
+                    data-cy="loginPassword"
                     type={showPassword ? "text" : "password"}
                     name="password"
                     sx={{ mb: 1 }}
@@ -310,6 +313,7 @@ export default connect((state) => {
                   </Link>
                 </Box>
                 <Button
+                  data-cy="loginSubmit"
                   size="large"
                   type="submit"
                   startIcon={<LoginRoundedIcon />}
