@@ -74,10 +74,12 @@ export const aiImageFields = (pageFields: any[]) =>
 // What an images field shows, for its first file: the public URL the server
 // sent for that file, else the media resolver's URL for its ZUID. Anything
 // else (an external URL, nothing) as it is.
-const imageFieldSrc = (value: unknown, publicUrls: Map<string, string>) => {
-  const first = String(value ?? "")
+const firstFile = (value: unknown) =>
+  String(value ?? "")
     .split(",")[0]
     .trim();
+const imageFieldSrc = (value: unknown, publicUrls: Map<string, string>) => {
+  const first = firstFile(value);
   if (!/^3-/.test(first)) return first;
   return (
     publicUrls.get(first) ??
@@ -452,7 +454,7 @@ export const useStudioAiEdit = ({
     // By file ZUID, so undo and redo show a generated file the same way.
     const publicUrls = new Map<string, string>();
     imageFieldsRef.current.forEach((field) => {
-      const showValue = (value: string) => {
+      const paint = (src: string) => {
         const { pageItemZUID: itemZuid, postCommandToBridge: post } =
           latestRef.current;
         post({
@@ -460,8 +462,16 @@ export const useStudioAiEdit = ({
           fieldZuid: field.ZUID,
           itemZuid,
           attr: "src",
-          value: imageFieldSrc(value, publicUrls),
+          value: src,
         });
+      };
+      // Undo and redo: the store already holds the value, and the bridge's
+      // history restore has put back the canvas. Only a file shown by its
+      // public URL is repainted; anything else would override the restore.
+      const showValue = (value: string) => {
+        const first = firstFile(value);
+        const url = /^3-/.test(first) ? publicUrls.get(first) : undefined;
+        if (url) paint(url);
       };
       const handle: RefHandle = {
         accepts: (value: string) => /^3-/.test(value),
@@ -475,9 +485,8 @@ export const useStudioAiEdit = ({
             key: field.name,
             value,
           });
-          showValue(value);
+          paint(imageFieldSrc(value, publicUrls));
         },
-        // Undo and redo: the store already holds the value.
         showValue,
       };
       registered[field.name] = {

@@ -903,10 +903,22 @@ describe("Studio Undo / Redo", () => {
 
     cy.getBySelector("AIDrawerSetValue").should("not.be.disabled").click();
     cy.window().should((win) => expect(readImage(win)).to.eq(imageZuid));
+    let paintsBefore;
+    hostCommands("setAttrByField").then((cmds) => {
+      expect(cmds.map((cmd) => cmd.value)).to.include(
+        "https://e2e.media.example/hero.png"
+      );
+      paintsBefore = cmds.length;
+    });
     cy.getBySelector("StudioUndoButton").should("not.be.disabled").click();
     cy.window().should((win) => expect(readImage(win)).to.eq(imageBefore));
     hostCommands("historyRestore").should("have.length", 1);
     cy.getBySelector("StudioUndoButton").should("be.disabled");
+    // The restore put back the canvas; a repaint with no public URL for the
+    // seeded value (the resolver's, or nothing) would override it.
+    hostCommands("setAttrByField").should((cmds) =>
+      expect(cmds, "repaints after undo").to.have.length(paintsBefore)
+    );
 
     cy.get('[data-cy="AIDrawerComposer"] textarea:not([aria-hidden])').type(
       "Generate another"

@@ -10,8 +10,7 @@ import { getRefRegistry } from "../../../engine/refRegistry";
 // the suggestion as applied when nothing changed. A handle can also refuse a
 // value it would not apply. Returns whether it applied. `immediate` writes
 // now instead of through the action queue, whose pacing can hold a write
-// for seconds, for a caller that must see it land before it returns; only
-// then does the handle get `url`, where the server says the value is shown.
+// for seconds, for a caller that must see it land before it returns.
 export const useApplySetValue = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();

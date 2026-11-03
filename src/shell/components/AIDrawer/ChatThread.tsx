@@ -74,7 +74,6 @@ type ToneOption = { label: string; value: string };
 export type ChatResponse = { approval?: string } & (
   | { type: "USER_INPUT"; payload: { value: string } }
   | { type: "NAVIGATE"; payload: { path: string } }
-  // `url`: a generated file's public URL, sent next to its ZUID.
   | {
       type: "SET_VALUE";
       payload: { refKey: string; value: string; url?: string };
