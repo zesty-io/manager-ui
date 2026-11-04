@@ -36,6 +36,7 @@ export const Sidebar = () => {
           name: app.label,
           path: `/apps/${app.ZUID}`,
           icon: PowerRounded,
+          dataCy: `app-${app.ZUID}`,
         };
       });
     }
