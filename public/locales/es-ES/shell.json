@@ -16,6 +16,8 @@
   "aiApplyTargetMissing": "El asistente no puede completar \"{{refKey}}\" aquí.",
   "aiAssistantBeta": "Asistente de IA Beta",
   "aiCodeEditSummary": "{{fileName}} — líneas: +{{added}} / −{{removed}}",
+  "aiCopied": "Copiado",
+  "aiCopyFailed": "No se pudo copiar",
   "aiDrawerPlaceholder": "Pregunta lo que quieras, por ejemplo \"Adapta mi contenido a una audiencia específica\"",
   "aiGeneratingContentStatus": "Nuestro asistente de IA está generando tu contenido según tus parámetros",
   "aiMistakesWarning": "Nuestro asistente de IA puede cometer errores. Comprueba la información importante.",

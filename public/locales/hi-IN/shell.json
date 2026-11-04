@@ -16,6 +16,8 @@
   "aiApplyTargetMissing": "असिस्टेंट यहाँ \"{{refKey}}\" नहीं भर सकता।",
   "aiAssistantBeta": "AI सहायक बीटा",
   "aiCodeEditSummary": "{{fileName}} — पंक्तियाँ: +{{added}} / −{{removed}}",
+  "aiCopied": "कॉपी हो गया",
+  "aiCopyFailed": "कॉपी नहीं हो सका",
   "aiDrawerPlaceholder": "कुछ भी पूछें, उदाहरण के लिए \"मेरे कंटेंट को किसी विशिष्ट दर्शक के अनुरूप बनाएं\"",
   "aiGeneratingContentStatus": "हमारा AI सहायक आपके पैरामीटर के आधार पर आपका कंटेंट जनरेट कर रहा है",
   "aiMistakesWarning": "हमारा AI सहायक गलतियाँ कर सकता है। कृपया महत्वपूर्ण जानकारी जाँच लें।",

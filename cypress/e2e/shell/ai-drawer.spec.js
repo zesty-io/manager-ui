@@ -127,19 +127,19 @@ describe("AI drawer", () => {
       cy.wait("@postClient", AI_CLIENT_TIMEOUT);
       cy.wait("@getChat");
       cy.getBySelector("AIDrawerUserInput").should("contain", prompt);
-      cy.getBySelector("AIDrawerSystemOutput").should(
-        "have.length.greaterThan",
-        0
-      );
+      // A live reply may be plain text or html/markdown (code block).
+      cy.get(
+        '[data-cy="AIDrawerSystemOutput"], [data-cy="AIDrawerCodeBlock"]'
+      ).should("have.length.greaterThan", 0);
 
       cy.reload();
       cy.wait("@getChat");
       cy.getBySelector("AIDrawerEnabled").should("exist");
       cy.getBySelector("AIDrawerUserInput").should("contain", prompt);
-      cy.getBySelector("AIDrawerSystemOutput").should(
-        "have.length.greaterThan",
-        0
-      );
+      // A live reply may be plain text or html/markdown (code block).
+      cy.get(
+        '[data-cy="AIDrawerSystemOutput"], [data-cy="AIDrawerCodeBlock"]'
+      ).should("have.length.greaterThan", 0);
     });
 
     it("should be able to generate text content and apply them to fields", () => {
@@ -380,6 +380,60 @@ describe("AI drawer", () => {
 
       cy.getBySelector("toast").should("contain.text", '"code-editor"');
       cy.get("@approve.all").should("have.length", 0);
+    });
+
+    it("shows html and markdown replies as a code block with a Copy button", () => {
+      const html = "<h1>Hi</h1><p>Hello</p>";
+      openDrawerWithReply(
+        JSON.stringify([{ type: "SYSTEM_OUTPUT", payload: { value: html } }])
+      );
+
+      cy.getBySelector("AIDrawerCodeBlock").should("contain.text", html);
+      cy.getBySelector("AIDrawerCopy").should("exist");
+    });
+
+    it("keeps a prose MESSAGE as text even when it looks like markdown", () => {
+      openDrawerWithReply("**Bold** reply with <b>markup</b>");
+
+      cy.getBySelector("AIDrawerMessage").should("exist");
+      cy.getBySelector("AIDrawerCodeBlock").should("not.exist");
+      cy.getBySelector("AIDrawerCopy").should("not.exist");
+    });
+
+    it("keeps plain text replies as text without a Copy button", () => {
+      openDrawerWithReply("Here is a friendlier headline.");
+
+      cy.getBySelector("AIDrawerSystemOutput").should(
+        "contain.text",
+        "Here is a friendlier headline."
+      );
+      cy.getBySelector("AIDrawerCodeBlock").should("not.exist");
+      cy.getBySelector("AIDrawerCopy").should("not.exist");
+    });
+
+    it("shows Copy beside Apply on a SET_VALUE reply", () => {
+      openDrawerWithReply(CODE_EDITOR_REPLY);
+
+      cy.getBySelector("AIDrawerCodeBlock").should(
+        "contain.text",
+        "<h1>Hi</h1>"
+      );
+      cy.getBySelector("AIDrawerSetValue").should("exist");
+      cy.getBySelector("AIDrawerCopy").should("exist");
+    });
+
+    it("shows Apply without Copy on a plain text SET_VALUE reply", () => {
+      openDrawerWithReply(
+        JSON.stringify([
+          {
+            type: "SET_VALUE",
+            payload: { refKey: "code-editor", value: "A friendlier headline" },
+          },
+        ])
+      );
+
+      cy.getBySelector("AIDrawerSetValue").should("exist");
+      cy.getBySelector("AIDrawerCopy").should("not.exist");
     });
   });
 });

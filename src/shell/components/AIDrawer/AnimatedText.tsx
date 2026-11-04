@@ -1,13 +1,27 @@
 import { Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
+import { detectFormat } from "./detectFormat";
+
+// Provisional: product has not confirmed typing out code blocks. Set to false
+// to show them at once; plain text still animates.
+export const ANIMATE_CODE_BLOCKS = true;
 
 type AnimatedTextProps = {
   text: string;
   animate: boolean;
   onGrow?: () => void;
+  // Opt in to showing html/markdown text as a code block; plain text otherwise.
+  renderCodeBlock?: boolean;
 };
 
-export const AnimatedText = ({ text, animate, onGrow }: AnimatedTextProps) => {
+export const AnimatedText = ({
+  text,
+  animate: animateProp,
+  onGrow,
+  renderCodeBlock = false,
+}: AnimatedTextProps) => {
+  const isCode = renderCodeBlock && detectFormat(text) !== "plain";
+  const animate = animateProp && (!isCode || ANIMATE_CODE_BLOCKS);
   const [displayedText, setDisplayedText] = useState(animate ? "" : text);
   const intervalRef = useRef(null);
   // Read through a ref instead of listing `onGrow` as a dep - it's an inline
@@ -40,6 +54,33 @@ export const AnimatedText = ({ text, animate, onGrow }: AnimatedTextProps) => {
 
     return () => clearInterval(intervalRef.current);
   }, [text, animate]);
+
+  if (isCode) {
+    // Source is shown as-is, never rendered.
+    return (
+      <Typography
+        data-cy="AIDrawerCodeBlock"
+        component="pre"
+        variant="body3"
+        sx={{
+          // body3 is inline-block, which would sit beside the refKey label.
+          display: "block",
+          m: 0,
+          p: 1.5,
+          fontFamily: "monospace",
+          whiteSpace: "pre-wrap",
+          overflowWrap: "anywhere",
+          overflowX: "auto",
+          bgcolor: "grey.100",
+          border: 1,
+          borderColor: "border",
+          borderRadius: 1,
+        }}
+      >
+        {displayedText}
+      </Typography>
+    );
+  }
 
   return (
     <Typography

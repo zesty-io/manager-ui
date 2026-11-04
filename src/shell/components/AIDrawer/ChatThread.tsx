@@ -35,6 +35,8 @@ import LanguageRoundedIcon from "@mui/icons-material/LanguageRounded";
 import { enqueueAction } from "../../../engine/queue";
 import { useGetLangsMappingQuery } from "../../services/instance";
 import { AnimatedText } from "./AnimatedText";
+import { CopyButton } from "./CopyButton";
+import { detectFormat } from "./detectFormat";
 import { GeneratedImage } from "./GeneratedImage";
 import { PromptComposer, PromptComposerHandle } from "./PromptComposer";
 import { useUpdatePromptApprovalStatusMutation } from "../../services/mcp";
@@ -71,24 +73,42 @@ const getToneOptions = (t: (key: string) => string) =>
 type LanguageOption = { label: string; value: string };
 type ToneOption = { label: string; value: string };
 
-export type ChatResponse = { approval?: string } & (
-  | { type: "USER_INPUT"; payload: { value: string } }
-  | { type: "NAVIGATE"; payload: { path: string } }
-  | { type: "SET_VALUE"; payload: { refKey: string; value: string } }
-  // A prose reply.
-  | { type: "MESSAGE"; payload: { value: string } }
-  // Built by a host, not sent by the server: an applied code edit's line
-  // counts, and a line of its own.
-  | {
-      type: "CODE_EDIT";
-      payload: { fileName: string; added: number; removed: number };
-    }
-  | { type: "NOTICE"; payload: { value: string } }
-  | {
-      type: "SYSTEM_SUGGESTION" | "SYSTEM_OUTPUT" | "ERROR";
-      payload: { refKey?: string; value: string };
-    }
-);
+type TextPayload = { value: string };
+type SystemPayload = { refKey?: string; value: string };
+
+// Every transcript entry type and its payload. See
+// docs/ai-drawer-responses.md for where each one comes from.
+type ChatResponsePayloads = {
+  /** The user's prompt. Built from `prompt`, never stored as a response. */
+  USER_INPUT: TextPayload;
+  /** Opens a route. Server: block flow only. */
+  NAVIGATE: { path: string };
+  /** Content for a field, applied via its `refKey`. Server: text/image flows. */
+  SET_VALUE: { refKey: string; value: string };
+  /** Prose that isn't a valid action (legacy or malformed), built by parseResponse. */
+  MESSAGE: TextPayload;
+  /** Built by a host: an applied code edit's line counts, and a line of its own. */
+  CODE_EDIT: { fileName: string; added: number; removed: number };
+  /** Host-built status line (Studio), e.g. discarded changes. */
+  NOTICE: TextPayload;
+  /** A clickable follow-up prompt from the model. */
+  SYSTEM_SUGGESTION: SystemPayload;
+  /** A message to the user from the model. Server: text flow. */
+  SYSTEM_OUTPUT: SystemPayload;
+  /** Client-built: a failed request or an unparseable entry. */
+  ERROR: SystemPayload;
+};
+
+export type ChatResponseType = keyof ChatResponsePayloads;
+
+// `approval` is only set on entries from the server or a stored log.
+export type ChatResponse = {
+  [K in ChatResponseType]: {
+    type: K;
+    payload: ChatResponsePayloads[K];
+    approval?: string;
+  };
+}[ChatResponseType];
 
 // Scrolls only the transcript. `scrollIntoView` would also scroll every
 // ancestor that overflows, moving the host's own layout.
@@ -343,13 +363,20 @@ export const ChatThread = ({
                     );
                   }
 
+                  // SET_VALUE and SYSTEM_OUTPUT carry generated content; ERROR
+                  // is always plain text.
+                  const canRenderCodeBlock = response.type !== "ERROR";
+
                   return (
                     <Box
                       key={`${promptZUID}-${responseIndex}`}
                       sx={{
-                        maxWidth: response.payload?.value?.startsWith("3-")
-                          ? "unset"
-                          : 160,
+                        maxWidth:
+                          response.payload?.value?.startsWith("3-") ||
+                          (canRenderCodeBlock &&
+                            detectFormat(response.payload?.value) !== "plain")
+                            ? "unset"
+                            : 160,
                       }}
                     >
                       {response.payload.refKey && (
@@ -371,57 +398,75 @@ export const ChatThread = ({
                           key={`${promptZUID}-${responseIndex}`}
                           text={response.payload.value}
                           animate={shouldAnimate && !isInCodeApp}
+                          renderCodeBlock={canRenderCodeBlock}
                           onGrow={() => scrollToEnd(scrollContainerRef.current)}
                         />
                       )}
-                      {!autoApply && response.type === "SET_VALUE" && (
-                        <Button
-                          data-cy="AIDrawerSetValue"
-                          variant="contained"
-                          sx={{ mt: 1.25 }}
-                          disabled={response.approval === "1"}
-                          onClick={() => {
-                            if (!urlChatZUID) return;
-                            // Stays applicable when the ref is not on the page.
-                            if (
-                              !applySetValue(
-                                response.payload.refKey,
-                                response.payload.value
-                              )
-                            ) {
-                              return;
-                            }
+                      {response.type === "SYSTEM_OUTPUT" &&
+                        detectFormat(response.payload.value) !== "plain" && (
+                          <Box mt={1.25}>
+                            <CopyButton text={response.payload.value} />
+                          </Box>
+                        )}
+                      {response.type === "SET_VALUE" && (
+                        <Box display="flex" flexWrap="wrap" gap={1} mt={1.25}>
+                          {!autoApply && (
+                            <Button
+                              data-cy="AIDrawerSetValue"
+                              variant="contained"
+                              disabled={response.approval === "1"}
+                              onClick={() => {
+                                if (!urlChatZUID) return;
+                                // Stays applicable when the ref is not on the page.
+                                if (
+                                  !applySetValue(
+                                    response.payload.refKey,
+                                    response.payload.value
+                                  )
+                                ) {
+                                  return;
+                                }
 
-                            updatePromptApprovalStatus({
-                              chatZUID: urlChatZUID,
-                              promptZUID,
-                              approval: "1",
-                            });
-                            // Optimistically mark only this response as approved
-                            // (not every SET_VALUE response for the prompt) so
-                            // applying one field doesn't silently disable Apply
-                            // on the prompt's other generated fields.
-                            // `prev` may no longer have this key if the chat
-                            // session was switched or cleared before this applies.
-                            setResponses((prev) => {
-                              const promptResponses = prev[promptZUID];
-                              if (!promptResponses) return prev;
+                                updatePromptApprovalStatus({
+                                  chatZUID: urlChatZUID,
+                                  promptZUID,
+                                  approval: "1",
+                                });
+                                // Optimistically mark only this response as approved
+                                // (not every SET_VALUE response for the prompt) so
+                                // applying one field doesn't silently disable Apply
+                                // on the prompt's other generated fields.
+                                // `prev` may no longer have this key if the chat
+                                // session was switched or cleared before this applies.
+                                setResponses((prev) => {
+                                  const promptResponses = prev[promptZUID];
+                                  if (!promptResponses) return prev;
 
-                              return {
-                                ...prev,
-                                [promptZUID]: promptResponses.map(
-                                  (promptResponse) =>
-                                    promptResponse === response
-                                      ? { ...promptResponse, approval: "1" }
-                                      : promptResponse
-                                ),
-                              };
-                            });
-                          }}
-                          startIcon={<AutoFixHighRounded fontSize="small" />}
-                        >
-                          {t("shell.applyAiSuggestion")}
-                        </Button>
+                                  return {
+                                    ...prev,
+                                    [promptZUID]: promptResponses.map(
+                                      (promptResponse) =>
+                                        promptResponse === response
+                                          ? {
+                                              ...promptResponse,
+                                              approval: "1",
+                                            }
+                                          : promptResponse
+                                    ),
+                                  };
+                                });
+                              }}
+                              startIcon={
+                                <AutoFixHighRounded fontSize="small" />
+                              }
+                            >
+                              {t("shell.applyAiSuggestion")}
+                            </Button>
+                          )}
+                          {detectFormat(response.payload.value) !== "plain" && (
+                            <CopyButton text={response.payload.value} />
+                          )}
+                        </Box>
                       )}
                     </Box>
                   );

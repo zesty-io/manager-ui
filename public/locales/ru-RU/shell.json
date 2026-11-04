@@ -16,6 +16,8 @@
   "aiApplyTargetMissing": "Ассистент не может заполнить «{{refKey}}» здесь.",
   "aiAssistantBeta": "ИИ-ассистент (бета)",
   "aiCodeEditSummary": "{{fileName}} — строки: +{{added}} / −{{removed}}",
+  "aiCopied": "Скопировано",
+  "aiCopyFailed": "Не удалось скопировать",
   "aiDrawerPlaceholder": "Спросите что угодно, например «Адаптируй мой контент под определённую аудиторию»",
   "aiGeneratingContentStatus": "Наш ИИ-ассистент создаёт ваш контент на основе ваших параметров",
   "aiMistakesWarning": "Наш ИИ-ассистент может ошибаться. Проверяйте важную информацию.",

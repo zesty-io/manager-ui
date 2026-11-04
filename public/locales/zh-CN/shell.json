@@ -16,6 +16,8 @@
   "aiApplyTargetMissing": "助手无法在此处填写“{{refKey}}”。",
   "aiAssistantBeta": "AI 助手 Beta",
   "aiCodeEditSummary": "{{fileName}} — 行：+{{added}} / −{{removed}}",
+  "aiCopied": "已复制",
+  "aiCopyFailed": "无法复制",
   "aiDrawerPlaceholder": "随便问，例如“让我的内容面向特定受众”",
   "aiGeneratingContentStatus": "我们的 AI 助手正在根据您的参数生成内容",
   "aiMistakesWarning": "我们的 AI 助手可能会出错。请核对重要信息。",

@@ -16,6 +16,8 @@
   "aiApplyTargetMissing": "De assistent kan \"{{refKey}}\" hier niet invullen.",
   "aiAssistantBeta": "AI-assistent bèta",
   "aiCodeEditSummary": "{{fileName}} — regels: +{{added}} / −{{removed}}",
+  "aiCopied": "Gekopieerd",
+  "aiCopyFailed": "Kopiëren mislukt",
   "aiDrawerPlaceholder": "Vraag wat je wilt, bijvoorbeeld \"Stem mijn inhoud af op een specifiek publiek\"",
   "aiGeneratingContentStatus": "Onze AI-assistent genereert je inhoud op basis van je parameters",
   "aiMistakesWarning": "Onze AI-assistent kan fouten maken. Controleer belangrijke informatie.",
