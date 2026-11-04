@@ -556,6 +556,7 @@ export const ChatThread = ({
           data-amp-track-id="ai-drawer-clear-chat-button"
           variant="text"
           color="inherit"
+          disabled={isUploading}
           onClick={onClearChat}
         >
           {t("shell.clearChat")}

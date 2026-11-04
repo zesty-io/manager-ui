@@ -10,6 +10,10 @@ const ACCEPTED_TYPES = [
   "image/webp",
   "image/heic",
   "image/heif",
+  // Non-standard names some systems report for the same PNG and JPEG files.
+  "image/x-png",
+  "image/jpg",
+  "image/pjpeg",
 ];
 // Browsers often report no MIME type for HEIC/HEIF, so a file without one is
 // judged by its extension instead.

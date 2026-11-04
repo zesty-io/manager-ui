@@ -643,6 +643,12 @@ describe("AI drawer", () => {
       );
       cy.getBySelector("AIDrawerAttachment").should("not.exist");
 
+      // A non-standard name for a PNG is still a PNG.
+      attach(image("legacy.png", PNG, "image/x-png"));
+      cy.getBySelector("AIDrawerAttachment").should("have.length", 1);
+      cy.getBySelector("AIDrawerAttachmentRemove").click();
+      cy.getBySelector("AIDrawerAttachment").should("not.exist");
+
       attach(image("huge.png", megabytes(21)));
       cy.getBySelector("AIDrawerAttachError").should(
         "have.text",
@@ -700,6 +706,7 @@ describe("AI drawer", () => {
       attach(image("first.png"));
       cy.getBySelector("AIDrawerComposer").type("Describe this{enter}");
       cy.getBySelector("AIDrawerAttachUploading").should("exist");
+      cy.getBySelector("AIDrawerClearChat").should("be.disabled");
 
       cy.getBySelector("AIDrawerToggle").click();
       cy.getBySelector("AIDrawerEnabled").should("not.exist");
