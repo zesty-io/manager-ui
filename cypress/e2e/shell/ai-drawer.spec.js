@@ -395,6 +395,42 @@ describe("AI drawer", () => {
       cy.getBySelector("AIDrawerCopy").should("exist");
     });
 
+    it("shows code in any language as a code block with a Copy button", () => {
+      const js = "const title = 'Hi';\nfunction greet() {\n  return title;\n}";
+      openDrawerWithReply(
+        JSON.stringify([{ type: "SYSTEM_OUTPUT", payload: { value: js } }])
+      );
+
+      cy.getBySelector("AIDrawerCodeBlock").should("contain.text", "greet()");
+      cy.getBySelector("AIDrawerCopy").should("exist");
+    });
+
+    it("indents a one-line json reply in the code block", () => {
+      openDrawerWithReply(
+        JSON.stringify([
+          { type: "SYSTEM_OUTPUT", payload: { value: '{"a":1,"b":[2]}' } },
+        ])
+      );
+
+      cy.getBySelector("AIDrawerCodeBlock").should("contain.text", '  "a": 1');
+    });
+
+    it("keeps prose with punctuation as text, not code", () => {
+      openDrawerWithReply(
+        JSON.stringify([
+          {
+            type: "SYSTEM_OUTPUT",
+            payload: {
+              value: "I changed the title; the slug is updated (done).",
+            },
+          },
+        ])
+      );
+
+      cy.getBySelector("AIDrawerSystemOutput").should("exist");
+      cy.getBySelector("AIDrawerCodeBlock").should("not.exist");
+    });
+
     it("keeps a prose MESSAGE as text even when it looks like markdown", () => {
       openDrawerWithReply("**Bold** reply with <b>markup</b>");
 
