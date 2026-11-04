@@ -61,6 +61,7 @@
   "collapseSidebar": "Zijbalk inklappen",
   "commentAddError": "Kan opmerking niet toevoegen. Controleer je internetverbinding en probeer het opnieuw.",
   "commentPlaceholder": "Reageer of voeg anderen toe met @",
+  "confirmDialogGenericError": "Er is iets misgegaan. Probeer het opnieuw.",
   "confirmPublishBody": "Hiermee wordt v{{version}} van het {{item}} direct beschikbaar op al je platforms. Je kunt dit item later altijd weer depubliceren indien nodig.",
   "confirmPublishTitle": "{{item}} publiceren",
   "contactSupport": "Contact opnemen met support",
