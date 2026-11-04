@@ -482,38 +482,22 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
           onCancel={() => {
             setShowDeletesModal(false);
           }}
-          loading={isDeleting}
-          onConfirm={(items) => {
+          onConfirm={async (items) => {
             if (!items.length) {
-              setShowDeletesModal(false);
               setSelectedItems([]);
               return;
             }
-            deleteContentItems({
+            await deleteContentItems({
               modelZUID,
               body: items.map((item) => item.meta.ZUID),
-            })
-              .unwrap()
-              .then(() => {
-                items.forEach((item) => {
-                  dispatch({
-                    type: "REMOVE_ITEM",
-                    itemZUID: item.meta.ZUID,
-                  });
-                });
-                setSelectedItems([]);
-                setShowDeletesModal(false);
-              })
-              .catch((res) => {
-                dispatch(
-                  notify({
-                    kind: "error",
-                    message: t("content.itemListErrorDeleting", {
-                      error: res?.data?.error,
-                    }),
-                  })
-                );
+            }).unwrap();
+            items.forEach((item) => {
+              dispatch({
+                type: "REMOVE_ITEM",
+                itemZUID: item.meta.ZUID,
               });
+            });
+            setSelectedItems([]);
           }}
         />
       )}

@@ -122,10 +122,10 @@ describe("Studio Freestyle Alert", () => {
 
     setStudioMode("layout");
 
-    // Layout mode drops the side panel, so this is the floating canvas alert.
-    cy.getBySelector("StudioSidePanel").should("not.exist");
+    // Only the canvas alert renders; the side panel leaves it out here.
+    cy.getBySelector("StudioSidePanel").should("exist");
     cy.getBySelector("StudioFreestyleAlert")
-      .should("exist")
+      .should("have.length", 1)
       .and("contain.text", "This layout was created in Freestyle");
     cy.getBySelector("StudioFreestyleAlertEditButton").should("exist");
   });
@@ -165,8 +165,8 @@ describe("Studio Freestyle Alert", () => {
     cy.getBySelector("StudioFreestyleAlertCloseButton").click();
     cy.getBySelector("StudioFreestyleAlert").should("not.exist");
 
-    // Layout mode's overlay is the only route to Freestyle there, so a content
-    // mode dismissal must not suppress it.
+    // Dismissal is per mode, so a content mode dismissal must not suppress
+    // layout mode's overlay.
     setStudioMode("layout");
     cy.getBySelector("StudioFreestyleAlert").should("exist");
     cy.getBySelector("StudioFreestyleAlertEditButton").should("exist");

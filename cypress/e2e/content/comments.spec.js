@@ -93,6 +93,29 @@ describe("Content Item: Comments", () => {
     cy.getBySelector("ResolveCommentButton").should("exist");
   });
 
+  it("Does not execute event handlers in a comment body", () => {
+    cy.intercept("GET", "/v1/comments/*showReplies=true*", (req) => {
+      req.continue((res) => {
+        const payload = '<img src="x" onerror="window.__xss = true">Safe text';
+        res.body.data.content = payload;
+      });
+    }).as("getXssComments");
+
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${Cypress.env(
+        "itemZUID"
+      )}/comment/${FIELDS[0]?.ZUID}`
+    );
+    cy.wait("@getXssComments");
+
+    cy.getBySelector("CommentItem").first().contains("Safe text");
+    cy.getBySelector("CommentItem")
+      .first()
+      .find("img[onerror]")
+      .should("not.exist");
+    cy.window().its("__xss").should("not.exist");
+  });
+
   it("Delete a comment", () => {
     cy.intercept("DELETE", "/v1/comments/*").as("deleteComment");
     cy.intercept("GET", "/v1/instances/*/comments*").as("getAllComments");
