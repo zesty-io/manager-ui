@@ -538,6 +538,38 @@ describe("Redirects", () => {
       createDeleteRedirectsTestData();
     });
 
+    it("Keeps the dialog open and shows the error when the delete fails", () => {
+      cy.intercept("DELETE", "**/web/redirects/*", {
+        statusCode: 500,
+        body: { error: "boom" },
+      }).as("deleteRedirectFailure");
+
+      cy.visit("/redirects");
+      cy.getElement('input[placeholder="Filter Redirects"]')
+        .clear()
+        .type("delete/");
+      cy.getElement(".MuiDataGrid-cell")
+        .contains(`/${TEST_DELETE_DATA[0]?.path}`, { matchCase: false })
+        .parents(".MuiDataGrid-row")
+        .find(".MuiDataGrid-cell:eq(0) .MuiCheckbox-root input")
+        .check();
+      cy.getElement('[data-cy="RedirectActionDeleteButton"]').click();
+      cy.getElement('[data-cy="DeleteContentItemConfirmButton"]').click();
+      cy.wait("@deleteRedirectFailure");
+
+      cy.getElement('[data-cy="ConfirmDialogError"]').should(
+        "contain",
+        "Error deleting redirects"
+      );
+      cy.getElement('[data-cy="RedirectsDeleteDialog"]').should("be.visible");
+      cy.contains('[data-cy="toast"]', "Redirect Deleted", {
+        matchCase: false,
+      }).should("not.exist");
+
+      cy.getElement('[data-cy="ConfirmDialogCancelButton"]').click();
+      cy.getElement('[data-cy="RedirectsDeleteDialog"]').should("not.exist");
+    });
+
     it("Actions Menu", () => {
       cy.visit("/redirects");
       // Filter to the delete-test redirects so the target row is rendered. The
@@ -561,11 +593,9 @@ describe("Redirects", () => {
       cy.getElement('[data-cy="DeleteContentItemConfirmButton"]').click();
       cy.wait(["@deleteRedirect", "@getRedirects"]);
 
-      cy.getElement('[data-cy="toast"]').should(
-        "contain",
-        "1 Redirect Deleted",
-        { matchCase: false }
-      );
+      cy.getElement('[data-cy="toast"]')
+        .should("contain", "1 Redirect Deleted", { matchCase: false })
+        .and("have.class", "MuiAlert-colorSuccess");
     });
     it("Single Selection", () => {
       // grid is already loaded and refreshed from the previous test
