@@ -28,6 +28,7 @@ import {
   ContentItemWithDirtyAndPublishing,
 } from "shell/services/types";
 import { ChatThread, ChatResponse, scrollToEnd } from "./ChatThread";
+import { PromptImage, toImageFileZUIDs } from "./attachments";
 import { toChatResponses } from "./parseResponse";
 import { useApplySetValue } from "./useApplySetValue";
 import { buildPromptRequest, buildSuggestionsRequest } from "./promptRequest";
@@ -44,12 +45,16 @@ const normalizeChatSessionLog = (prompts: ChatPrompt[] = []) => {
 
   prompts.forEach((promptLog) => {
     const parsedResponses = toChatResponses(promptLog.response);
+    const images = promptLog.inputArtifacts
+      ?.filter((artifact) => artifact.type === "image" && artifact.url)
+      .map(({ url, fileZuid }) => ({ url, fileZuid }));
 
     promptMap[promptLog.promptZuid] = [
       {
         type: "USER_INPUT",
         payload: {
           value: promptLog.prompt,
+          ...(!!images?.length && { images }),
         },
       },
       ...parsedResponses.map((parsedResponse: any) => ({
@@ -499,7 +504,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
   }, [aiResponse, isChatSessionLogError, t]);
 
   const handlePrompt = useCallback(
-    (newPrompt: string) => {
+    (newPrompt: string, images?: PromptImage[]) => {
       if (!newPrompt?.trim() || !userRole?.role?.ZUID) {
         return false;
       }
@@ -518,6 +523,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
           itemZUID,
           roleZUID: userRole.role.ZUID,
           chatZUID: urlChatZUID,
+          imageFileZUIDs: toImageFileZUIDs(images),
         })
       );
       setResponses((prev) => ({
@@ -527,6 +533,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
             type: "USER_INPUT",
             payload: {
               value: trimmedPrompt,
+              ...(!!images?.length && { images }),
             },
           },
         ],

@@ -19,6 +19,7 @@ import {
   Dispatch,
   MutableRefObject,
   SetStateAction,
+  useCallback,
   useRef,
   useState,
 } from "react";
@@ -39,6 +40,14 @@ import { GeneratedImage } from "./GeneratedImage";
 import { PromptComposer, PromptComposerHandle } from "./PromptComposer";
 import { useUpdatePromptApprovalStatusMutation } from "../../services/mcp";
 import { useApplySetValue } from "./useApplySetValue";
+import { MAX_ATTACHMENTS, PromptImage } from "./attachments";
+import {
+  AttachImagesButton,
+  PromptAttachmentList,
+  PromptAttachmentStatus,
+  PromptImages,
+  usePromptAttachments,
+} from "./PromptAttachments";
 
 // `value` is the tone instruction sent to the model (do not translate);
 // `label` is the short UI name, resolved with t() at the render site.
@@ -72,7 +81,7 @@ type LanguageOption = { label: string; value: string };
 type ToneOption = { label: string; value: string };
 
 export type ChatResponse = { approval?: string } & (
-  | { type: "USER_INPUT"; payload: { value: string } }
+  | { type: "USER_INPUT"; payload: { value: string; images?: PromptImage[] } }
   | { type: "NAVIGATE"; payload: { path: string } }
   | { type: "SET_VALUE"; payload: { refKey: string; value: string } }
   // A prose reply.
@@ -115,7 +124,8 @@ export type ChatThreadProps = {
   setSelectedLanguage: (language: LanguageOption) => void;
   selectedTone: ToneOption;
   setSelectedTone: (tone: ToneOption) => void;
-  handlePrompt: (value: string) => boolean;
+  // `images` are already in the media library.
+  handlePrompt: (value: string, images?: PromptImage[]) => boolean;
   handleGenerateSuggestions: (sourcePrompt: string) => void;
   // The transcript's own scroll box; scroll it with `scrollToEnd`.
   scrollContainerRef: MutableRefObject<HTMLDivElement | null>;
@@ -156,6 +166,32 @@ export const ChatThread = ({
   const { data: langMappings } = useGetLangsMappingQuery();
   const applySetValue = useApplySetValue();
   const toneOptions = getToneOptions(t);
+  const {
+    attachments,
+    refusals,
+    failedFilenames,
+    isUploading,
+    addFiles,
+    removeAttachment,
+    clearAttachments,
+    uploadAttachments,
+  } = usePromptAttachments();
+  const isComposerBusy = isLoading || isLoadingChatSessionLog || isUploading;
+
+  // Uploads the attachments first; an upload failure sends nothing.
+  const submitPrompt = useCallback(
+    (value: string): boolean | Promise<boolean> => {
+      if (!attachments.length) return handlePrompt(value);
+
+      return uploadAttachments().then((images) => {
+        if (!images) return false;
+        const sent = handlePrompt(value, images);
+        if (sent) clearAttachments();
+        return sent;
+      });
+    },
+    [attachments.length, handlePrompt, uploadAttachments, clearAttachments]
+  );
   const generateSuggestionsPromptPrefix = t("shell.generateSuggestionsPrompt", {
     prompt: "",
   });
@@ -237,6 +273,9 @@ export const ChatThread = ({
                           backgroundColor: "grey.500",
                         }}
                       >
+                        {!!response.payload.images?.length && (
+                          <PromptImages images={response.payload.images} />
+                        )}
                         <Typography
                           variant="body2"
                           sx={{
@@ -459,7 +498,7 @@ export const ChatThread = ({
       >
         {!Object.entries(responses)?.length && (
           <Button
-            disabled={isLoading || isLoadingChatSessionLog}
+            disabled={isComposerBusy}
             data-cy="AIDrawerGenerateSuggestions"
             data-amp-track-id="ai-drawer-generate-suggestions-button"
             size="large"
@@ -472,13 +511,23 @@ export const ChatThread = ({
             {t("shell.generateSuggestions")}
           </Button>
         )}
+        <PromptAttachmentList
+          attachments={attachments}
+          disabled={isComposerBusy}
+          onRemove={removeAttachment}
+        />
         <PromptComposer
           ref={composerRef}
           seed={composerSeed}
-          disabled={isLoading || isLoadingChatSessionLog}
-          onSubmit={handlePrompt}
+          disabled={isComposerBusy}
+          onSubmit={submitPrompt}
           onHasValueChange={setHasComposerValue}
           placeholder={placeholder}
+        />
+        <PromptAttachmentStatus
+          refusals={refusals}
+          failedFilenames={failedFilenames}
+          isUploading={isUploading}
         />
       </Box>
       <Box
@@ -507,13 +556,17 @@ export const ChatThread = ({
           >
             <SettingsRoundedIcon color="action" fontSize="small" />
           </IconButton>
+          <AttachImagesButton
+            disabled={isComposerBusy || attachments.length >= MAX_ATTACHMENTS}
+            onFiles={addFiles}
+          />
 
           <Button
             data-cy="AIDrawerSend"
             data-amp-track-id="ai-drawer-submit-button"
             variant="contained"
             onClick={() => composerRef.current?.submit()}
-            disabled={!hasComposerValue || isLoading || isLoadingChatSessionLog}
+            disabled={!hasComposerValue || isComposerBusy}
             sx={{
               flexShrink: 0,
               flexBasis: 32,
@@ -521,11 +574,11 @@ export const ChatThread = ({
               padding: 0.5,
               minWidth: 0,
               backgroundColor:
-                !hasComposerValue || isLoading || isLoadingChatSessionLog
+                !hasComposerValue || isComposerBusy
                   ? "transparent!important"
                   : "primary.main",
               color:
-                !hasComposerValue || isLoading || isLoadingChatSessionLog
+                !hasComposerValue || isComposerBusy
                   ? "action.active"
                   : "primary.contrastText",
             }}
