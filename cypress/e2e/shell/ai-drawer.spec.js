@@ -388,7 +388,10 @@ describe("AI drawer", () => {
         JSON.stringify([{ type: "SYSTEM_OUTPUT", payload: { value: html } }])
       );
 
-      cy.getBySelector("AIDrawerCodeBlock").should("contain.text", html);
+      // Shown indented, so each tag is checked on its own.
+      cy.getBySelector("AIDrawerCodeBlock")
+        .should("contain.text", "<h1>Hi</h1>")
+        .and("contain.text", "<p>Hello</p>");
       cy.getBySelector("AIDrawerCopy").should("exist");
     });
 

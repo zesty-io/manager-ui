@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
-import { detectFormat } from "./detectFormat";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { detectFormat, formatSource } from "./detectFormat";
 
 // Provisional: product has not confirmed typing out code blocks. Set to false
 // to show them at once; plain text still animates.
@@ -20,9 +20,16 @@ export const AnimatedText = ({
   onGrow,
   renderCodeBlock = false,
 }: AnimatedTextProps) => {
-  const isCode = renderCodeBlock && detectFormat(text) !== "plain";
+  // Memoized: the typing animation re-renders every few ms.
+  const { isCode, source } = useMemo(() => {
+    const format = renderCodeBlock ? detectFormat(text) : "plain";
+    return {
+      isCode: format !== "plain",
+      source: formatSource(text, format),
+    };
+  }, [text, renderCodeBlock]);
   const animate = animateProp && (!isCode || ANIMATE_CODE_BLOCKS);
-  const [displayedText, setDisplayedText] = useState(animate ? "" : text);
+  const [displayedText, setDisplayedText] = useState(animate ? "" : source);
   const intervalRef = useRef(null);
   // Read through a ref instead of listing `onGrow` as a dep - it's an inline
   // callback that gets a new reference every parent render, which would
@@ -32,16 +39,16 @@ export const AnimatedText = ({
 
   useEffect(() => {
     if (!animate) {
-      setDisplayedText(text);
+      setDisplayedText(source);
       return;
     }
     setDisplayedText("");
     intervalRef.current = setInterval(() => {
       setDisplayedText((prev) => {
-        if (prev.length < text.length) {
-          const next = prev + text[prev.length];
+        if (prev.length < source.length) {
+          const next = prev + source[prev.length];
           onGrowRef.current?.();
-          if (prev.length + 1 === text.length) {
+          if (prev.length + 1 === source.length) {
             clearInterval(intervalRef.current);
           }
           return next;
@@ -53,7 +60,7 @@ export const AnimatedText = ({
     }, 30);
 
     return () => clearInterval(intervalRef.current);
-  }, [text, animate]);
+  }, [source, animate]);
 
   if (isCode) {
     // Source is shown as-is, never rendered.

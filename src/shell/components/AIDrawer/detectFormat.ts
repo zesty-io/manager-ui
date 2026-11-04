@@ -1,3 +1,5 @@
+import { html as beautifyHtml } from "js-beautify";
+
 export type ResponseFormat = "html" | "markdown" | "plain";
 
 // Parsed, never rendered or attached, so nothing in the text runs. Leading
@@ -33,3 +35,8 @@ export const detectFormat = (text: string): ResponseFormat => {
 
   return "plain";
 };
+
+// Display only: a one-line html reply is indented so it reads like code.
+// Markdown already carries its own line breaks.
+export const formatSource = (text: string, format: ResponseFormat): string =>
+  format === "html" ? beautifyHtml(text, { indent_size: 2 }) : text;
