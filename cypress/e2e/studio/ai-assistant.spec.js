@@ -62,6 +62,11 @@ describe("Studio AI Assistant", () => {
   beforeEach(() => {
     cy.stubStaffUser();
     indexSeededPages();
+    // Refuses any upload a test's own stub does not catch, so none reaches
+    // the real media library. Registered first, so a test's stub wins.
+    cy.intercept("POST", "**/upload/**", { statusCode: 500 }).as(
+      "unstubbedUpload"
+    );
     visitStudio();
   });
 
@@ -460,6 +465,11 @@ describe("Studio AI Assistant", () => {
         body: { data: [{ id: "3-e2e-screenshot", url: IMAGE_URL }] },
       }
     ).as("upload");
+    // The stubbed upload's CDN, so the sent image loads.
+    cy.intercept("GET", `${IMAGE_URL}?*`, {
+      headers: { "content-type": "image/svg+xml" },
+      body: '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"></svg>',
+    });
     stubMcp((body) => liveReply([setValue(editSource(body.code))]));
     stubPvl({ statusCode: 200, body: "<p>preview</p>" });
     // Again, so the stubbed bin replaces the one the first visit cached.
@@ -482,11 +492,9 @@ describe("Studio AI Assistant", () => {
       expect(request.body.imageFileZuids).to.deep.equal(["3-e2e-screenshot"]);
       expect(request.body.code).to.contain("studio-e2e-two");
     });
-    cy.getBySelector("AIDrawerUserInputImage").should(
-      "have.attr",
-      "src",
-      `${IMAGE_URL}?width=200`
-    );
+    cy.getBySelector("AIDrawerUserInputImage")
+      .should("have.attr", "src", `${IMAGE_URL}?width=200`)
+      .and("have.prop", "naturalWidth", 1);
     cy.getBySelector("AIDrawerCodeEdit")
       .should("contain.text", viewFileName)
       .and("contain.text", "+1")

@@ -355,27 +355,52 @@ export const PromptAttachmentStatus = ({
   );
 };
 
-// A sent prompt's images, in its transcript bubble. The CDN URL needs no
-// token, so a plain <img> shows it.
-export const PromptImages = ({ images }: { images: PromptImage[] }) => {
+// One sent image, or an image icon when it cannot be shown (HEIC/HEIF, or a
+// file since removed from the media library).
+const SentImage = ({ image }: { image: PromptImage }) => {
   const { t } = useTranslation();
+  const [canPreview, setCanPreview] = useState(true);
+
+  if (!canPreview) {
+    return (
+      <Stack
+        data-cy="AIDrawerUserInputImage"
+        role="img"
+        aria-label={t("shell.aiAttachedImage")}
+        width={76}
+        height={76}
+        alignItems="center"
+        justifyContent="center"
+        borderRadius={1}
+        bgcolor="grey.200"
+      >
+        <ImageRoundedIcon color="action" />
+      </Stack>
+    );
+  }
 
   return (
-    <Stack direction="row" gap={0.5} flexWrap="wrap" mb={1}>
-      {images.map((image, index) => (
-        <Box
-          data-cy="AIDrawerUserInputImage"
-          key={`${image.url}-${index}`}
-          component="img"
-          src={`${image.url}?width=200`}
-          alt={t("shell.aiAttachedImage")}
-          width={76}
-          height={76}
-          display="block"
-          borderRadius={1}
-          sx={{ objectFit: "cover" }}
-        />
-      ))}
-    </Stack>
+    <Box
+      data-cy="AIDrawerUserInputImage"
+      component="img"
+      src={`${image.url}?width=200`}
+      alt={t("shell.aiAttachedImage")}
+      width={76}
+      height={76}
+      display="block"
+      borderRadius={1}
+      sx={{ objectFit: "cover" }}
+      onError={() => setCanPreview(false)}
+    />
   );
 };
+
+// A sent prompt's images, in its transcript bubble. The CDN URL needs no
+// token, so a plain <img> shows it.
+export const PromptImages = ({ images }: { images: PromptImage[] }) => (
+  <Stack direction="row" gap={0.5} flexWrap="wrap" mb={1}>
+    {images.map((image, index) => (
+      <SentImage key={`${image.url}-${index}`} image={image} />
+    ))}
+  </Stack>
+);

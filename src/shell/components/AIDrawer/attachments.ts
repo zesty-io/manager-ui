@@ -11,7 +11,8 @@ const ACCEPTED_TYPES = [
   "image/heic",
   "image/heif",
 ];
-// Browsers often report no MIME type for HEIC/HEIF, so the extension counts too.
+// Browsers often report no MIME type for HEIC/HEIF, so a file without one is
+// judged by its extension instead.
 const ACCEPTED_EXTENSIONS = [
   ".png",
   ".jpg",
@@ -52,12 +53,17 @@ export type AttachmentRefusal = {
   reason: AttachmentRefusalReason;
 };
 
+// The MIME types a browser reports when it does not know the file's type.
+const UNKNOWN_TYPES = ["", "application/octet-stream"];
+
+// A known MIME type decides; the extension only stands in for a missing one,
+// so a GIF renamed to .png is still refused.
 const isAcceptedType = (file: File) => {
+  if (!UNKNOWN_TYPES.includes(file.type)) {
+    return ACCEPTED_TYPES.includes(file.type);
+  }
   const name = file.name.toLowerCase();
-  return (
-    ACCEPTED_TYPES.includes(file.type) ||
-    ACCEPTED_EXTENSIONS.some((extension) => name.endsWith(extension))
-  );
+  return ACCEPTED_EXTENSIONS.some((extension) => name.endsWith(extension));
 };
 
 // Accepts `incoming` files in order while they fit beside `existing`.

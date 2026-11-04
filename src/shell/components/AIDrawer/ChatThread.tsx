@@ -20,6 +20,7 @@ import {
   MutableRefObject,
   SetStateAction,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -177,15 +178,27 @@ export const ChatThread = ({
     uploadAttachments,
   } = usePromptAttachments();
   const isComposerBusy = isLoading || isLoadingChatSessionLog || isUploading;
+  // Read after an upload resolves: the host may have moved to another chat or
+  // page meanwhile, and the handler in a stale closure would post to the old one.
+  const handlePromptRef = useRef(handlePrompt);
+  handlePromptRef.current = handlePrompt;
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
-  // Uploads the attachments first; an upload failure sends nothing.
+  // Uploads the attachments first; an upload failure sends nothing, and
+  // neither does a composer that unmounted before the uploads finished.
   const submitPrompt = useCallback(
     (value: string): boolean | Promise<boolean> => {
       if (!attachments.length) return handlePrompt(value);
 
       return uploadAttachments().then((images) => {
-        if (!images) return false;
-        const sent = handlePrompt(value, images);
+        if (!images || !isMountedRef.current) return false;
+        const sent = handlePromptRef.current(value, images);
         if (sent) clearAttachments();
         return sent;
       });

@@ -62,8 +62,9 @@ export const useAttachmentUpload = () => {
   return useCallback(
     async (file: File): Promise<PromptImage> => {
       const bins = await getBins({ instanceId, ecoId }, true).unwrap();
-      const bin = bins?.find((bin) => bin.default);
-      if (!bin) throw new Error("The instance has no default media bin");
+      // As the media app does, the first bin when none is marked default.
+      const bin = bins?.find((bin) => bin.default) || bins?.[0];
+      if (!bin) throw new Error("The instance has no media bin");
 
       const groupId = await getFolderId(bin);
       const [uploaded] = await uploadFile({
@@ -71,7 +72,14 @@ export const useAttachmentUpload = () => {
         groupId,
         userZUID,
         file,
-      }).unwrap();
+      })
+        .unwrap()
+        .catch((error) => {
+          // The folder may have been deleted since it was cached, so the
+          // next send looks it up again.
+          folderIdByBin.delete(bin.id);
+          throw error;
+        });
       if (!uploaded?.id) throw new Error("The upload returned no file");
 
       return { fileZuid: uploaded.id, url: uploaded.url };

@@ -409,6 +409,26 @@ describe("AI drawer", () => {
     });
     const megabytes = (count) => Cypress.Buffer.alloc(count * 1024 * 1024);
     const fileZUID = (fileName) => `3-e2e-${fileName.replace(/\W/g, "-")}`;
+    const MISSING_IMAGE = "missing.png";
+    // What the stubbed CDN serves: a text body, which a reply keeps intact.
+    const SVG =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"></svg>';
+
+    beforeEach(() => {
+      // Refuses any upload a test's own stub does not catch, so none reaches
+      // the real media library. Registered first, so the stubs below win.
+      cy.intercept("POST", "**/upload/**", { statusCode: 500 }).as(
+        "unstubbedUpload"
+      );
+      // The stubbed uploads' CDN, so a sent image loads.
+      cy.intercept("GET", new RegExp(`^${CDN}/`), (req) => {
+        if (req.url.includes(MISSING_IMAGE)) {
+          req.reply({ statusCode: 404 });
+          return;
+        }
+        req.reply({ headers: { "content-type": "image/svg+xml" }, body: SVG });
+      });
+    });
 
     const bodyText = (body) =>
       typeof body === "string" ? body : new TextDecoder().decode(body);
@@ -425,6 +445,7 @@ describe("AI drawer", () => {
         },
       ],
       failing = [],
+      uploadDelay = 0,
     } = {}) => {
       cy.intercept("GET", "**/site/*/bins", { body: { data: [BIN] } });
       cy.intercept("GET", "**/eco/*/bins", { body: { data: [] } });
@@ -446,6 +467,7 @@ describe("AI drawer", () => {
           }
           req.reply({
             statusCode: 201,
+            delay: uploadDelay,
             body: {
               data: [{ id: fileZUID(fileName), url: `${CDN}/${fileName}` }],
             },
@@ -558,7 +580,8 @@ describe("AI drawer", () => {
       cy.getBySelector("AIDrawerUserInputImage")
         .should("have.length", 2)
         .first()
-        .should("have.attr", "src", `${CDN}/first.png?width=200`);
+        .should("have.attr", "src", `${CDN}/first.png?width=200`)
+        .and("have.prop", "naturalWidth", 1);
       cy.getBySelector("AIDrawerUserInput").should(
         "contain.text",
         "Describe these"
@@ -612,6 +635,14 @@ describe("AI drawer", () => {
         "animated.gif wasn't added: only these image types can be attached: PNG, JPEG, WebP, HEIC, HEIF."
       );
 
+      // The browser's MIME type decides, not the name.
+      attach(image("renamed.png", PNG, "image/gif"));
+      cy.getBySelector("AIDrawerAttachError").should(
+        "have.text",
+        "renamed.png wasn't added: only these image types can be attached: PNG, JPEG, WebP, HEIC, HEIF."
+      );
+      cy.getBySelector("AIDrawerAttachment").should("not.exist");
+
       attach(image("huge.png", megabytes(21)));
       cy.getBySelector("AIDrawerAttachError").should(
         "have.text",
@@ -661,6 +692,23 @@ describe("AI drawer", () => {
       cy.getBySelector("AIDrawerUserInput").should("not.exist");
     });
 
+    it("sends nothing when the drawer closes before the uploads finish", () => {
+      stubMediaLibrary({ uploadDelay: 2000 });
+      stubChat();
+      openDrawer();
+
+      attach(image("first.png"));
+      cy.getBySelector("AIDrawerComposer").type("Describe this{enter}");
+      cy.getBySelector("AIDrawerAttachUploading").should("exist");
+
+      cy.getBySelector("AIDrawerToggle").click();
+      cy.getBySelector("AIDrawerEnabled").should("not.exist");
+      cy.wait("@upload");
+      // Time for a stale send to go out.
+      cy.wait(1000);
+      cy.get("@postClient.all").should("have.length", 0);
+    });
+
     it("shows a reloaded prompt's attached images", () => {
       stubMediaLibrary();
       stubChat({
@@ -670,14 +718,23 @@ describe("AI drawer", () => {
             fileZuid: fileZUID("first.png"),
             url: `${CDN}/first.png`,
           },
+          { type: "image", url: `${CDN}/${MISSING_IMAGE}` },
         ],
       });
       openDrawer({ chatZUID: CHAT_ZUID });
 
       cy.wait("@getChat");
+      cy.getBySelector("AIDrawerUserInputImage").should("have.length", 2);
       cy.getBySelector("AIDrawerUserInputImage")
-        .should("have.length", 1)
-        .and("have.attr", "src", `${CDN}/first.png?width=200`);
+        .first()
+        .should("have.attr", "src", `${CDN}/first.png?width=200`)
+        .and("have.prop", "naturalWidth", 1);
+      // One that no longer loads shows an icon instead.
+      cy.getBySelector("AIDrawerUserInputImage")
+        .last()
+        .should("not.match", "img")
+        .find("svg")
+        .should("exist");
     });
   });
 });
