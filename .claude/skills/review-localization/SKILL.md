@@ -3,7 +3,7 @@ name: review-localization
 description: Run the CI "Localization Reviewer" locally (objective i18n checks plus missed-string and translation-quality review) on a PR or the current branch. Shows findings in the session and saves them under the gitignored .reviews/ folder. Never posts to GitHub. Invoke as /review-localization [PR number].
 ---
 
-Runs the exact prompt from `.github/workflows/claude-localization-reviewer.yml`, extracted at run time so it can't drift. Read-only toward GitHub: never post comments or reviews.
+Runs the review prompt in `.claude/skills/review-localization/prompt.md`, the same file `.github/workflows/claude-localization-reviewer.yml` uses in CI. Read-only toward GitHub: never post comments or reviews.
 
 ## 0. Preflight
 
@@ -45,24 +45,24 @@ node ci/scripts/build_localization_diff.js $OUT/pr_files.json 200000 > $OUT/i18n
 
 Local mode: write `git diff $(git merge-base origin/dev HEAD) -- 'src/**/*.js' 'src/**/*.jsx' 'src/**/*.ts' 'src/**/*.tsx' 'public/locales/**'` to `$OUT/i18n-relevant.diff`. If `diff-stderr.txt` contains `TRUNCATED`, DIFF_TRUNCATED is `true`, else `false` (always `false` in local mode).
 
-## 3. Build the prompt
+## 3. Run (sub-agent)
 
-```bash
-node ci/scripts/extract_workflow_prompt.js .github/workflows/claude-localization-reviewer.yml \
-  --set github.repository=<owner/repo> \
-  --set github.event.pull_request.number=<n> \
-  --set github.workspace=$(pwd)/$OUT \
-  --set steps.diff.outputs.truncated=<true|false>
+Spawn one `general-purpose` Agent with this prompt, filling in the values. `REPORT_FILE` is the absolute path `$(pwd)/$OUT/i18n-comment.md`, and `WORKSPACE` is `$(pwd)/$OUT`.
+
+```
+Inputs:
+  REPO           = <owner/repo>
+  PR_NUMBER      = <PR number, or local>
+  REPORT_FILE    = <absolute path>
+  WORKSPACE      = <absolute path of $OUT>
+  DIFF_TRUNCATED = <true or false>
+
+Never post anything to GitHub.
+Read .claude/skills/review-localization/prompt.md and follow it exactly.
 ```
 
-If the script errors, stop and tell the user. Don't fall back to a hand-written prompt.
+Ignore the agent's chat reply: the report file is the result.
 
-## 4. Run (sub-agent)
+## 4. Show
 
-Spawn one `general-purpose` Agent. Its prompt is this preamble, verbatim, followed by the extracted prompt:
-
-> LOCAL RUN. These overrides win over anything below. You are not in CI. Never post anything to GitHub. The workspace root is the directory containing REPORT_FILE; `i18n-objective-results.json` and `i18n-relevant.diff` are there. Keep the report shape, including the Blocking/Advisory sections and verdict marker. Finish by replying with the full contents of REPORT_FILE.
-
-## 5. Show
-
-If `$OUT/i18n-comment.md` doesn't exist, the run failed: say so and don't show anything as a result. Otherwise print the sub-agent's report in the session as-is. Tell the user it's saved at `$OUT/i18n-comment.md`.
+If `$OUT/i18n-comment.md` doesn't exist, the run failed: say so and don't show anything as a result. Otherwise print the report in the session as-is. Tell the user it's saved at `$OUT/i18n-comment.md`.
