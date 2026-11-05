@@ -1,4 +1,11 @@
-import { memo, useState, useEffect, useCallback, forwardRef } from "react";
+import {
+  memo,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  forwardRef,
+} from "react";
 import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
 import cx from "classnames";
@@ -81,19 +88,34 @@ export default connect((state) => {
       setDrawerOpen(false);
     });
 
-    const kind = props.notifications[0]?.kind;
-    const { icon, severity } =
-      alertDetails[alertDetails.hasOwnProperty(kind) ? kind : "default"];
+    const seenCount = useRef(props.notifications.length);
 
     useEffect(() => {
       if (!initialRender && props.notifications.length) {
         setShowToast(true);
-        enqueueSnackbar(props.notifications[0].message, {
-          variant: "custom",
-          severity,
-          icon,
-          heading: props.notifications[0]?.heading,
-        });
+        // Notifications dispatched in the same tick land in one render, so
+        // enqueue everything added since the last run, oldest first
+        const added = Math.max(
+          props.notifications.length - seenCount.current,
+          1
+        );
+        props.notifications
+          .slice(0, added)
+          .reverse()
+          .forEach((notification) => {
+            const { icon, severity } =
+              alertDetails[
+                alertDetails.hasOwnProperty(notification.kind)
+                  ? notification.kind
+                  : "default"
+              ];
+            enqueueSnackbar(notification.message, {
+              variant: "custom",
+              severity,
+              icon,
+              heading: notification?.heading,
+            });
+          });
         // On every render set timeout to hide notices
         const token = setTimeout(() => {
           setShowToast(false);
@@ -106,6 +128,10 @@ export default connect((state) => {
 
       // Avoid displaying logout notice on re-login
       setInitialRender(false);
+    }, [props.notifications.length]);
+
+    useEffect(() => {
+      seenCount.current = props.notifications.length;
     }, [props.notifications.length]);
 
     const msgIcon = (kind) => {
