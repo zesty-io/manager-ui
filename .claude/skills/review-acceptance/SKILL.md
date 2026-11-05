@@ -51,4 +51,4 @@ If `$OUT/qa-comment.md` doesn't exist, the run failed: say so and stop. CI compu
 - Any ❌ → `❌ FAIL — X of N code-checkable criteria not met`. Otherwise `✅ PASS — P/N code-checkable criteria confirmed` (or `✅ PASS — nothing in this change was checkable from the code` when N is 0).
 - Append `, 1 needs a running app` or `, K need a running app` when runtime > 0.
 
-Print the verdict as a heading, then the report. Tell the user it's saved at `$OUT/qa-comment.md`.
+Print the verdict as a heading, then the report exactly as written. Add nothing of your own: no commentary, summary, assessment, agreement or disagreement with the report, and no suggested next steps. The only exceptions are the notes this skill requires (such as the report not being graded against an issue). The only text after the report is one line saying it's saved at `$OUT/qa-comment.md`.

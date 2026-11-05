@@ -65,4 +65,4 @@ Ignore the agent's chat reply: the report file is the result.
 
 ## 4. Show
 
-If `$OUT/i18n-comment.md` doesn't exist, the run failed: say so and don't show anything as a result. Otherwise print the report in the session as-is. Tell the user it's saved at `$OUT/i18n-comment.md`.
+If `$OUT/i18n-comment.md` doesn't exist, the run failed: say so and don't show anything as a result. Otherwise print the report exactly as written. Add nothing of your own: no commentary, summary, assessment, agreement or disagreement with the findings, and no suggested next steps. The only text after the report is one line saying it's saved at `$OUT/i18n-comment.md`.
