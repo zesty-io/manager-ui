@@ -2,6 +2,12 @@ name: "CI: Cancel superseded runs"
 
 # Cancels queued ci.yaml runs for older commits of the same PR.
 # Never touches in_progress runs, so a running e2e finishes.
+#
+# DO NOT merge this into ci.yaml. ci.yaml's workflow-level concurrency group
+# (queue: max) holds new runs in the queue before any of their jobs start, so a
+# cancel job there would only run once the run reached the front, too late to
+# cancel the older pending runs. This workflow has no concurrency group, so it
+# starts immediately on every push.
 on:
   pull_request:
     types: [opened, synchronize, reopened]
