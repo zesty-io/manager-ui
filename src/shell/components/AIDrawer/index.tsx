@@ -31,7 +31,7 @@ import {
 import { ChatThread, ChatResponse, scrollToEnd } from "./ChatThread";
 import { toChatResponses } from "./parseResponse";
 import { useApplySetValue } from "./useApplySetValue";
-import { useGenerateAltText } from "./useGenerateAltText";
+import { toAltTextEntry, useGenerateAltText } from "./useGenerateAltText";
 import { buildPromptRequest, buildSuggestionsRequest } from "./promptRequest";
 import { ChatHistory } from "./ChatHistory";
 import {
@@ -637,13 +637,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
             type: "USER_INPUT",
             payload: { value: t("shell.generateAltText") },
           },
-          // No `strictNullChecks` here, so only `=== false` narrows.
-          result.ok === false
-            ? { type: "ERROR", payload: { value: result.message } }
-            : {
-                type: "ALT_TEXT_SAVED",
-                payload: { value: result.altText, fileZuid },
-              },
+          toAltTextEntry(result, fileZuid),
         ],
       }));
 

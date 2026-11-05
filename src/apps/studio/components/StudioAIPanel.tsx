@@ -22,7 +22,10 @@ import {
   buildSuggestionsRequest,
 } from "shell/components/AIDrawer/promptRequest";
 import { useApplySetValue } from "shell/components/AIDrawer/useApplySetValue";
-import { useGenerateAltText } from "shell/components/AIDrawer/useGenerateAltText";
+import {
+  toAltTextEntry,
+  useGenerateAltText,
+} from "shell/components/AIDrawer/useGenerateAltText";
 import { getRefRegistry } from "../../../engine/refRegistry";
 import { countLineChanges } from "../../../utility/countLineChanges";
 
@@ -436,15 +439,7 @@ const StudioAIChat = ({
         chatZuid: chat.chatZUID,
       });
       if (clears !== chat.clears) return;
-      appendToChat(chat, turnZUID, [
-        // No `strictNullChecks` here, so only `=== false` narrows.
-        result.ok === false
-          ? { type: "ERROR", payload: { value: result.message } }
-          : {
-              type: "ALT_TEXT_SAVED",
-              payload: { value: result.altText, fileZuid },
-            },
-      ]);
+      appendToChat(chat, turnZUID, [toAltTextEntry(result, fileZuid)]);
     },
     [chat, appendToTurn, generateAltText, t]
   );

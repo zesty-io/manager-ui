@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useGenerateAltTextMutation } from "../../services/mcp";
 import { useUpdateFileAltTextMutation } from "../../services/mediaManager";
+import type { ChatResponse } from "./ChatThread";
 
 // The alt-text endpoint rejects a longer `context`.
 const MAX_CONTEXT_LENGTH = 500;
@@ -10,6 +11,16 @@ export type GenerateAltTextResult =
   // `chatError` is set when the server did not log the turn to `chatZuid`.
   | { ok: true; altText: string; chatError?: string }
   | { ok: false; message: string };
+
+// The thread entry for a result: the saved alt text, or the error.
+export const toAltTextEntry = (
+  result: GenerateAltTextResult,
+  fileZuid: string
+): ChatResponse =>
+  // No `strictNullChecks` here, so only `=== false` narrows.
+  result.ok === false
+    ? { type: "ERROR", payload: { value: result.message } }
+    : { type: "ALT_TEXT_SAVED", payload: { value: result.altText, fileZuid } };
 
 // Generates alt text for a media file and saves it as the file's alt text,
 // which the media app stores in `title`. Nothing is written when generation
