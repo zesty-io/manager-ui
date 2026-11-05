@@ -59,7 +59,6 @@ jobs:
       # uses to tell which lines a comment can anchor to.
       - name: Collect PR files
         if: always()
-        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
@@ -68,10 +67,9 @@ jobs:
 
       # Deterministic instead of relying on Claude to reliably call an inline-comment tool
       # itself. Findings GitHub can't anchor are written to unplaced.md for the verdict comment.
-      # Advisory like the rest of this workflow: a failure here shows red but doesn't block.
+      # A crash here fails the job: findings that never got posted must not look like a clean run.
       - name: Post inline comments
         if: always()
-        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
