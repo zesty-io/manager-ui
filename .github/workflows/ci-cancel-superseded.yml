@@ -1,4 +1,4 @@
-name: Cancel superseded CI runs
+name: "CI: Cancel superseded runs"
 
 # Cancels queued ci.yaml runs for older commits of the same PR.
 # Never touches in_progress runs, so a running e2e finishes.
