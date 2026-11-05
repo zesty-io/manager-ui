@@ -42,6 +42,7 @@
   "categorySecurity": "Security",
   "categorySeo": "SEO",
   "categorySettingsSaved": "{{category}} Settings Saved",
+  "categorySettingsSaveFailed": "Failed to save {{category}} settings: {{error}}",
   "categorySitelink": "Sitelink",
   "categorySocialLinks": "Social Links",
   "categoryStripe": "Stripe",

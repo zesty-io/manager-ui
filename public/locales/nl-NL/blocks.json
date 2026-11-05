@@ -4,6 +4,7 @@
   "allBlocksTitle": "Alle blokken",
   "blockImageAlt": "Blokafbeelding",
   "createBlock": "Blok aanmaken",
+  "createVariantFailed": "Variant maken mislukt: {{variantName}}",
   "createVariantOf": "Variant maken van {{label}}",
   "documentation": "Documentatie",
   "emptyItemsListAlt": "Lege lijst met items",
