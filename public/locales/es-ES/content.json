@@ -394,6 +394,7 @@
   "itemEditPublishRelatedItemsDescription": "Esto publicara todos los elementos seleccionados en la lista siguiente",
   "itemEditQuickShareTitle": "Compartir rápido",
   "itemEditRefreshCachedItem": "Actualizar elemento en cache",
+  "itemEditRefreshFailed": "Guardado, pero no se pudo actualizar el elemento: {{error}}",
   "itemEditRefreshingCachedItem": "Actualizando elemento en cache",
   "itemEditRenameVariant": "Renombrar variante",
   "itemEditRenameVariantDescription": "Esto actualizara el titulo de la variante que se muestra a los editores de contenido",

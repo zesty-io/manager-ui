@@ -42,6 +42,7 @@
   "categorySecurity": "安全",
   "categorySeo": "SEO",
   "categorySettingsSaved": "{{category}} 设置已保存",
+  "categorySettingsSaveFailed": "无法保存{{category}}设置：{{error}}",
   "categorySitelink": "Sitelink",
   "categorySocialLinks": "社交链接",
   "categoryStripe": "Stripe",
