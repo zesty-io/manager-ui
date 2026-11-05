@@ -80,6 +80,7 @@ export const TopBar: FC<TopBarProps> = ({
           >
             <ActionButton
               id="SaveSettings"
+              data-cy="SaveSettings"
               label={isNotSaved ? t("common.save") : t("settings.saved")}
               startIcon={<SaveRoundedIcon fontSize="small" />}
               tooltip={

@@ -42,6 +42,7 @@
   "categorySecurity": "Безопасность",
   "categorySeo": "SEO",
   "categorySettingsSaved": "Настройки категории «{{category}}» сохранены",
+  "categorySettingsSaveFailed": "Не удалось сохранить настройки {{category}}: {{error}}",
   "categorySitelink": "Sitelink",
   "categorySocialLinks": "Ссылки на социальные сети",
   "categoryStripe": "Stripe",
