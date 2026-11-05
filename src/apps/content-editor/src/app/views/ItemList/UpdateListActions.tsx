@@ -8,6 +8,7 @@ import {
   MenuItem,
   ListItemIcon,
 } from "@mui/material";
+import { notifyIfResponseFailed } from "utility/request";
 import { IconButton } from "@zesty-io/material";
 import {
   SaveRounded,
@@ -110,11 +111,15 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
           };
         }),
       });
-      await Promise.allSettled([
-        Object.keys(stagedChanges).forEach((itemZUID) => {
-          dispatch(fetchItem(modelZUID, itemZUID));
-        }),
-      ]);
+
+      notifyIfResponseFailed(
+        dispatch,
+        await Promise.all(
+          Object.keys(stagedChanges).map((itemZUID) =>
+            dispatch(fetchItem(modelZUID, itemZUID))
+          )
+        )
+      );
       setIsSaving(false);
       clearStagedChanges({});
     } catch (err) {
@@ -147,11 +152,14 @@ export const UpdateListActions = ({ items }: UpdateListActionsProps) => {
         }),
       });
 
-      await Promise.allSettled([
-        Object.keys(stagedChanges).forEach((itemZUID) => {
-          dispatch(fetchItem(modelZUID, itemZUID));
-        }),
-      ]);
+      notifyIfResponseFailed(
+        dispatch,
+        await Promise.all(
+          Object.keys(stagedChanges).map((itemZUID) =>
+            dispatch(fetchItem(modelZUID, itemZUID))
+          )
+        )
+      );
       setIsSaving(false);
       if (isSchedule) {
         // @ts-ignore

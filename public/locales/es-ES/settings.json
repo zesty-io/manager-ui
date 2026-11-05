@@ -42,6 +42,7 @@
   "categorySecurity": "Seguridad",
   "categorySeo": "SEO",
   "categorySettingsSaved": "Configuración de {{category}} guardada",
+  "categorySettingsSaveFailed": "No se pudo guardar la configuración de {{category}}: {{error}}",
   "categorySitelink": "Sitelink",
   "categorySocialLinks": "Enlaces sociales",
   "categoryStripe": "Stripe",

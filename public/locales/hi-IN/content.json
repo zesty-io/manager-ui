@@ -389,6 +389,7 @@
   "itemEditPublishRelatedItemsDescription": "यह नीचे दी गई सूची में चुने गए सभी आइटम प्रकाशित करेगा",
   "itemEditQuickShareTitle": "त्वरित साझा करें",
   "itemEditRefreshCachedItem": "Cached आइटम refresh करें",
+  "itemEditRefreshFailed": "सहेजा गया, लेकिन आइटम को रीफ़्रेश नहीं किया जा सका: {{error}}",
   "itemEditRefreshingCachedItem": "Cached आइटम refresh हो रहा है",
   "itemEditRenameVariant": "वैरिएंट का नाम बदलें",
   "itemEditRenameVariantDescription": "यह content editors को दिखाया जाने वाला variant title update करेगा",
