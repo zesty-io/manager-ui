@@ -389,6 +389,7 @@
   "itemEditPublishRelatedItemsDescription": "This will publish all items selected in the list below",
   "itemEditQuickShareTitle": "Quick Share",
   "itemEditRefreshCachedItem": "Refresh Cached Item",
+  "itemEditRefreshFailed": "Saved, but the item could not be refreshed: {{error}}",
   "itemEditRefreshingCachedItem": "Refreshing Cached Item",
   "itemEditRenameVariant": "Rename Variant",
   "itemEditRenameVariantDescription": "This will update the variant title that is shown to content editors",
