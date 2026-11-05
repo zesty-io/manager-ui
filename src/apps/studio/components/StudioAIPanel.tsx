@@ -22,6 +22,10 @@ import {
   buildSuggestionsRequest,
 } from "shell/components/AIDrawer/promptRequest";
 import { useApplySetValue } from "shell/components/AIDrawer/useApplySetValue";
+import {
+  PromptImage,
+  toImageFileZUIDs,
+} from "shell/components/AIDrawer/attachments";
 import { getRefRegistry } from "../../../engine/refRegistry";
 import { countLineChanges } from "../../../utility/countLineChanges";
 
@@ -336,7 +340,7 @@ const StudioAIChat = ({
   );
 
   const sendTurn = useCallback(
-    (prompt: string, body: Record<string, unknown>) => {
+    (prompt: string, body: Record<string, unknown>, images?: PromptImage[]) => {
       const turnZUID = `turn-${++turnSeq}`;
       const clears = chat.clears;
       const sessionZUID = chat.chatZUID;
@@ -345,7 +349,10 @@ const StudioAIChat = ({
         payload: { value: t("shell.errorGeneratingAiResponse") },
       };
       appendToTurn(turnZUID, [
-        { type: "USER_INPUT", payload: { value: prompt } },
+        {
+          type: "USER_INPUT",
+          payload: { value: prompt, ...(!!images?.length && { images }) },
+        },
       ]);
       setComposerSeed("");
       geminiGenerate(body)
@@ -373,7 +380,7 @@ const StudioAIChat = ({
   );
 
   const handlePrompt = useCallback(
-    (newPrompt: string) => {
+    (newPrompt: string, images?: PromptImage[]) => {
       if (!newPrompt?.trim() || !roleZUID) return false;
 
       const prompt = newPrompt.trim();
@@ -387,7 +394,9 @@ const StudioAIChat = ({
           itemZUID: pageItemZUID,
           roleZUID,
           chatZUID: chat.chatZUID,
-        })
+          imageFileZUIDs: toImageFileZUIDs(images),
+        }),
+        images
       );
       return true;
     },
