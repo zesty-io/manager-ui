@@ -10,7 +10,8 @@ type AnimatedTextProps = {
   text: string;
   animate: boolean;
   onGrow?: () => void;
-  // Opt in to showing html/markdown text as a code block; plain text otherwise.
+  // The caller decided this is code: show it as a code block, indented when
+  // it is html or json. Plain text otherwise.
   renderCodeBlock?: boolean;
 };
 
@@ -22,11 +23,11 @@ export const AnimatedText = ({
 }: AnimatedTextProps) => {
   // Memoized: the typing animation re-renders every few ms.
   const { isCode, source } = useMemo(() => {
-    const format = renderCodeBlock ? detectFormat(text) : "plain";
-    return {
-      isCode: format !== "plain",
-      source: formatSource(text, format),
-    };
+    if (!renderCodeBlock) return { isCode: false, source: text };
+
+    const detected = detectFormat(text);
+    const format = detected === "plain" ? "code" : detected;
+    return { isCode: true, source: formatSource(text, format) };
   }, [text, renderCodeBlock]);
   const animate = animateProp && (!isCode || ANIMATE_CODE_BLOCKS);
   const [displayedText, setDisplayedText] = useState(animate ? "" : source);

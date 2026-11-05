@@ -474,5 +474,47 @@ describe("AI drawer", () => {
       cy.getBySelector("AIDrawerSetValue").should("exist");
       cy.getBySelector("AIDrawerCopy").should("not.exist");
     });
+
+    it("treats a value for the code editor as code inside the code app", () => {
+      const response = JSON.stringify([
+        {
+          type: "SET_VALUE",
+          payload: { refKey: "code-editor", value: "A friendlier headline" },
+        },
+      ]);
+      cy.intercept("GET", "**/chats", { body: { data: [] } });
+      cy.intercept("POST", "**/client", {
+        body: { chatZuid: CHAT_ZUID, data: response, message: "", tools: [] },
+      }).as("postClient");
+      cy.intercept("GET", `**/chats/${CHAT_ZUID}?*`, {
+        body: {
+          data: {
+            chatZuid: CHAT_ZUID,
+            prompts: [
+              {
+                promptZuid: "e2e-stub-prompt",
+                chatZuid: CHAT_ZUID,
+                prompt: "Stubbed prompt",
+                response,
+                approval: "0",
+              },
+            ],
+          },
+        },
+      }).as("getChat");
+
+      cy.clearLocalStorage();
+      cy.visit("/code/file/views/11-eb8dec-6nsjbf");
+      cy.getBySelector("AIDrawerToggle").click();
+      cy.getBySelector("AIDrawerComposer").type("Stubbed prompt{enter}");
+      cy.wait("@postClient");
+      cy.wait("@getChat");
+
+      cy.getBySelector("AIDrawerCodeBlock").should(
+        "contain.text",
+        "A friendlier headline"
+      );
+      cy.getBySelector("AIDrawerCopy").should("exist");
+    });
   });
 });

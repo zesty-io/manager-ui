@@ -73,6 +73,9 @@ const getToneOptions = (t: (key: string) => string) =>
 type LanguageOption = { label: string; value: string };
 type ToneOption = { label: string; value: string };
 
+// The ref key the code editor registers.
+const CODE_EDITOR_REF_KEY = "code-editor";
+
 type TextPayload = { value: string };
 type SystemPayload = { refKey?: string; value: string };
 
@@ -366,6 +369,16 @@ export const ChatThread = ({
                   // SET_VALUE and SYSTEM_OUTPUT carry generated content; ERROR
                   // is always plain text.
                   const canRenderCodeBlock = response.type !== "ERROR";
+                  // In the code app the backend sends generated code under this
+                  // key. Elsewhere code can land on any field, so it is detected.
+                  const isCodeEditorValue =
+                    isInCodeApp &&
+                    response.type === "SET_VALUE" &&
+                    response.payload.refKey === CODE_EDITOR_REF_KEY;
+                  const isCodeResponse =
+                    canRenderCodeBlock &&
+                    (isCodeEditorValue ||
+                      detectFormat(response.payload?.value) !== "plain");
 
                   return (
                     <Box
@@ -373,8 +386,7 @@ export const ChatThread = ({
                       sx={{
                         maxWidth:
                           response.payload?.value?.startsWith("3-") ||
-                          (canRenderCodeBlock &&
-                            detectFormat(response.payload?.value) !== "plain")
+                          isCodeResponse
                             ? "unset"
                             : 160,
                       }}
@@ -398,16 +410,15 @@ export const ChatThread = ({
                           key={`${promptZUID}-${responseIndex}`}
                           text={response.payload.value}
                           animate={shouldAnimate && !isInCodeApp}
-                          renderCodeBlock={canRenderCodeBlock}
+                          renderCodeBlock={isCodeResponse}
                           onGrow={() => scrollToEnd(scrollContainerRef.current)}
                         />
                       )}
-                      {response.type === "SYSTEM_OUTPUT" &&
-                        detectFormat(response.payload.value) !== "plain" && (
-                          <Box mt={1.25}>
-                            <CopyButton text={response.payload.value} />
-                          </Box>
-                        )}
+                      {response.type === "SYSTEM_OUTPUT" && isCodeResponse && (
+                        <Box mt={1.25}>
+                          <CopyButton text={response.payload.value} />
+                        </Box>
+                      )}
                       {response.type === "SET_VALUE" && (
                         <Box display="flex" flexWrap="wrap" gap={1} mt={1.25}>
                           {!autoApply && (
@@ -463,7 +474,7 @@ export const ChatThread = ({
                               {t("shell.applyAiSuggestion")}
                             </Button>
                           )}
-                          {detectFormat(response.payload.value) !== "plain" && (
+                          {isCodeResponse && (
                             <CopyButton text={response.payload.value} />
                           )}
                         </Box>
