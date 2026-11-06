@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { notifyIfResponseFailed } from "utility/request";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import {
@@ -169,7 +170,9 @@ export const StudioLinkItemDialog = ({
       nextModelZUID &&
       !(contentItems as any)[next.ZUID]?.data
     ) {
-      dispatch(fetchItem(nextModelZUID, next.ZUID) as any);
+      Promise.resolve(
+        dispatch(fetchItem(nextModelZUID, next.ZUID) as any)
+      ).then((res) => notifyIfResponseFailed(dispatch, res));
     }
   };
 
