@@ -316,6 +316,18 @@ describe("AI drawer", () => {
       },
     ]);
 
+    const IMAGE_ZUID = "3-e2e-stub-image";
+    const IMAGE_REPLY = JSON.stringify([
+      {
+        type: "SET_VALUE",
+        payload: { refKey: "generated-image", value: IMAGE_ZUID },
+      },
+      {
+        type: "SYSTEM_OUTPUT",
+        payload: { value: "Generated an image of the alps." },
+      },
+    ]);
+
     const openDrawerWithReply = (response, beforePrompt = () => {}) => {
       cy.intercept("GET", "**/chats", { body: { data: [] } });
       cy.intercept("POST", "**/client", {
@@ -380,6 +392,118 @@ describe("AI drawer", () => {
 
       cy.getBySelector("toast").should("contain.text", '"code-editor"');
       cy.get("@approve.all").should("have.length", 0);
+    });
+
+    it("generates alt text for a generated image and saves it to the file", () => {
+      openDrawerWithReply(IMAGE_REPLY);
+      cy.intercept("POST", "**/api/alt-text", {
+        body: { data: { altText: "A stubbed alt text" }, message: "ok" },
+      }).as("altText");
+      cy.intercept("PATCH", `**/file/${IMAGE_ZUID}`, { body: {} }).as(
+        "saveAltText"
+      );
+
+      // The save refetches the chat log; the server has logged the alt-text
+      // turn by then. Registered before the click so the refetch cannot
+      // outrun it, and held until the live turn has been checked so it cannot
+      // replace that turn first. The logged text differs from the live one so
+      // the restored turn can be told apart from the local one it replaces.
+      let releaseChatLog;
+      const chatLogGate = new Promise((resolve) => {
+        releaseChatLog = resolve;
+      });
+      const restoredChatLog = {
+        body: {
+          data: {
+            chatZuid: CHAT_ZUID,
+            prompts: [
+              {
+                promptZuid: "e2e-stub-prompt",
+                chatZuid: CHAT_ZUID,
+                prompt: "Stubbed prompt",
+                response: IMAGE_REPLY,
+                approval: "0",
+              },
+              {
+                promptZuid: "e2e-stub-alt-prompt",
+                chatZuid: CHAT_ZUID,
+                prompt: "Generate alt text for this image (Stubbed prompt)",
+                response: JSON.stringify([
+                  {
+                    type: "SYSTEM_OUTPUT",
+                    payload: { value: "A restored alt text" },
+                  },
+                ]),
+                metadata: {
+                  fileZuid: IMAGE_ZUID,
+                  context: "Stubbed prompt",
+                  altText: "A restored alt text",
+                },
+                approval: "0",
+              },
+            ],
+          },
+        },
+      };
+      cy.intercept("GET", `**/chats/${CHAT_ZUID}?*`, (req) =>
+        chatLogGate.then(() => req.reply(restoredChatLog))
+      ).as("getChatWithAltText");
+
+      // Follows the reply's text, as the last entry of the turn.
+      cy.contains("Generated an image of the alps.");
+      cy.getBySelector("AIDrawerGenerateAltText").should("be.visible").click();
+
+      cy.wait("@altText")
+        .its("request.body")
+        .should((body) => {
+          expect(body.fileZuid).to.equal(IMAGE_ZUID);
+          expect(body.context).to.equal("Stubbed prompt");
+        });
+      cy.wait("@saveAltText")
+        .its("request.body")
+        .should("deep.equal", { title: "A stubbed alt text" });
+      cy.getBySelector("AIDrawerAltTextSaved")
+        .should("contain", "Alt text saved to the image")
+        .and("contain", "A stubbed alt text")
+        .and("be.visible");
+      cy.getBySelector("AIDrawerAltTextOpenInMedia").should(
+        "have.attr",
+        "href",
+        `/media?fileId=${IMAGE_ZUID}`
+      );
+
+      // The refetched log replaces the local turn; its metadata rebuilds it.
+      cy.then(() => releaseChatLog());
+      cy.wait("@getChatWithAltText");
+      cy.getBySelector("AIDrawerAltTextSaved")
+        .should("have.length", 1)
+        .and("contain", "A restored alt text")
+        .and("be.visible");
+      cy.getBySelector("AIDrawerAltTextOpenInMedia").should(
+        "have.attr",
+        "href",
+        `/media?fileId=${IMAGE_ZUID}`
+      );
+      cy.getBySelector("AIDrawerUserInput")
+        .last()
+        .should("have.text", "Generate an alt tag for this image");
+      cy.contains("Generate alt text for this image").should("not.exist");
+    });
+
+    it("shows the server's message and saves nothing when alt text fails", () => {
+      openDrawerWithReply(IMAGE_REPLY);
+      cy.intercept("POST", "**/api/alt-text", {
+        statusCode: 400,
+        body: { message: "Media file not found" },
+      }).as("altText");
+      cy.intercept("PATCH", `**/file/${IMAGE_ZUID}`, { body: {} }).as(
+        "saveAltText"
+      );
+
+      cy.getBySelector("AIDrawerGenerateAltText").click();
+      cy.wait("@altText");
+      cy.contains("Media file not found").should("be.visible");
+      cy.get("@saveAltText.all").should("have.length", 0);
     });
   });
 });
