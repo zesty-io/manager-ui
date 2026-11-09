@@ -84,6 +84,10 @@ describe("Used Blocks", () => {
       });
 
       // Append a publish record for the variant so the store only holds an empty stub
+      let publishingsDelivered;
+      const publishingsPromise = new Promise((resolve) => {
+        publishingsDelivered = resolve;
+      });
       cy.intercept("GET", "**/content/items/publishings*", (req) => {
         req.continue((res) => {
           res.body.data = [
@@ -96,14 +100,26 @@ describe("Used Blocks", () => {
               unpublishAt: null,
             },
           ];
+          publishingsDelivered();
         });
       }).as("getPublishings");
+      // Hold the views so the block references are built after the stub is in the store
+      cy.intercept("GET", "**/web/views*", (req) => {
+        req.continue(() => publishingsPromise);
+      });
       cy.intercept("GET", `**/search/items?q=${variantZUID}*`).as(
         "searchVariant"
       );
 
+      // Earlier tests leave this variant in the IndexedDB warm cache, which would
+      // hydrate it as fully loaded instead of a stub
       cy.visit(
-        `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`
+        `/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`,
+        {
+          onBeforeLoad(win) {
+            win.indexedDB.deleteDatabase("zesty");
+          },
+        }
       );
 
       cy.wait("@getPublishings");
