@@ -385,6 +385,18 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
       );
     }
 
+    // Refetch once the replace is done server-side, even if the modal was
+    // closed early and the upload state was already reset
+    function invalidateReplacedFile() {
+      dispatch(
+        mediaManagerApi.util.invalidateTags([
+          { type: "File", id: originalFile.id },
+          { type: "GroupData", id: originalFile.group_id },
+          "BinFiles",
+        ])
+      );
+    }
+
     req.addEventListener("abort", handleError);
     req.addEventListener("error", handleError);
     req.addEventListener("load", (_) => {
@@ -444,6 +456,7 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
           )
             .then((res) => {
               if (res.status === 200) {
+                invalidateReplacedFile();
                 const state: State = getState().mediaRevamp;
                 if (state.uploads.length) {
                   dispatch(
@@ -488,6 +501,13 @@ export function replaceFile(newFile: UploadFile, originalFile: FileBase) {
       // and not the extra meta data for the zesty services
       req.send(file.file);
     } else {
+      // Small files are done once the replace request returns
+      req.addEventListener("load", () => {
+        if (req.status === 200) {
+          invalidateReplacedFile();
+        }
+      });
+
       req.open(
         "PUT",
         `${CONFIG.SERVICE_MEDIA_STORAGE}/replace/${originalFile?.storage_driver}/${originalFile?.storage_name}`

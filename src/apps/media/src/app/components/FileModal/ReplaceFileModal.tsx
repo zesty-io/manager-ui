@@ -23,7 +23,6 @@ import {
 import { UploadHeaderText } from "../UploadModal";
 import { AppState } from "../../../../../../shell/store/types";
 import { UploadThumbnail } from "../UploadThumbnail";
-import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
 import { FileTypePreview } from "./FileTypePreview";
 import { useGetCurrentUserRolesQuery } from "../../../../../../shell/services/accounts";
 import instanceZUID from "../../../../../../utility/instanceZUID";
@@ -75,17 +74,8 @@ export const ReplaceFileModal = ({
   }, [newFile]);
 
   const handleCloseUploadingFileModal = () => {
+    // Refetching is handled by replaceFile once the upload completes
     dispatch(dismissFileUploads());
-
-    if (filesToUpload.length) {
-      dispatch(
-        mediaManagerApi.util.invalidateTags([
-          { type: "GroupData", id: originalFile.group_id },
-          "BinFiles",
-        ])
-      );
-    }
-
     onClose();
   };
 
