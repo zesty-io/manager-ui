@@ -3,6 +3,16 @@ import { suggestionSystemInstruction } from "./systemInstructions";
 
 const TEMPERATURE = 0.5;
 
+// The canvas element a Studio prompt is about. The server finds an image in
+// `code` by `src` and `occurrence` (0-based, among same-src images), or by
+// `boundField`; any other element is context for "here".
+export type AiSelection = {
+  tagName: string;
+  outerHTML: string;
+  occurrence: number;
+  boundField: string | null;
+};
+
 type PromptRequestArgs = {
   prompt: string;
   tone: string;
@@ -12,6 +22,7 @@ type PromptRequestArgs = {
   roleZUID: string;
   // Omitted to have the /client endpoint start a new chat session.
   chatZUID?: string;
+  selection?: AiSelection;
 };
 
 // The /client body for a typed prompt: every ref registered on the page,
@@ -24,6 +35,7 @@ export const buildPromptRequest = ({
   itemZUID,
   roleZUID,
   chatZUID,
+  selection,
 }: PromptRequestArgs) => {
   const registryKeys = Object.keys(getRefRegistry() || {});
   const refRegistry = getRefRegistry();
@@ -46,6 +58,7 @@ export const buildPromptRequest = ({
     url: window.location.href,
     roleZuid: roleZUID,
     ...(chatZUID && { chatZuid: chatZUID }),
+    ...(selection && { selection }),
   };
 };
 
