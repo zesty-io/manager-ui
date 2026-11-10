@@ -127,10 +127,11 @@ export const useStudioBridge = ({
   const { t } = useTranslation();
   const theme = useTheme();
   const bridgeInjectedCss = useMemo(() => {
-    const { hoverOutline, selectionOutline } = theme.palette.studio;
+    const selectionOutline = theme.palette.yellow[500];
+
     return `
   .studio-hover {
-    outline: 1px dashed ${hoverOutline};
+    outline: 1px dashed ${theme.palette.blue[500]};
     outline-offset: 2px;
     cursor: pointer;
   }
