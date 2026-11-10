@@ -384,6 +384,7 @@
   "itemEditPublishRelatedItemsDescription": "这将发布下方列表中选中的所有项目",
   "itemEditQuickShareTitle": "快速分享",
   "itemEditRefreshCachedItem": "刷新缓存项目",
+  "itemEditRefreshFailed": "已保存，但无法刷新该项目：{{error}}",
   "itemEditRefreshingCachedItem": "正在刷新缓存项目",
   "itemEditRenameVariant": "重命名变体",
   "itemEditRenameVariantDescription": "这将更新显示给内容编辑者的变体标题",
