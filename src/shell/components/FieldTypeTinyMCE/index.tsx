@@ -287,10 +287,15 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // We want the width to automatically be set to preserve the image proportions
             newImageNode.removeAttribute("height");
 
-            const currentValue = tinymce.activeEditor?.getContent() ?? "";
+            const ownEditor = editorRef.current;
+            if (!ownEditor || ownEditor.removed || !ownEditor.initialized) {
+              return;
+            }
+
+            const currentValue = ownEditor.getContent() ?? "";
 
             // Update the content with the new image data
-            tinymce.activeEditor?.setContent(
+            ownEditor.setContent(
               currentValue.replace(
                 clonedCurrentNode.outerHTML?.replaceAll("&", "&amp;"),
                 newImageNode.outerHTML
@@ -523,7 +528,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                   url: bynderPortalUrlSetting?.value,
                   onSuccess: (assets) => {
                     if (assets?.length) {
-                      tinymce.activeEditor?.insertContent(
+                      editor.insertContent(
                         assets
                           .map((asset) => {
                             const filename = asset.originalUrl.split("/").pop();
