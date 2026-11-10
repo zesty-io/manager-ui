@@ -330,7 +330,7 @@ type LayoutLeafLookup = {
 // inside it. The link operations all address the wrapping <a> RELATIVE to that
 // element — the wrapper has no id of its own — so they share the lookup and
 // re-serialize `root.innerHTML` once they've mutated it.
-const resolveLayoutLeaf = (
+export const resolveLayoutLeaf = (
   source: string,
   layoutId: string
 ): LayoutLeafLookup | null => {
