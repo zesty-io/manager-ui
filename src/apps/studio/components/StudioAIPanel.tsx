@@ -1,8 +1,8 @@
 import { Box, Drawer, IconButton, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import {
   useGeminiGenerationMutation,
   useUpdatePromptApprovalStatusMutation,
@@ -13,11 +13,13 @@ import { AppState } from "shell/store/types";
 import {
   ChatResponse,
   ChatThread,
+  GENERATED_IMAGE_REF_KEY,
   TONE_VALUES,
   scrollToEnd,
 } from "shell/components/AIDrawer/ChatThread";
 import { toChatResponses } from "shell/components/AIDrawer/parseResponse";
 import {
+  AiSelection,
   buildPromptRequest,
   buildSuggestionsRequest,
 } from "shell/components/AIDrawer/promptRequest";
@@ -40,14 +42,27 @@ type StudioAIPanelProps = {
   drawerWidth: number;
   // The last staged AI change dropped without a save, and whose page it was.
   lastDiscard: { id: number; pageItemZUID: string } | null;
-} & StudioAITurnCallbacks;
+} & StudioAIPageContext &
+  StudioAITurnCallbacks;
+
+// What a turn needs from the page beyond its ZUIDs.
+type StudioAIPageContext = {
+  // The page model's image fields an image reply may target. Applied only on
+  // Apply, unlike code edits.
+  imageFieldNames: string[];
+  // The canvas element the prompt is about, read when it is sent.
+  getSelection: () => AiSelection | undefined;
+};
 
 // How Studio's undo history hears about a turn: whether a request is in
-// flight, and the bracket around applying a reply's actions.
+// flight, the bracket around applying a reply's actions, and the one around
+// an image's Apply, which is not an AI turn: undoing it keeps the session.
 type StudioAITurnCallbacks = {
   onRequestPendingChange?: (pending: boolean) => void;
   onBeforeReplyApplied?: () => void;
   onAfterReplyApplied?: () => void;
+  onBeforeImageApplied?: () => void;
+  onAfterImageApplied?: () => void;
 };
 
 type StudioChat = {
@@ -98,9 +113,13 @@ export const StudioAIPanel = ({
   pageItemZUID,
   drawerWidth,
   lastDiscard,
+  imageFieldNames,
+  getSelection,
   onRequestPendingChange,
   onBeforeReplyApplied,
   onAfterReplyApplied,
+  onBeforeImageApplied,
+  onAfterImageApplied,
 }: StudioAIPanelProps) => {
   const { t } = useTranslation();
 
@@ -151,9 +170,13 @@ export const StudioAIPanel = ({
               ? lastDiscard.id
               : undefined
           }
+          imageFieldNames={imageFieldNames}
+          getSelection={getSelection}
           onRequestPendingChange={onRequestPendingChange}
           onBeforeReplyApplied={onBeforeReplyApplied}
           onAfterReplyApplied={onAfterReplyApplied}
+          onBeforeImageApplied={onBeforeImageApplied}
+          onAfterImageApplied={onAfterImageApplied}
         />
       </Box>
     </Drawer>
@@ -164,17 +187,23 @@ type StudioAIChatProps = {
   pageModelZUID: string;
   pageItemZUID: string;
   discardId?: number;
-} & StudioAITurnCallbacks;
+} & StudioAIPageContext &
+  StudioAITurnCallbacks;
 
-// One page's transcript. Every SET_VALUE is applied on arrival, and an
-// applied `code-editor` edit shows as its line counts, not the whole file.
+// One page's transcript. A SET_VALUE is applied on arrival, and an applied
+// `code-editor` edit shows as its line counts, not the whole file. An image
+// for a page image field waits for Apply; one with no field is only shown.
 const StudioAIChat = ({
   pageModelZUID,
   pageItemZUID,
   discardId,
+  imageFieldNames,
+  getSelection,
   onRequestPendingChange,
   onBeforeReplyApplied,
   onAfterReplyApplied,
+  onBeforeImageApplied,
+  onAfterImageApplied,
 }: StudioAIChatProps) => {
   const { t } = useTranslation();
   const applySetValue = useApplySetValue();
@@ -190,8 +219,8 @@ const StudioAIChat = ({
     onRequestPendingChange?.(isLoading);
     return () => onRequestPendingChange?.(false);
   }, [isLoading, onRequestPendingChange]);
-  // Never called: auto-apply hides Apply, its only caller, and a Studio turn
-  // has no server prompt ZUID to approve.
+  // Never called: Studio's Apply goes through onManualApply, and a Studio
+  // turn has no server prompt ZUID to approve.
   const [updatePromptApprovalStatus] = useUpdatePromptApprovalStatusMutation();
 
   // Fixed per mount: the panel remounts when the page changes.
@@ -272,6 +301,15 @@ const StudioAIChat = ({
     };
   }, [chat, appendToTurn]);
 
+  // Entries left for Apply, or only shown: never applied on arrival.
+  const isHeld = useCallback(
+    (entry: ChatResponse) =>
+      entry.type === "SET_VALUE" &&
+      (entry.payload.refKey === GENERATED_IMAGE_REF_KEY ||
+        imageFieldNames.includes(entry.payload.refKey)),
+    [imageFieldNames]
+  );
+
   const handleReply = useCallback(
     (turnZUID: string, reply: GeminiResponse) => {
       // No reply at all is a failure the user should see.
@@ -290,6 +328,7 @@ const StudioAIChat = ({
         parsed.filter(
           (entry) =>
             entry.type === "SET_VALUE" &&
+            !isHeld(entry) &&
             getRefRegistry()[entry.payload.refKey]?.handle?.accepts?.(
               entry.payload.value
             ) === false
@@ -305,7 +344,7 @@ const StudioAIChat = ({
         );
       const entries = parsed.flatMap((entry): ChatResponse[] => {
         if (entry.type === "SYSTEM_OUTPUT" && refused.size) return [];
-        if (entry.type !== "SET_VALUE") return [entry];
+        if (entry.type !== "SET_VALUE" || isHeld(entry)) return [entry];
         const { refKey, value } = entry.payload;
 
         // Said in the transcript, not as applySetValue's toast.
@@ -342,8 +381,67 @@ const StudioAIChat = ({
       appendToTurn(turnZUID, entries);
       setLatestPromptZUIDs(new Set([turnZUID]));
     },
-    [applySetValue, appendToTurn, onAfterReplyApplied, onBeforeReplyApplied, t]
+    [
+      applySetValue,
+      appendToTurn,
+      isHeld,
+      onAfterReplyApplied,
+      onBeforeReplyApplied,
+      t,
+    ]
   );
+
+  // Apply on a page image field: one undo step, made inside the step rather
+  // than queued past its end.
+  const handleManualApply = useCallback(
+    (response: ChatResponse) => {
+      if (response.type !== "SET_VALUE") return;
+      const { refKey, value, url } = response.payload;
+      onBeforeImageApplied?.();
+      try {
+        applySetValue(refKey, value, {
+          immediate: true,
+          url: typeof url === "string" ? url : undefined,
+        });
+      } finally {
+        onAfterImageApplied?.();
+      }
+    },
+    [applySetValue, onAfterImageApplied, onBeforeImageApplied]
+  );
+  const manualApplyFor = useCallback(
+    (response: ChatResponse) =>
+      response.type === "SET_VALUE" &&
+      imageFieldNames.includes(response.payload.refKey) &&
+      /^3-/.test(response.payload.value),
+    [imageFieldNames]
+  );
+
+  // Apply is off while its field holds that file, so a Cancel or an undo
+  // offers it again.
+  const imageFieldValues = useSelector(
+    (state: AppState) =>
+      imageFieldNames.map(
+        (name) => state.content?.[pageItemZUID]?.data?.[name] as unknown
+      ),
+    shallowEqual
+  );
+  const shownResponses = useMemo(() => {
+    const isApplied = (entry: ChatResponse) =>
+      entry.type === "SET_VALUE" &&
+      imageFieldValues[imageFieldNames.indexOf(entry.payload.refKey)] ===
+        entry.payload.value;
+    return Object.fromEntries(
+      Object.entries(responses).map(([turnZUID, entries]) => [
+        turnZUID,
+        entries.map((entry) =>
+          manualApplyFor(entry)
+            ? { ...entry, approval: isApplied(entry) ? "1" : undefined }
+            : entry
+        ),
+      ])
+    );
+  }, [imageFieldNames, imageFieldValues, manualApplyFor, responses]);
 
   const sendTurn = useCallback(
     (prompt: string, body: Record<string, unknown>, images?: PromptImage[]) => {
@@ -401,6 +499,7 @@ const StudioAIChat = ({
           roleZUID,
           chatZUID: chat.chatZUID,
           imageFileZUIDs: toImageFileZUIDs(images),
+          selection: getSelection(),
         }),
         images
       );
@@ -408,6 +507,7 @@ const StudioAIChat = ({
     },
     [
       chat,
+      getSelection,
       sendTurn,
       roleZUID,
       selectedTone.value,
@@ -463,13 +563,15 @@ const StudioAIChat = ({
 
   return (
     <ChatThread
-      responses={responses}
+      responses={shownResponses}
       setResponses={setResponses}
       latestPromptZUIDs={latestPromptZUIDs}
       autoApply
       // The switch is hidden, so nothing calls it.
       setAutoApply={() => {}}
       hideAutoApply
+      manualApplyFor={manualApplyFor}
+      onManualApply={handleManualApply}
       isInCodeApp={false}
       isLoading={isLoading || isGeneratingAltText}
       isLoadingChatSessionLog={false}

@@ -87,7 +87,10 @@ type ToneOption = { label: string; value: string };
 export type ChatResponse = { approval?: string } & (
   | { type: "USER_INPUT"; payload: { value: string; images?: PromptImage[] } }
   | { type: "NAVIGATE"; payload: { path: string } }
-  | { type: "SET_VALUE"; payload: { refKey: string; value: string } }
+  | {
+      type: "SET_VALUE";
+      payload: { refKey: string; value: string; url?: string };
+    }
   // A prose reply.
   | { type: "MESSAGE"; payload: { value: string } }
   // Built by a host, not sent by the server: an applied code edit's line
@@ -104,6 +107,10 @@ export type ChatResponse = { approval?: string } & (
       payload: { refKey?: string; value: string };
     }
 );
+
+// The refKey the server uses for an image with no field to fill. It is shown,
+// never applied.
+export const GENERATED_IMAGE_REF_KEY = "generated-image";
 
 // Scrolls only the transcript. `scrollIntoView` would also scroll every
 // ancestor that overflows, moving the host's own layout.
@@ -169,6 +176,10 @@ export type ChatThreadProps = {
   scrollContainerRef: MutableRefObject<HTMLDivElement | null>;
   // For a host that applies every suggestion itself.
   hideAutoApply?: boolean;
+  // Shows Apply on this entry even while auto-apply is on.
+  manualApplyFor?: (response: ChatResponse) => boolean;
+  // Replaces the drawer's Apply, which approves the prompt on the server.
+  onManualApply?: (response: ChatResponse, promptZUID: string) => void;
   placeholder?: string;
   // Shows an alt-text chip under each generated image. `prompt` is the turn
   // that asked for the image.
@@ -197,6 +208,8 @@ export const ChatThread = ({
   handleGenerateSuggestions,
   scrollContainerRef,
   hideAutoApply = false,
+  manualApplyFor,
+  onManualApply,
   placeholder,
   onGenerateAltText,
 }: ChatThreadProps) => {
@@ -450,6 +463,11 @@ export const ChatThread = ({
                     );
                   }
 
+                  const showApply =
+                    response.type === "SET_VALUE" &&
+                    response.payload.refKey !== GENERATED_IMAGE_REF_KEY &&
+                    (!autoApply || !!manualApplyFor?.(response));
+
                   return (
                     <Box
                       key={`${promptZUID}-${responseIndex}`}
@@ -481,13 +499,17 @@ export const ChatThread = ({
                           onGrow={() => scrollToEnd(scrollContainerRef.current)}
                         />
                       )}
-                      {!autoApply && response.type === "SET_VALUE" && (
+                      {showApply && response.type === "SET_VALUE" && (
                         <Button
                           data-cy="AIDrawerSetValue"
                           variant="contained"
                           sx={{ mt: 1.25 }}
                           disabled={response.approval === "1"}
                           onClick={() => {
+                            if (onManualApply) {
+                              onManualApply(response, promptZUID);
+                              return;
+                            }
                             if (!urlChatZUID) return;
                             // Stays applicable when the ref is not on the page.
                             if (

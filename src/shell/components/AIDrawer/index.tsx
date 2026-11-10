@@ -28,7 +28,12 @@ import {
   ChatPrompt,
   ContentItemWithDirtyAndPublishing,
 } from "shell/services/types";
-import { ChatThread, ChatResponse, scrollToEnd } from "./ChatThread";
+import {
+  ChatThread,
+  ChatResponse,
+  GENERATED_IMAGE_REF_KEY,
+  scrollToEnd,
+} from "./ChatThread";
 import { PromptImage, toImageFileZUIDs } from "./attachments";
 import { toChatResponses } from "./parseResponse";
 import { useApplySetValue } from "./useApplySetValue";
@@ -411,7 +416,10 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
 
       const unappliedSetValueResponses = promptResponses.filter(
         (response): response is Extract<ChatResponse, { type: "SET_VALUE" }> =>
-          response.type === "SET_VALUE" && response.approval !== "1"
+          response.type === "SET_VALUE" &&
+          response.approval !== "1" &&
+          // Shown only: there is no field to put it in.
+          response.payload.refKey !== GENERATED_IMAGE_REF_KEY
       );
       if (!unappliedSetValueResponses.length) return;
 
