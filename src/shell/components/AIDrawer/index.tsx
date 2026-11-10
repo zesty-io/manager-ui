@@ -1,5 +1,5 @@
 import { Box, IconButton, Paper, Skeleton, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Suspense,
   useCallback,
@@ -10,6 +10,7 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  mcpApi,
   useGeminiGenerationMutation,
   useGetChatSessionLogQuery,
   useGetChatSessionsQuery,
@@ -30,6 +31,7 @@ import {
 import { ChatThread, ChatResponse, scrollToEnd } from "./ChatThread";
 import { toChatResponses } from "./parseResponse";
 import { useApplySetValue } from "./useApplySetValue";
+import { toAltTextEntry, useGenerateAltText } from "./useGenerateAltText";
 import { buildPromptRequest, buildSuggestionsRequest } from "./promptRequest";
 import { ChatHistory } from "./ChatHistory";
 import {
@@ -39,10 +41,36 @@ import {
   isCodeAppPath,
 } from "utility/isAIDrawerSupportedPath";
 
-const normalizeChatSessionLog = (prompts: ChatPrompt[] = []) => {
+// `altTextPromptLabel` stands in for the server's own English prompt on a
+// logged alt-text turn.
+const normalizeChatSessionLog = (
+  prompts: ChatPrompt[] = [],
+  altTextPromptLabel: string
+) => {
   const promptMap: Record<string, any[]> = {};
 
   prompts.forEach((promptLog) => {
+    // The server marks an alt-text turn by its metadata, not its wording.
+    const metadata = promptLog.metadata;
+    if (
+      metadata &&
+      typeof metadata === "object" &&
+      "altText" in metadata &&
+      typeof metadata.altText === "string" &&
+      metadata.altText.trim() &&
+      typeof metadata.fileZuid === "string" &&
+      metadata.fileZuid
+    ) {
+      promptMap[promptLog.promptZuid] = [
+        { type: "USER_INPUT", payload: { value: altTextPromptLabel } },
+        {
+          type: "ALT_TEXT_SAVED",
+          payload: { value: metadata.altText, fileZuid: metadata.fileZuid },
+        },
+      ];
+      return;
+    }
+
     const parsedResponses = toChatResponses(promptLog.response);
 
     promptMap[promptLog.promptZuid] = [
@@ -164,6 +192,12 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     isFetchingChatSessionLog && currentChatSessionLog === undefined;
   const [updatePromptApprovalStatus] = useUpdatePromptApprovalStatusMutation();
   const applySetValue = useApplySetValue();
+  const dispatch = useDispatch();
+  const { generate: generateAltText, isLoading: isGeneratingAltText } =
+    useGenerateAltText();
+  // The chat on screen now, for a reply that lands after the user left it.
+  const urlChatZUIDRef = useRef(urlChatZUID);
+  urlChatZUIDRef.current = urlChatZUID;
   const {
     data: chatSessions,
     isLoading: isLoadingChatSessions,
@@ -443,7 +477,10 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     }
 
     const restoredResponses = chatSessionLog?.prompts?.length
-      ? normalizeChatSessionLog([...chatSessionLog?.prompts])
+      ? normalizeChatSessionLog(
+          [...chatSessionLog?.prompts],
+          t("shell.generateAltText")
+        )
       : {};
 
     // Only animate/auto-apply prompts that just arrived from a live model
@@ -580,6 +617,39 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     [geminiGenerate, urlChatZUID, userRole, t]
   );
 
+  // Shown locally at once. When the server logged the turn, a refetch then
+  // replaces the transcript with its copy; if the refetch fails, the local
+  // turn stays.
+  const handleGenerateAltText = useCallback(
+    async (fileZuid: string, prompt: string) => {
+      const chatZUID = urlChatZUID;
+      const result = await generateAltText({
+        fileZuid,
+        context: prompt,
+        chatZuid: chatZUID,
+      });
+      if (urlChatZUIDRef.current !== chatZUID) return;
+
+      setResponses((prev) => ({
+        ...prev,
+        [`alt-${Date.now()}`]: [
+          {
+            type: "USER_INPUT",
+            payload: { value: t("shell.generateAltText") },
+          },
+          toAltTextEntry(result, fileZuid),
+        ],
+      }));
+
+      if (result.ok && chatZUID && !result.chatError) {
+        dispatch(
+          mcpApi.util.invalidateTags([{ type: "ChatSessionLog", id: chatZUID }])
+        );
+      }
+    },
+    [dispatch, generateAltText, urlChatZUID, t]
+  );
+
   // Resets the live-response flag too, so it can't leak into the next session
   // opened and make its restored prompts look freshly arrived (auto-apply).
   const abandonRequest = useCallback(() => {
@@ -706,7 +776,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
           autoApply={autoApply}
           setAutoApply={setAutoApply}
           isInCodeApp={isInCodeApp}
-          isLoading={isLoading}
+          isLoading={isLoading || isGeneratingAltText}
           isLoadingChatSessionLog={isLoadingChatSessionLog}
           urlChatZUID={urlChatZUID}
           onClearChat={handleClearChat}
@@ -720,6 +790,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
           handlePrompt={handlePrompt}
           handleGenerateSuggestions={handleGenerateSuggestions}
           scrollContainerRef={scrollContainerRef}
+          onGenerateAltText={handleGenerateAltText}
         />
       ) : (
         <ChatHistory
