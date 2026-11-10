@@ -786,6 +786,12 @@ export type ChatPromptMetadata =
   | {
       temperature: number;
       systemInstruction: string;
+    }
+  // A turn the alt-text endpoint logged.
+  | {
+      fileZuid: string;
+      context?: string;
+      altText: string;
     };
 
 export type ChatPrompt = {
