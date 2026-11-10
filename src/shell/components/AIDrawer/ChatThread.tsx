@@ -8,6 +8,7 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
+  Link,
   Skeleton,
   Stack,
   Switch,
@@ -18,11 +19,13 @@ import {
 import {
   Dispatch,
   MutableRefObject,
+  ReactNode,
   SetStateAction,
   useRef,
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { Link as RouterLink } from "react-router-dom";
 import {
   ArrowForward,
   ArrowUpwardRounded,
@@ -87,6 +90,8 @@ export type ChatResponse = { approval?: string } & (
       payload: { fileName: string; added: number; removed: number };
     }
   | { type: "NOTICE"; payload: { value: string } }
+  // Built by a host: alt text that was written to a media file.
+  | { type: "ALT_TEXT_SAVED"; payload: { value: string; fileZuid: string } }
   | {
       type: "SYSTEM_SUGGESTION" | "SYSTEM_OUTPUT" | "ERROR";
       payload: { refKey?: string; value: string };
@@ -101,6 +106,38 @@ export const GENERATED_IMAGE_REF_KEY = "generated-image";
 // ancestor that overflows, moving the host's own layout.
 export const scrollToEnd = (container: HTMLElement | null) =>
   container?.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+
+// The `>` chip under a reply: a server suggestion, or an action on it.
+const SuggestionChip = ({
+  dataCy,
+  onClick,
+  disabled,
+  children,
+}: {
+  dataCy: string;
+  onClick: () => void;
+  disabled?: boolean;
+  children: ReactNode;
+}) => (
+  <Button
+    data-cy={dataCy}
+    onClick={onClick}
+    disabled={disabled}
+    sx={{
+      textAlign: "left",
+      justifyContent: "flex-start",
+      width: "fit-content",
+      px: 1.5,
+      py: 1,
+      borderRadius: 2,
+    }}
+    variant="contained"
+    color="inherit"
+    endIcon={<ChevronRightRounded />}
+  >
+    {children}
+  </Button>
+);
 
 export type ChatThreadProps = {
   responses: Record<string, ChatResponse[]>;
@@ -133,6 +170,9 @@ export type ChatThreadProps = {
   // Replaces the drawer's Apply, which approves the prompt on the server.
   onManualApply?: (response: ChatResponse, promptZUID: string) => void;
   placeholder?: string;
+  // Shows an alt-text chip under each generated image. `prompt` is the turn
+  // that asked for the image.
+  onGenerateAltText?: (fileZuid: string, prompt: string) => void;
 };
 
 export const ChatThread = ({
@@ -160,6 +200,7 @@ export const ChatThread = ({
   manualApplyFor,
   onManualApply,
   placeholder,
+  onGenerateAltText,
 }: ChatThreadProps) => {
   const { t } = useTranslation();
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -228,7 +269,7 @@ export const ChatThread = ({
               </>
             ) : (
               Object.entries(responses).map(([promptZUID, promptResponses]) => {
-                return promptResponses.map((response, responseIndex) => {
+                const turn = promptResponses.map((response, responseIndex) => {
                   const shouldAnimate =
                     latestPromptZUIDs.has(promptZUID) &&
                     response.type !== "USER_INPUT";
@@ -270,30 +311,19 @@ export const ChatThread = ({
                     );
                   } else if (response.type === "SYSTEM_SUGGESTION") {
                     return (
-                      <Button
-                        data-cy="AIDrawerSystemSuggestion"
+                      <SuggestionChip
+                        dataCy="AIDrawerSystemSuggestion"
                         key={`${promptZUID}-${responseIndex}`}
                         onClick={() => {
                           setComposerSeed(response.payload.value);
                         }}
-                        sx={{
-                          textAlign: "left",
-                          justifyContent: "flex-start",
-                          width: "fit-content",
-                          px: 1.5,
-                          py: 1,
-                          borderRadius: 2,
-                        }}
-                        variant="contained"
-                        color="inherit"
-                        endIcon={<ChevronRightRounded />}
                       >
                         <AnimatedText
                           text={response.payload.value}
                           animate={shouldAnimate}
                           onGrow={() => scrollToEnd(scrollContainerRef.current)}
                         />
-                      </Button>
+                      </SuggestionChip>
                     );
                   } else if (response.type === "NAVIGATE") {
                     return (
@@ -353,6 +383,31 @@ export const ChatThread = ({
                       >
                         {response.payload.value}
                       </Typography>
+                    );
+                  } else if (response.type === "ALT_TEXT_SAVED") {
+                    return (
+                      <Box
+                        data-cy="AIDrawerAltTextSaved"
+                        key={`${promptZUID}-${responseIndex}`}
+                      >
+                        <Typography variant="body2" fontWeight={600}>
+                          {t("shell.altTextSaved")}
+                          {":"}
+                        </Typography>
+                        <AnimatedText
+                          text={response.payload.value}
+                          animate={shouldAnimate && !isInCodeApp}
+                          onGrow={() => scrollToEnd(scrollContainerRef.current)}
+                        />
+                        <Link
+                          data-cy="AIDrawerAltTextOpenInMedia"
+                          component={RouterLink}
+                          to={`/media?fileId=${response.payload.fileZuid}`}
+                          variant="body2"
+                        >
+                          {t("shell.openInMedia")}
+                        </Link>
+                      </Box>
                     );
                   }
 
@@ -448,6 +503,40 @@ export const ChatThread = ({
                     </Box>
                   );
                 });
+                if (!onGenerateAltText) return turn;
+
+                // Follow-up chips come last in the turn, after its text.
+                const promptInput = promptResponses.find(
+                  (
+                    entry
+                  ): entry is Extract<ChatResponse, { type: "USER_INPUT" }> =>
+                    entry.type === "USER_INPUT"
+                );
+                const altTextChips = promptResponses
+                  .filter(
+                    (
+                      entry
+                    ): entry is Extract<ChatResponse, { type: "SET_VALUE" }> =>
+                      entry.type === "SET_VALUE" &&
+                      !!entry.payload.value?.startsWith("3-")
+                  )
+                  .map((entry, imageIndex) => (
+                    <SuggestionChip
+                      dataCy="AIDrawerGenerateAltText"
+                      key={`${promptZUID}-alt-${imageIndex}`}
+                      disabled={isLoading}
+                      onClick={() =>
+                        onGenerateAltText(
+                          entry.payload.value,
+                          promptInput?.payload.value ?? ""
+                        )
+                      }
+                    >
+                      {t("shell.generateAltText")}
+                    </SuggestionChip>
+                  ));
+
+                return [...turn, ...altTextChips];
               })
             )}
             {isLoading && (

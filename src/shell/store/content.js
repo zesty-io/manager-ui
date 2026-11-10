@@ -2,7 +2,7 @@ import cloneDeep from "lodash/cloneDeep";
 
 import i18n from "shell/i18n";
 import { notify } from "shell/store/notifications";
-import { request } from "utility/request";
+import { request, toRequestFailure, isRequestFailed } from "utility/request";
 import instanceZUID from "utility/instanceZUID";
 import { fetchNav, navContent } from "apps/content-editor/src/store/navContent";
 import { instanceApi } from "../../shell/services/instance";
@@ -281,8 +281,9 @@ export function fetchItem(modelZUID, itemZUID) {
     return dispatch({
       type: "FETCH_RESOURCE",
       uri: `${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items/${itemZUID}`,
+      rejectOnError: true,
       handler: (res) => {
-        if (res.status === 404 || res.data === null) {
+        if (res.data === null) {
           dispatch({
             type: "REMOVE_ITEM",
             itemZUID,
@@ -302,7 +303,17 @@ export function fetchItem(modelZUID, itemZUID) {
       },
     }).catch((err) => {
       console.error("Failed to fetch item:", err);
-      return err;
+      const failure = toRequestFailure(err);
+
+      if (failure.status === 404) {
+        dispatch({
+          type: "REMOVE_ITEM",
+          itemZUID,
+        });
+      }
+
+      // Resolves { error, status }, callers check with isRequestFailed()
+      return failure;
     });
   };
 }
@@ -580,6 +591,7 @@ export function saveItem({
       {
         method: "PUT",
         json: true,
+        rejectOnError: true,
         body: {
           data: item.data,
           meta: item.meta,
@@ -599,43 +611,50 @@ export function saveItem({
           items: [itemZUID],
         });
 
-        if (res.status === 200) {
-          await dispatch(fetchItem(item.meta.contentModelZUID, itemZUID));
-          if (model?.type === "block") {
-            /*
-            Not awaiting this because capturing the screenshot is not critical to the save operation
-            and we don't want to hold up the user
+        // The save succeeded, so a failed refetch is returned alongside the
+        // result for the caller to surface instead of failing the save
+        const refetch = await dispatch(
+          fetchItem(item.meta.contentModelZUID, itemZUID)
+        );
+
+        if (model?.type === "block") {
+          /*
+          Not awaiting this because capturing the screenshot is not critical to the save operation
+          and we don't want to hold up the user
           */
+          dispatch({
+            type: "START_CAPTURING_SCREENSHOT",
+            itemZUID,
+          });
+
+          dispatch(
+            cloudFunctionsApi.endpoints.createScreenshot.initiate(
+              `${CONFIG.URL_PREVIEW_PROTOCOL}${itemBlockPreviewUrl}`
+            )
+          ).then(() => {
+            dispatch(
+              instanceApi.util.invalidateTags([
+                "ContentItems",
+                "ItemWorkflowStatus",
+              ])
+            );
             dispatch({
-              type: "START_CAPTURING_SCREENSHOT",
+              type: "DONE_CAPTURING_SCREENSHOT",
               itemZUID,
             });
-            dispatch(
-              cloudFunctionsApi.endpoints.createScreenshot.initiate(
-                `${CONFIG.URL_PREVIEW_PROTOCOL}${itemBlockPreviewUrl}`
-              )
-            ).then(() => {
-              dispatch(
-                instanceApi.util.invalidateTags([
-                  "ContentItems",
-                  "ItemWorkflowStatus",
-                ])
-              );
-              dispatch({
-                type: "DONE_CAPTURING_SCREENSHOT",
-                itemZUID,
-              });
-            });
-          }
+          });
         }
 
         zesty.trigger("PREVIEW_REFRESH");
 
-        return res;
+        return isRequestFailed(refetch)
+          ? { ...res, refetchFailure: refetch }
+          : res;
       })
       .catch((err) => {
         console.error("Failed to save item:", err);
-        return err;
+        // Resolves { error, status }, item stays dirty
+        return toRequestFailure(err);
       });
   };
 }
@@ -776,6 +795,7 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
     return request(`${CONFIG.API_INSTANCE}/content/models/${modelZUID}/items`, {
       method: "POST",
       json: true,
+      rejectOnError: true,
       body: {
         data: item.data,
         web: item.web,
@@ -783,23 +803,25 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
       },
     })
       .then(async (res) => {
-        if (!res.error) {
-          dispatch(
-            instanceApi.util.invalidateTags(["ContentNav", "ContentItems"])
-          );
-          dispatch({
-            type: "REMOVE_ITEM",
-            itemZUID,
-          });
+        dispatch(
+          instanceApi.util.invalidateTags(["ContentNav", "ContentItems"])
+        );
+        dispatch({
+          type: "REMOVE_ITEM",
+          itemZUID,
+        });
 
-          if (model?.type === "block") {
-            const newItem = await dispatch(
-              fetchItem(item.meta.contentModelZUID, res?.data?.ZUID)
-            );
+        if (model?.type === "block") {
+          // The item exists at this point, so a failure of this follow-up
+          // save does not fail the create
+          const newItem = await dispatch(
+            fetchItem(item.meta.contentModelZUID, res?.data?.ZUID)
+          );
+          if (!isRequestFailed(newItem) && newItem?.data) {
             await dispatch(
               saveItem({
                 itemZUID: res?.data?.ZUID,
-                itemOverride: newItem?.data,
+                itemOverride: newItem.data,
               })
             );
           }
@@ -808,7 +830,7 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
       })
       .catch((err) => {
         console.error("Failed to create item:", err);
-        return err;
+        return toRequestFailure(err);
       });
   };
 }

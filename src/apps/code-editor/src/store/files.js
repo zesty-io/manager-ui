@@ -3,6 +3,7 @@ import { notify } from "shell/store/notifications";
 import { request } from "utility/request";
 import { instanceApi } from "shell/services/instance";
 import i18n from "shell/i18n";
+import { resolveCodePathPart } from "utility/resolveCodePathPart";
 
 export function files(state = [], action) {
   let files;
@@ -88,7 +89,7 @@ export function files(state = [], action) {
       // Check if other branchs are ahead of "live" and mark them as can be published
       combinedFiles.forEach((f) => {
         let liveFile = liveFiles[f.ZUID];
-        f.fileType = resolvePathPart(f.type);
+        f.fileType = resolveCodePathPart(f.type);
         if (liveFile && liveFile.version) {
           f.publishedVersion = liveFile.version;
 
@@ -418,7 +419,7 @@ export function fetchFileVersions(fileZUID, fileType) {
 }
 
 export function createFile(name, type, code = "") {
-  const pathPart = resolvePathPart(type);
+  const pathPart = resolveCodePathPart(type);
   return (dispatch) => {
     return request(`${CONFIG.API_INSTANCE}/web/${pathPart}`, {
       json: true,
@@ -475,7 +476,7 @@ export function saveFile(ZUID, status, code = null) {
   return (dispatch, getState) => {
     const file = resolveFile(dispatch, getState().files, ZUID, status);
     const newCode = code || file.code;
-    const pathPart = resolvePathPart(file.type);
+    const pathPart = resolveCodePathPart(file.type);
 
     // delete file.version;
     // delete file.versions;
@@ -555,7 +556,7 @@ export function saveFile(ZUID, status, code = null) {
 export function publishFile(fileZUID, fileStatus) {
   return (dispatch, getState) => {
     const file = resolveFile(dispatch, getState().files, fileZUID, fileStatus);
-    const pathPart = resolvePathPart(file.type);
+    const pathPart = resolveCodePathPart(file.type);
     const latestVersion = file.latestVersion || file.version;
 
     return request(
@@ -613,7 +614,7 @@ export function publishFile(fileZUID, fileStatus) {
 export function deleteFile(fileZUID, fileStatus) {
   return (dispatch, getState) => {
     const file = resolveFile(dispatch, getState().files, fileZUID, fileStatus);
-    const pathPart = resolvePathPart(file.type);
+    const pathPart = resolveCodePathPart(file.type);
 
     return request(`${CONFIG.API_INSTANCE}/web/${pathPart}/${fileZUID}`, {
       method: "DELETE",
@@ -695,34 +696,6 @@ export function resolveMonacoLang(fileName) {
   }
 
   return language;
-}
-
-export function resolvePathPart(type) {
-  switch (type) {
-    case "templateset":
-    case "dataset":
-    case "pageset":
-    case "snippet":
-    case "ajax-json":
-    case "ajax-html":
-    case "404":
-    case "loader":
-    case "block":
-      return "views";
-
-    case "text/js":
-    case "text/javascript":
-      return "scripts";
-
-    case "text/css":
-    case "text/less":
-    case "text/scss":
-    case "text/sass":
-      return "stylesheets";
-
-    default:
-      return type;
-  }
 }
 
 function resolveFile(dispatch, files, fileZUID, fileStatus) {
