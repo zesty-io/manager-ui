@@ -5,9 +5,14 @@ on:
     branches: [dev, beta, stable, master]
 
 # Serialize e2e across PRs — they share one dev instance; concurrent runs overload it.
+# `queue: max` keeps pending runs FIFO instead of a new run evicting another PR's pending one.
+# Superseded pending runs of the same PR are cancelled by ci-cancel-superseded.yml.
+# That must stay a separate workflow: a cancel job in this file wouldn't start until
+# its run left the queue. Don't move the concurrency to job level either, since
+# run_tests and run_global_tests would interleave across PRs.
 concurrency:
   group: manager-ui-e2e-dev-instance
-  cancel-in-progress: false
+  queue: max
 
 # Job flow:
 #   setup (install + typecheck) -> run_tests -> run_global_tests
@@ -32,14 +37,6 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      # This Clean step simply checks if there's already a workflow running from the last
-      # commit and cancels it if there is. This helps us save on cloud cost in the long run.
-      # See https://github.com/rokroskar/workflow-run-cleanup-action for more information.
-      - name: Clean
-        uses: rokroskar/workflow-run-cleanup-action@v0.2.2
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        if: "github.ref != 'refs/heads/master'"
       # Installs and caches node_modules so every downstream job restores instead of installing.
       - name: Checkout Repo
         uses: actions/checkout@v4
