@@ -26,7 +26,7 @@
   "deleteFile": "Eliminar archivo",
   "deleteFileCdnWarning": "Eliminar un archivo lo borrará y activará una purga de la CDN, lo que hará que la producción se actualice inmediatamente.",
   "deleteFileError": "Error al eliminar el archivo {{fileName}}. {{error}}",
-  "deleteFileLabel": "Eliminar archivo",
+  "deleteFileTitleRich": "Eliminar archivo: <name>{{fileName}}</name>",
   "developerResources": "Recursos para desarrolladores",
   "diffVersions": "Comparar versiones (Diff)",
   "editItemContent": "Editar contenido del elemento",

@@ -1,4 +1,4 @@
-// Signs the negative-QA agent's browser in and proves it worked, by writing auth-state.json
+// Signs the QA browser agent in and proves it worked, by writing auth-state.json
 // for Playwright MCP's --storage-state. Keeps the token out of the agent's prompt entirely.
 
 import { createRequire } from "module";
