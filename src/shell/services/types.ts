@@ -806,6 +806,8 @@ export type ChatPrompt = {
   deletedAt: string | null;
   promptZuid: string;
   chatZuid: string;
+  // What the user attached to the prompt.
+  inputArtifacts?: { type: string; url: string; fileZuid?: string }[];
 };
 
 export type ChatSessionLog = {

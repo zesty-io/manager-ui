@@ -22,6 +22,8 @@ type PromptRequestArgs = {
   roleZUID: string;
   // Omitted to have the /client endpoint start a new chat session.
   chatZUID?: string;
+  // Media library files attached to the prompt.
+  imageFileZUIDs?: string[];
   selection?: AiSelection;
 };
 
@@ -35,6 +37,7 @@ export const buildPromptRequest = ({
   itemZUID,
   roleZUID,
   chatZUID,
+  imageFileZUIDs,
   selection,
 }: PromptRequestArgs) => {
   const registryKeys = Object.keys(getRefRegistry() || {});
@@ -58,6 +61,7 @@ export const buildPromptRequest = ({
     url: window.location.href,
     roleZuid: roleZUID,
     ...(chatZUID && { chatZuid: chatZUID }),
+    ...(!!imageFileZUIDs?.length && { imageFileZuids: imageFileZUIDs }),
     ...(selection && { selection }),
   };
 };
