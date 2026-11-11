@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { connect, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { alpha } from "@mui/material/styles";
@@ -41,8 +41,13 @@ export default connect((state) => {
     const [loading, setLoading] = useState(false);
     const [twoFactor, setTwoFactor] = useState(false);
     const [error, setError] = useState("");
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+
+    // Login stays mounted while the session is valid, so onSSOSuccess/
+    // onSSOError below read the latest value through a ref to ignore stray
+    // SSO messages instead of overwriting an already-valid session.
+    const isSessionValid = useRef(props.auth.valid);
+    isSessionValid.current = props.auth.valid;
 
     const handleLogin = (evt) => {
       evt.preventDefault();
@@ -82,11 +87,33 @@ export default connect((state) => {
         .finally(() => setLoading(false));
     };
 
-    useEffect(() => {
-      if (isAuthenticated) {
-        props.dispatch(verify());
+    const handleSSOSuccess = (message) => {
+      if (isSessionValid.current) {
+        return;
       }
-    }, [isAuthenticated]);
+
+      setError("");
+      dispatch({
+        type: "FETCH_LOGIN_SUCCESS",
+        payload: {
+          // The auth service posts status as the string "200", but the
+          // auth reducer only treats the number 200 as a valid session.
+          code: 200,
+          meta: {
+            token: message.token,
+          },
+        },
+      });
+      dispatch(verify());
+    };
+
+    const handleSSOError = (errorMessage) => {
+      if (isSessionValid.current) {
+        return;
+      }
+
+      setError(errorMessage);
+    };
 
     return (
       <Box
@@ -175,21 +202,8 @@ export default connect((state) => {
               </Box>
               <SSOButtonGroup
                 authServiceUrl={CONFIG.SERVICE_AUTH}
-                onSuccess={(data) => {
-                  dispatch({
-                    type: "FETCH_LOGIN_SUCCESS",
-                    payload: {
-                      code: data.status,
-                      meta: {
-                        token: data.token,
-                      },
-                    },
-                  });
-                  setIsAuthenticated(true);
-                }}
-                onError={(err) => {
-                  setError(err);
-                }}
+                onSuccess={handleSSOSuccess}
+                onError={handleSSOError}
               >
                 <SSOButton
                   service="google"
