@@ -62,6 +62,11 @@ describe("Studio AI Assistant", () => {
   beforeEach(() => {
     cy.stubStaffUser();
     indexSeededPages();
+    // Refuses any upload a test's own stub does not catch, so none reaches
+    // the real media library. Registered first, so a test's stub wins.
+    cy.intercept("POST", "**/upload/**", { statusCode: 500 }).as(
+      "unstubbedUpload"
+    );
     visitStudio();
   });
 
@@ -427,6 +432,73 @@ describe("Studio AI Assistant", () => {
       .and("contain.text", "−1");
     cy.getBySelector("AIDrawerSystemOutput").should("not.exist");
     cy.getBySelector("StudioAIPanel").should("not.contain", "studio-e2e");
+    expectPreviewing(true);
+  });
+
+  it("sends an attached image with the page's code, and stages the edit it returns", () => {
+    const BIN = {
+      id: "1-e2e-bin",
+      default: true,
+      storage_driver: "gcp",
+      storage_name: "e2e-bucket",
+    };
+    const IMAGE_URL = "https://e2e.media.zestyio.com/screenshot.png";
+    cy.intercept("GET", "**/site/*/bins", { body: { data: [BIN] } });
+    cy.intercept("GET", "**/eco/*/bins", { body: { data: [] } });
+    cy.intercept("GET", `**/bin/${BIN.id}/groups`, {
+      body: {
+        data: [
+          {
+            id: "2-e2e-ai-attachments",
+            bin_id: BIN.id,
+            group_id: BIN.id,
+            name: "AI Attachments",
+          },
+        ],
+      },
+    });
+    cy.intercept(
+      "POST",
+      `**/upload/${BIN.storage_driver}/${BIN.storage_name}`,
+      {
+        statusCode: 201,
+        body: { data: [{ id: "3-e2e-screenshot", url: IMAGE_URL }] },
+      }
+    ).as("upload");
+    // The stubbed upload's CDN, so the sent image loads.
+    cy.intercept("GET", `${IMAGE_URL}?*`, {
+      headers: { "content-type": "image/svg+xml" },
+      body: '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"></svg>',
+    });
+    stubMcp((body) => liveReply([setValue(editSource(body.code))]));
+    stubPvl({ statusCode: 200, body: "<p>preview</p>" });
+    // Again, so the stubbed bin replaces the one the first visit cached.
+    visitStudio();
+    openAiPanel();
+
+    cy.getBySelector("AIDrawerAttachInput").selectFile(
+      {
+        contents: Cypress.Buffer.from("e2e"),
+        fileName: "screenshot.png",
+        mimeType: "image/png",
+      },
+      // The input is hidden behind the attach button.
+      { force: true }
+    );
+    cy.getBySelector("AIDrawerAttachment").should("have.length", 1);
+    sendPrompt("Make this view match this screenshot");
+
+    cy.get("@mcp.all").then(([{ request }]) => {
+      expect(request.body.imageFileZuids).to.deep.equal(["3-e2e-screenshot"]);
+      expect(request.body.code).to.contain("studio-e2e-two");
+    });
+    cy.getBySelector("AIDrawerUserInputImage")
+      .should("have.attr", "src", `${IMAGE_URL}?width=200`)
+      .and("have.prop", "naturalWidth", 1);
+    cy.getBySelector("AIDrawerCodeEdit")
+      .should("contain.text", viewFileName)
+      .and("contain.text", "+1")
+      .and("contain.text", "−1");
     expectPreviewing(true);
   });
 
