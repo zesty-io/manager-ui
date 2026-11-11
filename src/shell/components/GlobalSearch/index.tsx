@@ -105,14 +105,11 @@ export const GlobalSearch = () => {
   const [debouncedKeyword, setDebouncedKeyword] = useState("");
   useDebounce(() => setDebouncedKeyword(searchKeyword), 300, [searchKeyword]);
 
-  const apiQueryTerm = useMemo(() => {
-    if (!!typedSearchAccelerator && !!debouncedKeyword) {
-      // Remove the accelerator from the keyword
-      return debouncedKeyword.replace(typedAcceleratorRegex, "")?.trim();
-    }
-
-    return debouncedKeyword;
-  }, [debouncedKeyword, typedSearchAccelerator]);
+  // Strip from the debounced text so it can't disagree with the immediate accelerator state
+  const apiQueryTerm = useMemo(
+    () => debouncedKeyword.replace(typedAcceleratorRegex, "").trim(),
+    [debouncedKeyword]
+  );
 
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: mediaFiles, isFetching: isFetchingMediaSearchResults } =
