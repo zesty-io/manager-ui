@@ -257,7 +257,7 @@ export default function Content(props) {
       const directVariants = (
         await Promise.allSettled(
           Array.from(directVariantZUIDs).map(async (variantZUID) => {
-            if (!contentItems[variantZUID]) {
+            if (!contentItems[variantZUID]?.meta?.ZUID) {
               await dispatch(searchItems(variantZUID));
             }
             return store.getState().content[variantZUID] ?? null;
