@@ -1,18 +1,9 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  Typography,
-  Stack,
-  Box,
-} from "@mui/material";
-import { DeleteRounded } from "@mui/icons-material";
+import { Typography, Box } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { notify } from "../../../../../../shell/store/notifications";
-import { DialogContent } from "@mui/material";
+import { ConfirmDialog } from "../../../../../../shell/components/ConfirmDialog";
 
 import { useDeleteRedirectMutation } from "../../../../../../shell/services/instance";
 
@@ -33,137 +24,100 @@ export const DeleteDialog: FC<DeleteDialogProps> = ({
   redirects,
 }) => {
   const { t } = useTranslation();
-  const [deleteRedirect, { isLoading: isDeleting }] =
-    useDeleteRedirectMutation();
+  const [deleteRedirect] = useDeleteRedirectMutation();
+  // Narrowed to the failed redirects after a partial failure, so a retry
+  // only re-sends those.
+  const [remaining, setRemaining] = useState(redirects ?? []);
 
   const dispatch = useDispatch();
 
   const descriptionPart =
-    redirects?.length < 2
+    remaining.length < 2
       ? t("seo.deleteRedirectDescriptionSingular")
-      : t("seo.deleteRedirectDescriptionPlural", { count: redirects?.length });
+      : t("seo.deleteRedirectDescriptionPlural", { count: remaining.length });
 
   const handleDeleteRedirects = async () => {
-    const requests = [...(redirects || [])]?.map((redirect) =>
-      deleteRedirect({ ZUID: redirect?.ZUID })
+    const results = await Promise.allSettled(
+      remaining.map((redirect) =>
+        deleteRedirect({ ZUID: redirect?.ZUID }).unwrap()
+      )
     );
-    Promise.allSettled(requests)
-      .then((res) => {
-        onClose();
+    const failed = remaining.filter(
+      (_, index) => results[index].status === "rejected"
+    );
+
+    if (failed.length) {
+      setRemaining(failed);
+      throw new Error(t("seo.errorDeletingRedirects"));
+    }
+
+    dispatch(
+      notify({
+        kind: "success",
+        message: t("seo.redirectDeleted", { count: redirects?.length }),
       })
-      .catch(() => {
-        dispatch(
-          notify({
-            kind: "error",
-            message: t("seo.errorDeletingRedirects"),
-          })
-        );
-      })
-      .finally(() => {
-        dispatch(
-          notify({
-            kind: "error",
-            message: t("seo.redirectDeleted", { count: redirects?.length }),
-          })
-        );
-      });
+    );
   };
+
   return (
-    <Dialog open={open} fullWidth maxWidth="xs" onClose={onClose}>
-      <DialogTitle>
-        <Box
-          sx={{
-            backgroundColor: "red.100",
-            borderRadius: "100%",
-            width: "40px",
-            height: "40px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            mb: 1.5,
-          }}
-        >
-          <DeleteRounded color="error" />
+    <ConfirmDialog
+      open={open}
+      onClose={onClose}
+      onConfirm={handleDeleteRedirects}
+      confirmDataCy="DeleteContentItemConfirmButton"
+      confirmLabel={t("seo.deleteRedirectsButton", {
+        count: remaining.length,
+      })}
+      title={
+        <Box component="span" data-cy="RedirectsDeleteDialogHeader">
+          {t("seo.deleteRedirectTitle", { count: remaining.length })}
         </Box>
-        <Stack
-          display="flex"
-          flexDirection="row"
-          justifyContent="flex-start"
-          alignItems="center"
-          columnGap={1}
-          overflow="hidden"
-          textOverflow="ellipsis"
-        >
-          <Typography
-            data-cy="RedirectsDeleteDialogHeader"
-            variant="inherit"
-            fontWeight={700}
-            flexGrow={0}
-            flexShrink={0}
+      }
+      description={`${descriptionPart} ${t(
+        "seo.deleteRedirectDescriptionSuffix",
+        {
+          count: remaining.length,
+        }
+      )}`}
+    >
+      <Box
+        data-cy="RedirectsDeleteDialog"
+        display="flex"
+        flexDirection="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        rowGap="20px"
+        mt={2.5}
+      >
+        {remaining.map((redirect, index) => (
+          <Box
+            key={redirect?.ZUID}
+            display="flex"
+            flexDirection="row"
+            justifyContent="flex-start"
+            alignItems="baseline"
+            columnGap="5px"
           >
-            {t("seo.deleteRedirectTitle", { count: redirects?.length })}
-          </Typography>
-        </Stack>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: "8px" }}>
-          {`${descriptionPart} ${t("seo.deleteRedirectDescriptionSuffix", {
-            count: redirects?.length,
-          })}`}
-        </Typography>
-      </DialogTitle>
-      <DialogContent sx={{ p: 0 }} data-cy="RedirectsDeleteDialog">
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="flex-start"
-          alignItems="flex-start"
-          rowGap="20px"
-          py={0}
-          px="20px"
-        >
-          {redirects?.map((redirect, index) => (
-            <Box
-              key={redirect?.ZUID}
-              display="flex"
-              flexDirection="row"
-              justifyContent="flex-start"
-              alignItems="baseline"
-              columnGap="5px"
+            <Typography
+              variant="body2"
+              color="info.dark"
+              width="20px"
+              flexGrow={0}
+              flexShrink={0}
             >
-              <Typography
-                variant="body2"
-                color="info.dark"
-                width="20px"
-                flexGrow={0}
-                flexShrink={0}
-              >
-                {`${index + 1}.`}
-              </Typography>
-              <Typography
-                variant="body2"
-                color="info.dark"
-                flexGrow={1}
-                flexShrink={1}
-              >
-                {redirect?.path}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
-      </DialogContent>
-      <DialogActions sx={{ p: "20px" }}>
-        <Button variant="text" color="inherit" onClick={onClose}>
-          {t("common.cancel")}
-        </Button>
-        <Button
-          data-cy="DeleteContentItemConfirmButton"
-          variant="contained"
-          color="error"
-          onClick={handleDeleteRedirects}
-          loading={isDeleting}
-        >
-          {t("seo.deleteRedirectsButton", { count: redirects?.length })}
-        </Button>
-      </DialogActions>
-    </Dialog>
+              {`${index + 1}.`}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="info.dark"
+              flexGrow={1}
+              flexShrink={1}
+            >
+              {redirect?.path}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+    </ConfirmDialog>
   );
 };

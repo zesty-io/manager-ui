@@ -24,6 +24,7 @@ import {
 import { fetchModel } from "shell/store/models";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
 import { notify } from "shell/store/notifications";
+import { notifyIfResponseFailed, notifyFailure } from "utility/request";
 import { fetchFields } from "shell/store/fields";
 import { ContentInfo } from "../content-editor/src/app/views/ItemEdit/Content/Actions/Widgets/ContentInfo";
 import Editor from "../content-editor/src/app/components/Editor/Editor";
@@ -81,7 +82,12 @@ import {
 } from "./hooks/studioTypes";
 import { useStudioSelection } from "./hooks/useStudioSelection";
 import { useStudioLayersTree } from "./hooks/useStudioLayersTree";
-import { CodeRegionReplaced, useStudioAiEdit } from "./hooks/useStudioAiEdit";
+import {
+  CodeRegionReplaced,
+  aiImageFields,
+  useStudioAiEdit,
+} from "./hooks/useStudioAiEdit";
+import { buildAiSelection } from "./utils/aiSelection";
 import { contentKey, useStudioHistory } from "./hooks/useStudioHistory";
 import { getRefRegistry } from "../../engine/refRegistry";
 import { useMultiPermission } from "shell/hooks/use-permissions";
@@ -677,9 +683,9 @@ export const StudioWrapper = () => {
     if (!pageModelZUID || !pageItemZUID) return;
     const hasWarmCopy = Boolean(getContentItems()[pageItemZUID]?.meta?.ZUID);
     if (!hasWarmCopy) setIsFetchingItem(true);
-    Promise.resolve(dispatch(fetchItem(pageModelZUID, pageItemZUID))).finally(
-      () => setIsFetchingItem(false)
-    );
+    Promise.resolve(dispatch(fetchItem(pageModelZUID, pageItemZUID)))
+      .then((res) => notifyIfResponseFailed(dispatch, res))
+      .finally(() => setIsFetchingItem(false));
   }, [dispatch, getContentItems, pageItemZUID, pageModelZUID]);
 
   useEffect(() => {
@@ -1705,6 +1711,15 @@ export const StudioWrapper = () => {
 
       // Any 2xx is a successful save (saveItem resolves 201 on version create).
       if (res?.status >= 200 && res?.status < 300) {
+        if (res.refetchFailure) {
+          notifyFailure(
+            dispatch,
+            res.refetchFailure,
+            t("content.itemEditRefreshFailed", {
+              error: res.refetchFailure.error,
+            })
+          );
+        }
         dispatch(
           notify({
             kind: "success",
@@ -1757,7 +1772,9 @@ export const StudioWrapper = () => {
     if (!hasWarmCopy) setIsFetchingItem(true);
     Promise.resolve(
       dispatch(fetchItem(selectedItemModelZuid, selectedItemZuid))
-    ).finally(() => setIsFetchingItem(false));
+    )
+      .then((res) => notifyIfResponseFailed(dispatch, res))
+      .finally(() => setIsFetchingItem(false));
   }, [dispatch, getContentItems, selectedItemModelZuid, selectedItemZuid]);
 
   useEffect(() => {
@@ -2128,7 +2145,8 @@ export const StudioWrapper = () => {
         const refModelZUID = modelZUIDByName[ref!.source!.modelName];
         if (refModelZUID) {
           Promise.resolve(dispatch(fetchItem(refModelZUID, refItemZUID))).then(
-            () => {
+            (res) => {
+              notifyIfResponseFailed(dispatch, res);
               // The replay closes over `value`, so it must not fire if the user
               // has since changed this slot — disconnecting and typing a
               // replacement inside the fetch window would otherwise repaint the
@@ -2403,6 +2421,27 @@ export const StudioWrapper = () => {
   const isAiRendering = isAiPreviewing && aiPreview?.status === "loading";
   const canUseAi = aiAllowed && !!aiPageView;
   const showAiPanel = isAiPanelOpen && canUseAi;
+  const aiImageFieldNames = useMemo(
+    () => aiImageFields(pageFields).map((field) => field.name as string),
+    [pageFields]
+  );
+  // Read when a prompt is sent, so the panel needs no selection state.
+  const getAiSelection = useCallback(
+    () =>
+      buildAiSelection(
+        inspectorSelection,
+        { viewZUID: aiPageView?.ZUID, itemZUID: pageItemZUID },
+        (codeId) => getLayoutRegionSnapshot(codeId).source,
+        (fieldZUID) => fieldsState[fieldZUID]?.name
+      ),
+    [
+      aiPageView?.ZUID,
+      fieldsState,
+      getLayoutRegionSnapshot,
+      inspectorSelection,
+      pageItemZUID,
+    ]
+  );
 
   useEffect(() => {
     if (!canUseAi) setIsAiPanelOpen(false);
@@ -2496,6 +2535,17 @@ export const StudioWrapper = () => {
     // A reply that staged a change closes its step when the preview settles.
     if (!isAiRenderPending()) historyRef.current?.endStep();
   }, [isAiRenderPending]);
+  // An image's Apply is a field write like the media picker's, not an AI
+  // turn, so undoing it leaves the chat session alone. During a render it
+  // joins that turn's step.
+  const handleBeforeAiImageApplied = useCallback(
+    () => historyRef.current?.beginStep("image"),
+    []
+  );
+  const handleAfterAiImageApplied = useCallback(
+    () => historyRef.current?.endStep(),
+    []
+  );
 
   // Cancel discards by undoing back to the saved state when the history can
   // reach it: nothing reloads, and redo still works afterwards. Anything
@@ -2786,9 +2836,13 @@ export const StudioWrapper = () => {
                 pageItemZUID={pageItemZUID}
                 drawerWidth={drawerWidth}
                 lastDiscard={aiLastDiscard}
+                imageFieldNames={aiImageFieldNames}
+                getSelection={getAiSelection}
                 onRequestPendingChange={setIsAiRequestPending}
                 onBeforeReplyApplied={handleBeforeAiReplyApplied}
                 onAfterReplyApplied={handleAfterAiReplyApplied}
+                onBeforeImageApplied={handleBeforeAiImageApplied}
+                onAfterImageApplied={handleAfterAiImageApplied}
               />
             ) : panelMode === "inspector" && inspectorSelection ? (
               <StudioInspectorPanel
@@ -2848,7 +2902,15 @@ export const StudioWrapper = () => {
                 onEditInManager={handleEditInManager}
                 isFreestyleLayout={isFreestyleLayout}
                 onEditInFreestyle={handleEditInFreestyle}
-                onSave={handleSave}
+                onSave={async () => {
+                  try {
+                    const res = await handleSave();
+                    // false tells the header to drop a queued publish
+                    return !!res && !(res as any).error && !(res as any).err;
+                  } catch {
+                    return false;
+                  }
+                }}
                 editorPanel={renderEditorPanel()}
                 infoPanel={renderInfoPanel()}
                 drawerWidth={drawerWidth}

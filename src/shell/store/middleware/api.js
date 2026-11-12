@@ -14,7 +14,9 @@ export const fetchResource =
       // return a reference to the same promise to any number of duplicate
       // requests
       if (!(action.uri in inflight)) {
-        const promise = request(action.uri)
+        const promise = request(action.uri, {
+          rejectOnError: !!action.rejectOnError,
+        })
           .then(action.handler)
           .then((res) => {
             // on resolve, remove promise from inflight map
