@@ -213,7 +213,6 @@ jobs:
       # Claude never posts directly (no comment/label/edit tools granted) — this
       # step is the only place a comment is created, so it can reliably PATCH an
       # existing marked comment instead of stacking a new one on every re-run.
-      # Mirrors the find-marker → PATCH-or-POST pattern in claude-change-verifier.yml.
       - name: Post or update duplicate-check comment
         id: dup
         env:

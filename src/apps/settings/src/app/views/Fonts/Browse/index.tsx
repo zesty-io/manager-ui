@@ -6,7 +6,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { TopBar } from "../../../components/TopBar";
 import Box from "@mui/material/Box";
 import { Typography, Button, Portal } from "@mui/material";
-import { NoResults } from "../../../../../../schema/src/app/components/NoResults";
+import { EmptyResults } from "shell/components/EmptyResults";
 import SearchBox from "../../../../../../../shell/components/SearchBox";
 import FontFamilyCard from "./FontFamilyCard";
 import { useInstalledFonts } from "../Installed";
@@ -240,10 +240,11 @@ const Browse = () => {
               alignContent="center"
               data-cy="BrowseFontNoResultsContainer"
             >
-              <NoResults
-                type="search"
-                searchTerm={search}
-                onButtonClick={() => {
+              <EmptyResults
+                dataCy="NoResults"
+                variant="search"
+                query={search}
+                onAction={() => {
                   setSearch("");
                   setActivePage(prevActivePage);
                   searchInputRef?.current?.focus();

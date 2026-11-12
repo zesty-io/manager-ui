@@ -14,8 +14,10 @@ const APP_NAV_KEY_MAP: Record<string, string> = {
 
 const NO_SIDEBAR_APPS = new Set(["", "launchpad", "leads", "redirects"]);
 
-const SKELETON_BG = "#344054";
-const SIDEBAR_BG = "#101828";
+// Matches the real sidebar's grey.700/grey.900 (src/shell/components/AppSidebar/index.tsx)
+// exactly, so the boot skeleton blends into it seamlessly once it mounts.
+const SKELETON_BG = "grey.700";
+const SIDEBAR_BG = "grey.900";
 
 function getSidebarState(): { show: boolean; width: number } {
   const openApp = window.location.pathname.split("/")[1];

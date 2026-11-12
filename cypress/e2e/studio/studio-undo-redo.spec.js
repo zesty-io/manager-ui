@@ -18,6 +18,7 @@ describe("Studio Undo / Redo", () => {
   let itemZUID = "";
   let modelZUID = "";
   let titleFieldZUID = "";
+  let heroImageFieldZUID = "";
   let viewZUID = "";
   let seededPage = null;
 
@@ -33,6 +34,11 @@ describe("Studio Undo / Redo", () => {
         titleFieldZUID = fields.find((field) => field.name === "title")?.ZUID;
         expect(titleFieldZUID, "seeded title field").to.be.a("string").and.not
           .be.empty;
+        heroImageFieldZUID = fields.find(
+          (field) => field.name === "hero_image"
+        )?.ZUID;
+        expect(heroImageFieldZUID, "seeded hero_image field").to.be.a("string")
+          .and.not.be.empty;
       }
     );
   });
@@ -862,6 +868,84 @@ describe("Studio Undo / Redo", () => {
     );
     cy.getBySelector("AIDrawerSend").click();
     cy.wait("@mcp").its("request.body").should("not.have.property", "chatZuid");
+  });
+
+  // Apply writes a field, as the media picker does: undoing it is not
+  // undoing an AI turn, so the session goes on.
+  it("undoes an applied AI image in one step and keeps the AI chat session", () => {
+    const imageZuid = "3-e2e000-stub00";
+    cy.intercept({ method: "POST", url: MCP_CLIENT }, (req) =>
+      req.reply({
+        statusCode: 200,
+        body: {
+          data: [
+            {
+              type: "SET_VALUE",
+              payload: {
+                refKey: "hero_image",
+                value: imageZuid,
+                url: "https://e2e.media.example/hero.png",
+              },
+            },
+          ],
+          message: "",
+          tools: [],
+          chatZuid: "e2e-chat-image",
+        },
+      })
+    ).as("mcp");
+    bridgeReady(["history"]);
+    waitForPageHydrated();
+    // The field may be absent from the item, so read it with a retrying
+    // assertion rather than `its`.
+    const readImage = (win) =>
+      win.zestyStore.getState().content[itemZUID]?.data?.hero_image;
+    let imageBefore;
+    cy.window().then((win) => {
+      imageBefore = readImage(win);
+      expect(imageBefore, "seeded image").not.to.eq(imageZuid);
+    });
+    sendAiPrompt();
+
+    cy.getBySelector("AIDrawerSetValue").should("not.be.disabled").click();
+    cy.window().should((win) => expect(readImage(win)).to.eq(imageZuid));
+    let paintsBefore;
+    hostCommands("setAttrByField").then((cmds) => {
+      expect(cmds.map((cmd) => cmd.value)).to.include(
+        "https://e2e.media.example/hero.png"
+      );
+      paintsBefore = cmds.length;
+    });
+    // The bridge finds the <img> bound to the field through this snapshot.
+    hostCommands("historySnapshot").should(
+      (cmds) =>
+        expect(
+          cmds.some((cmd) =>
+            cmd.fields?.some(
+              (field) =>
+                field.fieldZuid === heroImageFieldZUID &&
+                field.itemZuid === itemZUID
+            )
+          ),
+          "snapshot names hero_image"
+        ).to.be.true
+    );
+    cy.getBySelector("StudioUndoButton").should("not.be.disabled").click();
+    cy.window().should((win) => expect(readImage(win)).to.eq(imageBefore));
+    hostCommands("historyRestore").should("have.length", 1);
+    cy.getBySelector("StudioUndoButton").should("be.disabled");
+    // The bridge restores the bound <img> from the field's region snapshot;
+    // a repaint with no public URL for the seeded value (the resolver's, or
+    // nothing) would override it.
+    hostCommands("setAttrByField").should((cmds) =>
+      expect(cmds, "repaints after undo").to.have.length(paintsBefore)
+    );
+
+    cy.get('[data-cy="AIDrawerComposer"] textarea:not([aria-hidden])').type(
+      "Generate another"
+    );
+    cy.getBySelector("AIDrawerSend").click();
+    cy.wait("@mcp").its("request.body.chatZuid").should("eq", "e2e-chat-image");
   });
 
   it("puts back the canvas lock when a redo into an AI change fails", () => {

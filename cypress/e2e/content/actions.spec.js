@@ -472,6 +472,56 @@ describe("Actions in content editor", () => {
     cy.getBySelector("ContentScheduledIndicator").should("exist");
   });
 
+  it("Keeps the dialog open and does not fire the success callback when Unschedule Publish fails", () => {
+    const { items, publishings } = awaitRequests();
+    cy.intercept("DELETE", "/v1/content/models/*/items/*/publishings/*", {
+      statusCode: 500,
+      body: { error: "forced failure" },
+    }).as("failedUnschedule");
+
+    cy.visit(
+      `/content/${Cypress.env("modelZUID")}/${CONTENT_ITEMS?.[4]?.meta?.ZUID}`
+    );
+    cy.wait([items, publishings], { requestTimeout });
+
+    cy.getBySelector("PublishMenuButton").should("exist").should("be.enabled");
+    cy.getBySelector("PublishMenuButton").click();
+
+    cy.getBySelector("publishingMenu")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("PublishScheduleButton").should("exist");
+        cy.getBySelector("PublishScheduleButton").click();
+      });
+
+    cy.getBySelector("SchedulePublishModal")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnschedulePublishButton").should("exist");
+        cy.getBySelector("UnschedulePublishButton").click();
+      });
+
+    cy.wait("@failedUnschedule");
+
+    cy.getBySelector("toast").contains("Error unscheduling version");
+
+    cy.getBySelector("SchedulePublishModal")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("UnschedulePublishButton")
+          .should("exist")
+          .should("be.enabled");
+      });
+
+    cy.getBySelector("ContentScheduledIndicator").should("exist");
+
+    cy.getBySelector("SchedulePublishModal")
+      .should("exist")
+      .within(() => {
+        cy.getBySelector("CancelSchedulePublishButton").trigger("click");
+      });
+  });
+
   it("Unschedules a Publish for an item", () => {
     const { items, deletePublishedItem, publishings } = awaitRequests();
     cy.visit(
@@ -645,10 +695,15 @@ describe("Actions in content editor", () => {
   });
 
   it("Deletes an item", () => {
+    cy.intercept("DELETE", "**/items/*").as("deleteItem");
+
     cy.contains(TEST_DATA?.new).should("exist").click();
     cy.getBySelector("ContentItemMoreButton").click();
     cy.getBySelector("DeleteContentItem").click();
     cy.getBySelector("DeleteContentItemConfirmButton").should("exist").click();
+    cy.wait("@deleteItem")
+      .its("response.statusCode")
+      .should("be.lessThan", 300);
 
     cy.waitOn("/v1/content/models**", () => {
       cy.visit(`/content/${Cypress.env("modelZUID")}`);

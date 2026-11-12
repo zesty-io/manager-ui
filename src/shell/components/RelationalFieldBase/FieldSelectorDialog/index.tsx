@@ -1,4 +1,5 @@
 import {
+  forwardRef,
   useEffect,
   useMemo,
   useState,
@@ -20,7 +21,7 @@ import {
   GridRenderCellParams,
 } from "@mui/x-data-grid-pro";
 import { debounce } from "lodash";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 
@@ -34,7 +35,7 @@ import { TitleCell } from "./TitleCell";
 import { VersionCell } from "./VersionCell";
 import { ItemsLoading } from "./ItemsLoading";
 import { useGetUsersQuery } from "../../../services/accounts";
-import { NoSearchResults } from "../../NoSearchResults";
+import { EmptyResults } from "../../EmptyResults";
 import { DialogHeader } from "./DialogHeader";
 import { fetchItems } from "../../../store/content";
 import { AppState } from "../../../store/types";
@@ -45,10 +46,13 @@ import { userFilterOperator } from "./userFilter";
 import { keywordSearchFilterOperator } from "./keywordSearchFilter";
 import { dateFilterOperator } from "./dateFilter";
 
+// The grid passes a ref to its columnHeaders slot, so it must accept one
+const NoColumnHeaders = forwardRef<HTMLDivElement>(() => null);
+
 const selectFilteredItems = (
   state: AppState,
   modelZUID: string,
-  activeLangId: number,
+  activeLangId: number | null,
   skip = false
 ) => {
   if (skip) {
@@ -63,14 +67,14 @@ const selectFilteredItems = (
 
 export type FieldFilters = {
   sortOrder: string;
-  user: string;
+  user: string | null;
   date: {
-    preset: string;
-    from: string;
-    to: string;
+    preset: string | null;
+    from: string | null;
+    to: string | null;
   };
-  lang: number;
-  status: keyof typeof STATUS_FILTER;
+  lang: number | null;
+  status: keyof typeof STATUS_FILTER | null;
 };
 type FieldSelectorDialogProps = {
   onClose: () => void;
@@ -98,8 +102,9 @@ export const FieldSelectorDialog = ({
   const userSelectedLangCode = useSelector(
     (state: AppState) => state?.user?.selected_lang
   );
-  const searchField = useRef(null);
-  const [filterKeyword, setFilterKeyword] = useState<string>(null);
+  const [noResults, setNoResults] = useState<boolean>(false);
+  const searchField = useRef<HTMLInputElement>(null);
+  const [filterKeyword, setFilterKeyword] = useState<string>("");
   const [filters, updateFilters] = useReducer(
     (state: FieldFilters, newValue: Partial<FieldFilters>): FieldFilters => {
       return {
@@ -524,6 +529,86 @@ export const FieldSelectorDialog = ({
     (ZUID) => !deletedItemZUIDs?.includes(ZUID)
   );
 
+  // In replace mode the already-selected items are not candidates
+  const gridRows = useMemo(
+    () =>
+      !!replace
+        ? rows?.filter((row) => !selectedZUIDs?.includes(row?.id))
+        : rows,
+    [rows, replace, selectedZUIDs]
+  );
+  const hasGridRows = !!gridRows?.length;
+
+  // noResults only updates from the grid's onRowCountChange, which doesn't
+  // fire on remount when every row passes the filters, so reset it whenever
+  // the grid unmounts
+  useEffect(() => {
+    if (isLoading || !hasGridRows) {
+      setNoResults(false);
+    }
+  }, [isLoading, hasGridRows]);
+
+  const showFilterEmptyState =
+    isFilteringResults && (!hasGridRows || noResults);
+
+  const filterEmptyState = (
+    <Box
+      data-cy="NoSearchResults"
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100%",
+        bgcolor: "background.paper",
+      }}
+    >
+      <EmptyResults
+        variant="search"
+        size="page"
+        query={filterKeyword}
+        title={
+          <Trans
+            i18nKey="shell.filterNoResultsRich"
+            values={{ query: filterKeyword }}
+            components={{
+              strong: (
+                <Box
+                  component="strong"
+                  fontWeight="bold"
+                  sx={{ wordBreak: "break-word" }}
+                />
+              ),
+            }}
+          />
+        }
+        onAction={() => {
+          if (!!filterKeyword) {
+            setFilterKeyword("");
+            if (!!searchField.current) {
+              searchField.current.value = "";
+              searchField.current.focus();
+            }
+          }
+
+          updateFilters({
+            sortOrder: "lastSaved",
+            user: null,
+            date: {
+              preset: null,
+              from: null,
+              to: null,
+            },
+            lang: userSelectedLangCode
+              ? langs?.find((lang) => lang.code === userSelectedLangCode)?.ID
+              : null,
+
+            status: null,
+          });
+        }}
+      />
+    </Box>
+  );
+
   return (
     <Dialog
       open
@@ -577,17 +662,19 @@ export const FieldSelectorDialog = ({
       >
         <TextField
           data-cy="relational-fields-search-input"
-          ref={searchField}
+          inputRef={searchField}
           fullWidth
           onChange={(evt) => debouncedSetFilterKeyword(evt.currentTarget.value)}
           size="small"
           placeholder={t("shell.relationalFilterItems")}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            },
           }}
         />
         <FieldSelectorFilters
@@ -600,188 +687,157 @@ export const FieldSelectorDialog = ({
         ) : (
           <Box
             height={
-              !rows?.length && isFilteringResults ? 610 : rows?.length * 64 + 2
+              showFilterEmptyState
+                ? 610
+                : hasGridRows
+                ? gridRows.length * 64 + 2
+                : "auto"
             }
             maxHeight={1024}
-            sx={{
-              "& [data-cy='NoSearchResults']": {
-                border: 1,
-                borderColor: "border",
-                bgcolor: "background.paper",
-                borderRadius: 2,
-              },
-            }}
           >
-            <AutoSizer>
-              {({ width, height }: Size) => (
-                <DataGridPro
-                  keepNonExistentRowsSelected
-                  style={{
-                    width: width,
-                    height: height,
-                  }}
-                  sortingMode="server"
-                  checkboxSelection
-                  columns={columns}
-                  rows={
-                    !!replace
-                      ? rows?.filter((row) => !selectedZUIDs?.includes(row?.id))
-                      : rows
-                  }
-                  slots={{
-                    noResultsOverlay: () => (
-                      <NoSearchResults
-                        isFilter
-                        query={filterKeyword}
-                        onSearchAgain={() => {
-                          if (!!filterKeyword) {
-                            setFilterKeyword("");
-                            if (!!searchField.current) {
-                              searchField.current.querySelector("input").value =
-                                "";
-                              searchField.current
-                                .querySelector("input")
-                                .focus();
-                            }
-                          }
+            {!hasGridRows && isFilteringResults && filterEmptyState}
+            {!hasGridRows && !isFilteringResults && (
+              <EmptyResults
+                variant="filter"
+                size="compact"
+                title={t("shell.noResultsFound")}
+              />
+            )}
+            {hasGridRows && (
+              <AutoSizer>
+                {({ width, height }: Size) => (
+                  <DataGridPro
+                    keepNonExistentRowsSelected
+                    style={{
+                      width: width,
+                      height: height,
+                    }}
+                    sortingMode="server"
+                    checkboxSelection
+                    columns={columns}
+                    rows={gridRows}
+                    slots={{
+                      noResultsOverlay: () => filterEmptyState,
+                      columnHeaders: NoColumnHeaders,
+                    }}
+                    rowHeight={64}
+                    hideFooter
+                    filterModel={{
+                      items: [
+                        {
+                          field: "keywordSearch",
+                          operator: "keywordContains",
+                          value: filterKeyword,
+                          id: "keyword",
+                        },
+                        ...(filters.status
+                          ? [
+                              {
+                                field: "version",
+                                operator: "statusEquals",
+                                value: filters.status,
+                                id: "status",
+                              },
+                            ]
+                          : []),
+                        ...(filters.user
+                          ? [
+                              {
+                                field: "version",
+                                operator: "userEquals",
+                                value: filters.user,
+                                id: "user",
+                              },
+                            ]
+                          : []),
+                        ...(filters.date.preset ||
+                        filters.date.from ||
+                        filters.date.to
+                          ? [
+                              {
+                                field: "version",
+                                operator: "dateFilter",
+                                value: filters.date,
+                                id: "date",
+                              },
+                            ]
+                          : []),
+                      ],
+                      logicOperator: GridLogicOperator.And,
+                    }}
+                    onRowCountChange={(count) => {
+                      setNoResults(count < 1);
+                    }}
+                    rowSelectionModel={filteredSelectionModels}
+                    onRowSelectionModelChange={(newSelectionModel: any) => {
+                      let _newSelectionModel = newSelectionModel as string[];
 
-                          updateFilters({
-                            sortOrder: "lastSaved",
-                            user: null,
-                            date: {
-                              preset: null,
-                              from: null,
-                              to: null,
-                            },
-                            lang: userSelectedLangCode
-                              ? langs?.find(
-                                  (lang) => lang.code === userSelectedLangCode
-                                )?.ID
-                              : null,
+                      if (!multiselect && _newSelectionModel?.length > 1) {
+                        _newSelectionModel = [_newSelectionModel[0]];
+                      }
 
-                            status: null,
-                          });
-                        }}
-                        ignoreFilters
-                        hideBackButton
-                      />
-                    ),
-                    columnHeaders: () => null,
-                  }}
-                  rowHeight={64}
-                  hideFooter
-                  filterModel={{
-                    items: [
-                      {
-                        field: "keywordSearch",
-                        operator: "keywordContains",
-                        value: filterKeyword,
-                        id: "keyword",
+                      setSelectionModel([
+                        ...deletedItemZUIDs,
+                        ..._newSelectionModel,
+                      ]);
+                    }}
+                    initialState={{
+                      columns: {
+                        columnVisibilityModel: { keywordSearch: false },
                       },
-                      ...(filters.status
-                        ? [
-                            {
-                              field: "version",
-                              operator: "statusEquals",
-                              value: filters.status,
-                              id: "status",
-                            },
-                          ]
-                        : []),
-                      ...(filters.user
-                        ? [
-                            {
-                              field: "version",
-                              operator: "userEquals",
-                              value: filters.user,
-                              id: "user",
-                            },
-                          ]
-                        : []),
-                      ...(filters.date.preset ||
-                      filters.date.from ||
-                      filters.date.to
-                        ? [
-                            {
-                              field: "version",
-                              operator: "dateFilter",
-                              value: filters.date,
-                              id: "date",
-                            },
-                          ]
-                        : []),
-                    ],
-                    logicOperator: GridLogicOperator.And,
-                  }}
-                  rowSelectionModel={filteredSelectionModels}
-                  onRowSelectionModelChange={(newSelectionModel: any) => {
-                    let _newSelectionModel = newSelectionModel as string[];
+                    }}
+                    sx={{
+                      bgcolor: "background.paper",
 
-                    if (!multiselect && _newSelectionModel?.length > 1) {
-                      _newSelectionModel = [_newSelectionModel[0]];
-                    }
-
-                    setSelectionModel([
-                      ...deletedItemZUIDs,
-                      ..._newSelectionModel,
-                    ]);
-                  }}
-                  initialState={{
-                    columns: {
-                      columnVisibilityModel: { keywordSearch: false },
-                    },
-                  }}
-                  sx={{
-                    bgcolor: "background.paper",
-
-                    "& .MuiDataGrid-columnHeaders": {
-                      borderBottom: 0,
-                    },
-
-                    "& .MuiDataGrid-cellCheckbox": {
-                      mx: "3px",
-                    },
-
-                    "& .MuiDataGrid-row.Mui-selected": {
-                      borderBottom: (theme) =>
-                        `1px solid ${theme.palette.primary.main}`,
-
-                      "& .MuiDataGrid-cell": {
+                      "& .MuiDataGrid-columnHeaders": {
                         borderBottom: 0,
                       },
-                    },
 
-                    "& .MuiDataGrid-cell:focus-within": {
-                      outline: "none",
-                    },
+                      "& .MuiDataGrid-cellCheckbox": {
+                        mx: "3px",
+                      },
 
-                    ".MuiDataGrid-row": {
-                      cursor: "pointer",
-                    },
+                      "& .MuiDataGrid-row.Mui-selected": {
+                        borderBottom: (theme) =>
+                          `1px solid ${theme.palette.primary.main}`,
 
-                    "& [data-field='image']": {
-                      p: 0,
-                    },
+                        "& .MuiDataGrid-cell": {
+                          borderBottom: 0,
+                        },
+                      },
 
-                    "& [data-field='title']": {
-                      pl: !!imageFieldName ? 2 : 0,
-                      pr: 2,
-                    },
+                      "& .MuiDataGrid-cell:focus-within": {
+                        outline: "none",
+                      },
 
-                    "& [data-field='version']": {
-                      pl: 0,
-                      pr: 2,
-                      justifyContent: "center",
-                    },
+                      ".MuiDataGrid-row": {
+                        cursor: "pointer",
+                      },
 
-                    // Makes sure that the custom overlay is interactive
-                    "& [data-cy='NoSearchResults']": {
-                      pointerEvents: "all",
-                    },
-                  }}
-                />
-              )}
-            </AutoSizer>
+                      "& [data-field='image']": {
+                        p: 0,
+                      },
+
+                      "& [data-field='title']": {
+                        pl: !!imageFieldName ? 2 : 0,
+                        pr: 2,
+                      },
+
+                      "& [data-field='version']": {
+                        pl: 0,
+                        pr: 2,
+                        justifyContent: "center",
+                      },
+
+                      // Makes sure that the custom overlay is interactive
+                      "& [data-cy='NoSearchResults']": {
+                        pointerEvents: "all",
+                      },
+                    }}
+                  />
+                )}
+              </AutoSizer>
+            )}
           </Box>
         )}
       </DialogContent>

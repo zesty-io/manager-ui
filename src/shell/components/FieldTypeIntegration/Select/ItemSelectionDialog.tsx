@@ -27,7 +27,7 @@ import {
 import { ApiDataProps } from "../types";
 import { LOADING_DATA } from "../constants";
 import DisplayCard from "../Shared/DisplayCard";
-import { NoSearchResults } from "../../NoSearchResults";
+import { EmptyResults } from "../../EmptyResults";
 import JsonViewer from "../Shared/JsonViewer";
 import { isEqual, get } from "lodash";
 import { useTranslation } from "react-i18next";
@@ -467,12 +467,12 @@ const ItemSelectionDialog = ({
             }}
           >
             <Box width={387}>
-              <NoSearchResults
+              <EmptyResults
+                variant="search"
+                size="dialog"
                 query={searchTerm}
-                hideBackButton
-                ignoreFilters
                 imageHeight={160}
-                onSearchAgain={() => {
+                onAction={() => {
                   setSearchTerm("");
                   searchInputRef.current?.focus();
                 }}

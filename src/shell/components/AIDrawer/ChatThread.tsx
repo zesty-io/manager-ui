@@ -8,6 +8,7 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
+  Link,
   Skeleton,
   Stack,
   Switch,
@@ -18,11 +19,15 @@ import {
 import {
   Dispatch,
   MutableRefObject,
+  ReactNode,
   SetStateAction,
+  useCallback,
+  useEffect,
   useRef,
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { Link as RouterLink } from "react-router-dom";
 import {
   ArrowForward,
   ArrowUpwardRounded,
@@ -39,6 +44,14 @@ import { GeneratedImage } from "./GeneratedImage";
 import { PromptComposer, PromptComposerHandle } from "./PromptComposer";
 import { useUpdatePromptApprovalStatusMutation } from "../../services/mcp";
 import { useApplySetValue } from "./useApplySetValue";
+import { MAX_ATTACHMENTS, PromptImage } from "./attachments";
+import {
+  AttachImagesButton,
+  PromptAttachmentList,
+  PromptAttachmentStatus,
+  PromptImages,
+  usePromptAttachments,
+} from "./PromptAttachments";
 
 // `value` is the tone instruction sent to the model (do not translate);
 // `label` is the short UI name, resolved with t() at the render site.
@@ -72,9 +85,12 @@ type LanguageOption = { label: string; value: string };
 type ToneOption = { label: string; value: string };
 
 export type ChatResponse = { approval?: string } & (
-  | { type: "USER_INPUT"; payload: { value: string } }
+  | { type: "USER_INPUT"; payload: { value: string; images?: PromptImage[] } }
   | { type: "NAVIGATE"; payload: { path: string } }
-  | { type: "SET_VALUE"; payload: { refKey: string; value: string } }
+  | {
+      type: "SET_VALUE";
+      payload: { refKey: string; value: string; url?: string };
+    }
   // A prose reply.
   | { type: "MESSAGE"; payload: { value: string } }
   // Built by a host, not sent by the server: an applied code edit's line
@@ -84,16 +100,54 @@ export type ChatResponse = { approval?: string } & (
       payload: { fileName: string; added: number; removed: number };
     }
   | { type: "NOTICE"; payload: { value: string } }
+  // Built by a host: alt text that was written to a media file.
+  | { type: "ALT_TEXT_SAVED"; payload: { value: string; fileZuid: string } }
   | {
       type: "SYSTEM_SUGGESTION" | "SYSTEM_OUTPUT" | "ERROR";
       payload: { refKey?: string; value: string };
     }
 );
 
+// The refKey the server uses for an image with no field to fill. It is shown,
+// never applied.
+export const GENERATED_IMAGE_REF_KEY = "generated-image";
+
 // Scrolls only the transcript. `scrollIntoView` would also scroll every
 // ancestor that overflows, moving the host's own layout.
 export const scrollToEnd = (container: HTMLElement | null) =>
   container?.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+
+// The `>` chip under a reply: a server suggestion, or an action on it.
+const SuggestionChip = ({
+  dataCy,
+  onClick,
+  disabled,
+  children,
+}: {
+  dataCy: string;
+  onClick: () => void;
+  disabled?: boolean;
+  children: ReactNode;
+}) => (
+  <Button
+    data-cy={dataCy}
+    onClick={onClick}
+    disabled={disabled}
+    sx={{
+      textAlign: "left",
+      justifyContent: "flex-start",
+      width: "fit-content",
+      px: 1.5,
+      py: 1,
+      borderRadius: 2,
+    }}
+    variant="contained"
+    color="inherit"
+    endIcon={<ChevronRightRounded />}
+  >
+    {children}
+  </Button>
+);
 
 export type ChatThreadProps = {
   responses: Record<string, ChatResponse[]>;
@@ -115,13 +169,21 @@ export type ChatThreadProps = {
   setSelectedLanguage: (language: LanguageOption) => void;
   selectedTone: ToneOption;
   setSelectedTone: (tone: ToneOption) => void;
-  handlePrompt: (value: string) => boolean;
+  // `images` are already in the media library.
+  handlePrompt: (value: string, images?: PromptImage[]) => boolean;
   handleGenerateSuggestions: (sourcePrompt: string) => void;
   // The transcript's own scroll box; scroll it with `scrollToEnd`.
   scrollContainerRef: MutableRefObject<HTMLDivElement | null>;
   // For a host that applies every suggestion itself.
   hideAutoApply?: boolean;
+  // Shows Apply on this entry even while auto-apply is on.
+  manualApplyFor?: (response: ChatResponse) => boolean;
+  // Replaces the drawer's Apply, which approves the prompt on the server.
+  onManualApply?: (response: ChatResponse, promptZUID: string) => void;
   placeholder?: string;
+  // Shows an alt-text chip under each generated image. `prompt` is the turn
+  // that asked for the image.
+  onGenerateAltText?: (fileZuid: string, prompt: string) => void;
 };
 
 export const ChatThread = ({
@@ -146,7 +208,10 @@ export const ChatThread = ({
   handleGenerateSuggestions,
   scrollContainerRef,
   hideAutoApply = false,
+  manualApplyFor,
+  onManualApply,
   placeholder,
+  onGenerateAltText,
 }: ChatThreadProps) => {
   const { t } = useTranslation();
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -156,6 +221,44 @@ export const ChatThread = ({
   const { data: langMappings } = useGetLangsMappingQuery();
   const applySetValue = useApplySetValue();
   const toneOptions = getToneOptions(t);
+  const {
+    attachments,
+    refusals,
+    failedFilenames,
+    isUploading,
+    addFiles,
+    removeAttachment,
+    clearAttachments,
+    uploadAttachments,
+  } = usePromptAttachments();
+  const isComposerBusy = isLoading || isLoadingChatSessionLog || isUploading;
+  // Read after an upload resolves: the host may have moved to another chat or
+  // page meanwhile, and the handler in a stale closure would post to the old one.
+  const handlePromptRef = useRef(handlePrompt);
+  handlePromptRef.current = handlePrompt;
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  // Uploads the attachments first; an upload failure sends nothing, and
+  // neither does a composer that unmounted before the uploads finished.
+  const submitPrompt = useCallback(
+    (value: string): boolean | Promise<boolean> => {
+      if (!attachments.length) return handlePrompt(value);
+
+      return uploadAttachments().then((images) => {
+        if (!images || !isMountedRef.current) return false;
+        const sent = handlePromptRef.current(value, images);
+        if (sent) clearAttachments();
+        return sent;
+      });
+    },
+    [attachments.length, handlePrompt, uploadAttachments, clearAttachments]
+  );
   const generateSuggestionsPromptPrefix = t("shell.generateSuggestionsPrompt", {
     prompt: "",
   });
@@ -215,7 +318,7 @@ export const ChatThread = ({
               </>
             ) : (
               Object.entries(responses).map(([promptZUID, promptResponses]) => {
-                return promptResponses.map((response, responseIndex) => {
+                const turn = promptResponses.map((response, responseIndex) => {
                   const shouldAnimate =
                     latestPromptZUIDs.has(promptZUID) &&
                     response.type !== "USER_INPUT";
@@ -237,6 +340,9 @@ export const ChatThread = ({
                           backgroundColor: "grey.500",
                         }}
                       >
+                        {!!response.payload.images?.length && (
+                          <PromptImages images={response.payload.images} />
+                        )}
                         <Typography
                           variant="body2"
                           sx={{
@@ -257,30 +363,19 @@ export const ChatThread = ({
                     );
                   } else if (response.type === "SYSTEM_SUGGESTION") {
                     return (
-                      <Button
-                        data-cy="AIDrawerSystemSuggestion"
+                      <SuggestionChip
+                        dataCy="AIDrawerSystemSuggestion"
                         key={`${promptZUID}-${responseIndex}`}
                         onClick={() => {
                           setComposerSeed(response.payload.value);
                         }}
-                        sx={{
-                          textAlign: "left",
-                          justifyContent: "flex-start",
-                          width: "fit-content",
-                          px: 1.5,
-                          py: 1,
-                          borderRadius: 2,
-                        }}
-                        variant="contained"
-                        color="inherit"
-                        endIcon={<ChevronRightRounded />}
                       >
                         <AnimatedText
                           text={response.payload.value}
                           animate={shouldAnimate}
                           onGrow={() => scrollToEnd(scrollContainerRef.current)}
                         />
-                      </Button>
+                      </SuggestionChip>
                     );
                   } else if (response.type === "NAVIGATE") {
                     return (
@@ -341,7 +436,37 @@ export const ChatThread = ({
                         {response.payload.value}
                       </Typography>
                     );
+                  } else if (response.type === "ALT_TEXT_SAVED") {
+                    return (
+                      <Box
+                        data-cy="AIDrawerAltTextSaved"
+                        key={`${promptZUID}-${responseIndex}`}
+                      >
+                        <Typography variant="body2" fontWeight={600}>
+                          {t("shell.altTextSaved")}
+                          {":"}
+                        </Typography>
+                        <AnimatedText
+                          text={response.payload.value}
+                          animate={shouldAnimate && !isInCodeApp}
+                          onGrow={() => scrollToEnd(scrollContainerRef.current)}
+                        />
+                        <Link
+                          data-cy="AIDrawerAltTextOpenInMedia"
+                          component={RouterLink}
+                          to={`/media?fileId=${response.payload.fileZuid}`}
+                          variant="body2"
+                        >
+                          {t("shell.openInMedia")}
+                        </Link>
+                      </Box>
+                    );
                   }
+
+                  const showApply =
+                    response.type === "SET_VALUE" &&
+                    response.payload.refKey !== GENERATED_IMAGE_REF_KEY &&
+                    (!autoApply || !!manualApplyFor?.(response));
 
                   return (
                     <Box
@@ -374,13 +499,17 @@ export const ChatThread = ({
                           onGrow={() => scrollToEnd(scrollContainerRef.current)}
                         />
                       )}
-                      {!autoApply && response.type === "SET_VALUE" && (
+                      {showApply && response.type === "SET_VALUE" && (
                         <Button
                           data-cy="AIDrawerSetValue"
                           variant="contained"
                           sx={{ mt: 1.25 }}
                           disabled={response.approval === "1"}
                           onClick={() => {
+                            if (onManualApply) {
+                              onManualApply(response, promptZUID);
+                              return;
+                            }
                             if (!urlChatZUID) return;
                             // Stays applicable when the ref is not on the page.
                             if (
@@ -426,6 +555,40 @@ export const ChatThread = ({
                     </Box>
                   );
                 });
+                if (!onGenerateAltText) return turn;
+
+                // Follow-up chips come last in the turn, after its text.
+                const promptInput = promptResponses.find(
+                  (
+                    entry
+                  ): entry is Extract<ChatResponse, { type: "USER_INPUT" }> =>
+                    entry.type === "USER_INPUT"
+                );
+                const altTextChips = promptResponses
+                  .filter(
+                    (
+                      entry
+                    ): entry is Extract<ChatResponse, { type: "SET_VALUE" }> =>
+                      entry.type === "SET_VALUE" &&
+                      !!entry.payload.value?.startsWith("3-")
+                  )
+                  .map((entry, imageIndex) => (
+                    <SuggestionChip
+                      dataCy="AIDrawerGenerateAltText"
+                      key={`${promptZUID}-alt-${imageIndex}`}
+                      disabled={isLoading}
+                      onClick={() =>
+                        onGenerateAltText(
+                          entry.payload.value,
+                          promptInput?.payload.value ?? ""
+                        )
+                      }
+                    >
+                      {t("shell.generateAltText")}
+                    </SuggestionChip>
+                  ));
+
+                return [...turn, ...altTextChips];
               })
             )}
             {isLoading && (
@@ -459,7 +622,7 @@ export const ChatThread = ({
       >
         {!Object.entries(responses)?.length && (
           <Button
-            disabled={isLoading || isLoadingChatSessionLog}
+            disabled={isComposerBusy}
             data-cy="AIDrawerGenerateSuggestions"
             data-amp-track-id="ai-drawer-generate-suggestions-button"
             size="large"
@@ -472,13 +635,23 @@ export const ChatThread = ({
             {t("shell.generateSuggestions")}
           </Button>
         )}
+        <PromptAttachmentList
+          attachments={attachments}
+          disabled={isComposerBusy}
+          onRemove={removeAttachment}
+        />
         <PromptComposer
           ref={composerRef}
           seed={composerSeed}
-          disabled={isLoading || isLoadingChatSessionLog}
-          onSubmit={handlePrompt}
+          disabled={isComposerBusy}
+          onSubmit={submitPrompt}
           onHasValueChange={setHasComposerValue}
           placeholder={placeholder}
+        />
+        <PromptAttachmentStatus
+          refusals={refusals}
+          failedFilenames={failedFilenames}
+          isUploading={isUploading}
         />
       </Box>
       <Box
@@ -494,6 +667,7 @@ export const ChatThread = ({
           data-amp-track-id="ai-drawer-clear-chat-button"
           variant="text"
           color="inherit"
+          disabled={isUploading}
           onClick={onClearChat}
         >
           {t("shell.clearChat")}
@@ -507,13 +681,17 @@ export const ChatThread = ({
           >
             <SettingsRoundedIcon color="action" fontSize="small" />
           </IconButton>
+          <AttachImagesButton
+            disabled={isComposerBusy || attachments.length >= MAX_ATTACHMENTS}
+            onFiles={addFiles}
+          />
 
           <Button
             data-cy="AIDrawerSend"
             data-amp-track-id="ai-drawer-submit-button"
             variant="contained"
             onClick={() => composerRef.current?.submit()}
-            disabled={!hasComposerValue || isLoading || isLoadingChatSessionLog}
+            disabled={!hasComposerValue || isComposerBusy}
             sx={{
               flexShrink: 0,
               flexBasis: 32,
@@ -521,11 +699,11 @@ export const ChatThread = ({
               padding: 0.5,
               minWidth: 0,
               backgroundColor:
-                !hasComposerValue || isLoading || isLoadingChatSessionLog
+                !hasComposerValue || isComposerBusy
                   ? "transparent!important"
                   : "primary.main",
               color:
-                !hasComposerValue || isLoading || isLoadingChatSessionLog
+                !hasComposerValue || isComposerBusy
                   ? "action.active"
                   : "primary.contrastText",
             }}
