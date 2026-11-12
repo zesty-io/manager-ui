@@ -15,6 +15,7 @@ import {
   Chip,
   Skeleton,
 } from "@mui/material";
+import { useDebounce } from "react-use";
 import { useHistory } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
@@ -100,14 +101,15 @@ export const GlobalSearch = () => {
   const [isFetchingContentSearchResults, setIsFetchingContentSearchResults] =
     useState(false);
 
-  const apiQueryTerm = useMemo(() => {
-    if (!!typedSearchAccelerator && !!searchKeyword) {
-      // Remove the accelerator from the keyword
-      return searchKeyword.replace(typedAcceleratorRegex, "")?.trim();
-    }
+  // Search-dependent effects run off the debounced keyword, input stays immediate
+  const [debouncedKeyword, setDebouncedKeyword] = useState("");
+  useDebounce(() => setDebouncedKeyword(searchKeyword), 300, [searchKeyword]);
 
-    return searchKeyword;
-  }, [searchKeyword]);
+  // Strip from the debounced text so it can't disagree with the immediate accelerator state
+  const apiQueryTerm = useMemo(
+    () => debouncedKeyword.replace(typedAcceleratorRegex, "").trim(),
+    [debouncedKeyword]
+  );
 
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const { data: mediaFiles, isFetching: isFetchingMediaSearchResults } =
@@ -130,34 +132,52 @@ export const GlobalSearch = () => {
   const isLoading =
     isFetchingAllMediaFiles ||
     isFetchingMediaSearchResults ||
-    isFetchingContentSearchResults;
+    isFetchingContentSearchResults ||
+    // Debounce pending: don't show the previous term's results
+    searchKeyword !== debouncedKeyword;
 
   useEffect(() => {
     //Update models in store to provide access to other search hooks
     dispatch(fetchModels());
   }, []);
 
+  // Clear immediately when the input is emptied, without waiting for the debounce
   useEffect(() => {
-    if (isEmpty(apiQueryTerm)) {
-      return setContents([]);
+    if (!searchKeyword) {
+      setDebouncedKeyword("");
     }
+  }, [searchKeyword]);
+
+  const searchRequestId = useRef(0);
+  useEffect(() => {
+    const requestId = ++searchRequestId.current;
+    const isCurrent = () => requestId === searchRequestId.current;
+
+    if (isEmpty(apiQueryTerm)) {
+      setContents([]);
+      setIsFetchingContentSearchResults(false);
+      return;
+    }
+
+    const controller = new AbortController();
     setIsFetchingContentSearchResults(true);
     //Update contents in store to provide access to other search hooks
-    dispatch(searchItems(apiQueryTerm))
+    dispatch(searchItems(apiQueryTerm, undefined, controller.signal))
       //@ts-ignore
       .then((res) => {
-        if (!!res?.data?.length) {
-          setContents(res?.data);
-        } else {
-          setContents([]);
-        }
+        // Ignore responses for superseded terms
+        if (!isCurrent()) return;
+        setContents(res?.data?.length ? res.data : []);
       })
       .catch(() => {
-        setContents([]);
+        if (isCurrent()) setContents([]);
       })
       .finally(() => {
-        setIsFetchingContentSearchResults(false);
+        if (isCurrent()) setIsFetchingContentSearchResults(false);
       });
+
+    // Cancel the in-flight request when the term changes or on unmount
+    return () => controller.abort();
   }, [apiQueryTerm]);
 
   const suggestions: Suggestion[] = useMemo(() => {
@@ -339,7 +359,7 @@ export const GlobalSearch = () => {
       ..._recentSearches,
       "AdvancedSearchButton",
     ];
-  }, [suggestions, recentSearches, searchKeyword]);
+  }, [suggestions, recentSearches, searchKeyword, isLoading]);
 
   useEffect(() => {
     setModelKeyword(apiQueryTerm);
