@@ -28,6 +28,8 @@ export const BlockPreview = ({
     });
   const instance = useSelector((state: AppState) => state.instance);
 
+  const isUnresolved = !variantData?.meta?.ZUID;
+
   const url = useMemo(() => {
     if (!variantData || !blockModelData || !instance) return "";
 
@@ -103,7 +105,7 @@ export const BlockPreview = ({
           <IconButton
             data-cy="EditBlock"
             size="small"
-            disabled={isLoadingBlockModel}
+            disabled={isLoadingBlockModel || isUnresolved}
             onClick={() =>
               history.push(
                 `/blocks/${variantData?.meta?.contentModelZUID}/${variantData?.meta?.ZUID}`
@@ -113,8 +115,9 @@ export const BlockPreview = ({
             <ModeEditRounded fontSize="small" />
           </IconButton>
           <IconButton
+            data-cy="CopyBlockLink"
             size="small"
-            disabled={isLoadingBlockModel}
+            disabled={isLoadingBlockModel || isUnresolved}
             onClick={() => handleCopyLinkClick(url)}
           >
             {isLinkCopied ? (
@@ -124,8 +127,9 @@ export const BlockPreview = ({
             )}
           </IconButton>
           <IconButton
+            data-cy="OpenBlockInNewTab"
             size="small"
-            disabled={isLoadingBlockModel}
+            disabled={isLoadingBlockModel || isUnresolved}
             onClick={() =>
               window.open(url, "_blank", "noopener=true,noreferrer=true")
             }
@@ -140,7 +144,7 @@ export const BlockPreview = ({
         src={
           isImageBroken
             ? blockPlaceholder
-            : String(variantData?.data?.og_image) || blockPlaceholder
+            : variantData?.data?.og_image || blockPlaceholder
         }
         onError={() => setIsImageBroken(true)}
         loading="lazy"
