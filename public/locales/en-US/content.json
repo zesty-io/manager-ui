@@ -493,7 +493,7 @@
   "itemListScheduleSubtitle": "You can always cancel the scheduled publish later if needed",
   "itemListScheduleTitle_one": "Schedule Publish of Changes to {{count}} Item",
   "itemListScheduleTitle_other": "Schedule Publish of Changes to {{count}} Items",
-  "itemListSearchNoResultsBody": "Try adjusting your search. We suggest check all words are spelled correctly or try using different keywords.",
+  "itemListSearchNoResultsBody": "Try adjusting your search. We suggest checking that all words are spelled correctly or try using different keywords.",
   "itemListSearchNoResultsTitleRich": "Your filter <strong>\"{{search}}\"</strong> could not find any results",
   "itemListSelectedCount": "{{count}} selected",
   "itemListSelectedCount_one": "{{count}} selected",
