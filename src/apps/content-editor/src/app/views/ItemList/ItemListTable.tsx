@@ -248,6 +248,7 @@ const fieldTypeColumnConfigMap: Partial<
               borderRadius: "8px",
               backgroundColor: params.value,
               border: (theme) =>
+                // eslint-disable-next-line no-restricted-syntax -- comparison against a user-stored color-field value (design-system.md §3)
                 params.value?.toLowerCase() === "#ffffff"
                   ? `1px solid ${theme.palette.border}`
                   : "none",
