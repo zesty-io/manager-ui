@@ -16,7 +16,7 @@ import { isValid } from "date-fns";
 import { useMemo, useState, useReducer } from "react";
 import AutoSizer, { Size } from "react-virtualized-auto-sizer";
 import { useHistory } from "react-router";
-import { NoResults } from "./NoResults";
+import { EmptyResults } from "shell/components/EmptyResults";
 import { modelIconMap, modelNameMap } from "../utils";
 import { Filters } from "./Filters";
 import { AllModelsEmptyState } from "./AllModelsEmptyState";
@@ -273,19 +273,24 @@ export const ModelsTable = ({ search, onEmptySearch }: Props) => {
       </AutoSizer>
       {!filteredModels?.length && !isFetching && search && (
         <Box sx={{ mt: 10 }}>
-          <NoResults
-            type="search"
-            searchTerm={search}
-            onButtonClick={() => onEmptySearch()}
+          <EmptyResults
+            dataCy="NoResults"
+            variant="search"
+            query={search}
+            onAction={() => onEmptySearch()}
           />
         </Box>
       )}
 
       {!filteredModels?.length && !isFetching && !search && (
         <Box sx={{ mt: 10 }}>
-          <NoResults
-            type="filter"
-            onButtonClick={() =>
+          <EmptyResults
+            dataCy="NoResults"
+            variant="filter"
+            title={t("schema.noFilterResultsHeader")}
+            description={t("schema.noFilterResultsSubHeader")}
+            actionLabel={t("schema.clearFilters")}
+            onAction={() =>
               setActiveFilters({
                 modelType: "",
                 user: "",
