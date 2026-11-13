@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
+import { theme } from "@zesty-io/material";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
@@ -125,7 +126,7 @@ export const Field = memo(
     const fieldData = fields?.find((field) => field.ZUID === ZUID);
     const [rerenderKey, setRerenderKey] = useState(0);
 
-    const { local, onLocalChange, showLocal } = useDebouncedInput(
+    const { local, onLocalChange, showLocal, flush } = useDebouncedInput(
       value,
       (v) => {
         onChange(v, name);
@@ -426,7 +427,12 @@ export const Field = memo(
                 value={local}
                 version={version}
                 onChange={(value) => onLocalChange(value)}
-                onSave={onSave}
+                onBlur={flush}
+                onSave={() => {
+                  // Commit the pending debounced value before saving
+                  flush();
+                  onSave?.();
+                }}
                 onCharacterCountChange={(charCount: number) =>
                   setCharacterCount(charCount)
                 }
@@ -617,7 +623,7 @@ export const Field = memo(
           );
         } else {
           return (
-            <h1 style={{ color: "#e53c05" }}>
+            <h1 style={{ color: theme.palette.error.dark }}>
               <FontAwesomeIcon icon={faExclamationTriangle} />
               &nbsp;
               <AppLink to={`/schema/${contentModelZUID}/field/${ZUID}`}>
@@ -723,6 +729,7 @@ export const Field = memo(
             <FieldShell settings={fieldData} errors={errors}>
               <FieldTypeColor
                 name={name}
+                // eslint-disable-next-line no-restricted-syntax -- colour-field default value (design-system.md §3: values the user picks or we store)
                 value={value || "#FFFFFF"}
                 onChange={(evt) => onChange(evt.target.value, name)}
                 error={
