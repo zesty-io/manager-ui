@@ -4,7 +4,7 @@ import { Paper, Box, Grid, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { formatDistanceToNowLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
-import { NoResults } from "../../../../../schema/src/app/components/NoResults";
+import { EmptyResults } from "shell/components/EmptyResults";
 import { FileTypes } from "../constants";
 
 export type FileProps = {
@@ -194,12 +194,12 @@ export const FileList: FC<FileListProps> = ({
               placeContent: "center",
             }}
           >
-            <NoResults
-              type="search"
-              onButtonClick={handleClearSearch}
-              searchTerm={searchKeyword}
+            <EmptyResults
+              dataCy="NoResults"
+              variant="search"
+              query={searchKeyword}
+              onAction={handleClearSearch}
               sx={{
-                "& img": { height: 200, width: 220 },
                 "& h4.MuiTypography-root": { color: "common.white" },
                 "& p.MuiTypography-root": { color: "grey.200" },
               }}

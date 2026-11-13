@@ -37,7 +37,7 @@ import {
   useGetInstanceSettingsQuery,
   useUpdateInstanceSettingMutation,
 } from "../../../../../../../shell/services/instance";
-import { NoSearchResults } from "../../../../../../../shell/components/NoSearchResults";
+import { EmptyResults } from "shell/components/EmptyResults";
 import googleAnalyticsIcon from "../../../../../../../../public/images/googleAnalyticsIcon.svg";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -302,13 +302,16 @@ export const PropertiesDialog = ({ onClose }: Props) => {
                   border: "1px solid",
                   borderColor: "border",
                   borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <NoSearchResults
+                <EmptyResults
+                  variant="search"
+                  size="dialog"
                   query={search}
-                  ignoreFilters
-                  hideBackButton
-                  onSearchAgain={() => {
+                  onAction={() => {
                     setSearch("");
                     inputRef?.current?.focus();
                   }}

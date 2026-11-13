@@ -1,11 +1,5 @@
 import { useState, useCallback, useMemo, FC } from "react";
-import {
-  Stack,
-  Typography,
-  Box,
-  IconButton,
-  CircularProgress,
-} from "@mui/material";
+import { Box, IconButton, CircularProgress } from "@mui/material";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 import {
   AppSideBar,
@@ -24,6 +18,7 @@ import { fetchAuditTrail } from "../../../store/auditTrail";
 import CloudUploadRoundedIcon from "@mui/icons-material/CloudUploadRounded";
 import { usePermission } from "../../../../../../shell/hooks/use-permissions";
 import { useTranslation } from "react-i18next";
+import { EmptyResults } from "shell/components/EmptyResults";
 
 type NavType = "view" | "script" | "stylesheet" | "file";
 
@@ -274,7 +269,15 @@ export const SideBar: FC<SideBarProps> = ({
             />
           </Box>
           <Box className="no-results-container">
-            <NoResults keyword={keyword} />
+            <EmptyResults
+              variant="search"
+              size="compact"
+              title={
+                keyword
+                  ? t("code.noResultsFor", { keyword })
+                  : t("code.noFilesFound")
+              }
+            />
           </Box>
         </AppSideBar>
       </ResizableContainer>
@@ -284,24 +287,6 @@ export const SideBar: FC<SideBarProps> = ({
         onClose={closeOrderFilesDialog}
       />
     </>
-  );
-};
-
-const NoResults = ({ keyword }: { keyword: string }) => {
-  const { t } = useTranslation();
-  return (
-    <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
-      <img
-        src="/images/noSearchResults.svg"
-        alt={t("shell.noSearchResultsAlt")}
-        width="70"
-        height="64"
-        loading="lazy"
-      />
-      <Typography color="text.secondary" variant="body2" align="center">
-        {keyword ? t("code.noResultsFor", { keyword }) : t("code.noFilesFound")}
-      </Typography>
-    </Stack>
   );
 };
 
