@@ -1,5 +1,6 @@
-import { MutableRefObject, useCallback, useEffect } from "react";
+import { MutableRefObject, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { alpha, useTheme } from "@mui/material/styles";
 import { notify } from "shell/store/notifications";
 import { Sentry } from "utility/sentry";
 import {
@@ -7,65 +8,7 @@ import {
   usesContentEditing,
   usesLayoutGrammar,
 } from "./studioTypes";
-
-const bridgeInjectedCss = `
-  .studio-hover {
-    outline: 1px dashed #00bcd4;
-    outline-offset: 2px;
-    cursor: pointer;
-  }
-  .studio-selected {
-    outline: 2px solid #ff9800;
-    outline-offset: 2px;
-  }
-  .studio-layout-mode [data-layout-id] {
-    cursor: pointer;
-  }
-  .studio-layout-mode [data-layout-id][draggable="true"] {
-    cursor: move;
-  }
-  .studio-dragging {
-    background-color: rgba(255, 152, 0, 0.18);
-    outline: 2px solid #ff9800;
-    color: transparent !important;
-  }
-  .studio-dragging * {
-    visibility: hidden !important;
-  }
-  [data-layout-id].studio-drop-before {
-    box-shadow:
-      inset 0 4px 0 #ff9800,
-      0 0 0 1px rgba(255, 152, 0, 0.35);
-  }
-  [data-layout-id].studio-drop-before-horizontal {
-    box-shadow:
-      inset 4px 0 0 #ff9800,
-      0 0 0 1px rgba(255, 152, 0, 0.35);
-  }
-  [data-layout-id].studio-drop-after {
-    box-shadow:
-      inset 0 -4px 0 #ff9800,
-      0 0 0 1px rgba(255, 152, 0, 0.35);
-  }
-  [data-layout-id].studio-drop-after-horizontal {
-    box-shadow:
-      inset -4px 0 0 #ff9800,
-      0 0 0 1px rgba(255, 152, 0, 0.35);
-  }
-  [data-layout-id].studio-drop-inside {
-    background-color: rgba(255, 152, 0, 0.18);
-    outline: 2px dashed #ff9800;
-    outline-offset: 2px;
-  }
-  .studio-static-editing {
-    outline: 2px solid #ff9800 !important;
-    outline-offset: 2px;
-    cursor: text !important;
-  }
-  .studio-static-editing * {
-    cursor: text !important;
-  }
-`;
+import { CodeRegionReplaced } from "./useStudioAiEdit";
 
 type Args = {
   dispatch: (action: any) => any;
@@ -114,7 +57,43 @@ type Args = {
     imgIndex: number;
     currentSrc: string;
   }) => void;
+  /** True while an AI change is staged: the canvas is then its preview. */
+  canvasLockedRef?: MutableRefObject<boolean>;
+  /** The bridge's answer to a replaceCodeRegion command. */
+  onCodeRegionReplaced?: (msg: CodeRegionReplaced) => void;
+  /**
+   * A freshly loaded canvas is ready, after the host's own setup posts.
+   * `capabilities` lists optional bridge features; an older bridge sends none.
+   */
+  onBridgeReady?: (path?: string, capabilities?: string[]) => void;
+  /**
+   * A canvas keystroke in a bound field, before it is written to the store.
+   * The canvas already shows it.
+   */
+  onBeforeBridgeContentInput?: (itemZuid: string, fieldName: string) => void;
+  /** Escape on the canvas: an edit in progress there has ended. */
+  onEscape?: () => void;
+  /** Undo/redo pressed while focus was in the canvas. */
+  onHistoryKey?: (action: "undo" | "redo") => void;
+  /** The bridge's answer to historyRestore. */
+  onHistoryRestored?: (msg: {
+    stepId?: number;
+    direction?: string;
+    ok?: boolean;
+    reason?: string;
+  }) => void;
 };
+
+// Canvas gestures and the edits they stage. While an AI preview is showing,
+// they would act on markup that is not the page's, so they are dropped.
+const CANVAS_INPUT_MESSAGES = new Set([
+  "DOM_EVENT",
+  "REORDER_OUTPUT",
+  "LAYOUT_CONTENT_UPDATE",
+  "DYNAMIC_EDIT_REQUEST",
+  "STATIC_EDIT_REJECTED",
+  "STATIC_EDIT_IMAGE",
+]);
 
 export const useStudioBridge = ({
   dispatch,
@@ -137,16 +116,97 @@ export const useStudioBridge = ({
   setIsNavigating,
   onBridgeFieldInput,
   onStaticEditImage,
+  canvasLockedRef,
+  onCodeRegionReplaced,
+  onBridgeReady,
+  onBeforeBridgeContentInput,
+  onEscape,
+  onHistoryKey,
+  onHistoryRestored,
 }: Args) => {
   const { t } = useTranslation();
-  const handleBridgeReady = useCallback(() => {
-    postCommandToBridge({
-      action: "injectCss",
-      css: bridgeInjectedCss,
-    });
-    syncBridgeInteractionMode(interactionMode);
-    postCommandToBridge({ action: "requestLayersTree" });
-  }, [interactionMode, postCommandToBridge, syncBridgeInteractionMode]);
+  const theme = useTheme();
+  const bridgeInjectedCss = useMemo(() => {
+    const selectionOutline = theme.palette.yellow[500];
+
+    return `
+  .studio-hover {
+    outline: 1px dashed ${theme.palette.blue[500]};
+    outline-offset: 2px;
+    cursor: pointer;
+  }
+  .studio-selected {
+    outline: 2px solid ${selectionOutline};
+    outline-offset: 2px;
+  }
+  .studio-layout-mode [data-layout-id] {
+    cursor: pointer;
+  }
+  .studio-layout-mode [data-layout-id][draggable="true"] {
+    cursor: move;
+  }
+  .studio-dragging {
+    background-color: ${alpha(selectionOutline, 0.18)};
+    outline: 2px solid ${selectionOutline};
+    color: transparent !important;
+  }
+  .studio-dragging * {
+    visibility: hidden !important;
+  }
+  [data-layout-id].studio-drop-before {
+    box-shadow:
+      inset 0 4px 0 ${selectionOutline},
+      0 0 0 1px ${alpha(selectionOutline, 0.35)};
+  }
+  [data-layout-id].studio-drop-before-horizontal {
+    box-shadow:
+      inset 4px 0 0 ${selectionOutline},
+      0 0 0 1px ${alpha(selectionOutline, 0.35)};
+  }
+  [data-layout-id].studio-drop-after {
+    box-shadow:
+      inset 0 -4px 0 ${selectionOutline},
+      0 0 0 1px ${alpha(selectionOutline, 0.35)};
+  }
+  [data-layout-id].studio-drop-after-horizontal {
+    box-shadow:
+      inset -4px 0 0 ${selectionOutline},
+      0 0 0 1px ${alpha(selectionOutline, 0.35)};
+  }
+  [data-layout-id].studio-drop-inside {
+    background-color: ${alpha(selectionOutline, 0.18)};
+    outline: 2px dashed ${selectionOutline};
+    outline-offset: 2px;
+  }
+  .studio-static-editing {
+    outline: 2px solid ${selectionOutline} !important;
+    outline-offset: 2px;
+    cursor: text !important;
+  }
+  .studio-static-editing * {
+    cursor: text !important;
+  }
+`;
+  }, [theme]);
+
+  const handleBridgeReady = useCallback(
+    (path?: string, capabilities?: string[]) => {
+      postCommandToBridge({
+        action: "injectCss",
+        css: bridgeInjectedCss,
+      });
+      syncBridgeInteractionMode(interactionMode);
+      postCommandToBridge({ action: "requestLayersTree" });
+      onBridgeReady?.(path, capabilities);
+    },
+    [
+      bridgeInjectedCss,
+      interactionMode,
+      onBridgeReady,
+      postCommandToBridge,
+      syncBridgeInteractionMode,
+    ]
+  );
 
   const handleBridgeError = useCallback(
     (msg: any) => {
@@ -205,6 +265,7 @@ export const useStudioBridge = ({
         }
 
         case "escape": {
+          onEscape?.();
           if (usesLayoutGrammar(interactionMode)) {
             clearLayoutSelection();
             return;
@@ -233,6 +294,7 @@ export const useStudioBridge = ({
           const fieldName = fieldNameByZuid.get(fieldZuid);
           if (!fieldName) return;
 
+          onBeforeBridgeContentInput?.(itemZuid, fieldName);
           dispatch({
             type: "SET_ITEM_DATA",
             itemZUID: itemZuid,
@@ -281,6 +343,8 @@ export const useStudioBridge = ({
       interactionMode,
       postCommandToBridge,
       onBridgeFieldInput,
+      onBeforeBridgeContentInput,
+      onEscape,
     ]
   );
 
@@ -301,13 +365,44 @@ export const useStudioBridge = ({
       const msg = data.message;
       if (!msg) return;
 
+      if (msg.type === "CODE_REGION_REPLACED") {
+        onCodeRegionReplaced?.(msg);
+        return;
+      }
+
+      // Not canvas input: the bridge sends both while a preview is locked
+      // too, and undo is how a locked AI preview is taken back.
+      if (msg.type === "HISTORY_KEY") {
+        if (msg.action === "undo" || msg.action === "redo") {
+          onHistoryKey?.(msg.action);
+        }
+        return;
+      }
+
+      if (msg.type === "HISTORY_RESTORED") {
+        onHistoryRestored?.(msg);
+        return;
+      }
+
+      if (canvasLockedRef?.current && CANVAS_INPUT_MESSAGES.has(msg.type)) {
+        return;
+      }
+
       if (msg.type === "TEMPLATE_SOURCE_MAP") {
         handleTemplateSourceMap(msg);
         return;
       }
 
       if (msg.type === "BRIDGE_READY") {
-        handleBridgeReady();
+        handleBridgeReady(
+          typeof msg.path === "string" ? msg.path : undefined,
+          Array.isArray(msg.capabilities)
+            ? msg.capabilities.filter(
+                (capability: unknown): capability is string =>
+                  typeof capability === "string"
+              )
+            : undefined
+        );
         return;
       }
 
@@ -411,7 +506,11 @@ export const useStudioBridge = ({
     handleReorderOutput,
     handleTemplateSourceMap,
     interactionMode,
+    onCodeRegionReplaced,
+    onHistoryKey,
+    onHistoryRestored,
     onStaticEditImage,
+    canvasLockedRef,
     t,
   ]);
 

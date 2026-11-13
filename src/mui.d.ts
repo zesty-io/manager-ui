@@ -35,6 +35,7 @@ declare module "@mui/material/styles" {
   export interface TypeBackground {
     shimmer: string;
     shimmerSweep: string;
+    noticeBackground: string;
   }
 }
 

@@ -1,4 +1,4 @@
-import { useMemo, useState, ChangeEvent, memo } from "react";
+import { useEffect, useMemo, useRef, useState, ChangeEvent, memo } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch } from "react-redux";
 import { Trans, useTranslation } from "react-i18next";
@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
+import { theme } from "@zesty-io/material";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
@@ -49,6 +50,14 @@ import { format as fmt } from "date-fns";
 import { FieldTypeRepeater } from "shell/components/FieldTypeRepeater";
 
 const AIFieldShell = withAI(FieldShell);
+
+// Editors that read their value only when they mount.
+const MOUNT_READ_DATATYPES = [
+  "wysiwyg_basic",
+  "wysiwyg_advanced",
+  "markdown",
+  "article_writer",
+];
 
 export const sortHTML = (a: any, b: any) => {
   const nameA = String(a.html) && String(a.html).toUpperCase(); // ignore upper and lowercase
@@ -117,9 +126,12 @@ export const Field = memo(
     const fieldData = fields?.find((field) => field.ZUID === ZUID);
     const [rerenderKey, setRerenderKey] = useState(0);
 
-    const { local, onLocalChange } = useDebouncedInput(value, (v) => {
-      onChange(v, name);
-    });
+    const { local, onLocalChange, showLocal, flush } = useDebouncedInput(
+      value,
+      (v) => {
+        onChange(v, name);
+      }
+    );
 
     const handle = useMemo<any>(
       () => ({
@@ -147,6 +159,15 @@ export const Field = memo(
           }
 
           setRerenderKey((prevKey: number) => prevKey + 1);
+        },
+        // Shows a value restored from outside (Studio's undo/redo) without
+        // writing it back. TinyMCE and the markdown editor read their value
+        // only when they mount, so they remount to pick it up.
+        showValue: (val: unknown) => {
+          showLocal(String(val ?? ""));
+          if (MOUNT_READ_DATATYPES.includes(datatype)) {
+            setRerenderKey((prevKey: number) => prevKey + 1);
+          }
         },
       }),
       []
@@ -406,7 +427,12 @@ export const Field = memo(
                 value={local}
                 version={version}
                 onChange={(value) => onLocalChange(value)}
-                onSave={onSave}
+                onBlur={flush}
+                onSave={() => {
+                  // Commit the pending debounced value before saving
+                  flush();
+                  onSave?.();
+                }}
                 onCharacterCountChange={(charCount: number) =>
                   setCharacterCount(charCount)
                 }
@@ -597,7 +623,7 @@ export const Field = memo(
           );
         } else {
           return (
-            <h1 style={{ color: "#e53c05" }}>
+            <h1 style={{ color: theme.palette.error.dark }}>
               <FontAwesomeIcon icon={faExclamationTriangle} />
               &nbsp;
               <AppLink to={`/schema/${contentModelZUID}/field/${ZUID}`}>
@@ -703,6 +729,7 @@ export const Field = memo(
             <FieldShell settings={fieldData} errors={errors}>
               <FieldTypeColor
                 name={name}
+                // eslint-disable-next-line no-restricted-syntax -- colour-field default value (design-system.md §3: values the user picks or we store)
                 value={value || "#FFFFFF"}
                 onChange={(evt) => onChange(evt.target.value, name)}
                 error={

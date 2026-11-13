@@ -1,5 +1,5 @@
 import { Box, IconButton, Paper, Skeleton, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Suspense,
   useCallback,
@@ -9,8 +9,8 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import i18n from "shell/i18n";
 import {
+  mcpApi,
   useGeminiGenerationMutation,
   useGetChatSessionLogQuery,
   useGetChatSessionsQuery,
@@ -18,9 +18,7 @@ import {
 } from "../../services/mcp";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
-import { enqueueAction } from "../../../engine/queue";
 import { useLocation } from "react-router";
-import { suggestionSystemInstruction } from "./systemInstructions";
 import { useLocalStorage } from "react-use";
 import { getRefRegistry } from "../../../engine/refRegistry";
 import { AppState } from "shell/store/types";
@@ -30,7 +28,17 @@ import {
   ChatPrompt,
   ContentItemWithDirtyAndPublishing,
 } from "shell/services/types";
-import { ChatThread, ChatResponse } from "./ChatThread";
+import {
+  ChatThread,
+  ChatResponse,
+  GENERATED_IMAGE_REF_KEY,
+  scrollToEnd,
+} from "./ChatThread";
+import { PromptImage, toImageFileZUIDs } from "./attachments";
+import { toChatResponses } from "./parseResponse";
+import { useApplySetValue } from "./useApplySetValue";
+import { toAltTextEntry, useGenerateAltText } from "./useGenerateAltText";
+import { buildPromptRequest, buildSuggestionsRequest } from "./promptRequest";
 import { ChatHistory } from "./ChatHistory";
 import {
   isContentAppPath,
@@ -39,75 +47,47 @@ import {
   isCodeAppPath,
 } from "utility/isAIDrawerSupportedPath";
 
-const parseResponse = (rawResponse: string) => {
-  if (!rawResponse) return;
-
-  try {
-    let parsed: any = rawResponse;
-
-    // Some persisted responses are double-encoded JSON strings.
-    // Cap parsing at 3 passes: enough for normal, fenced, and double-encoded payloads
-    // while avoiding endless retries on malformed values.
-    for (let i = 0; i < 3 && typeof parsed === "string"; i++) {
-      const cleaned = parsed.replace(/```json|```/g, "").trim();
-      parsed = JSON.parse(cleaned);
-    }
-
-    return parsed;
-  } catch (error) {
-    throw error;
-  }
-};
-
-// The model sometimes wraps the response array as a JSON string inside a
-// single item's `payload.value`; unwrap it so each entry renders on its own.
-const flattenResponses = (items: any[]): any[] =>
-  items.flatMap((item) => {
-    const value = item?.payload?.value;
-    if (typeof value !== "string" || !value.trim().startsWith("[")) {
-      return [item];
-    }
-
-    try {
-      const nested = parseResponse(value);
-      const isResponseArray =
-        Array.isArray(nested) &&
-        nested.length > 0 &&
-        nested.every((entry) => typeof entry?.type === "string");
-
-      return isResponseArray ? flattenResponses(nested) : [item];
-    } catch {
-      return [item];
-    }
-  });
-
-const normalizeChatSessionLog = (prompts: ChatPrompt[] = []) => {
+// `altTextPromptLabel` stands in for the server's own English prompt on a
+// logged alt-text turn.
+const normalizeChatSessionLog = (
+  prompts: ChatPrompt[] = [],
+  altTextPromptLabel: string
+) => {
   const promptMap: Record<string, any[]> = {};
 
   prompts.forEach((promptLog) => {
-    let parsedResponses = [];
-
-    try {
-      const parsed = parseResponse(promptLog.response);
-      parsedResponses = flattenResponses(
-        parsed ? (Array.isArray(parsed) ? parsed : [parsed]) : []
-      );
-    } catch (error) {
-      parsedResponses = [
+    // The server marks an alt-text turn by its metadata, not its wording.
+    const metadata = promptLog.metadata;
+    if (
+      metadata &&
+      typeof metadata === "object" &&
+      "altText" in metadata &&
+      typeof metadata.altText === "string" &&
+      metadata.altText.trim() &&
+      typeof metadata.fileZuid === "string" &&
+      metadata.fileZuid
+    ) {
+      promptMap[promptLog.promptZuid] = [
+        { type: "USER_INPUT", payload: { value: altTextPromptLabel } },
         {
-          type: "ERROR",
-          payload: {
-            value: i18n.t("shell.errorParsingAiResponse"),
-          },
+          type: "ALT_TEXT_SAVED",
+          payload: { value: metadata.altText, fileZuid: metadata.fileZuid },
         },
       ];
+      return;
     }
+
+    const parsedResponses = toChatResponses(promptLog.response);
+    const images = promptLog.inputArtifacts
+      ?.filter((artifact) => artifact.type === "image" && artifact.url)
+      .map(({ url, fileZuid }) => ({ url, fileZuid }));
 
     promptMap[promptLog.promptZuid] = [
       {
         type: "USER_INPUT",
         payload: {
           value: promptLog.prompt,
+          ...(!!images?.length && { images }),
         },
       },
       ...parsedResponses.map((parsedResponse: any) => ({
@@ -221,6 +201,13 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
   const isChatSessionLogUnresolved =
     isFetchingChatSessionLog && currentChatSessionLog === undefined;
   const [updatePromptApprovalStatus] = useUpdatePromptApprovalStatusMutation();
+  const applySetValue = useApplySetValue();
+  const dispatch = useDispatch();
+  const { generate: generateAltText, isLoading: isGeneratingAltText } =
+    useGenerateAltText();
+  // The chat on screen now, for a reply that lands after the user left it.
+  const urlChatZUIDRef = useRef(urlChatZUID);
+  urlChatZUIDRef.current = urlChatZUID;
   const {
     data: chatSessions,
     isLoading: isLoadingChatSessions,
@@ -270,7 +257,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     setUrlChatZUID,
   ]);
 
-  const responsesEndRef = useRef<HTMLDivElement | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   // Tracks whether the next chatSessionLog sync is the result of a prompt we
   // just sent live, vs. restoring history from opening/switching chats.
   const isAwaitingLiveResponseRef = useRef(false);
@@ -421,6 +408,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     // batch update), so every entry in the set needs to be applied, not just
     // the first.
     const approvedPromptZUIDs: string[] = [];
+    const appliedResponses = new Set<ChatResponse>();
 
     latestPromptZUIDs.forEach((promptZUID) => {
       const promptResponses = responsesRef.current[promptZUID];
@@ -428,7 +416,10 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
 
       const unappliedSetValueResponses = promptResponses.filter(
         (response): response is Extract<ChatResponse, { type: "SET_VALUE" }> =>
-          response.type === "SET_VALUE" && response.approval !== "1"
+          response.type === "SET_VALUE" &&
+          response.approval !== "1" &&
+          // Shown only: there is no field to put it in.
+          response.payload.refKey !== GENERATED_IMAGE_REF_KEY
       );
       if (!unappliedSetValueResponses.length) return;
 
@@ -437,24 +428,24 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
       // Strict Mode double-invokes it in development to surface impurities),
       // which would otherwise double-enqueue the action and double-PATCH.
       unappliedSetValueResponses.forEach((response) => {
-        enqueueAction({
-          type: response.type,
-          payload: {
-            refKey: response.payload.refKey,
-            value: response.payload.value,
-          },
-        });
+        // A ref that is not on the page is skipped: no approval PATCH, and
+        // the response stays unapplied.
+        if (!applySetValue(response.payload.refKey, response.payload.value)) {
+          return;
+        }
+
         updatePromptApprovalStatus({
           chatZUID: urlChatZUID,
           promptZUID,
           approval: "1",
         });
+        appliedResponses.add(response);
       });
 
       approvedPromptZUIDs.push(promptZUID);
     });
 
-    if (!approvedPromptZUIDs.length) return;
+    if (!appliedResponses.size) return;
 
     // Optimistically mark as approved so the button disables immediately
     // without waiting for a re-fetch (mirrors the manual Apply button behavior).
@@ -466,7 +457,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
         if (!currentPromptResponses) return;
 
         nextResponses[promptZUID] = currentPromptResponses.map((response) =>
-          response.type === "SET_VALUE"
+          appliedResponses.has(response)
             ? { ...response, approval: "1" }
             : response
         );
@@ -474,12 +465,16 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
 
       return nextResponses;
     });
-  }, [autoApply, latestPromptZUIDs, urlChatZUID, updatePromptApprovalStatus]);
+  }, [
+    autoApply,
+    latestPromptZUIDs,
+    urlChatZUID,
+    updatePromptApprovalStatus,
+    applySetValue,
+  ]);
 
   useEffect(() => {
-    if (responsesEndRef.current) {
-      responsesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    scrollToEnd(scrollContainerRef.current);
   }, [responses]);
 
   // Maps the chat session log to a normalized format for rendering
@@ -495,7 +490,10 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     }
 
     const restoredResponses = chatSessionLog?.prompts?.length
-      ? normalizeChatSessionLog([...chatSessionLog?.prompts])
+      ? normalizeChatSessionLog(
+          [...chatSessionLog?.prompts],
+          t("shell.generateAltText")
+        )
       : {};
 
     // Only animate/auto-apply prompts that just arrived from a live model
@@ -551,41 +549,28 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
   }, [aiResponse, isChatSessionLogError, t]);
 
   const handlePrompt = useCallback(
-    (newPrompt: string) => {
+    (newPrompt: string, images?: PromptImage[]) => {
       if (!newPrompt?.trim() || !userRole?.role?.ZUID) {
         return false;
       }
 
-      const registryKeys = Object.keys(getRefRegistry() || {});
-      const refRegistry = getRefRegistry();
-      const mappedRefRegistry = registryKeys.map(
-        (x) => `"${x}": "${JSON.stringify(refRegistry[x].context())}"`
-      );
-      const temperature = 0.5;
       const trimmedPrompt = newPrompt.trim();
 
       isAwaitingLiveResponseRef.current = true;
       requestedChatZUIDRef.current = urlChatZUID;
       isRequestAbandonedRef.current = false;
-      geminiGenerate({
-        prompt: trimmedPrompt,
-        tone: selectedTone.value,
-        language: selectedLanguage.value,
-        modelZuid: modelZUID,
-        itemZuid: itemZUID,
-        registryKeys,
-        refRegistry: mappedRefRegistry,
-        filename:
-          getRefRegistry()?.["code-editor"]?.context()?.fileName || undefined,
-        code: getRefRegistry()?.["code-editor"]?.context()?.code || undefined,
-        fields:
-          getRefRegistry()?.["code-editor"]?.context()?.fields || undefined,
-        temperature,
-        url: window.location.href,
-        roleZuid: userRole.role.ZUID,
-        // This tells the /client endpoint whether to generate a new chat session or use an existing one
-        ...(urlChatZUID && { chatZuid: urlChatZUID }),
-      });
+      geminiGenerate(
+        buildPromptRequest({
+          prompt: trimmedPrompt,
+          tone: selectedTone.value,
+          language: selectedLanguage.value,
+          modelZUID,
+          itemZUID,
+          roleZUID: userRole.role.ZUID,
+          chatZUID: urlChatZUID,
+          imageFileZUIDs: toImageFileZUIDs(images),
+        })
+      );
       setResponses((prev) => ({
         ...prev,
         pendingPrompt: [
@@ -593,6 +578,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
             type: "USER_INPUT",
             payload: {
               value: trimmedPrompt,
+              ...(!!images?.length && { images }),
             },
           },
         ],
@@ -615,11 +601,6 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
     (sourcePrompt: string) => {
       if (!urlChatZUID && !userRole?.role?.ZUID) return;
 
-      const systemInstruction = suggestionSystemInstruction(
-        Object.keys(getRefRegistry() || {}),
-        getRefRegistry()
-      );
-      const temperature = 0.5;
       const normalizedPrompt = sourcePrompt ? sourcePrompt.trim() : "";
       const promptValue = normalizedPrompt
         ? t("shell.generateSuggestionsPrompt", { prompt: normalizedPrompt })
@@ -628,15 +609,13 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
       isAwaitingLiveResponseRef.current = true;
       requestedChatZUIDRef.current = urlChatZUID;
       isRequestAbandonedRef.current = false;
-      geminiGenerate({
-        prompt: promptValue,
-        systemInstruction,
-        temperature,
-        chatZuid: urlChatZUID,
-        url: window.location.href,
-        // roleZUID is needed to create a new chat session when Generate Suggestions button is clicked and there is no existing chatZUID yet
-        ...(!urlChatZUID && { roleZuid: userRole?.role?.ZUID }),
-      });
+      geminiGenerate(
+        buildSuggestionsRequest({
+          prompt: promptValue,
+          chatZUID: urlChatZUID,
+          roleZUID: userRole?.role?.ZUID,
+        })
+      );
       setResponses((prev) => ({
         ...prev,
         pendingPrompt: [
@@ -651,6 +630,39 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
       setComposerSeed("");
     },
     [geminiGenerate, urlChatZUID, userRole, t]
+  );
+
+  // Shown locally at once. When the server logged the turn, a refetch then
+  // replaces the transcript with its copy; if the refetch fails, the local
+  // turn stays.
+  const handleGenerateAltText = useCallback(
+    async (fileZuid: string, prompt: string) => {
+      const chatZUID = urlChatZUID;
+      const result = await generateAltText({
+        fileZuid,
+        context: prompt,
+        chatZuid: chatZUID,
+      });
+      if (urlChatZUIDRef.current !== chatZUID) return;
+
+      setResponses((prev) => ({
+        ...prev,
+        [`alt-${Date.now()}`]: [
+          {
+            type: "USER_INPUT",
+            payload: { value: t("shell.generateAltText") },
+          },
+          toAltTextEntry(result, fileZuid),
+        ],
+      }));
+
+      if (result.ok && chatZUID && !result.chatError) {
+        dispatch(
+          mcpApi.util.invalidateTags([{ type: "ChatSessionLog", id: chatZUID }])
+        );
+      }
+    },
+    [dispatch, generateAltText, urlChatZUID, t]
   );
 
   // Resets the live-response flag too, so it can't leak into the next session
@@ -779,7 +791,7 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
           autoApply={autoApply}
           setAutoApply={setAutoApply}
           isInCodeApp={isInCodeApp}
-          isLoading={isLoading}
+          isLoading={isLoading || isGeneratingAltText}
           isLoadingChatSessionLog={isLoadingChatSessionLog}
           urlChatZUID={urlChatZUID}
           onClearChat={handleClearChat}
@@ -792,7 +804,8 @@ const AIDrawerInner = ({ open, onClose }: AIDrawerProps) => {
           setSelectedTone={setSelectedTone}
           handlePrompt={handlePrompt}
           handleGenerateSuggestions={handleGenerateSuggestions}
-          responsesEndRef={responsesEndRef}
+          scrollContainerRef={scrollContainerRef}
+          onGenerateAltText={handleGenerateAltText}
         />
       ) : (
         <ChatHistory

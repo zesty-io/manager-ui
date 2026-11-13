@@ -42,6 +42,22 @@ describe("Content List Filters", () => {
     cy.getBySelector("NoResults").should("not.exist");
   });
 
+  it("Resets the date filter from the empty state", () => {
+    cy.getBySelector("MultiPageTableSearchField")
+      .find("input")
+      .should("be.empty");
+    cy.getBySelector("date_default").click({ force: true });
+    cy.getBySelector("DateFilterMenu")
+      .find("ul li")
+      .contains("Yesterday")
+      .should("exist")
+      .click({ force: true });
+    cy.getBySelector("NoResults").should("exist");
+    cy.getBySelector("NoResultsAction").click({ force: true });
+    cy.getBySelector("NoResults").should("not.exist");
+    cy.location("search").should("not.contain", "datePreset");
+  });
+
   it("Filters by publish status", () => {
     cy.getBySelector("statusFilter_default").click();
     cy.getBySelector("scheduledFilterOption").click();
