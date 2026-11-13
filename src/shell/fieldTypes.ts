@@ -180,7 +180,8 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     group: "text",
     textLike: true,
     richText: true,
-    inlineEditable: true,
+    // Legacy type, not supported by Studio inline editing
+    inlineEditable: false,
     filterable: true,
     studioSlot: "text",
   },
