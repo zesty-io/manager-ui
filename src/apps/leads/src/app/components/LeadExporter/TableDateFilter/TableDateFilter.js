@@ -123,7 +123,7 @@ export default connect((state) => {
         return (
           <div>
             <FormControl fullWidth size="small">
-              <FormLabel sx={{ color: "leads.toolbarLabel" }}>
+              <FormLabel sx={{ color: "grey.300" }}>
                 {t("shell.dateRange")}
               </FormLabel>
               <Select
@@ -145,7 +145,7 @@ export default connect((state) => {
               sx={{
                 mt: 1,
                 "& > div + div": { mt: 1 },
-                "& label": { color: "leads.toolbarLabel" },
+                "& label": { color: "grey.300" },
               }}
               style={this.state.datePickerIsVisible ? {} : { display: "none" }}
             >

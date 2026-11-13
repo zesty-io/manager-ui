@@ -31,10 +31,10 @@ export function LeadExporter() {
         display: "flex",
         flexWrap: "wrap",
         alignItems: "flex-end",
-        bgcolor: "leads.toolbar",
+        bgcolor: "grey.500",
         px: 4,
         py: 2,
-        "& span, & label": { color: "leads.toolbarLabel" },
+        "& span, & label": { color: "grey.300" },
       }}
     >
       <Box sx={{ ...filterSx, minWidth: 150 }}>
