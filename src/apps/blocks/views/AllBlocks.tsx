@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import { CreateModelDialogue } from "../../schema/src/app/components/CreateModelDialogue";
 import { BlockCard } from "../components/BlockCard";
 import { useGetContentModelsQuery } from "../../../shell/services/instance";
-import { NoResults } from "../../schema/src/app/components/NoResults";
+import { EmptyResults } from "shell/components/EmptyResults";
 import allBlocksEmpty from "../../../../public/images/allBlocksEmpty.png";
 import { OnboardingDialog } from "../components/OnboardingDialog";
 import { useLocalStorage } from "react-use";
@@ -197,10 +197,11 @@ export const AllBlocks = () => {
               </Box>
             )}
             {search && (
-              <NoResults
-                type="search"
-                searchTerm={search}
-                onButtonClick={() => {
+              <EmptyResults
+                dataCy="NoResults"
+                variant="search"
+                query={search}
+                onAction={() => {
                   setSearch("");
                   searchRef.current.focus();
                 }}

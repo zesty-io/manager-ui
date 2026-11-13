@@ -3,7 +3,6 @@ import {
   Tabs,
   Tab,
   Box,
-  Typography,
   List,
   TextField,
   InputAdornment,
@@ -20,7 +19,7 @@ import { Actions } from "../../Content/Actions";
 import { useParams } from "react-router";
 import { useGetContentModelItemsQuery } from "../../../../../../../../shell/services/instance";
 import { AddRounded, SearchRounded } from "@mui/icons-material";
-import noSearchResults from "../../../../../../../../../public/images/noSearchResults.svg";
+import { EmptyResults } from "shell/components/EmptyResults";
 import { CreateVariantDialog } from "../../../../../../../blocks/components/CreateVariantDialog";
 import { BlockVariantCard } from "./BlockVariantCard";
 import { CodeSample } from "./CodeSample";
@@ -156,41 +155,23 @@ export const BlockTabs = (props: any) => {
             </List>
           )}
           {search && !filteredBlocks.length && (
-            <Box display="flex" gap={2}>
-              <Box
-                component="img"
-                src={noSearchResults}
-                width={120}
-                height={110}
-              ></Box>
-              <Box>
-                <Typography variant="h4" maxWidth={458}>
-                  <Trans
-                    i18nKey="content.blockSearchNoResultsRich"
-                    values={{ search }}
-                    components={{
-                      term: <strong style={{ wordBreak: "break-all" }} />,
-                    }}
-                  />
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  mt={1}
-                  mb={3}
-                  maxWidth={458}
-                >
-                  {t("content.blockSearchNoResultsHint")}
-                </Typography>
-                <Button
-                  variant="contained"
-                  startIcon={<SearchRounded />}
-                  onClick={() => searchRef?.current?.focus()}
-                >
-                  {t("content.blockSearchAgain")}
-                </Button>
-              </Box>
-            </Box>
+            <EmptyResults
+              variant="search"
+              size="dialog"
+              query={search}
+              title={
+                <Trans
+                  i18nKey="content.blockSearchNoResultsRich"
+                  values={{ search }}
+                  components={{
+                    term: <strong style={{ wordBreak: "break-all" }} />,
+                  }}
+                />
+              }
+              description={t("content.blockSearchNoResultsHint")}
+              actionLabel={t("content.blockSearchAgain")}
+              onAction={() => searchRef?.current?.focus()}
+            />
           )}
         </>
       )}

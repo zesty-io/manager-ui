@@ -526,6 +526,7 @@ export const DefaultValueInput = ({
         <FieldTypeColor
           data-cy="DefaultValueInput"
           name={"defaultValue"}
+          // eslint-disable-next-line no-restricted-syntax -- colour-field default value (design-system.md §3: values the user picks or we store)
           value={value || "#FFFFFF"}
           onChange={(evt) => onChange(evt.target.value)}
           error={error}

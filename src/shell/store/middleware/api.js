@@ -13,9 +13,26 @@ export const fetchResource =
       // Track inflight API requests, keep a reference to the promise so we can
       // return a reference to the same promise to any number of duplicate
       // requests
+      // Abortable requests skip dedupe so one caller's abort can't cancel another's
+      if (action.signal) {
+        return request(action.uri, {
+          rejectOnError: !!action.rejectOnError,
+          signal: action.signal,
+        })
+          .then(action.handler)
+          .catch((err) => {
+            if (action.error) {
+              action.error(err);
+            } else {
+              throw err;
+            }
+          });
+      }
+
       if (!(action.uri in inflight)) {
         const promise = request(action.uri, {
           rejectOnError: !!action.rejectOnError,
+          signal: action.signal,
         })
           .then(action.handler)
           .then((res) => {

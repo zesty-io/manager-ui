@@ -324,11 +324,13 @@ export function searchItems(
     order: "created",
     dir: "DESC",
     limit: "100",
-  }
+  },
+  signal
 ) {
   return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
+      signal,
       uri: `${CONFIG.API_INSTANCE}/search/items?q=${term}&order=${
         query.order
       }&dir=${query.dir}&limit=${query.limit}${
@@ -356,6 +358,8 @@ export function searchItems(
         return res;
       },
       error: (err) => {
+        // Superseded requests are aborted on purpose
+        if (err?.name === "AbortError") return;
         dispatch(
           notify({
             kind: "warn",

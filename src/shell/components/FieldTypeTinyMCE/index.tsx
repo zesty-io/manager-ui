@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
+import type { Editor as TinyMCEEditor } from "tinymce";
 import { Box, alpha } from "@mui/material";
 import { theme } from "@zesty-io/material";
 import { useTranslation } from "react-i18next";
@@ -117,7 +118,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
 }: FieldTypeTinyMCEProps) {
   const { t } = useTranslation();
   // NOTE: controlled component
-  const [initialValue, setInitialValue] = useState(value);
   const [isSkinLoaded, setIsSkinLoaded] = useState(false);
   const { data: rawInstanceSettings } = useGetInstanceSettingsQuery();
 
@@ -132,6 +132,15 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
   // item.
   const editorKey = `${effectiveCompact}-${version}`;
   const baselineRef = useRef<{ key: string; content: string } | null>(null);
+  const editorRef = useRef<TinyMCEEditor | null>(null);
+
+  // Value the editor instance is created with. Captured once per editor
+  // instance (editorKey) and deliberately NOT refreshed afterwards: changing
+  // the <Editor initialValue> prop after init makes tinymce-react call
+  // editor.setContent(), which fires `setcontent` and dirties the item. This
+  // relies on `value` being current in the render that changes editorKey
+  // (useDebouncedInput syncs during render, not in an effect).
+  const initialValue = useMemo(() => value, [editorKey]);
 
   const EDITOR_HEIGHT = effectiveCompact
     ? COMPACT_EDITOR_HEIGHT
@@ -186,7 +195,12 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
           evt.target instanceof Element &&
           evt.target.id === "tinyMceWrapper"
         ) {
-          tinymce.activeEditor?.execCommand("mceFullScreen");
+          // Use this field's own editor, not the global tinymce.activeEditor,
+          // which can be another field's or a destroyed instance mid-remount.
+          const editor = editorRef.current;
+          if (editor && !editor.removed && editor.initialized) {
+            editor.execCommand("mceFullScreen");
+          }
         }
       }}
     >
@@ -217,14 +231,14 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             onCharacterCountChange && onCharacterCountChange(charCount);
           }}
           onInit={(_, editor) => {
+            editorRef.current = editor;
+
             // Seed the baseline with the loaded (post-normalization) content,
             // tagged with this instance's key so a remount starts fresh.
             baselineRef.current = {
               key: editorKey,
               content: editor.getContent(),
             };
-
-            setInitialValue(value ?? "");
 
             const charCount =
               editor.plugins?.wordcount?.body?.getCharacterCount() ?? 0;
@@ -278,10 +292,15 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
             // We want the width to automatically be set to preserve the image proportions
             newImageNode.removeAttribute("height");
 
-            const currentValue = tinymce.activeEditor?.getContent() ?? "";
+            const ownEditor = editorRef.current;
+            if (!ownEditor || ownEditor.removed || !ownEditor.initialized) {
+              return;
+            }
+
+            const currentValue = ownEditor.getContent() ?? "";
 
             // Update the content with the new image data
-            tinymce.activeEditor?.setContent(
+            ownEditor.setContent(
               currentValue.replace(
                 clonedCurrentNode.outerHTML?.replaceAll("&", "&amp;"),
                 newImageNode.outerHTML
@@ -514,7 +533,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
                   url: bynderPortalUrlSetting?.value,
                   onSuccess: (assets) => {
                     if (assets?.length) {
-                      tinymce.activeEditor?.insertContent(
+                      editor.insertContent(
                         assets
                           .map((asset) => {
                             const filename = asset.originalUrl.split("/").pop();

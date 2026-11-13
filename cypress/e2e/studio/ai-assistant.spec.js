@@ -62,6 +62,11 @@ describe("Studio AI Assistant", () => {
   beforeEach(() => {
     cy.stubStaffUser();
     indexSeededPages();
+    // Refuses any upload a test's own stub does not catch, so none reaches
+    // the real media library. Registered first, so a test's stub wins.
+    cy.intercept("POST", "**/upload/**", { statusCode: 500 }).as(
+      "unstubbedUpload"
+    );
     visitStudio();
   });
 
@@ -427,6 +432,73 @@ describe("Studio AI Assistant", () => {
       .and("contain.text", "−1");
     cy.getBySelector("AIDrawerSystemOutput").should("not.exist");
     cy.getBySelector("StudioAIPanel").should("not.contain", "studio-e2e");
+    expectPreviewing(true);
+  });
+
+  it("sends an attached image with the page's code, and stages the edit it returns", () => {
+    const BIN = {
+      id: "1-e2e-bin",
+      default: true,
+      storage_driver: "gcp",
+      storage_name: "e2e-bucket",
+    };
+    const IMAGE_URL = "https://e2e.media.zestyio.com/screenshot.png";
+    cy.intercept("GET", "**/site/*/bins", { body: { data: [BIN] } });
+    cy.intercept("GET", "**/eco/*/bins", { body: { data: [] } });
+    cy.intercept("GET", `**/bin/${BIN.id}/groups`, {
+      body: {
+        data: [
+          {
+            id: "2-e2e-ai-attachments",
+            bin_id: BIN.id,
+            group_id: BIN.id,
+            name: "AI Attachments",
+          },
+        ],
+      },
+    });
+    cy.intercept(
+      "POST",
+      `**/upload/${BIN.storage_driver}/${BIN.storage_name}`,
+      {
+        statusCode: 201,
+        body: { data: [{ id: "3-e2e-screenshot", url: IMAGE_URL }] },
+      }
+    ).as("upload");
+    // The stubbed upload's CDN, so the sent image loads.
+    cy.intercept("GET", `${IMAGE_URL}?*`, {
+      headers: { "content-type": "image/svg+xml" },
+      body: '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"></svg>',
+    });
+    stubMcp((body) => liveReply([setValue(editSource(body.code))]));
+    stubPvl({ statusCode: 200, body: "<p>preview</p>" });
+    // Again, so the stubbed bin replaces the one the first visit cached.
+    visitStudio();
+    openAiPanel();
+
+    cy.getBySelector("AIDrawerAttachInput").selectFile(
+      {
+        contents: Cypress.Buffer.from("e2e"),
+        fileName: "screenshot.png",
+        mimeType: "image/png",
+      },
+      // The input is hidden behind the attach button.
+      { force: true }
+    );
+    cy.getBySelector("AIDrawerAttachment").should("have.length", 1);
+    sendPrompt("Make this view match this screenshot");
+
+    cy.get("@mcp.all").then(([{ request }]) => {
+      expect(request.body.imageFileZuids).to.deep.equal(["3-e2e-screenshot"]);
+      expect(request.body.code).to.contain("studio-e2e-two");
+    });
+    cy.getBySelector("AIDrawerUserInputImage")
+      .should("have.attr", "src", `${IMAGE_URL}?width=200`)
+      .and("have.prop", "naturalWidth", 1);
+    cy.getBySelector("AIDrawerCodeEdit")
+      .should("contain.text", viewFileName)
+      .and("contain.text", "+1")
+      .and("contain.text", "−1");
     expectPreviewing(true);
   });
 
@@ -1381,5 +1453,229 @@ describe("Studio AI Assistant", () => {
     cy.getBySelector("StudioLayoutCancelButton").click();
     cy.getBySelector("StudioLayoutSaveBar").should("not.exist");
     cy.getBySelector("AIDrawerNotice").should("not.exist");
+  });
+
+  // An image reply. `hero_image` is the seeded model's images field.
+  const IMAGE_URL = "https://e2e.media.example/hero.png";
+  const imageReply = (refKey) =>
+    mcpReply([
+      {
+        type: "SET_VALUE",
+        payload: { refKey, value: "3-e2e000-stub00", url: IMAGE_URL },
+      },
+    ]);
+
+  it("shows an image with no field to fill, with no Apply and no warning", () => {
+    // The warning for a ref not on the page shows the reply was handled. Only
+    // the last of one pass's warnings is shown, so the image goes last.
+    stubMcp(() =>
+      mcpReply([
+        {
+          type: "SET_VALUE",
+          payload: { refKey: "e2e-not-on-page", value: "Text" },
+        },
+        {
+          type: "SET_VALUE",
+          payload: { refKey: "generated-image", value: "3-e2e000-stub00" },
+        },
+      ])
+    );
+    openAiPanel();
+    sendPrompt("Generate an image of a harbor");
+
+    cy.getBySelector("AIDrawerGeneratedImage").should("exist");
+    cy.getBySelector("AIDrawerSetValue").should("not.exist");
+    cy.getBySelector("toast")
+      .should("contain.text", '"e2e-not-on-page"')
+      .and("not.contain.text", '"generated-image"');
+    cy.getBySelector("StudioContentSaveBar").should("not.exist");
+  });
+
+  it("applies an image to a page image field only on Apply", () => {
+    serveEchoCanvas();
+    stubMcp(() => imageReply("hero_image"));
+    visitStudio();
+    recordHostCommands();
+    awaitEchoCanvas();
+    openAiPanel();
+    sendPrompt("Generate a hero image");
+
+    cy.get("@mcp")
+      .its("request.body.registryKeys")
+      .should("include", "hero_image");
+    cy.getBySelector("AIDrawerGeneratedImage").should("exist");
+    cy.getBySelector("StudioContentSaveBar").should("not.exist");
+
+    cy.getBySelector("AIDrawerSetValue").should("not.be.disabled").click();
+    cy.getBySelector("AIDrawerSetValue").should("be.disabled");
+    cy.getBySelector("StudioContentSaveBar").should("exist");
+    cy.window()
+      .its("__hostCommands")
+      .should((commands) => {
+        const repaint = commands.find((c) => c.action === "setAttrByField");
+        // The server's public URL: the resolver's needs a session.
+        expect(repaint).to.include({
+          itemZuid: itemZUID,
+          attr: "src",
+          value: IMAGE_URL,
+        });
+      });
+
+    cy.getBySelector("StudioContentCancelButton").click();
+    cy.getBySelector("StudioContentSaveBar").should("not.exist");
+    // The field no longer holds the image, so it can be applied again.
+    cy.getBySelector("AIDrawerSetValue").should("not.be.disabled");
+  });
+
+  it("offers no Apply for an image field value that is not a file", () => {
+    // The generated image shows the reply was handled.
+    stubMcp(() =>
+      mcpReply([
+        {
+          type: "SET_VALUE",
+          payload: { refKey: "hero_image", value: "undefined" },
+        },
+        {
+          type: "SET_VALUE",
+          payload: { refKey: "generated-image", value: "3-e2e000-stub00" },
+        },
+      ])
+    );
+    openAiPanel();
+    sendPrompt("Generate a hero image");
+
+    cy.getBySelector("AIDrawerGeneratedImage").should("exist");
+    cy.getBySelector("AIDrawerSetValue").should("not.exist");
+    cy.getBySelector("StudioContentSaveBar").should("not.exist");
+  });
+
+  describe("canvas selection", () => {
+    // The page's view as the bridge maps it: a repeated <img>, a text
+    // element, and a background repeated in two inline styles.
+    const TEMPLATE =
+      '<div data-layout-id="1"><img src="a.jpg" alt="first">' +
+      '<img src="{{this.hero_image.getImage()}}">' +
+      '<img src="a.jpg" data-layout-id="2"></div>' +
+      '<p data-layout-id="3">Hello <b>there</b></p>' +
+      '<div style="background: url(bg.jpg)">first</div>' +
+      '<section data-layout-id="4" style="background-image: url(\'bg.jpg\')">' +
+      "Second</section>";
+    const patch = (layoutId, tagName) => ({
+      codeId: viewZUID,
+      layoutId,
+      isSelf: true,
+      tagName,
+      elementIndex: 0,
+    });
+    const attrSlot = (attr, value) => ({
+      kind: "attribute",
+      key: attr,
+      attr,
+      isDynamic: false,
+      value,
+      sourceValue: value,
+      layoutEditable: true,
+      control: "text",
+    });
+    const element = (layoutId, tagName, slots, children = []) => ({
+      id: `${viewZUID}:${layoutId}`,
+      kind: "element",
+      tagName,
+      codeId: viewZUID,
+      layoutId,
+      layoutPatch: patch(layoutId, tagName),
+      slots,
+      children,
+    });
+    // A text row: no tag of its own, addressed through its <p>.
+    const textRow = () => ({
+      id: `${viewZUID}:textOf:3:0`,
+      kind: "text",
+      tagName: null,
+      codeId: viewZUID,
+      layoutId: null,
+      label: "Hello",
+      layoutPatch: patch("3", "p"),
+      slots: [
+        {
+          kind: "text",
+          key: "text",
+          control: "text",
+          isDynamic: false,
+          value: "Hello",
+          sourceValue: "Hello",
+          layoutEditable: true,
+          textIndex: 0,
+        },
+      ],
+      children: [],
+    });
+
+    // Selects a row on a canvas whose template is TEMPLATE, then sends a
+    // prompt and yields the request's selection.
+    const sendWithSelected = (rowId) => {
+      serveEchoCanvas();
+      stubMcp(() => mcpReply([]));
+      // The page's path lookup; its response triggers clearSelection.
+      cy.intercept({
+        method: "GET",
+        pathname: "**/search/items",
+        query: { field: "path" },
+      }).as("pathSearch");
+      visitStudio();
+      cy.wait("@pathSearch");
+      recordHostCommands();
+      awaitEchoCanvas();
+      // Layout mode, where a row opens the Inspector, is set in an effect.
+      cy.getBySelector("StudioAIButton").should("exist");
+      replyFromBridge({
+        type: "TEMPLATE_SOURCE_MAP",
+        templateSourceByCodeId: { [viewZUID]: TEMPLATE },
+      });
+      replyFromBridge({
+        type: "LAYERS_TREE",
+        tree: [
+          element("2", "img", [
+            attrSlot("src", "a.jpg"),
+            attrSlot("alt", "hero"),
+          ]),
+          element("3", "p", [], [textRow()]),
+          element("4", "section", []),
+        ],
+      });
+      cy.get(`[data-cy="StudioLayersRow"][data-node-id="${rowId}"]`).click();
+      cy.getBySelector("StudioInspectorPanel").should("exist");
+      openAiPanel();
+      sendPrompt("Replace this image");
+      return cy.get("@mcp").its("request.body.selection");
+    };
+
+    it("sends a selected image by its src and which copy it is", () => {
+      sendWithSelected(`${viewZUID}:2`).should("deep.equal", {
+        tagName: "img",
+        outerHTML: '<img src="a.jpg" alt="hero">',
+        occurrence: 1,
+        boundField: null,
+      });
+    });
+
+    it("sends a selected text row as its element", () => {
+      sendWithSelected(`${viewZUID}:textOf:3:0`).should("deep.equal", {
+        tagName: "p",
+        outerHTML: "<p>Hello <b>there</b></p>",
+        occurrence: 0,
+        boundField: null,
+      });
+    });
+
+    it("sends which copy of an inline background a selection is", () => {
+      sendWithSelected(`${viewZUID}:4`).should("deep.equal", {
+        tagName: "section",
+        outerHTML:
+          "<section style=\"background-image: url('bg.jpg')\">Second</section>",
+        occurrence: 1,
+        boundField: null,
+      });
+    });
   });
 });
