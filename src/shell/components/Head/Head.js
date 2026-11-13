@@ -77,7 +77,7 @@ export default connect((state, props) => {
 
   return (
     <div className={styles.Head}>
-      <main className={styles.Tags}>
+      <div className={styles.Tags}>
         <div className={styles.Notice}>
           <Button
             title={t("shell.headCreateTag")}
@@ -114,7 +114,7 @@ export default connect((state, props) => {
             {t("shell.headNoTags")}
           </h3>
         )}
-      </main>
+      </div>
 
       <Preview
         item={props.item}

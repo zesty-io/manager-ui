@@ -91,9 +91,9 @@ type ModalHeaderProps = {
 
 export const ModalHeader = React.memo((props: ModalHeaderProps) => {
   return (
-    <header className={cx(styles.ModalHeader, props.className)}>
+    <div className={cx(styles.ModalHeader, props.className)}>
       {props.children}
-    </header>
+    </div>
   );
 });
 
@@ -104,9 +104,9 @@ type ModalContentProps = React.HTMLAttributes<HTMLElement> & {
 export const ModalContent = React.memo((props: ModalContentProps) => {
   const { className, children, ...rest } = props;
   return (
-    <main {...rest} className={cx(styles.ModalContent, className)}>
+    <div {...rest} className={cx(styles.ModalContent, className)}>
       {children}
-    </main>
+    </div>
   );
 });
 
@@ -117,8 +117,8 @@ type ModalFooterProps = {
 
 export const ModalFooter = React.memo((props: ModalFooterProps) => {
   return (
-    <footer className={cx(styles.ModalFooter, props.className)}>
+    <div className={cx(styles.ModalFooter, props.className)}>
       {props.children}
-    </footer>
+    </div>
   );
 });
