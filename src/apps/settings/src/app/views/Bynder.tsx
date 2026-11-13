@@ -11,7 +11,7 @@ import {
 import PersonRemoveRoundedIcon from "@mui/icons-material/PersonRemoveRounded";
 import { theme } from "@zesty-io/material";
 
-import bynderPreview from "../../../../../../public/images/bynder-preview.png";
+import bynderPreview from "../../../../../../public/images/bynder-preview.webp";
 import bynderLogo from "../../../../../../public/images/bynder-logo.svg";
 import {
   useCreateInstanceSettingsMutation,

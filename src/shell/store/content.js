@@ -93,12 +93,11 @@ export function content(state = {}, action) {
           ...state[action.payload.itemZUID],
           ...action.payload.data[action.payload.itemZUID],
         };
-      } else {
-        if (state[action.payload.itemZUID]) {
-          // no publish or schedule records so remove them from the item
-          delete state[action.payload.itemZUID].publishing;
-          delete state[action.payload.itemZUID].scheduling;
-        }
+      } else if (state[action.payload.itemZUID]) {
+        // no publish or schedule records so remove them from the item
+        const { publishing, scheduling, ...rest } =
+          state[action.payload.itemZUID];
+        state[action.payload.itemZUID] = rest;
       }
 
       return { ...state };
@@ -324,11 +323,13 @@ export function searchItems(
     order: "created",
     dir: "DESC",
     limit: "100",
-  }
+  },
+  signal
 ) {
   return (dispatch) => {
     return dispatch({
       type: "FETCH_RESOURCE",
+      signal,
       uri: `${CONFIG.API_INSTANCE}/search/items?q=${term}&order=${
         query.order
       }&dir=${query.dir}&limit=${query.limit}${
@@ -356,6 +357,8 @@ export function searchItems(
         return res;
       },
       error: (err) => {
+        // Superseded requests are aborted on purpose
+        if (err?.name === "AbortError") return;
         dispatch(
           notify({
             kind: "warn",
