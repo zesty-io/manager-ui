@@ -1,16 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ShuffleRoundedIcon from "@mui/icons-material/ShuffleRounded";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  Typography,
-  Box,
-  Stack,
-} from "@mui/material";
-import { DeleteRounded } from "@mui/icons-material";
+import { Button, Typography, Box } from "@mui/material";
 
 import { Paper, Skeleton } from "@mui/material";
 import {
@@ -24,6 +15,7 @@ import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import { ContentItemProps } from "../../../../../seo/src/app/components/RedirectsDialogProvider/constants";
 import { ContentRedirectModal } from "./ContentRedirectModal";
 import { useDeleteRedirectMutation } from "../../../../../../shell/services/instance";
+import { ConfirmDialog } from "../../../../../../shell/components/ConfirmDialog";
 import DescriptionIcon from "@mui/icons-material/Description";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { ListOptionSkeleton } from "../../../../../seo/src/app/components/RedirectsDialogProvider/CreateRedirects/SearchField";
@@ -148,8 +140,10 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
   redirects = [],
 }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteRedirect] = useDeleteRedirectMutation();
   const [isRedirected, setIsRedirected] = useState(false);
   const [redirection, setRedirection] = useState<Redirects | null>(null);
 
@@ -254,108 +248,28 @@ const ContentRedirects: FC<ContentRedirectsProps> = ({
         />
       )}
       {isDeleteModalOpen && (
-        <ConfirmDeleteModal
-          open={isDeleteModalOpen}
+        <ConfirmDialog
           onClose={() => setIsDeleteModalOpen(false)}
-          itemZUID={redirection?.ZUID}
+          onConfirm={() =>
+            deleteRedirect({ ZUID: redirection?.ZUID })
+              .unwrap()
+              .then(() => {
+                dispatch(
+                  notify({
+                    kind: "success",
+                    message: t("content.redirectDeletedOne"),
+                  })
+                );
+              })
+          }
+          title={t("content.redirectStopRedirecting")}
+          description={t("content.redirectStopBody")}
+          confirmLabel={t("content.redirectStopRedirecting")}
+          confirmStartIcon={<StopRoundedIcon />}
+          confirmDataCy="StopRedirectContentItemConfirmButton"
         />
       )}
     </>
-  );
-};
-
-type ConfirmDeleteModalProps = {
-  open: boolean;
-  onClose: () => void;
-  itemZUID: string;
-};
-
-export const ConfirmDeleteModal = (props: ConfirmDeleteModalProps) => {
-  const { open, onClose, itemZUID } = props;
-  const { t } = useTranslation();
-  const dispatch = useDispatch();
-
-  const [deleteRedirect, { isLoading: isDeleting }] =
-    useDeleteRedirectMutation();
-
-  const handleDeleteRedirects = () => {
-    Promise.resolve(deleteRedirect({ ZUID: itemZUID }))
-      .then((res) => {
-        onClose();
-      })
-      .catch(() => {
-        dispatch(
-          notify({
-            kind: "error",
-            message: t("content.redirectErrorDeleting"),
-          })
-        );
-      })
-      .finally(() => {
-        dispatch(
-          notify({
-            kind: "error",
-            message: t("content.redirectDeletedOne"),
-          })
-        );
-      });
-  };
-
-  return (
-    <Dialog open={open} fullWidth maxWidth="xs" onClose={onClose}>
-      <DialogTitle>
-        <Box
-          sx={{
-            backgroundColor: "red.100",
-            borderRadius: "100%",
-            width: "40px",
-            height: "40px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            mb: 1.5,
-          }}
-        >
-          <DeleteRounded color="error" />
-        </Box>
-        <Stack
-          display="flex"
-          flexDirection="row"
-          justifyContent="flex-start"
-          alignItems="center"
-          columnGap={1}
-          overflow="hidden"
-          textOverflow="ellipsis"
-        >
-          <Typography
-            variant="inherit"
-            fontWeight={700}
-            flexGrow={0}
-            flexShrink={0}
-          >
-            {t("content.redirectStopRedirecting")}
-          </Typography>
-        </Stack>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          {t("content.redirectStopBody")}
-        </Typography>
-      </DialogTitle>
-      <DialogActions>
-        <Button variant="text" color="inherit" onClick={onClose}>
-          {t("common.cancel")}
-        </Button>
-        <Button
-          data-cy="StopRedirectContentItemConfirmButton"
-          variant="contained"
-          color="error"
-          onClick={handleDeleteRedirects}
-          loading={isDeleting}
-          startIcon={<StopRoundedIcon />}
-        >
-          {t("content.redirectStopRedirecting")}
-        </Button>
-      </DialogActions>
-    </Dialog>
   );
 };
 

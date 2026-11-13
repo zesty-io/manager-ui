@@ -316,6 +316,26 @@ describe("AI drawer", () => {
       },
     ]);
 
+    // An image with no field to fill: shown, never applied.
+    const GENERATED_IMAGE_REPLY = JSON.stringify([
+      {
+        type: "SET_VALUE",
+        payload: { refKey: "generated-image", value: "3-e2e000-stub00" },
+      },
+    ]);
+
+    const IMAGE_ZUID = "3-e2e-stub-image";
+    const IMAGE_REPLY = JSON.stringify([
+      {
+        type: "SET_VALUE",
+        payload: { refKey: "generated-image", value: IMAGE_ZUID },
+      },
+      {
+        type: "SYSTEM_OUTPUT",
+        payload: { value: "Generated an image of the alps." },
+      },
+    ]);
+
     const openDrawerWithReply = (response, beforePrompt = () => {}) => {
       cy.intercept("GET", "**/chats", { body: { data: [] } });
       cy.intercept("POST", "**/client", {
@@ -380,6 +400,507 @@ describe("AI drawer", () => {
 
       cy.getBySelector("toast").should("contain.text", '"code-editor"');
       cy.get("@approve.all").should("have.length", 0);
+    });
+
+    it("shows a generated image with no Apply and no warning", () => {
+      openDrawerWithReply(GENERATED_IMAGE_REPLY);
+
+      cy.getBySelector("AIDrawerGeneratedImage").should("exist");
+      cy.getBySelector("AIDrawerSetValue").should("not.exist");
+      cy.getBySelector("toast").should("not.exist");
+    });
+
+    it("does not auto-apply a generated image", () => {
+      // The code-editor warning shows that auto-apply ran over the reply.
+      // Only the last of one pass's warnings is shown, so the image goes last.
+      const reply = JSON.stringify([
+        ...JSON.parse(CODE_EDITOR_REPLY),
+        ...JSON.parse(GENERATED_IMAGE_REPLY),
+      ]);
+      openDrawerWithReply(reply, () => {
+        cy.getBySelector("AIDrawerSettings").click();
+        cy.getBySelector("AIDrawerAutoApplyToggle").find("input").check();
+      });
+
+      cy.getBySelector("AIDrawerGeneratedImage").should("exist");
+      cy.getBySelector("toast")
+        .should("contain.text", '"code-editor"')
+        .and("not.contain.text", '"generated-image"');
+      cy.get("@approve.all").should("have.length", 0);
+    });
+
+    it("generates alt text for a generated image and saves it to the file", () => {
+      openDrawerWithReply(IMAGE_REPLY);
+      cy.intercept("POST", "**/api/alt-text", {
+        body: { data: { altText: "A stubbed alt text" }, message: "ok" },
+      }).as("altText");
+      cy.intercept("PATCH", `**/file/${IMAGE_ZUID}`, { body: {} }).as(
+        "saveAltText"
+      );
+
+      // The save refetches the chat log; the server has logged the alt-text
+      // turn by then. Registered before the click so the refetch cannot
+      // outrun it, and held until the live turn has been checked so it cannot
+      // replace that turn first. The logged text differs from the live one so
+      // the restored turn can be told apart from the local one it replaces.
+      let releaseChatLog;
+      const chatLogGate = new Promise((resolve) => {
+        releaseChatLog = resolve;
+      });
+      const restoredChatLog = {
+        body: {
+          data: {
+            chatZuid: CHAT_ZUID,
+            prompts: [
+              {
+                promptZuid: "e2e-stub-prompt",
+                chatZuid: CHAT_ZUID,
+                prompt: "Stubbed prompt",
+                response: IMAGE_REPLY,
+                approval: "0",
+              },
+              {
+                promptZuid: "e2e-stub-alt-prompt",
+                chatZuid: CHAT_ZUID,
+                prompt: "Generate alt text for this image (Stubbed prompt)",
+                response: JSON.stringify([
+                  {
+                    type: "SYSTEM_OUTPUT",
+                    payload: { value: "A restored alt text" },
+                  },
+                ]),
+                metadata: {
+                  fileZuid: IMAGE_ZUID,
+                  context: "Stubbed prompt",
+                  altText: "A restored alt text",
+                },
+                approval: "0",
+              },
+            ],
+          },
+        },
+      };
+      cy.intercept("GET", `**/chats/${CHAT_ZUID}?*`, (req) =>
+        chatLogGate.then(() => req.reply(restoredChatLog))
+      ).as("getChatWithAltText");
+
+      // Follows the reply's text, as the last entry of the turn.
+      cy.contains("Generated an image of the alps.");
+      cy.getBySelector("AIDrawerGenerateAltText").should("be.visible").click();
+
+      cy.wait("@altText")
+        .its("request.body")
+        .should((body) => {
+          expect(body.fileZuid).to.equal(IMAGE_ZUID);
+          expect(body.context).to.equal("Stubbed prompt");
+        });
+      cy.wait("@saveAltText")
+        .its("request.body")
+        .should("deep.equal", { title: "A stubbed alt text" });
+      cy.getBySelector("AIDrawerAltTextSaved")
+        .should("contain", "Alt text saved to the image")
+        .and("contain", "A stubbed alt text")
+        .and("be.visible");
+      cy.getBySelector("AIDrawerAltTextOpenInMedia").should(
+        "have.attr",
+        "href",
+        `/media?fileId=${IMAGE_ZUID}`
+      );
+
+      // The refetched log replaces the local turn; its metadata rebuilds it.
+      cy.then(() => releaseChatLog());
+      cy.wait("@getChatWithAltText");
+      cy.getBySelector("AIDrawerAltTextSaved")
+        .should("have.length", 1)
+        .and("contain", "A restored alt text")
+        .and("be.visible");
+      cy.getBySelector("AIDrawerAltTextOpenInMedia").should(
+        "have.attr",
+        "href",
+        `/media?fileId=${IMAGE_ZUID}`
+      );
+      cy.getBySelector("AIDrawerUserInput")
+        .last()
+        .should("have.text", "Generate an alt tag for this image");
+      cy.contains("Generate alt text for this image").should("not.exist");
+    });
+
+    it("shows the server's message and saves nothing when alt text fails", () => {
+      openDrawerWithReply(IMAGE_REPLY);
+      cy.intercept("POST", "**/api/alt-text", {
+        statusCode: 400,
+        body: { message: "Media file not found" },
+      }).as("altText");
+      cy.intercept("PATCH", `**/file/${IMAGE_ZUID}`, { body: {} }).as(
+        "saveAltText"
+      );
+
+      cy.getBySelector("AIDrawerGenerateAltText").click();
+      cy.wait("@altText");
+      cy.contains("Media file not found").should("be.visible");
+      cy.get("@saveAltText.all").should("have.length", 0);
+    });
+  });
+
+  // Stubbed: the media library and the reply are fixed.
+  describe("attaching images to a prompt", () => {
+    const CHAT_ZUID = "e2e-stub-attachments-chat";
+    const BIN = {
+      id: "1-e2e-bin",
+      name: "E2E bin",
+      default: true,
+      storage_driver: "gcp",
+      storage_name: "e2e-bucket",
+    };
+    const FOLDER_ID = "2-e2e-ai-attachments";
+    const CREATED_FOLDER_ID = "2-e2e-created";
+    const CDN = "https://e2e.media.zestyio.com";
+    // A 1x1 PNG, so the thumbnail renders.
+    const PNG = Cypress.Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+      "base64"
+    );
+    const image = (fileName, contents = PNG, mimeType = "image/png") => ({
+      contents,
+      fileName,
+      mimeType,
+      lastModified: Date.now(),
+    });
+    const megabytes = (count) => Cypress.Buffer.alloc(count * 1024 * 1024);
+    const fileZUID = (fileName) => `3-e2e-${fileName.replace(/\W/g, "-")}`;
+    const MISSING_IMAGE = "missing.png";
+    // What the stubbed CDN serves: a text body, which a reply keeps intact.
+    const SVG =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"></svg>';
+
+    beforeEach(() => {
+      // Refuses any upload a test's own stub does not catch, so none reaches
+      // the real media library. Registered first, so the stubs below win.
+      cy.intercept("POST", "**/upload/**", { statusCode: 500 }).as(
+        "unstubbedUpload"
+      );
+      // The stubbed uploads' CDN, so a sent image loads.
+      cy.intercept("GET", new RegExp(`^${CDN}/`), (req) => {
+        if (req.url.includes(MISSING_IMAGE)) {
+          req.reply({ statusCode: 404 });
+          return;
+        }
+        req.reply({ headers: { "content-type": "image/svg+xml" }, body: SVG });
+      });
+    });
+
+    const bodyText = (body) =>
+      typeof body === "string" ? body : new TextDecoder().decode(body);
+    const uploadedFileName = (req) =>
+      bodyText(req.body).match(/name="file"; filename="([^"]+)"/)[1];
+
+    const stubMediaLibrary = ({
+      groups = [
+        {
+          id: FOLDER_ID,
+          bin_id: BIN.id,
+          group_id: BIN.id,
+          name: "AI Attachments",
+        },
+      ],
+      failing = [],
+      uploadDelay = 0,
+    } = {}) => {
+      cy.intercept("GET", "**/site/*/bins", { body: { data: [BIN] } });
+      cy.intercept("GET", "**/eco/*/bins", { body: { data: [] } });
+      cy.intercept("GET", `**/bin/${BIN.id}/groups`, {
+        body: { data: groups },
+      }).as("getGroups");
+      cy.intercept("POST", "**/group", {
+        statusCode: 201,
+        body: { data: [{ id: CREATED_FOLDER_ID }] },
+      }).as("createGroup");
+      cy.intercept(
+        "POST",
+        `**/upload/${BIN.storage_driver}/${BIN.storage_name}`,
+        (req) => {
+          const fileName = uploadedFileName(req);
+          if (failing.includes(fileName)) {
+            req.reply({ statusCode: 500, body: { message: "Upload failed" } });
+            return;
+          }
+          req.reply({
+            statusCode: 201,
+            delay: uploadDelay,
+            body: {
+              data: [{ id: fileZUID(fileName), url: `${CDN}/${fileName}` }],
+            },
+          });
+        }
+      ).as("upload");
+    };
+
+    const stubChat = ({ inputArtifacts, delay = 0 } = {}) => {
+      cy.intercept("GET", "**/chats", { body: { data: [] } });
+      cy.intercept("POST", "**/client", {
+        body: { chatZuid: CHAT_ZUID, data: "Noted.", message: "", tools: [] },
+      }).as("postClient");
+      cy.intercept("GET", `**/chats/${CHAT_ZUID}?*`, {
+        delay,
+        body: {
+          data: {
+            chatZuid: CHAT_ZUID,
+            prompts: [
+              {
+                promptZuid: "e2e-stub-attachments-prompt",
+                chatZuid: CHAT_ZUID,
+                prompt: "Describe these",
+                response: "Noted.",
+                approval: "0",
+                ...(inputArtifacts && { inputArtifacts }),
+              },
+            ],
+          },
+        },
+      }).as("getChat");
+    };
+
+    const openDrawer = ({ chatZUID } = {}) => {
+      const pathname = `/content/${Cypress.env("modelZUID")}/${Cypress.env(
+        "itemZUID"
+      )}`;
+      cy.clearLocalStorage();
+      cy.waitOn("/v1/content/models*", () => {
+        cy.visit(pathname, {
+          onBeforeLoad: (win) => {
+            if (chatZUID) {
+              win.localStorage.setItem(
+                `ai-drawer-${pathname}-chatZUID`,
+                JSON.stringify(chatZUID)
+              );
+            }
+          },
+        });
+      });
+      cy.getBySelector("DuoModeToggle").click({ force: true });
+      cy.getBySelector("AIDrawerToggle").click();
+    };
+
+    const attach = (...files) =>
+      cy.getBySelector("AIDrawerAttachInput").selectFile(files, {
+        // The input is hidden behind the attach button.
+        force: true,
+      });
+
+    it("shows a thumbnail for each attached image, and removes one before sending", () => {
+      stubMediaLibrary();
+      stubChat();
+      openDrawer();
+
+      attach(image("first.png"), image("second.png"));
+      cy.getBySelector("AIDrawerAttachment").should("have.length", 2);
+      cy.getBySelector("AIDrawerAttachment")
+        .first()
+        .find("img")
+        .should("have.prop", "naturalWidth", 1);
+
+      cy.getBySelector("AIDrawerAttachmentRemove").first().click();
+      cy.getBySelector("AIDrawerAttachment")
+        .should("have.length", 1)
+        .find("img")
+        .should("have.attr", "alt", "second.png");
+      cy.get("@upload.all").should("have.length", 0);
+    });
+
+    it("uploads each image into AI Attachments and sends its ZUID with the prompt", () => {
+      stubMediaLibrary();
+      // The reload carries no images, so any shown come from the send itself.
+      stubChat({ delay: 5000 });
+      openDrawer();
+
+      attach(image("first.png"), image("second.png"));
+      cy.getBySelector("AIDrawerComposer").type("Describe these{enter}");
+
+      cy.wait("@postClient").then(({ request }) => {
+        expect(request.body.imageFileZuids).to.deep.equal([
+          fileZUID("first.png"),
+          fileZUID("second.png"),
+        ]);
+      });
+      cy.get("@upload.all").then((uploads) => {
+        expect(uploads).to.have.length(2);
+        uploads.forEach(({ request }) => {
+          const body = bodyText(request.body);
+          expect(body).to.match(
+            new RegExp(`name="group_id"\\r\\n\\r\\n${FOLDER_ID}\\r\\n`)
+          );
+          expect(body).to.match(
+            new RegExp(`name="bin_id"\\r\\n\\r\\n${BIN.id}\\r\\n`)
+          );
+        });
+      });
+      cy.get("@createGroup.all").should("have.length", 0);
+
+      cy.getBySelector("AIDrawerUserInputImage")
+        .should("have.length", 2)
+        .first()
+        .should("have.attr", "src", `${CDN}/first.png?width=200`)
+        .and("have.prop", "naturalWidth", 1);
+      cy.getBySelector("AIDrawerUserInput").should(
+        "contain.text",
+        "Describe these"
+      );
+      cy.getBySelector("AIDrawerAttachment").should("not.exist");
+    });
+
+    it("creates the AI Attachments folder at the bin root when there is none", () => {
+      stubMediaLibrary({
+        // Same name, but not at the root.
+        groups: [
+          {
+            id: "2-e2e-nested",
+            bin_id: BIN.id,
+            group_id: "2-e2e-parent",
+            name: "AI Attachments",
+          },
+        ],
+      });
+      stubChat();
+      openDrawer();
+
+      attach(image("first.png"));
+      cy.getBySelector("AIDrawerComposer").type("Describe this{enter}");
+
+      cy.wait("@createGroup").then(({ request }) => {
+        expect(request.body).to.deep.equal({
+          name: "AI Attachments",
+          bin_id: BIN.id,
+          group_id: BIN.id,
+        });
+      });
+      cy.wait("@upload").then(({ request }) => {
+        expect(bodyText(request.body)).to.match(
+          new RegExp(`name="group_id"\\r\\n\\r\\n${CREATED_FOLDER_ID}\\r\\n`)
+        );
+      });
+      cy.wait("@postClient")
+        .its("request.body.imageFileZuids")
+        .should("deep.equal", [fileZUID("first.png")]);
+    });
+
+    it("refuses files over the limits, or of another type, before uploading", () => {
+      stubMediaLibrary();
+      stubChat();
+      openDrawer();
+
+      attach(image("animated.gif", PNG, "image/gif"));
+      cy.getBySelector("AIDrawerAttachError").should(
+        "have.text",
+        "animated.gif wasn't added: only these image types can be attached: PNG, JPEG, WebP, HEIC, HEIF."
+      );
+
+      // The browser's MIME type decides, not the name.
+      attach(image("renamed.png", PNG, "image/gif"));
+      cy.getBySelector("AIDrawerAttachError").should(
+        "have.text",
+        "renamed.png wasn't added: only these image types can be attached: PNG, JPEG, WebP, HEIC, HEIF."
+      );
+      cy.getBySelector("AIDrawerAttachment").should("not.exist");
+
+      // A non-standard name for a PNG is still a PNG.
+      attach(image("legacy.png", PNG, "image/x-png"));
+      cy.getBySelector("AIDrawerAttachment").should("have.length", 1);
+      cy.getBySelector("AIDrawerAttachmentRemove").click();
+      cy.getBySelector("AIDrawerAttachment").should("not.exist");
+
+      attach(image("huge.png", megabytes(21)));
+      cy.getBySelector("AIDrawerAttachError").should(
+        "have.text",
+        "huge.png wasn't added: each image can be at most 20 MB."
+      );
+
+      attach(
+        image("big-one.png", megabytes(11)),
+        image("big-two.png", megabytes(11))
+      );
+      cy.getBySelector("AIDrawerAttachError").should(
+        "have.text",
+        "big-two.png wasn't added: a prompt's images can total at most 20 MB."
+      );
+      cy.getBySelector("AIDrawerAttachment").should("have.length", 1);
+      cy.getBySelector("AIDrawerAttachmentRemove").click();
+
+      attach(...["1", "2", "3", "4", "5", "6"].map((n) => image(`${n}.png`)));
+      cy.getBySelector("AIDrawerAttachError").should(
+        "have.text",
+        "6.png wasn't added: a prompt can have at most 5 images."
+      );
+      cy.getBySelector("AIDrawerAttachment").should("have.length", 5);
+      cy.getBySelector("AIDrawerAttach").should("be.disabled");
+
+      cy.get("@upload.all").should("have.length", 0);
+    });
+
+    it("does not send the prompt when an upload fails, and names the file", () => {
+      stubMediaLibrary({ failing: ["second.png"] });
+      stubChat();
+      openDrawer();
+
+      attach(image("first.png"), image("second.png"));
+      cy.getBySelector("AIDrawerComposer").type("Describe these{enter}");
+
+      cy.getBySelector("AIDrawerAttachError").should(
+        "have.text",
+        "second.png couldn't be uploaded, so the prompt wasn't sent."
+      );
+      cy.get("@upload.all").should("have.length", 2);
+      cy.get("@postClient.all").should("have.length", 0);
+      cy.getBySelector("AIDrawerAttachment").should("have.length", 2);
+      cy.getBySelector("AIDrawerComposer")
+        .find("textarea:not([aria-hidden])")
+        .should("have.value", "Describe these");
+      cy.getBySelector("AIDrawerUserInput").should("not.exist");
+    });
+
+    it("sends nothing when the drawer closes before the uploads finish", () => {
+      stubMediaLibrary({ uploadDelay: 2000 });
+      stubChat();
+      openDrawer();
+
+      attach(image("first.png"));
+      cy.getBySelector("AIDrawerComposer").type("Describe this{enter}");
+      cy.getBySelector("AIDrawerAttachUploading").should("exist");
+      cy.getBySelector("AIDrawerClearChat").should("be.disabled");
+
+      cy.getBySelector("AIDrawerToggle").click();
+      cy.getBySelector("AIDrawerEnabled").should("not.exist");
+      cy.wait("@upload");
+      // Time for a stale send to go out.
+      cy.wait(1000);
+      cy.get("@postClient.all").should("have.length", 0);
+    });
+
+    it("shows a reloaded prompt's attached images", () => {
+      stubMediaLibrary();
+      stubChat({
+        inputArtifacts: [
+          {
+            type: "image",
+            fileZuid: fileZUID("first.png"),
+            url: `${CDN}/first.png`,
+          },
+          { type: "image", url: `${CDN}/${MISSING_IMAGE}` },
+        ],
+      });
+      openDrawer({ chatZUID: CHAT_ZUID });
+
+      cy.wait("@getChat");
+      cy.getBySelector("AIDrawerUserInputImage").should("have.length", 2);
+      cy.getBySelector("AIDrawerUserInputImage")
+        .first()
+        .should("have.attr", "src", `${CDN}/first.png?width=200`)
+        .and("have.prop", "naturalWidth", 1);
+      // One that no longer loads shows an icon instead.
+      cy.getBySelector("AIDrawerUserInputImage")
+        .last()
+        .should("not.match", "img")
+        .find("svg")
+        .should("exist");
     });
   });
 });

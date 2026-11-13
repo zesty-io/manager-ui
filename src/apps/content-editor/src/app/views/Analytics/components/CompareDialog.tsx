@@ -24,7 +24,7 @@ import {
   useGetContentItemQuery,
   useGetContentModelQuery,
 } from "../../../../../../../shell/services/instance";
-import { NoSearchResults } from "../../../../../../../shell/components/NoSearchResults";
+import { EmptyResults } from "shell/components/EmptyResults";
 import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded";
 import { formatDistanceToNowLocalized } from "shell/i18n/dates";
 import { isValid } from "date-fns";
@@ -173,13 +173,16 @@ export const CompareDialog = ({ onClose }: Props) => {
               border: "1px solid",
               borderColor: "border",
               borderRadius: "8px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <NoSearchResults
+            <EmptyResults
+              variant="search"
+              size="dialog"
               query={search}
-              ignoreFilters
-              hideBackButton
-              onSearchAgain={() => {
+              onAction={() => {
                 setSearch("");
                 inputRef?.current?.focus();
               }}

@@ -1,27 +1,13 @@
-import { FC, useEffect, useState, Dispatch } from "react";
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Typography,
-  TextField,
-  DialogActions,
-  CircularProgress,
-  IconButton,
-  Button,
-  Box,
-} from "@mui/material";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material/styles";
-import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import { Box } from "@mui/material";
+import { ConfirmDialog } from "../../../../../../shell/components/ConfirmDialog";
 
 interface Props {
-  onClose?: () => void;
-  onDeleteFile?: () => any;
+  onClose: () => void;
+  onDeleteFile: () => Promise<unknown>;
   filename?: string;
   fileCount?: number;
-  isLoadingDelete?: boolean;
 }
 
 export const DeleteFileModal: FC<Props> = ({
@@ -29,70 +15,38 @@ export const DeleteFileModal: FC<Props> = ({
   onDeleteFile,
   filename,
   fileCount,
-  isLoadingDelete,
 }) => {
   const { t } = useTranslation();
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isMultiple = fileCount > 1;
 
   return (
-    <Dialog open={true} fullWidth maxWidth={"xs"} onClose={onClose}>
-      <DialogTitle component="div">
-        <Box
-          sx={{
-            backgroundColor: "red.100",
-            borderRadius: "100%",
-            width: "40px",
-            height: "40px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <DeleteRoundedIcon sx={{ color: "red.600" }} />
-        </Box>
-        <Typography variant="h5" fontWeight={700} sx={{ mt: 2 }}>
-          {fileCount > 1
-            ? t("media.deleteFileModalTitleMultiple", { count: fileCount })
-            : t("media.deleteFileModalTitleSingle")}
-        </Typography>
-      </DialogTitle>
-      <DialogContent>
-        <Typography sx={{ wordBreak: "break-all" }}>
-          {fileCount > 1
-            ? t("media.deleteFileModalWarningMultiple")
-            : t("media.deleteFileModalWarningSingle", { filename })}
-        </Typography>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          color="inherit"
-          disabled={isLoadingDelete}
-          onClick={() => onClose()}
-        >
-          {t("common.cancel")}
-        </Button>
-        <Button
-          variant="contained"
-          color="error"
-          aria-label={t("media.deleteFileModalDeleteButtonAria")}
-          onClick={() => onDeleteFile()}
-          disabled={isLoadingDelete}
-        >
-          {isLoadingDelete ? (
-            <CircularProgress size="24px" color="inherit" />
-          ) : (
-            <>
-              {fileCount > 1
-                ? t("media.deleteFileModalDeleteButtonMultiple", {
-                    count: fileCount,
-                  })
-                : t("common.delete")}
-            </>
-          )}
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <ConfirmDialog
+      onClose={onClose}
+      onConfirm={onDeleteFile}
+      title={
+        isMultiple
+          ? t("media.deleteFileModalTitleMultiple", { count: fileCount })
+          : t("media.deleteFileModalTitleSingle")
+      }
+      description={
+        isMultiple ? (
+          t("media.deleteFileModalWarningMultiple")
+        ) : (
+          <Box component="span" sx={{ wordBreak: "break-all" }}>
+            {t("media.deleteFileModalWarningSingle", { filename })}
+          </Box>
+        )
+      }
+      confirmLabel={
+        isMultiple
+          ? t("media.deleteFileModalDeleteButtonMultiple", {
+              count: fileCount,
+            })
+          : t("common.delete")
+      }
+      confirmAriaLabel={t("media.deleteFileModalDeleteButtonAria")}
+      confirmDataCy="DeleteFileModalConfirmButton"
+    />
   );
 };
 
