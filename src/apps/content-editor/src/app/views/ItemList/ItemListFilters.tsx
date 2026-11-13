@@ -31,7 +31,7 @@ import { TableSortContext } from "./TableSortProvider";
 import { selectLang } from "../../../../../../shell/store/user";
 import { useDispatch } from "react-redux";
 import { Flag, getCountryCode } from "shell/components/Flag";
-import { isFilterableFieldType } from "shell/fieldTypes";
+import { isSortableFieldType } from "shell/fieldTypes";
 
 // Values are i18next keys (content namespace); translated at render time.
 const SORT_ORDER = {
@@ -201,7 +201,7 @@ export const ItemListFilters = () => {
           {t("content.itemListFieldsLabel")}
         </Typography>
         {fields
-          ?.filter((field) => isFilterableFieldType(field.datatype))
+          ?.filter((field) => isSortableFieldType(field.datatype))
           ?.map((field) => (
             <MenuItem
               key={field.ZUID}

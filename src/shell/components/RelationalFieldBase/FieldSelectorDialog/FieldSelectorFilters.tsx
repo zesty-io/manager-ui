@@ -21,7 +21,7 @@ import { useGetUsersQuery } from "../../../services/accounts";
 import { DateFilterValue, DateFilter } from "../../Filters/DateFilter";
 import { FieldFilters } from "./index";
 import { DateRangeFilterValue } from "../../Filters/DateFilter/types";
-import { isFilterableFieldType } from "shell/fieldTypes";
+import { isSortableFieldType } from "shell/fieldTypes";
 
 // Maps stable filter keys to their i18n key strings. Labels are resolved via
 // t() at render so they localize; do not render these values directly.
@@ -333,7 +333,7 @@ export const FieldSelectorFilters = ({
           {t("shell.relationalFieldsHeading")}
         </Typography>
         {fields
-          ?.filter((field) => isFilterableFieldType(field.datatype))
+          ?.filter((field) => isSortableFieldType(field.datatype))
           ?.map((field) => (
             <MenuItem
               key={field.ZUID}

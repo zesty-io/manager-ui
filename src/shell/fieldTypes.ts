@@ -76,7 +76,10 @@ export type FieldTypeMeta = {
   textLike: boolean;
   richText: boolean;
   inlineEditable: boolean;
+  // DataGrid column filter
   filterable: boolean;
+  // Sort-by-field menus
+  sortable: boolean;
   studioSlot: StudioSlot;
   formatForDisplay?: (value: unknown) => string | null;
 };
@@ -138,6 +141,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: true,
     filterable: true,
+    sortable: true,
     studioSlot: "text",
   },
   textarea: {
@@ -149,6 +153,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: true,
     filterable: true,
+    sortable: true,
     studioSlot: "text",
   },
   wysiwyg_basic: {
@@ -160,6 +165,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: true,
     inlineEditable: true,
     filterable: true,
+    sortable: true,
     studioSlot: "text",
   },
   wysiwyg_advanced: {
@@ -171,6 +177,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: true,
     inlineEditable: true,
     filterable: true,
+    sortable: true,
     studioSlot: "text",
   },
   article_writer: {
@@ -180,9 +187,9 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     group: "text",
     textLike: true,
     richText: true,
-    // Legacy type, not supported by Studio inline editing
-    inlineEditable: false,
+    inlineEditable: true,
     filterable: true,
+    sortable: true,
     studioSlot: "text",
   },
   markdown: {
@@ -194,6 +201,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: true,
     inlineEditable: true,
     filterable: true,
+    sortable: true,
     studioSlot: "text",
   },
   images: {
@@ -205,7 +213,8 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     textLike: false,
     richText: false,
     inlineEditable: true,
-    filterable: true,
+    filterable: false,
+    sortable: true,
     studioSlot: "media",
   },
   files: {
@@ -218,6 +227,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: false,
+    sortable: false,
     studioSlot: null,
   },
   one_to_one: {
@@ -229,6 +239,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: true,
+    sortable: true,
     studioSlot: null,
   },
   one_to_many: {
@@ -240,6 +251,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: true,
+    sortable: true,
     studioSlot: null,
   },
   link: {
@@ -251,6 +263,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: true,
+    sortable: true,
     studioSlot: "media",
   },
   internal_link: {
@@ -262,6 +275,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: true,
+    sortable: true,
     studioSlot: null,
   },
   block_selector: {
@@ -273,6 +287,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: true,
+    sortable: false,
     studioSlot: null,
   },
   number: {
@@ -284,6 +299,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: true,
+    sortable: true,
     studioSlot: "text",
     formatForDisplay: formatNumber,
   },
@@ -295,7 +311,8 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     textLike: false,
     richText: false,
     inlineEditable: false,
-    filterable: true,
+    filterable: false,
+    sortable: true,
     studioSlot: "text",
   },
   date: {
@@ -307,6 +324,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: true,
+    sortable: true,
     studioSlot: null,
     formatForDisplay: (value) => formatDate(value as string),
   },
@@ -319,6 +337,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: true,
+    sortable: true,
     studioSlot: null,
     formatForDisplay: (value) => formatDateTime(value as string),
   },
@@ -331,6 +350,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: true,
+    sortable: false,
     studioSlot: null,
   },
   dropdown: {
@@ -342,6 +362,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: true,
+    sortable: false,
     studioSlot: "text",
   },
   color: {
@@ -353,6 +374,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: true,
+    sortable: false,
     studioSlot: "text",
   },
   sort: {
@@ -364,6 +386,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: true,
+    sortable: true,
     studioSlot: "text",
   },
   uuid: {
@@ -375,6 +398,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: true,
+    sortable: true,
     studioSlot: "text",
   },
   fontawesome: {
@@ -386,6 +410,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: false,
+    sortable: false,
     studioSlot: null,
   },
   integration: {
@@ -397,6 +422,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: true,
+    sortable: false,
     studioSlot: null,
   },
   repeater: {
@@ -408,6 +434,7 @@ export const FIELD_TYPES: Record<FieldType, FieldTypeMeta> = {
     richText: false,
     inlineEditable: false,
     filterable: false,
+    sortable: false,
     studioSlot: null,
   },
 };
@@ -423,6 +450,7 @@ export const UNKNOWN_FIELD_TYPE_META: FieldTypeMeta = {
   richText: false,
   inlineEditable: false,
   filterable: false,
+  sortable: false,
   studioSlot: null,
 };
 
@@ -433,11 +461,14 @@ export const getFieldTypeMeta = (datatype?: string | null): FieldTypeMeta =>
   isFieldType(datatype) ? FIELD_TYPES[datatype] : UNKNOWN_FIELD_TYPE_META;
 
 const flag =
-  (key: "filterable" | "textLike" | "richText" | "inlineEditable") =>
+  (
+    key: "filterable" | "sortable" | "textLike" | "richText" | "inlineEditable"
+  ) =>
   (datatype?: string | null): boolean =>
     isFieldType(datatype) ? FIELD_TYPES[datatype][key] : false;
 
 export const isFilterableFieldType = flag("filterable");
+export const isSortableFieldType = flag("sortable");
 export const isTextLikeFieldType = flag("textLike");
 export const isRichTextFieldType = flag("richText");
 export const isInlineEditableFieldType = flag("inlineEditable");
