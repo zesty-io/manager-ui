@@ -5,6 +5,7 @@ import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBullete
 import { FileTable, Block } from "@zesty-io/material";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
 import i18n from "shell/i18n";
+import { FIELD_TYPES, isFieldType } from "shell/fieldTypes";
 
 export const modelIconMap = {
   templateset: DescriptionRoundedIcon,
@@ -134,53 +135,5 @@ export const getErrorMessage = ({
   }
 };
 
-export const getCategory = (type: string) => {
-  let category = "";
-
-  switch (type) {
-    case "text":
-    case "textarea":
-    case "wysiwyg_basic":
-    case "markdown":
-      category = "text";
-      break;
-
-    case "images":
-      category = "media";
-      break;
-
-    case "one_to_one":
-    case "one_to_many":
-    case "link":
-    case "internal_link":
-    case "block_selector":
-      category = "relationship";
-      break;
-
-    case "number":
-    case "currency":
-      category = "numeric";
-      break;
-
-    case "date":
-    case "datetime":
-      category = "dateandtime";
-      break;
-
-    case "yes_no":
-    case "dropdown":
-    case "color":
-    case "sort":
-    case "uuid":
-    case "integration":
-    case "repeater":
-      category = "options";
-      break;
-
-    default:
-      category = "";
-      break;
-  }
-
-  return category;
-};
+export const getCategory = (type: string) =>
+  isFieldType(type) ? FIELD_TYPES[type].group : "";

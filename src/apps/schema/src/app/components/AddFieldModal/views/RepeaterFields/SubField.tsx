@@ -20,7 +20,8 @@ import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
 import { useDrag, useDrop } from "react-dnd";
 
 import { FieldIcon } from "../../../Field/FieldIcon";
-import { getTypeText, FieldType } from "../../../configs";
+import { getTypeText } from "../../../configs";
+import { FieldType } from "shell/fieldTypes";
 // import { FieldBody } from "../FieldForm";
 import { useState } from "react";
 import { ContentModelField, RepeaterSubField } from "shell/services/types";
