@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import { MemoryRouter, useHistory, useLocation } from "react-router";
 import { cloneDeep } from "lodash";
 import { AppState } from "shell/store/types";
-import { usePermission } from "shell/hooks/use-permissions";
+import { useMultiPermission, usePermission } from "shell/hooks/use-permissions";
 import {
   fetchAllModelPublishings,
   fetchItem,
@@ -90,7 +90,6 @@ import {
 import { buildAiSelection } from "./utils/aiSelection";
 import { contentKey, useStudioHistory } from "./hooks/useStudioHistory";
 import { getRefRegistry } from "../../engine/refRegistry";
-import { useMultiPermission } from "shell/hooks/use-permissions";
 import { MediaApp } from "../media/src/app";
 
 const drawerWidth = 440;
@@ -166,7 +165,6 @@ export const StudioWrapper = () => {
   // can reach, so a staff account cannot select into a mode it lacks the
   // permissions for.
   const isStaff = useSelector((state: AppState) => !!state.user?.staff);
-  const canSelectMode = isStaff;
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   // Undo history is built last, from the hooks below; everything before it
@@ -196,7 +194,6 @@ export const StudioWrapper = () => {
   const [studioSaving, setStudioSaving] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, any>>({});
   const [saveClicked, setSaveClicked] = useState(false);
-  const fieldErrorRef = useRef<any>(null);
   const pendingLayoutContinuationRef = useRef<null | (() => void)>(null);
   const previewReloadContinuationRef = useRef<null | (() => void)>(null);
   // Set while a merged save is running so the content and layout save paths,
@@ -700,19 +697,15 @@ export const StudioWrapper = () => {
     }
   }, [dispatch, pageModel, pageModelZUID]);
 
-  const editorItem = selectedItem || null;
-  const editorModel = selectedModel || null;
-
   const isSelectedItemLoading =
     isFetchingItem ||
     isFetchingModel ||
     isFetchingFields ||
-    !editorItem ||
-    !editorModel ||
+    !selectedItem ||
+    !selectedModel ||
     (selectedElement?.itemZuid &&
       selectedElement.itemZuid !== pageItemZUID &&
       !selectedItem);
-  const isSaving = studioSaving;
 
   const selectedItemLabel = useMemo(
     () =>
@@ -726,16 +719,16 @@ export const StudioWrapper = () => {
     ]
   );
 
-  const activeVersion = editorItem?.meta?.version ?? 0;
+  const activeVersion = selectedItem?.meta?.version ?? 0;
   const lastVersionRef = useRef<{ itemZUID: string; version: number } | null>(
     null
   );
 
   useEffect(() => {
-    if (!selectedItemZUID || !editorItem) return;
-    if (typeof editorItem?.meta?.version !== "number") return;
+    if (!selectedItemZUID || !selectedItem) return;
+    if (typeof selectedItem?.meta?.version !== "number") return;
 
-    const nextVersion = editorItem.meta.version;
+    const nextVersion = selectedItem.meta.version;
     const prev = lastVersionRef.current;
 
     if (!prev || prev.itemZUID !== selectedItemZUID) {
@@ -758,16 +751,7 @@ export const StudioWrapper = () => {
         version: nextVersion,
       };
     }
-  }, [dispatch, editorItem, selectedItemZUID, studioSaving]);
-
-  useEffect(() => {
-    const iframeEl = iframeRef.current;
-    if (!iframeEl) return;
-
-    const handleLoad = () => setIsNavigating(false);
-    iframeEl.addEventListener("load", handleLoad);
-    return () => iframeEl.removeEventListener("load", handleLoad);
-  }, []);
+  }, [dispatch, selectedItem, selectedItemZUID, studioSaving]);
 
   useEffect(
     () => () => {
@@ -1224,7 +1208,7 @@ export const StudioWrapper = () => {
     if (hasPendingContentChanges) void discardAllContent();
   };
   // The "Save Changes" bar button opens the modal; the modal's Save All /
-  // Save & Publish All buttons run the active mode's batch handlers and close.
+  // Save & Publish All buttons run the merged save below and close.
   // Close the modal on full success; keep it open on partial failure so the
   // user sees which items remain (still listed + toasted) and can retry.
   const closeModalUnlessFailed = (result: { failedCount?: number } | void) => {
@@ -1315,9 +1299,8 @@ export const StudioWrapper = () => {
     ).then(closeModalUnlessFailed, () => {});
   };
 
-  // Rows shown in the Save Changes modal — scoped to the active mode: content
-  // mode lists the staged content/block items, layout mode lists changed code
-  // files. (Per product: staging is gated by mode, never mixed.)
+  // Rows shown in the Save Changes modal: the staged content/block items and
+  // the changed code files, whichever are pending.
   const saveChanges = useMemo<StudioSaveChange[]>(() => {
     const layoutChanges: StudioSaveChange[] = pendingLayoutCodeIds.map(
       (codeId) => {
@@ -1467,7 +1450,7 @@ export const StudioWrapper = () => {
       // Deliberately NOT gated on hasPendingLayoutChanges. A debounced write
       // that hasn't fired yet leaves that flag false, so gating here would skip
       // the one function that knows to flush it — the timer would then land
-      // with isLayoutMode already false, staging an edit into a save bar the
+      // after the switch to content mode, staging an edit into a save bar the
       // user cannot see until they switch back. The callee proceeds immediately
       // when there is genuinely nothing pending, so this costs no prompt.
       if (nextMode === "content") {
@@ -1573,16 +1556,6 @@ export const StudioWrapper = () => {
           ? basePath
           : normalizePath(`/${langCode.toLowerCase()}${basePath}`);
 
-      const nextSrc = buildIframeSrc(localizedPath);
-      if (!nextSrc) {
-        dispatch(
-          notify({
-            kind: "warn",
-            message: t("content.studioInvalidUrl"),
-          })
-        );
-        return;
-      }
       updateItemByPath(localizedPath, {
         onApplied: () => {
           clearSelection();
@@ -1591,15 +1564,7 @@ export const StudioWrapper = () => {
         },
       });
     },
-    [
-      buildIframeSrc,
-      clearSelection,
-      dispatch,
-      previewPath,
-      updateItemByPath,
-      updateStudioUrl,
-      t,
-    ]
+    [clearSelection, previewPath, updateItemByPath, updateStudioUrl]
   );
 
   const lastResolvedPathRef = useRef<string | null>(null);
@@ -1613,16 +1578,12 @@ export const StudioWrapper = () => {
     updateItemByPath(normalized, { onApplied: clearSelection });
   }, [normalizedPathParam, updateItemByPath, clearSelection]);
 
-  const requestClearSelection = useCallback(() => {
-    clearSelection();
-  }, [clearSelection]);
-
   useEffect(() => {
     if (!usesContentEditing(interactionMode)) return;
     if (
       !selectedElement?.studioId ||
       !selectedElement.fieldZuid ||
-      !editorItem
+      !selectedItem
     ) {
       return;
     }
@@ -1630,7 +1591,7 @@ export const StudioWrapper = () => {
     const selectedFieldName = fieldNameByZuid.get(selectedElement.fieldZuid);
     if (!selectedFieldName) return;
 
-    const rawValue = editorItem?.data?.[selectedFieldName];
+    const rawValue = selectedItem?.data?.[selectedFieldName];
     const nextValue =
       typeof rawValue === "string"
         ? rawValue
@@ -1688,11 +1649,11 @@ export const StudioWrapper = () => {
       });
     }
   }, [
-    editorItem,
     fieldNameByZuid,
     interactionMode,
     postCommandToBridge,
     selectedElement,
+    selectedItem,
   ]);
 
   const handleSave = useCallback(async () => {
@@ -1790,12 +1751,6 @@ export const StudioWrapper = () => {
     }
   }, [dispatch, pageModelZUID, modelsState, selectedElement]);
 
-  // Alias only — the hooks below take this under a bridge-specific prop name.
-  // It used to close over `fieldNameByZuid` to resolve the filtered field name
-  // eagerly; that lookup now lives in a memo (see filteredFieldName), which also
-  // stops every consumer of this callback from re-running when fields load.
-  const applyBridgeSelection = applySelection;
-
   const handleBridgeFieldInput = useCallback((fieldZuid: string) => {
     bridgeUpdatedFieldZuidRef.current = fieldZuid;
   }, []);
@@ -1815,7 +1770,7 @@ export const StudioWrapper = () => {
   } = useStudioLayersTree({
     interactionMode,
     postCommandToBridge,
-    applyBridgeSelection,
+    applyBridgeSelection: applySelection,
     applyLayoutSelection,
     applyInspectorSelection,
     refreshInspectorSlots,
@@ -1874,7 +1829,7 @@ export const StudioWrapper = () => {
       if (msg.codeId && msg.layoutId) {
         openInspectorForLayoutElement(msg.codeId, msg.layoutId);
       }
-      applyBridgeSelection({
+      applySelection({
         studioId: msg.studioId,
         fieldZuid: msg.fieldZuid,
         fieldType: msg.fieldType,
@@ -1882,7 +1837,7 @@ export const StudioWrapper = () => {
         modelZuid: msg.modelZuid,
       });
     },
-    [applyBridgeSelection, openInspectorForLayoutElement]
+    [applySelection, openInspectorForLayoutElement]
   );
 
   // One drop is one step, even when it moves a block across regions.
@@ -1922,7 +1877,7 @@ export const StudioWrapper = () => {
     handleLayersTree,
     applyLayoutSelection: handleBridgeLayoutSelection,
     clearLayoutSelection,
-    applySelection: applyBridgeSelection,
+    applySelection,
     onDynamicEditRequest: handleDynamicEditRequest,
     canEditLayout,
     fieldNameByZuid,
@@ -1953,7 +1908,7 @@ export const StudioWrapper = () => {
   const handleEditDynamicSlot = useCallback(
     (slot: ElementSlot) => {
       if (!slot.fieldZuid) return;
-      applyBridgeSelection({
+      applySelection({
         studioId: slot.studioId,
         fieldZuid: slot.fieldZuid,
         fieldType: slot.fieldType,
@@ -1961,7 +1916,7 @@ export const StudioWrapper = () => {
         modelZuid: slot.modelZuid,
       });
     },
-    [applyBridgeSelection]
+    [applySelection]
   );
 
   // On connect, the panel emits a Parsley ref. For the LIVE preview we show the
@@ -2364,11 +2319,6 @@ export const StudioWrapper = () => {
     [handleLinkAttrChange]
   );
 
-  // Layout mode: connect a content item to a text slot. A text slot's value is
-  // just the raw template content, so "connecting" means writing a Parsley
-  // expression (e.g. "{{this.title}}") in place of the static text — which the
-  // existing text write-path already persists. The content-item picker itself
-  // isn't built yet; this is the entry point it will hang off.
   // Fields of the item being edited, offered in a text slot's "Connect Item"
   // dropdown. `this` in a Parsley expression resolves to the item rendering the
   // template region, which for the main page is the page item — so its model's
@@ -2674,17 +2624,13 @@ export const StudioWrapper = () => {
   const renderEditorPanel = () => (
     <Box display="flex" flexDirection="column" gap={2}>
       {selectedItemZUID === pageItemZUID && saveClicked && hasErrors && (
-        <FieldError
-          ref={fieldErrorRef}
-          errors={fieldErrors}
-          fields={activeFields}
-        />
+        <FieldError errors={fieldErrors} fields={activeFields} />
       )}
       <Editor
         // @ts-ignore
         active={selectedElement?.fieldZuid || undefined}
-        item={editorItem}
-        model={editorModel}
+        item={selectedItem}
+        model={selectedModel}
         onSave={handleSave}
         itemZUID={selectedItemZUID}
         modelZUID={selectedModelZUID}
@@ -2753,7 +2699,7 @@ export const StudioWrapper = () => {
             interactionMode={interactionMode}
             onInteractionModeChange={handleInteractionModeChange}
             availableModes={availableModes}
-            canSelectMode={canSelectMode}
+            canSelectMode={isStaff}
             selectedLayoutBreadcrumb={selectedLayout?.breadcrumb || []}
             onLayoutBreadcrumbClick={handleLayoutBreadcrumbSelect}
             pageModelZUID={pageModelZUID}
@@ -2856,7 +2802,7 @@ export const StudioWrapper = () => {
                   !!inspectorSelection.layoutPatch?.isSelf
                 }
                 onChangeTag={handleTagChange}
-                onClose={requestClearSelection}
+                onClose={clearSelection}
                 onEditDynamicSlot={handleEditDynamicSlot}
                 onChangeSlot={handleSlotChange}
                 onBrowseMedia={handleBrowseMedia}
@@ -2892,11 +2838,11 @@ export const StudioWrapper = () => {
                     ? "edit"
                     : "info"
                 }
-                clearSelection={requestClearSelection}
+                clearSelection={clearSelection}
                 activeVersion={activeVersion}
                 selectedModelZUID={selectedModelZUID}
                 selectedItemZUID={selectedItemZUID}
-                isSaving={isSaving}
+                isSaving={studioSaving}
                 hasErrors={hasErrors}
                 isSelectedItemLoading={isSelectedItemLoading}
                 onEditInManager={handleEditInManager}

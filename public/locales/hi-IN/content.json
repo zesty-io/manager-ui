@@ -678,7 +678,6 @@
   "studioFreestyleAlertTitle": "यह लेआउट Freestyle में बनाया गया था",
   "studioFullHint": "आइटम संपादित करने के लिए कैनवास पर उन्हें चुनें, या लेआउट को पुनः क्रमित करने के लिए ब्लॉक खींचें",
   "studioInlineEditFailed": "इस ब्लॉक के लिए इनलाइन संपादन लागू नहीं किया जा सका।",
-  "studioInvalidUrl": "अमान्य URL। कृपया जाँचें और पुनः प्रयास करें।",
   "studioItemPublished": "प्रकाशित: {{label}}",
   "studioItemSaved": "आइटम सहेजा गया: {{label}}",
   "studioItemsPublishedCount_one": "{{count}} आइटम सहेजा और प्रकाशित किया गया",

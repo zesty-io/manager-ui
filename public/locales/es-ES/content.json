@@ -695,7 +695,6 @@
   "studioFreestyleAlertTitle": "Este diseño se creó en Freestyle",
   "studioFullHint": "Selecciona elementos en el lienzo para editarlos, o arrastra los bloques para reordenar el diseño",
   "studioInlineEditFailed": "No se pudo aplicar la edición en línea para este bloque.",
-  "studioInvalidUrl": "URL no válida. Comprueba e inténtalo de nuevo.",
   "studioItemPublished": "Publicado: {{label}}",
   "studioItemSaved": "Elemento guardado: {{label}}",
   "studioItemsPublishedCount_one": "Se guardó y publicó {{count}} elemento",

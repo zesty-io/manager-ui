@@ -678,7 +678,6 @@
   "studioFreestyleAlertTitle": "This layout was created in Freestyle",
   "studioFullHint": "Select items on the canvas to edit them, or drag blocks to reorder the layout",
   "studioInlineEditFailed": "Could not apply inline edit for this block.",
-  "studioInvalidUrl": "Invalid URL. Please check and try again.",
   "studioItemPublished": "Published: {{label}}",
   "studioItemSaved": "Item Saved: {{label}}",
   "studioItemsPublishedCount_one": "Saved & published {{count}} item",
