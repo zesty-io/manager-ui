@@ -342,6 +342,9 @@ describe("Studio Wrapper", () => {
           cy.getBySelector("StudioPreviewFrame")
             .should("have.attr", "src")
             .and("not.equal", initialSrc);
+
+          // The new page's load clears the navigating spinner.
+          cy.getBySelector("StudioPreviewNavigating").should("not.exist");
         });
       });
   });
