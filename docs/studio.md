@@ -14,6 +14,7 @@ src/apps/studio/
   StudioWrapper.tsx                          the orchestrator (~3000 lines)
   utils/pathResolver.ts                      normalizePath / findItemByPath / resolveItemByPath
   utils/aiSelection.ts                       buildAiSelection: the selection handed to the AI
+  bridge/protocol.ts                         host ↔ bridge message types + envelope sources
   hooks/
     studioTypes.ts                           LayersTreeNode, ElementSlot, ElementLayoutPatch, …
     useStudioBridge.ts                       window "message" listener; routes bridge → host

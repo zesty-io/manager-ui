@@ -72,6 +72,7 @@ import {
   useStudioContentSave,
 } from "./hooks/useStudioContentSave";
 import { useStudioBridge } from "./hooks/useStudioBridge";
+import { HOST_SOURCE } from "./bridge/protocol";
 import {
   ConnectField,
   ElementSlot,
@@ -363,7 +364,7 @@ export const StudioWrapper = () => {
 
       iframeWindow.postMessage(
         {
-          source: "zesty-studio-host",
+          source: HOST_SOURCE,
           message: {
             type: "COMMAND",
             payload: cmd,
@@ -538,7 +539,7 @@ export const StudioWrapper = () => {
         // can stay in sync with the active preview path.
         window.parent.postMessage(
           {
-            source: "zesty-studio-host",
+            source: HOST_SOURCE,
             message: {
               type: "PATH_CHANGE",
               location: {
