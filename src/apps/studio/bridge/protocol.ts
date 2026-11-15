@@ -1,6 +1,6 @@
 // The host <-> bridge postMessage protocol, as types.
 //
-// The wire strings here mirror studio-bridge's `bridge.js`: the
+// The wire strings here mirror studio-bridge's `src/index.js`: the
 // `handleIncomingMessage` dispatch for commands, and its `post(...)` calls for
 // messages. That file lives in another repo, so a change on either side needs
 // the matching change on the other.
@@ -108,7 +108,8 @@ export type HostCommand =
       action: "replaceCodeRegion";
       codeId: string;
       html: string;
-      requestId: number;
+      // Optional on the wire: the bridge echoes it only when present.
+      requestId?: number;
     }
   | { action: "setPreviewLock"; locked: boolean }
   | {

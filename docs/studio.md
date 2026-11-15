@@ -64,9 +64,7 @@ Envelopes are asymmetric — always check `source` before trusting a message:
 { source: "studio-bridge",     message: { type: "<TYPE>", ... } }
 ```
 
-**Bridge → host** (handled in `useStudioBridge.ts`): `BRIDGE_READY` · `BRIDGE_ERROR` · `DOM_EVENT` · `LAYERS_TREE` · `TEMPLATE_SOURCE_MAP` · `REORDER_OUTPUT` · `LAYOUT_CONTENT_UPDATE` · `STATIC_EDIT_REJECTED` · `STATIC_EDIT_IMAGE` · `CODE_REGION_REPLACED`
-
-**Host → bridge** (`payload.action`): `injectCss` · `setInteractionMode` · `requestLayersTree` · `addClass` · `removeClass` · `addClassByLayoutId` · `removeClassByLayoutId` · `enableEditing` · `disableEditing` · `setTextByField` · `setHtmlByField` · `setSelectedLayoutId` · `clearSelectedLayout` · `enableReorderByUid` · `disableReorderByUid` · `moveLayoutElement` · `enterStaticEditingByLayoutId` · `updateElementText` · `updateElementAttr` · `updateElementTag` · `updateImageSrc` · `syncTemplateSource` · `replaceCodeRegion` · `setPreviewLock`
+The full set of commands and messages, with their payload fields, is typed in `src/apps/studio/bridge/protocol.ts` (`HostCommand`, `BridgeMessage`). Bridge → host messages are handled in `useStudioBridge.ts`.
 
 `updateElementText` carries three non-obvious fields: `previewValue` (a resolved value to _display_ while the template keeps `value`), `previewAsHtml` (parse it as markup rather than writing a text node), and `textIndex` (which of the leaf's own text runs to write).
 
