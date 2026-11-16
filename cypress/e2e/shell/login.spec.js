@@ -36,18 +36,6 @@ const postSSOMessage = (data) =>
     );
   });
 
-// Lets React render the previous message before the next one is posted, so
-// the two are not batched into a single render.
-const waitForRender = () =>
-  cy.window().then(
-    (win) =>
-      new Cypress.Promise((resolve) => {
-        win.requestAnimationFrame(() => {
-          win.requestAnimationFrame(() => resolve());
-        });
-      })
-  );
-
 describe("Shell: Login with SSO", () => {
   beforeEach(() => {
     // Start without a session so the boot verify fails and Login opens.
@@ -101,8 +89,10 @@ describe("Shell: Login with SSO", () => {
         });
       });
 
+    // A tokenless success is a failed sign-in. Waiting for its error also
+    // keeps React from batching the two messages into a single render.
     postSSOMessage({ status: "200" });
-    waitForRender();
+    cy.getBySelector("LoginError").should("be.visible");
     postSSOMessage({ status: "200", token });
     cy.wait("@verifyToken");
 
@@ -110,5 +100,18 @@ describe("Shell: Login with SSO", () => {
     cy.wrap(signedInTokens).should((tokens) => {
       expect(Cypress._.uniq(tokens)).to.deep.equal([token]);
     });
+  });
+
+  it("Shows an SSO error that follows an earlier sign-in", () => {
+    const token = `sso-${uuidv4()}`;
+    const errorMessage = `SSO error ${uuidv4()}`;
+    interceptVerify(token).as("verifyToken");
+
+    postSSOMessage({ status: "200", token });
+    cy.wait("@verifyToken");
+    expectSignedOut();
+
+    postSSOMessage({ status: "401", error_message: errorMessage });
+    cy.getBySelector("LoginError").should("contain.text", errorMessage);
   });
 });

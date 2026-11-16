@@ -81,12 +81,31 @@ export default connect((state) => {
         .finally(() => setLoading(false));
     };
 
+    const handleSSOError = (errorMessage) => {
+      if (props.auth.valid) {
+        return;
+      }
+
+      setError(errorMessage || t("shell.loginProblem"));
+    };
+
     const handleSSOSuccess = (message) => {
-      // Login stays mounted while the session is valid, and once one SSO
-      // login has succeeded SSOButtonGroup reports every later message
-      // (errors included) through onSuccess. Only a successful message that
-      // carries a token signs the user in.
-      if (props.auth.valid || message?.status !== "200" || !message?.token) {
+      // Login stays mounted while the session is valid; ignore stray messages
+      if (props.auth.valid) {
+        return;
+      }
+
+      // Once one SSO login has succeeded, SSOButtonGroup reports every later
+      // message (errors included) through onSuccess, so only a successful
+      // message that carries a token signs the user in. Anything else is a
+      // failed sign-in.
+      if (message?.status !== "200") {
+        handleSSOError(message?.error_message);
+        return;
+      }
+
+      if (!message?.token) {
+        handleSSOError();
         return;
       }
 
@@ -103,14 +122,6 @@ export default connect((state) => {
         },
       });
       dispatch(verify());
-    };
-
-    const handleSSOError = (errorMessage) => {
-      if (props.auth.valid) {
-        return;
-      }
-
-      setError(errorMessage || t("shell.loginProblem"));
     };
 
     return (
@@ -234,6 +245,7 @@ export default connect((state) => {
               </Box>
               {!!error && (
                 <Alert
+                  data-cy="LoginError"
                   severity="error"
                   onClose={() => setError("")}
                   sx={{
