@@ -113,9 +113,8 @@ export default connect((state) => {
       dispatch({
         type: "FETCH_LOGIN_SUCCESS",
         payload: {
-          // The auth service posts status as the string "200", but the
-          // auth reducer only treats the number 200 as a valid session.
-          code: 200,
+          // No code: verify() marks the session valid together with the
+          // user ZUID, which LoadInstance needs when it reacts to it.
           meta: {
             token: message.token,
           },
