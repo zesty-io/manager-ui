@@ -1,4 +1,9 @@
+import { v4 as uuidv4 } from "uuid";
+
 const today = Date.now();
+// Typed straight after the value, so it lands inside the fields' 500ms
+// debounce: these tests cover saving a value that hasn't committed yet.
+const saveShortcut = Cypress.platform === "darwin" ? "{cmd}s" : "{ctrl}s";
 
 describe("Content Meta", () => {
   let ITEM;
@@ -102,7 +107,7 @@ describe("Content Meta", () => {
     });
   });
 
-  it("Does not validate meta description for dataset items", () => {
+  it("Creates an item when Save is clicked straight after typing", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/env/nav", () => {
         cy.waitOn("/v1/search/items*", () => {
@@ -125,11 +130,31 @@ describe("Content Meta", () => {
       });
     });
 
-    const saveShortcut = Cypress.platform === "darwin" ? "{cmd}s" : "{ctrl}s";
-    const title = `shortcut ${today}`;
+    const title = `shortcut ${uuidv4()}`;
 
     cy.getBySelector("field:text").find("input").type(title).type(saveShortcut);
     cy.getBySelector("toast").contains(`Created Item: ${title}`);
+  });
+
+  it("Saves the pending field value when using the save shortcut on an existing item", () => {
+    cy.intercept(
+      "PUT",
+      `**/v1/content/models/${Cypress.env("modelZUID")}/items/${Cypress.env(
+        "itemZUID"
+      )}`
+    ).as("saveItem");
+    cy.visit(`/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`);
+
+    const value = `edit shortcut ${uuidv4()}`;
+
+    cy.getBySelector("field:text")
+      .find("input")
+      // Wait for the loaded item before replacing its value
+      .should("not.have.value", "")
+      .type(`{selectall}{backspace}${value}`)
+      .type(saveShortcut);
+    cy.wait("@saveItem").its("request.body.data.text").should("eq", value);
+    cy.getBySelector("toast").contains("Item Saved");
   });
 
   it("Auto applies page parent when creating an item", () => {
@@ -188,5 +213,74 @@ describe("Content Meta", () => {
     // on the item's social-image data populating and an external bynder image load,
     // which is unreliable in CI (the element intermittently never renders). Title and
     // description cover the dedicated-Twitter-fields behavior.
+  });
+});
+
+describe("Content Meta: dataset items", () => {
+  const suffix = uuidv4();
+  let modelZUID;
+
+  before(() => {
+    cy.createModel({
+      label: `E2E: Meta Dataset | ${suffix}`,
+      name: `e2e_meta_dataset_${suffix.replace(/-/g, "_")}`,
+      type: "dataset",
+      listed: true,
+    }).then(({ data }) => {
+      modelZUID = data?.ZUID;
+      cy.createField(modelZUID, {
+        label: "Title",
+        name: "title",
+        datatype: "text",
+        sort: 0,
+        settings: { list: true },
+      });
+    });
+  });
+
+  after(() => {
+    if (modelZUID) {
+      cy.deleteModel(modelZUID);
+    }
+  });
+
+  const visitNewItem = () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit(`/content/${modelZUID}/new`);
+    });
+  };
+
+  it("Creates an item when Save is clicked straight after typing", () => {
+    cy.intercept("POST", `**/v1/content/models/${modelZUID}/items`).as(
+      "createItem"
+    );
+    visitNewItem();
+
+    const title = `dataset click ${uuidv4()}`;
+
+    cy.getBySelector("field:title").find("input").type(title);
+    cy.getBySelector("CreateItemSaveButton").click();
+    cy.wait("@createItem")
+      .its("request.body.web.metaTitle")
+      .should("eq", title);
+    cy.getBySelector("toast").contains(`Created Item: ${title}`);
+  });
+
+  it("Creates an item when using the save shortcut straight after typing", () => {
+    cy.intercept("POST", `**/v1/content/models/${modelZUID}/items`).as(
+      "createItem"
+    );
+    visitNewItem();
+
+    const title = `dataset shortcut ${uuidv4()}`;
+
+    cy.getBySelector("field:title")
+      .find("input")
+      .type(title)
+      .type(saveShortcut);
+    cy.wait("@createItem")
+      .its("request.body.web.metaTitle")
+      .should("eq", title);
+    cy.getBySelector("toast").contains(`Created Item: ${title}`);
   });
 });
