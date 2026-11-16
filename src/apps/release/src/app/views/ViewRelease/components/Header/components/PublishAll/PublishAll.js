@@ -55,7 +55,7 @@ export const PublishAll = memo(function PublishAll() {
       <Button
         variant="contained"
         color="success"
-        data-cy="releasePublishAll"
+        data-cy="release-publishAll"
         title={t("release.publishAll")}
         onClick={() => setOpen(true)}
         disabled={!canPublish || loading}
@@ -71,7 +71,7 @@ export const PublishAll = memo(function PublishAll() {
         <ModalFooter>
           <Button
             variant="contained"
-            data-cy="releasePublishAllCancel"
+            data-cy="release-publishAll-cancel"
             onClick={() => setOpen(false)}
             startIcon={<DoDisturbAltIcon />}
           >
@@ -80,7 +80,7 @@ export const PublishAll = memo(function PublishAll() {
           <Button
             variant="contained"
             color="success"
-            data-cy="releasePublishAllConfirm"
+            data-cy="release-publishAll-confirm"
             disabled={loading}
             onClick={onPublishAll}
             startIcon={

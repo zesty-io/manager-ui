@@ -127,7 +127,7 @@ export function PlanStep(props) {
   return (
     <Box
       component="tr"
-      data-cy="releasePlanStep"
+      data-cy="release-planStep"
       sx={(theme) => {
         // An errored member keeps its error border in every row state
         const borderLeft = (color) =>
@@ -182,6 +182,7 @@ export function PlanStep(props) {
         {/* Preview link should include specific selected version */}
         {item?.web.path ? (
           <Link
+            data-cy="release-member-preview"
             underline="none"
             color="secondary"
             target="_blank"
@@ -197,6 +198,7 @@ export function PlanStep(props) {
 
       <td>
         <AppLink
+          data-cy="release-member-link"
           to={`/content/${item?.meta.contentModelZUID}/${item?.meta.ZUID}`}
         >
           <p>

@@ -76,7 +76,7 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
       <Button
         variant="contained"
         color="error"
-        data-cy="releaseDelete"
+        data-cy="release-delete"
         onClick={() => setOpen(true)}
         disabled={!canPublish || loading}
         startIcon={<DeleteIcon />}
@@ -91,7 +91,7 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
         <ModalFooter>
           <Button
             variant="contained"
-            data-cy="releaseDeleteCancel"
+            data-cy="release-delete-cancel"
             onClick={() => setOpen(false)}
             startIcon={<DoDisturbAltIcon />}
           >
@@ -100,7 +100,7 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
           <Button
             variant="contained"
             color="error"
-            data-cy="releaseDeleteConfirm"
+            data-cy="release-delete-confirm"
             disabled={loading}
             onClick={onDeleteRelease}
             startIcon={<DeleteIcon />}

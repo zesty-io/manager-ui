@@ -15,7 +15,7 @@ export function Release(props) {
   return (
     <Box
       component="tr"
-      data-cy="releaseRow"
+      data-cy="release-row"
       sx={(theme) => ({
         alignItems: "center",
         bgcolor: "common.white",
@@ -41,6 +41,7 @@ export function Release(props) {
     >
       <td>
         <AppLink
+          data-cy="release-row-link"
           to={
             props.isContentSubpage
               ? `/content/releases/${props.release.ZUID}`

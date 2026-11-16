@@ -28,12 +28,10 @@
   "neverPublished": "从未发布",
   "publishAll": "全部发布",
   "publishAllNoticeBody": "这将发布此次发布中的所有成员，并清除所有成员的 URL 及相关内容（Purge）。",
-  "publishedItems_other": "已发布 {{count}} 个项目",
   "publishing": "正在发布...",
   "releasesHeading": "发布版本 (Releases)",
   "searchPlaceholder": "通过 ZUID 或 Meta 标题搜索以包含在您的发布中",
   "startingRelease": "正在启动发布",
-  "startNewPublishPlan": "启动新发布计划",
   "updatedReleaseMember": "已将发布 ({{releaseName}}) 的成员 ({{itemTitle}}) 更新至版本 {{version}}",
   "versionNumber": "版本 {{version}}",
   "versionPublishedAgo": "版本 {{version}} 已于 {{timeAgo}} 发布"

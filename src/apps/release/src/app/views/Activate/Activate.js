@@ -61,7 +61,7 @@ export function Activate({ isContentSubpage }) {
         <Button
           variant="contained"
           color="success"
-          data-cy="releaseActivateBtn"
+          data-cy="release-activateBtn"
           disabled={loading}
           sx={{ mt: 4 }}
           size="large"

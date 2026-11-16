@@ -50,7 +50,7 @@ export function Header({ plan, isContentSubpage }) {
         component={RouterLink}
         to={isContentSubpage ? `/content/releases` : `/release`}
         variant="contained"
-        data-cy="releaseBackBtn"
+        data-cy="release-backBtn"
       >
         <FastRewindIcon fontSize="small" />
       </Button>
