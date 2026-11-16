@@ -718,11 +718,14 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
     let hasMissingRequiredSEOFields = false;
 
     if (model?.type !== "block" && model?.type !== "dataset") {
+      const metaTitle = item?.web?.metaTitle;
+      const isMetaTitleBlank =
+        typeof metaTitle === "string" ? !metaTitle.trim() : !metaTitle;
+
       if (skipPathPartValidation) {
-        hasMissingRequiredSEOFields = !item?.web?.metaTitle?.trim();
+        hasMissingRequiredSEOFields = isMetaTitleBlank;
       } else {
-        hasMissingRequiredSEOFields =
-          !item?.web?.metaTitle?.trim() || !item?.web?.pathPart;
+        hasMissingRequiredSEOFields = isMetaTitleBlank || !item?.web?.pathPart;
       }
     }
 
