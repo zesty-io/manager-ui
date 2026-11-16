@@ -1,4 +1,4 @@
-import { memo, useRef, useState } from "react";
+import { memo, useState } from "react";
 import { connect, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { alpha } from "@mui/material/styles";
@@ -43,12 +43,6 @@ export default connect((state) => {
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
-    // Login stays mounted while the session is valid, so onSSOSuccess/
-    // onSSOError below read the latest value through a ref to ignore stray
-    // SSO messages instead of overwriting an already-valid session.
-    const isSessionValid = useRef(props.auth.valid);
-    isSessionValid.current = props.auth.valid;
-
     const handleLogin = (evt) => {
       evt.preventDefault();
       setLoading(true);
@@ -88,7 +82,11 @@ export default connect((state) => {
     };
 
     const handleSSOSuccess = (message) => {
-      if (isSessionValid.current) {
+      // Login stays mounted while the session is valid, and once one SSO
+      // login has succeeded SSOButtonGroup reports every later message
+      // (errors included) through onSuccess. Only a successful message that
+      // carries a token signs the user in.
+      if (props.auth.valid || message?.status !== "200" || !message?.token) {
         return;
       }
 
@@ -108,11 +106,11 @@ export default connect((state) => {
     };
 
     const handleSSOError = (errorMessage) => {
-      if (isSessionValid.current) {
+      if (props.auth.valid) {
         return;
       }
 
-      setError(errorMessage);
+      setError(errorMessage || t("shell.loginProblem"));
     };
 
     return (
