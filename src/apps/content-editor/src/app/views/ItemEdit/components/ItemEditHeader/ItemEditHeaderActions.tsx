@@ -36,9 +36,10 @@ import {
   ManageAccountsRounded,
   ScheduleRounded,
 } from "@mui/icons-material";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, useStore } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { useMetaKey } from "../../../../../../../../shell/hooks/useMetaKey";
+import { flushAllDebouncedInputs } from "../../../../../../../../shell/hooks/useDebouncedInput";
 import {
   fetchAllModelPublishings,
   fetchItemPublishing,
@@ -115,6 +116,7 @@ export const ItemEditHeaderActions = ({
   const resolvedItemZUID = itemZUIDOverride || itemZUID;
   const { openChangeDialog } = useRedirectsDialog();
   const dispatch = useDispatch();
+  const store = useStore<AppState>();
   const canPublish = usePermission("PUBLISH", resolvedItemZUID);
   const canUpdate = usePermission("UPDATE", resolvedItemZUID);
   const [publishMenu, setPublishMenu] = useState<null | HTMLElement>(null);
@@ -358,7 +360,12 @@ export const ItemEditHeaderActions = ({
 
   const saveShortcut = useMetaKey("s", () => {
     if (!canUpdate) return;
-    if (itemState === ITEM_STATES.dirty) {
+    // The shortcut doesn't move focus, so a value typed within the debounce
+    // delay hasn't reached the store yet and the item isn't dirty. Commit it,
+    // then read dirtiness from the store, as this render's itemState predates
+    // the flush.
+    flushAllDebouncedInputs();
+    if (store.getState().content[resolvedItemZUID]?.dirty) {
       onSave();
     }
   });

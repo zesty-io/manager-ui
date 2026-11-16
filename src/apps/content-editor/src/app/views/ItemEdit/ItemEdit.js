@@ -35,6 +35,7 @@ import {
   fetchAllModelPublishings,
 } from "shell/store/content";
 import { selectLang } from "shell/store/user";
+import { flushAllDebouncedInputs } from "shell/hooks/useDebouncedInput";
 import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
@@ -321,6 +322,10 @@ export default function ItemEdit() {
   }
 
   const save = useCallback(async () => {
+    // Commit any field value still waiting out its debounce, so a save
+    // straight after typing validates and sends what the user typed.
+    // validateMetaFields and saveItem both read the item from the store.
+    flushAllDebouncedInputs();
     setSaveClicked(true);
 
     try {

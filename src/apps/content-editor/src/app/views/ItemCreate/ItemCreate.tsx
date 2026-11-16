@@ -49,6 +49,7 @@ import { SocialMediaPreview } from "../ItemEdit/Meta/SocialMediaPreview";
 import { FieldError } from "../../components/Editor/FieldError";
 import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
 import { useParams as useQueryParams } from "../../../../../../shell/hooks/useParams";
+import { flushAllDebouncedInputs } from "../../../../../../shell/hooks/useDebouncedInput";
 import { CreateContentItemDialogContext } from "../../../../../../shell/contexts/CreateContentItemDialogProvider";
 import * as amplitude from "@amplitude/analytics-browser";
 import {
@@ -210,13 +211,13 @@ export const ItemCreate = () => {
 
   const save = useCallback(
     async (action: ActionAfterSave) => {
-      // The Cmd/Ctrl+S shortcut doesn't move focus, so blur the active field
-      // to run its onBlur flush and commit any pending debounced value.
-      (document.activeElement as HTMLElement | null)?.blur();
+      // Commit any field value still waiting out its debounce, so a save
+      // straight after typing (Save click or Cmd/Ctrl+S) validates and sends
+      // what the user actually typed.
+      flushAllDebouncedInputs();
 
-      // Read the item from the store rather than this render's closure: a
-      // field can flush its debounced value in the same task as the Save
-      // click, before React has re-rendered with it.
+      // Read the item from the store rather than this render's closure: the
+      // flush above has just updated it, before React has re-rendered.
       const item = store.getState().content[itemZUID];
       setSaveClicked(true);
 
