@@ -26,7 +26,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchIcon from "@mui/icons-material/Search";
 import { AddFieldDivider } from "./AddFieldDivider";
 import { FieldsListRight } from "./FieldsListRight";
-import { NoResults } from "./NoResults";
+import { EmptyResults } from "shell/components/EmptyResults";
 import { ContentModelField } from "../../../../../shell/services/types";
 import { FieldEmptyState } from "./FieldEmptyState";
 import { getSeoFields, getSystemFields, SystemField } from "./configs";
@@ -231,10 +231,11 @@ export const FieldList = ({ onNewFieldModalClick }: Props) => {
         <Box sx={{ overflowY: "auto", height: "100%", pr: 2 }}>
           {/* NO SEARCH RESULTS */}
           {!Boolean(filteredFields?.length) && search && (
-            <NoResults
-              type="search"
-              searchTerm={search}
-              onButtonClick={handleSearchAgain}
+            <EmptyResults
+              dataCy="NoResults"
+              variant="search"
+              query={search}
+              onAction={handleSearchAgain}
             />
           )}
 

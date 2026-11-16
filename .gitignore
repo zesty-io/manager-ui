@@ -29,3 +29,6 @@ qa-artifacts/
 qa-comment.md
 browser-qa-comment.md
 devserver.log
+
+# local /review-* skill output
+.reviews/

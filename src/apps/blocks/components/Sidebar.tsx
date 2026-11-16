@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useHistory } from "react-router";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import { useTranslation } from "react-i18next";
 
@@ -9,7 +9,7 @@ import { useParams } from "../../../shell/hooks/useParams";
 import { useGetContentModelsQuery } from "../../../shell/services/instance";
 import { ModelList } from "../../schema/src/app/components/Sidebar/ModelList";
 import { CreateModelDialogue } from "../../schema/src/app/components/CreateModelDialogue";
-import noSearchResults from "../../../../public/images/noSearchResults.svg";
+import { EmptyResults } from "shell/components/EmptyResults";
 
 export const Sidebar = () => {
   const { t } = useTranslation();
@@ -62,17 +62,11 @@ export const Sidebar = () => {
           </Box>
         )}
         {!isLoading && filter && !filteredModels?.length && (
-          <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
-            <img
-              src={noSearchResults}
-              alt={t("blocks.noSearchResultsAlt")}
-              width="70px"
-              height="64px"
-            />
-            <Typography color="text.secondary" variant="body2" align="center">
-              {t("blocks.noResultsAvailable", { filter })}
-            </Typography>
-          </Stack>
+          <EmptyResults
+            variant="search"
+            size="compact"
+            title={t("blocks.noResultsAvailable", { filter })}
+          />
         )}
       </AppSideBar>
       {isCreateModelDialogueOpen && (

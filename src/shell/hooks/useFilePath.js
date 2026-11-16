@@ -1,6 +1,7 @@
 import zuid from "zuid";
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
+import { resolveCodePathPart } from "utility/resolveCodePathPart";
 
 export function useFilePath(ZUID = "") {
   const files = useSelector((state) => state.files);
@@ -40,11 +41,7 @@ export function useFilePath(ZUID = "") {
       const callBack = (file) => file.ZUID === ZUID;
       let file = files.find(callBack);
       if (file) {
-        if (file.type === "text/javascript") {
-          return `/code/file/scripts/${ZUID}`;
-        } else {
-          return `/code/file/stylesheets/${ZUID}`;
-        }
+        return `/code/file/${resolveCodePathPart(file.type)}/${ZUID}`;
       } else {
         return "/code";
       }

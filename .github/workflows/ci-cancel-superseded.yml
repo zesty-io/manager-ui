@@ -1,0 +1,37 @@
+name: "CI: Cancel superseded runs"
+
+# Cancels queued ci.yaml runs for older commits of the same PR.
+# Never touches in_progress runs, so a running e2e finishes.
+#
+# DO NOT merge this into ci.yaml. ci.yaml's workflow-level concurrency group
+# (queue: max) holds new runs in the queue before any of their jobs start, so a
+# cancel job there would only run once the run reached the front, too late to
+# cancel the older pending runs. This workflow has no concurrency group, so it
+# starts immediately on every push.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  actions: write
+
+jobs:
+  cancel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel pending ci.yaml runs for older commits
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          for status in queued pending waiting; do
+            gh run list --repo "$REPO" --workflow ci.yaml --event pull_request \
+              --status "$status" --json databaseId,headSha,headBranch --limit 100 \
+              --jq '.[] | select(.headBranch == env.HEAD_REF and .headSha != env.HEAD_SHA) | .databaseId' |
+            while read -r id; do
+              echo "Cancelling run $id ($status)"
+              gh run cancel "$id" --repo "$REPO" || echo "::warning::could not cancel run $id (fork PR token is read-only)"
+            done
+          done
