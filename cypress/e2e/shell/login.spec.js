@@ -111,7 +111,7 @@ describe("Shell: Login with SSO", () => {
     postSSOMessage({ status: "200", token });
     cy.wait("@verifyToken");
 
-    // Only the message that carried a token reached the auth state
+    // The tokened message reached the auth state
     cy.wrap(storedTokens).should((tokens) => {
       expect(Cypress._.uniq(tokens)).to.deep.equal([token]);
     });
