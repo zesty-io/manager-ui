@@ -130,4 +130,23 @@ describe("Global Search: Search Bar", () => {
     // Verify that search accelerators are present
     cy.getBySelector("global-search-accelerators").should("exist");
   });
+
+  it("Issues a single content search request for a multi-character term", () => {
+    cy.visit("/");
+
+    // scoped to the typed term so dashboard ZUID lookups are ignored
+    cy.intercept("GET", "**/search/items*q=d*").as("searchItems");
+
+    cy.getBySelector("global-search-textfield")
+      .find("input")
+      .should("exist")
+      .click()
+      // typed fast, so keystrokes land inside the debounce window
+      .type("debounce", { delay: 20 });
+
+    cy.wait("@searchItems").its("request.url").should("include", "q=debounce");
+
+    // No partial-term (per-keystroke) request should have fired
+    cy.get("@searchItems.all").should("have.length", 1);
+  });
 });

@@ -16,4 +16,5 @@ export const BRAND_COLORS = {
   facebook: "#1574EA",
   youtube: "#FE0000",
   google: "#131CA4",
+  bynder: "#0af",
 } as const;

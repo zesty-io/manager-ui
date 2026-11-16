@@ -26,7 +26,7 @@
   "deleteFile": "Delete File",
   "deleteFileCdnWarning": "Deleting a file will remove it and trigger a CDN purge causing production to update immediately.",
   "deleteFileError": "Failed to delete file {{fileName}}. {{error}}",
-  "deleteFileLabel": "Delete File",
+  "deleteFileTitleRich": "Delete File: <name>{{fileName}}</name>",
   "developerResources": "Developer Resources",
   "diffVersions": "Diff Versions",
   "editItemContent": "Edit item content",

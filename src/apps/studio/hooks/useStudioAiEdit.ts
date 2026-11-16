@@ -1,11 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
+import { useDispatch, useStore } from "react-redux";
 import { notify } from "shell/store/notifications";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { useRenderParsleyPreviewMutation } from "shell/services/mcp";
 import { WebView } from "shell/services/types";
+import { AppState } from "shell/store/types";
 import { useRegisterRef } from "../../../engine/useRegisterRef";
+import {
+  RefHandle,
+  RefRegistryEntry,
+  refRegistry,
+} from "../../../engine/refRegistry";
 import { endStudioChatSession } from "../components/StudioAIPanel";
 
 // The load balancer in front of PVL answers 413 at 1 MiB. The margin covers
@@ -46,6 +52,38 @@ const isNotPageCode = (next: string, current: string) => {
   return (
     BARE_ZUID.test(trimmed) ||
     (!!trimmed && !HAS_CODE.test(trimmed) && HAS_CODE.test(current))
+  );
+};
+
+// Fields the AI is never offered: the code editor's own refKey, and the
+// SEO image, which a request that offers it lets the server set.
+const NOT_AI_IMAGE_FIELDS = ["code-editor", "og_image"];
+
+// The page model's live image fields the AI may fill. Their names are the
+// refKeys the server targets. `any` because the fields store is untyped (see
+// AppState's TODO).
+export const aiImageFields = (pageFields: any[]) =>
+  pageFields.filter(
+    (field) =>
+      field?.datatype === "images" &&
+      !field.deletedAt &&
+      typeof field?.name === "string" &&
+      !NOT_AI_IMAGE_FIELDS.includes(field.name)
+  );
+
+// What an images field shows, for its first file: the public URL the server
+// sent for that file, else the media resolver's URL for its ZUID. Anything
+// else (an external URL, nothing) as it is.
+const firstFile = (value: unknown) =>
+  String(value ?? "")
+    .split(",")[0]
+    .trim();
+const imageFieldSrc = (value: unknown, publicUrls: Map<string, string>) => {
+  const first = firstFile(value);
+  if (!/^3-/.test(first)) return first;
+  return (
+    publicUrls.get(first) ??
+    `${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${first}/getimage`
   );
 };
 
@@ -99,6 +137,10 @@ type Args = {
     html?: string;
     requestId?: number;
     locked?: boolean;
+    fieldZuid?: string;
+    itemZuid?: string;
+    attr?: string;
+    value?: string;
   }) => void;
   // Runs when a preview stops loading — painted, or failed — so an AI turn's
   // undo step can close once the canvas shows its result.
@@ -127,6 +169,7 @@ export const useStudioAiEdit = ({
 }: Args) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const store = useStore();
   const [renderParsleyPreview] = useRenderParsleyPreviewMutation();
   const [stagedCodeId, setStagedCodeId] = useState<string | null>(null);
   const stagedCodeIdRef = useRef<string | null>(null);
@@ -389,6 +432,87 @@ export const useStudioAiEdit = ({
   useRegisterRef("code-editor", isRegistered ? handle : null, stableContext, {
     skip: !isRegistered,
   });
+
+  // The page's image fields, by name, so an image the AI generates for one
+  // can be applied from the chat. The Editor registers the same keys, but it
+  // is not mounted while the AI panel is. Applying stages the item like any
+  // content edit; the bridge then shows the file wherever the page binds the
+  // field, since the canvas's content repaint has no image branch.
+  const imageFields = useMemo(() => aiImageFields(pageFields), [pageFields]);
+  const imageFieldsRef = useRef(imageFields);
+  imageFieldsRef.current = imageFields;
+  const latestRef = useRef({ pageItemZUID, postCommandToBridge });
+  latestRef.current = { pageItemZUID, postCommandToBridge };
+  // Re-registered only when the set of fields changes, for the same reason
+  // as the code-editor's stable context above.
+  const imageFieldsKey = isRegistered
+    ? imageFields.map((field) => `${field.ZUID}:${field.name}`).join("|")
+    : "";
+  useEffect(() => {
+    if (!imageFieldsKey) return;
+    const registered: Record<string, RefRegistryEntry> = {};
+    // By file ZUID, so undo and redo show a generated file the same way.
+    const publicUrls = new Map<string, string>();
+    imageFieldsRef.current.forEach((field) => {
+      const paint = (src: string) => {
+        const { pageItemZUID: itemZuid, postCommandToBridge: post } =
+          latestRef.current;
+        post({
+          action: "setAttrByField",
+          fieldZuid: field.ZUID,
+          itemZuid,
+          attr: "src",
+          value: src,
+        });
+      };
+      // Undo and redo: the store already holds the value. The step's
+      // snapshot names this field, and the bridge restores the bound <img>
+      // from the snapshot of the region holding it. Only a file with a known
+      // public URL is repainted: that is the same file the restore shows,
+      // minus the srcset / <source> the paint drops. Anything else would
+      // override the restore.
+      const showValue = (value: string) => {
+        const first = firstFile(value);
+        const url = /^3-/.test(first) ? publicUrls.get(first) : undefined;
+        if (url) paint(url);
+      };
+      const handle: RefHandle = {
+        accepts: (value: string) => /^3-/.test(value),
+        // `url` is the file's public URL, when the server sent one: the
+        // resolver's needs a session the canvas may not have.
+        setValue: (value: string, { url } = {}) => {
+          if (url && /^https?:\/\//.test(url)) publicUrls.set(value, url);
+          dispatch({
+            type: "SET_ITEM_DATA",
+            itemZUID: latestRef.current.pageItemZUID,
+            key: field.name,
+            value,
+          });
+          paint(imageFieldSrc(value, publicUrls));
+        },
+        showValue,
+      };
+      registered[field.name] = {
+        handle,
+        context: () => ({
+          ZUID: field.ZUID,
+          contentModelZUID: field.contentModelZUID,
+          currentValue: (store.getState() as AppState).content?.[
+            latestRef.current.pageItemZUID
+          ]?.data?.[field.name],
+          datatype: field.datatype,
+          name: field.name,
+          label: field.label,
+        }),
+      };
+      refRegistry[field.name] = registered[field.name];
+    });
+    return () => {
+      Object.keys(registered).forEach((key) => {
+        if (refRegistry[key] === registered[key]) delete refRegistry[key];
+      });
+    };
+  }, [dispatch, imageFieldsKey, store]);
 
   // A save or a discard takes the view out of the pending set; either way the
   // live canvas is current again.

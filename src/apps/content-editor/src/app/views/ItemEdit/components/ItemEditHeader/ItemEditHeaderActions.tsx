@@ -73,9 +73,25 @@ const ITEM_STATES = {
   draft: "draft",
 } as const;
 
+// Resolves false when the save failed
+type SaveHandler = () => void | Promise<boolean | void>;
+
+// Queue a follow-up action (publish/schedule) and drop it if the save fails
+const saveAndQueue = (
+  onSave: SaveHandler,
+  setQueued: (value: boolean) => void
+) => {
+  setQueued(true);
+  Promise.resolve(onSave()).then((saved) => {
+    if (saved === false) {
+      setQueued(false);
+    }
+  });
+};
+
 type ItemEditHeaderActionsProps = {
   saving: boolean;
-  onSave: () => void;
+  onSave: SaveHandler;
   hasError: boolean;
   isLoadingItem?: boolean;
   modelZUIDOverride?: string;
@@ -350,8 +366,7 @@ export const ItemEditHeaderActions = ({
   const publishShortcut = useMetaKey("p", () => {
     if (!canPublish) return;
     if (itemState === ITEM_STATES.dirty) {
-      setPublishAfterSave(true);
-      onSave();
+      saveAndQueue(onSave, setPublishAfterSave);
     } else {
       setIsConfirmPublishModalOpen(true);
     }
@@ -725,8 +740,7 @@ export const ItemEditHeaderActions = ({
                 }}
                 onClick={() => {
                   if (itemState === ITEM_STATES.dirty) {
-                    setPublishAfterSave(true);
-                    onSave();
+                    saveAndQueue(onSave, setPublishAfterSave);
                   } else {
                     setIsConfirmPublishModalOpen(true);
                   }
@@ -1017,7 +1031,7 @@ export const ItemEditHeaderActions = ({
 
 type PublishingMenuProps = {
   itemState: string;
-  onSave: () => void;
+  onSave: SaveHandler;
   onClose: () => void;
   anchorEl: null | HTMLElement;
   setPublishAfterSave: (value: boolean) => void;
@@ -1089,8 +1103,7 @@ const PublishingMenu = ({
         onClick={() => {
           switch (itemState) {
             case ITEM_STATES.dirty:
-              setPublishAfterSave(true);
-              onSave();
+              saveAndQueue(onSave, setPublishAfterSave);
               break;
             case ITEM_STATES.published:
               setUnpublishDialogOpen(true);
@@ -1117,8 +1130,7 @@ const PublishingMenu = ({
           onClick={() => {
             switch (itemState) {
               case ITEM_STATES.dirty:
-                setScheduleAfterSave(true);
-                onSave();
+                saveAndQueue(onSave, setScheduleAfterSave);
                 break;
               case ITEM_STATES.scheduled:
                 setScheduledPublishDialogOpen(true, "publish");

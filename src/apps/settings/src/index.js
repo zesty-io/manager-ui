@@ -12,10 +12,8 @@ injectReducer(store, "settings", settings);
 // Inner — triggers the "settings" namespace lazy load and suspends this
 // subtree until ready; child components use bare useTranslation() with
 // qualified keys once it's in the store.
-// "schema" is loaded here because settings borrows the shared NoResults
-// component from the schema app, which resolves its keys against that namespace.
 const SettingsAppInner = () => {
-  useTranslation(["settings", "schema"]);
+  useTranslation("settings");
   return <Settings />;
 };
 

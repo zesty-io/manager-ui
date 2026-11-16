@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { notifyIfResponseFailed } from "utility/request";
 import {
   Box,
   Button,
@@ -91,7 +92,9 @@ export const RenameItemDialog = ({ onClose }: DuplicateItemProps) => {
                 },
               },
             }).then(() => {
-              dispatch(fetchItem(modelZUID, itemZUID));
+              Promise.resolve(dispatch(fetchItem(modelZUID, itemZUID))).then(
+                (res) => notifyIfResponseFailed(dispatch, res)
+              );
               refetchContentModels();
               onClose();
             });

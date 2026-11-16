@@ -40,9 +40,6 @@ import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import { FileReplace } from "@zesty-io/material";
 import DeleteFileModal from "./DeleteFileModal";
 import { MoveFileDialog } from "./MoveFileDialog";
-import { useDispatch } from "react-redux";
-import { notify } from "../../../../../../shell/store/notifications";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import { formatLocalized } from "shell/i18n/dates";
 
 export const MEDIA_TITLE_MAXLENGTH = 255;
@@ -80,7 +77,6 @@ export const FileModalContent: FC<Props> = ({
   onOpenReplaceFileModal,
 }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
   const [newTitle, setNewTitle] = useState(title);
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [isCopiedZuid, setIsCopiedZuid] = useState<boolean>(false);
@@ -93,7 +89,7 @@ export const FileModalContent: FC<Props> = ({
   const [showMoveFileDialog, setShowMoveFileDialog] = useState(false);
   const openSettings = Boolean(showSettingsDropdown);
 
-  const [deleteFile, { isLoading: isLoadingDelete }] = useDeleteFileMutation();
+  const [deleteFile] = useDeleteFileMutation();
   const [
     updateFile,
     {
@@ -189,25 +185,14 @@ export const FileModalContent: FC<Props> = ({
     }
   };
 
-  const onDeleteFile = () => {
-    deleteFile({
+  const onDeleteFile = async () => {
+    await deleteFile({
       id,
       body: {
         group_id: groupId,
       },
-    }).then((deleteResponse: any | FetchBaseQueryError) => {
-      if (!deleteResponse?.error) return handleCloseModal();
-      setShowDeleteFileModal(false);
-      dispatch(
-        notify({
-          kind: "error",
-          message:
-            deleteResponse?.error?.data?.message ||
-            t("media.fileModalContentDeleteFailed"),
-        })
-      );
-    });
-    // history.replace(location.path);
+    }).unwrap();
+    handleCloseModal();
   };
 
   useEffect(() => {
@@ -225,7 +210,6 @@ export const FileModalContent: FC<Props> = ({
           onDeleteFile={onDeleteFile}
           filename={filename}
           onClose={() => setShowDeleteFileModal(false)}
-          isLoadingDelete={isLoadingDelete}
         />
       )}
 

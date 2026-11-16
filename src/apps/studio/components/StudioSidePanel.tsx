@@ -33,7 +33,7 @@ type StudioSidePanelProps = {
   // render an enabled button whose onClick is undefined.
   isFreestyleLayout?: boolean;
   onEditInFreestyle: () => void;
-  onSave: () => void;
+  onSave: () => void | Promise<boolean | void>;
   editorPanel: ReactNode;
   infoPanel: ReactNode;
   drawerWidth: number;
