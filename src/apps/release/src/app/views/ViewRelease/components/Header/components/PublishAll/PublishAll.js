@@ -4,6 +4,7 @@ import { useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
+import { Box } from "@mui/material";
 import BackupIcon from "@mui/icons-material/Backup";
 import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -19,7 +20,6 @@ import {
 import { publishAll } from "shell/store/releases";
 import { usePermission } from "shell/hooks/use-permissions";
 
-import styles from "./PublishAll.less";
 export const PublishAll = memo(function PublishAll() {
   const dispatch = useDispatch();
   const params = useParams();
@@ -38,10 +38,24 @@ export const PublishAll = memo(function PublishAll() {
   };
 
   return (
-    <div>
+    <Box
+      sx={(theme) => ({
+        "& article": {
+          top: 0,
+          left: 0,
+          boxShadow: `2px 2px 4px ${theme.palette.grey[800]}`,
+          minWidth: 420,
+          "& > footer": {
+            display: "flex",
+            justifyContent: "space-between",
+          },
+        },
+      })}
+    >
       <Button
         variant="contained"
         color="success"
+        data-cy="releasePublishAll"
         title={t("release.publishAll")}
         onClick={() => setOpen(true)}
         disabled={!canPublish || loading}
@@ -50,18 +64,14 @@ export const PublishAll = memo(function PublishAll() {
         {t("release.publishAll")}
       </Button>
 
-      <Modal
-        className={styles.PublishAllModal}
-        type="local"
-        open={open}
-        onClose={() => setOpen(false)}
-      >
+      <Modal type="local" open={open} onClose={() => setOpen(false)}>
         <ModalContent>
           <Notice>{t("release.publishAllNoticeBody")}</Notice>
         </ModalContent>
-        <ModalFooter className={styles.ModalFooter}>
+        <ModalFooter>
           <Button
             variant="contained"
+            data-cy="releasePublishAllCancel"
             onClick={() => setOpen(false)}
             startIcon={<DoDisturbAltIcon />}
           >
@@ -70,6 +80,7 @@ export const PublishAll = memo(function PublishAll() {
           <Button
             variant="contained"
             color="success"
+            data-cy="releasePublishAllConfirm"
             disabled={loading}
             onClick={onPublishAll}
             startIcon={
@@ -80,6 +91,6 @@ export const PublishAll = memo(function PublishAll() {
           </Button>
         </ModalFooter>
       </Modal>
-    </div>
+    </Box>
   );
 });

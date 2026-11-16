@@ -4,6 +4,7 @@ import { useHistory, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
+import { Box } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
@@ -19,7 +20,6 @@ import { notify } from "shell/store/notifications";
 import { isRequestFailed, notifyFailure } from "utility/request";
 import { usePermission } from "shell/hooks/use-permissions";
 
-import styles from "./DeleteRelease.less";
 export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -60,10 +60,23 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
   };
 
   return (
-    <div>
+    <Box
+      sx={(theme) => ({
+        "& article": {
+          top: 0,
+          right: 0,
+          boxShadow: `2px 2px 4px ${theme.palette.grey[800]}`,
+          "& > footer": {
+            display: "flex",
+            justifyContent: "space-between",
+          },
+        },
+      })}
+    >
       <Button
         variant="contained"
         color="error"
+        data-cy="releaseDelete"
         onClick={() => setOpen(true)}
         disabled={!canPublish || loading}
         startIcon={<DeleteIcon />}
@@ -71,18 +84,14 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
         {t("common.delete")}
       </Button>
 
-      <Modal
-        className={styles.DeleteReleaseModal}
-        type="local"
-        open={open}
-        onClose={() => setOpen(false)}
-      >
+      <Modal type="local" open={open} onClose={() => setOpen(false)}>
         <ModalContent>
           <Notice>{t("release.deleteWarning")}</Notice>
         </ModalContent>
-        <ModalFooter className={styles.ModalFooter}>
+        <ModalFooter>
           <Button
             variant="contained"
+            data-cy="releaseDeleteCancel"
             onClick={() => setOpen(false)}
             startIcon={<DoDisturbAltIcon />}
           >
@@ -91,6 +100,7 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
           <Button
             variant="contained"
             color="error"
+            data-cy="releaseDeleteConfirm"
             disabled={loading}
             onClick={onDeleteRelease}
             startIcon={<DeleteIcon />}
@@ -99,6 +109,6 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
           </Button>
         </ModalFooter>
       </Modal>
-    </div>
+    </Box>
   );
 });

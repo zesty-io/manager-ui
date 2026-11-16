@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import cx from "classnames";
 import {
   formatDistanceToNowLocalized,
   formatLocalized,
@@ -11,6 +10,7 @@ import {
 import { updateMember, deleteMember } from "shell/store/releaseMembers";
 
 import {
+  Box,
   Link,
   Button,
   CircularProgress,
@@ -31,8 +31,6 @@ import {
   faLink,
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
-
-import styles from "./PlanStep.less";
 
 const ICONS = {
   templateset: faFile,
@@ -124,13 +122,42 @@ export function PlanStep(props) {
     );
   };
 
+  const isError = props.member.status === "error";
+
   return (
-    <tr
-      className={cx(
-        styles.bodyText,
-        styles.PlanStep,
-        props.member.status === "error" ? styles.error : null
-      )}
+    <Box
+      component="tr"
+      data-cy="releasePlanStep"
+      sx={(theme) => {
+        // An errored member keeps its error border in every row state
+        const borderLeft = (color) =>
+          `4px solid ${isError ? theme.palette.error.main : color}`;
+
+        return {
+          typography: "body2",
+          lineHeight: "24px",
+          letterSpacing: 0,
+          alignItems: "center",
+          bgcolor: "common.white",
+          borderLeft: borderLeft(theme.palette.common.white),
+          "&:nth-of-type(odd)": {
+            bgcolor: "grey.50",
+            borderLeft: borderLeft(theme.palette.grey[50]),
+          },
+          "&:hover, &:focus, &:active, &:nth-of-type(odd):hover, &:nth-of-type(odd):focus, &:nth-of-type(odd):active":
+            {
+              bgcolor: "grey.100",
+              borderLeft: borderLeft(theme.palette.grey[100]),
+            },
+          "& td": {
+            textAlign: "left",
+          },
+          "& small": {
+            typography: "caption",
+            color: "text.secondary",
+          },
+        };
+      }}
     >
       <td>{lang?.code}</td>
 
@@ -174,9 +201,9 @@ export function PlanStep(props) {
         >
           <p>
             {/* Use icon matched to items model type */}
-            <span className={styles.Icon}>
+            <Box component="span" sx={{ mr: 1 }}>
               <FontAwesomeIcon icon={ICONS[model?.type]} />
-            </span>
+            </Box>
 
             {/* Use meta title. Show warning with link to edit if meta title is missing. */}
 
@@ -213,6 +240,6 @@ export function PlanStep(props) {
           </Button>
         )}
       </td>
-    </tr>
+    </Box>
   );
 }
