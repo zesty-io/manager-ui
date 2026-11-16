@@ -47,6 +47,7 @@ import { SchedulePublish } from "../../../../../../shell/components/SchedulePubl
 import { Meta } from "../ItemEdit/Meta";
 import { SocialMediaPreview } from "../ItemEdit/Meta/SocialMediaPreview";
 import { FieldError } from "../../components/Editor/FieldError";
+import { hasFieldErrors } from "../../components/Editor/Field/hasFieldErrors";
 import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
 import { useParams as useQueryParams } from "../../../../../../shell/hooks/useParams";
 import { flushAllDebouncedInputs } from "../../../../../../shell/hooks/useDebouncedInput";
@@ -106,6 +107,12 @@ export const ItemCreate = () => {
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
   const [willRedirect, setWillRedirect] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  // Updated synchronously, so save() sees errors raised by its own flush
+  const fieldErrorsRef = useRef<FieldErrors>({});
+  const updateFieldErrors = (errors: FieldErrors) => {
+    fieldErrorsRef.current = errors;
+    setFieldErrors(errors);
+  };
   const [saveClicked, setSaveClicked] = useState(false);
   // const [hasSEOErrors, setHasSEOErrors] = useState(false);
   const [SEOErrors, setSEOErrors] = useState<FieldErrors>({});
@@ -211,19 +218,14 @@ export const ItemCreate = () => {
 
   const save = useCallback(
     async (action: ActionAfterSave) => {
-      // Commit any field value still waiting out its debounce, so a save
-      // straight after typing (Save click or Cmd/Ctrl+S) validates and sends
-      // what the user actually typed.
+      // Land debounced field values before validating and saving
       flushAllDebouncedInputs();
-
-      // Read the item from the store rather than this render's closure: the
-      // flush above has just updated it, before React has re-rendered.
       const item = store.getState().content[itemZUID];
       setSaveClicked(true);
 
       const validationErrors = metaRef.current?.validateMetaFields?.();
 
-      if (hasErrors || hasSEOErrors || validationErrors) {
+      if (hasFieldErrors(fieldErrorsRef.current) || validationErrors) {
         fieldErrorRef.current?.scrollToErrors?.();
         return;
       }
@@ -254,7 +256,7 @@ export const ItemCreate = () => {
                 []
               );
 
-            const errors = cloneDeep(fieldErrors);
+            const errors = cloneDeep(fieldErrorsRef.current);
 
             if (missingRequiredFieldNames?.length) {
               missingRequiredFieldNames?.forEach((fieldName) => {
@@ -327,7 +329,7 @@ export const ItemCreate = () => {
               );
             }
 
-            setFieldErrors(errors);
+            updateFieldErrors(errors);
 
             // scroll to required field
             fieldErrorRef.current?.scrollToErrors?.();
@@ -340,7 +342,7 @@ export const ItemCreate = () => {
 
               if (dataLongErrorMatch?.[1]) {
                 const fieldName = dataLongErrorMatch[1];
-                const errors = cloneDeep(fieldErrors);
+                const errors = cloneDeep(fieldErrorsRef.current);
                 const oneToManyFieldNames = activeFields?.reduce(
                   (names, currItem) => {
                     if (currItem?.datatype === "one_to_many") {
@@ -359,7 +361,7 @@ export const ItemCreate = () => {
                     : t("content.itemEditCannotSaveValueTooLong"),
                 };
 
-                setFieldErrors(errors);
+                updateFieldErrors(errors);
               }
             }
 
@@ -380,7 +382,7 @@ export const ItemCreate = () => {
           );
 
           setNewItemZUID(res.data.ZUID);
-          setFieldErrors({});
+          updateFieldErrors({});
 
           switch (action) {
             case "addNew":
@@ -613,7 +615,7 @@ export const ItemCreate = () => {
                 fieldErrors={fieldErrors}
                 // @ts-ignore  untyped component
                 onUpdateFieldErrors={(errors: FieldErrors) => {
-                  setFieldErrors(errors);
+                  updateFieldErrors(errors);
                 }}
               />
               {model?.type !== "block" && (

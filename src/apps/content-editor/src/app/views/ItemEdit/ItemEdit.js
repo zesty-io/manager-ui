@@ -58,6 +58,7 @@ import { useLocalStorage } from "react-use";
 import { FreestyleWrapper } from "./FreestyleWrapper";
 import { Meta } from "./Meta";
 import { FieldError } from "../../components/Editor/FieldError";
+import { hasFieldErrors } from "../../components/Editor/Field/hasFieldErrors";
 import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
 import { Redirects } from "../Redirects";
 import RedirectsDialogContextProvider from "../../../../../seo/src/app/components/RedirectsDialogProvider";
@@ -109,6 +110,12 @@ export default function ItemEdit() {
   const [notFound, setNotFound] = useState("");
   const [saveClicked, setSaveClicked] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  // Updated synchronously, so save() sees errors raised by its own flush
+  const fieldErrorsRef = useRef({});
+  const updateFieldErrors = (errors) => {
+    fieldErrorsRef.current = errors;
+    setFieldErrors(errors);
+  };
   const [SEOErrors, setSEOErrors] = useState({});
   // const [hasSEOErrors, setHasSEOErrors] = useState(false);
   const {
@@ -176,7 +183,7 @@ export default function ItemEdit() {
 
   useEffect(() => {
     setSaveClicked(false);
-    setFieldErrors({});
+    updateFieldErrors({});
     setSEOErrors({});
   }, [location.pathname]);
 
@@ -322,15 +329,13 @@ export default function ItemEdit() {
   }
 
   const save = useCallback(async () => {
-    // Commit any field value still waiting out its debounce, so a save
-    // straight after typing validates and sends what the user typed.
-    // validateMetaFields and saveItem both read the item from the store.
+    // Land debounced field values before validating and saving
     flushAllDebouncedInputs();
     setSaveClicked(true);
 
     try {
       if (
-        hasErrors ||
+        hasFieldErrors(fieldErrorsRef.current) ||
         hasSEOErrors ||
         metaRef.current?.validateMetaFields?.()
       ) {
@@ -374,7 +379,7 @@ export default function ItemEdit() {
           []
         );
 
-        const errors = cloneDeep(fieldErrors);
+        const errors = cloneDeep(fieldErrorsRef.current);
 
         if (missingRequiredFieldNames?.length) {
           missingRequiredFieldNames?.forEach((fieldName) => {
@@ -445,7 +450,7 @@ export default function ItemEdit() {
           });
         }
 
-        setFieldErrors(errors);
+        updateFieldErrors(errors);
         throw new Error(errors);
       }
       if (res.status === 400) {
@@ -455,7 +460,7 @@ export default function ItemEdit() {
 
           if (dataLongErrorMatch?.[1]) {
             const fieldName = dataLongErrorMatch[1];
-            const errors = cloneDeep(fieldErrors);
+            const errors = cloneDeep(fieldErrorsRef.current);
             const oneToManyFieldNames = activeFields?.reduce(
               (names, currItem) => {
                 if (currItem?.datatype === "one_to_many") {
@@ -474,7 +479,7 @@ export default function ItemEdit() {
                 : t("content.itemEditCannotSaveValueTooLong"),
             };
 
-            setFieldErrors(errors);
+            updateFieldErrors(errors);
           }
         }
 
@@ -732,7 +737,7 @@ export default function ItemEdit() {
                           saving={saving}
                           saveClicked={saveClicked}
                           onUpdateFieldErrors={(errors) => {
-                            setFieldErrors(errors);
+                            updateFieldErrors(errors);
                           }}
                           fieldErrors={fieldErrors}
                           hasErrors={hasErrors}
