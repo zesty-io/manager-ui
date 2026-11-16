@@ -243,6 +243,13 @@ describe("Content Meta: dataset items", () => {
         sort: 1,
         settings: { list: true, maxCharLimit: 10 },
       });
+      cy.createField(modelZUID, {
+        label: "Notes",
+        name: "notes",
+        datatype: "text",
+        sort: 2,
+        settings: { list: true },
+      });
     });
   });
 
@@ -322,6 +329,30 @@ describe("Content Meta: dataset items", () => {
     visitNewItem();
 
     cy.getBySelector("field:subtitle").find("input").type("far too long");
+    cy.getBySelector("CreateItemSaveButton").click();
+    cy.getBySelector("FieldErrorsList").should("contain", "Subtitle");
+
+    cy.getBySelector("field:subtitle")
+      .find("input")
+      .type("{selectall}{backspace}short");
+    cy.getBySelector("CreateItemSaveButton").click();
+    // The first create request must be the corrected one
+    cy.wait("@createItem")
+      .its("request.body.data.subtitle")
+      .should("eq", "short");
+  });
+
+  it("Keeps an earlier field's error when several fields flush in one save", () => {
+    cy.intercept("POST", `**/v1/content/models/${modelZUID}/items`).as(
+      "createItem"
+    );
+    visitNewItem();
+    cy.getBySelector("field:notes").find("input").should("exist");
+
+    // Freeze timers so both fields are still mid-debounce when Save runs
+    cy.clock();
+    cy.getBySelector("field:subtitle").find("input").type("far too long");
+    cy.getBySelector("field:notes").find("input").type("fine");
     cy.getBySelector("CreateItemSaveButton").click();
     cy.getBySelector("FieldErrorsList").should("contain", "Subtitle");
 
