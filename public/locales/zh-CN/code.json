@@ -26,7 +26,7 @@
   "deleteFile": "删除文件",
   "deleteFileCdnWarning": "删除文件会将其移除并触发 CDN 刷新（purge），从而立即使生产环境完成更新。",
   "deleteFileError": "删除文件 {{fileName}} 失败。{{error}}",
-  "deleteFileLabel": "删除文件",
+  "deleteFileTitleRich": "删除文件：<name>{{fileName}}</name>",
   "developerResources": "开发者资源",
   "diffVersions": "对比版本 (Diff)",
   "editItemContent": "编辑项目内容",

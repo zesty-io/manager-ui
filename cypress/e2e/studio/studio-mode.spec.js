@@ -132,11 +132,22 @@ describe("Studio Full Mode", () => {
     cy.getBySelector("StudioModeToggleOption-layout").should("exist");
   });
 
-  it("shows the empty panel, not the content editor, until something is selected", () => {
+  it("shows the item details, not the empty panel, until something is selected", () => {
+    // Content mode also shows the item details, so wait for the promotion
+    // to full mode before asserting. Only staff see the toggle.
+    reloadAsStaff();
+    cy.getBySelector("StudioModeToggleOption-full").should(
+      "have.attr",
+      "aria-pressed",
+      "true"
+    );
     cy.getBySelector("StudioPreviewFrame").should("exist");
-    // Layout grammar always reserves the right panel (#4374).
-    cy.getBySelector("StudioEmptyPanel").should("exist");
-    cy.getBySelector("StudioSidePanel").should("not.exist");
+    cy.getBySelector("StudioSidePanel").should("exist");
+    // The close button renders only in the content editor.
+    cy.getBySelector("StudioSidePanel")
+      .find('button[aria-label="Close Studio preview"]')
+      .should("not.exist");
+    cy.getBySelector("StudioEmptyPanel").should("not.exist");
   });
 
   it("opens the content editor when the bridge reports a bound leaf", () => {
@@ -150,11 +161,13 @@ describe("Studio Full Mode", () => {
     });
 
     // Selection is what the message drives; the panel switching to "edit" is
-    // the observable consequence.
-    cy.getBySelector("StudioSidePanel").should("exist");
+    // the observable consequence. The close button renders only in edit.
+    cy.getBySelector("StudioSidePanel")
+      .find('button[aria-label="Close Studio preview"]')
+      .should("exist");
   });
 
-  it("shows the neutral empty panel after the content editor closes on a selected element", () => {
+  it("shows the item details after the content editor closes on a selected element", () => {
     // An <h1> the Inspector can edit, selected on the canvas, then its bound
     // field opened in the content editor.
     cy.wait("@resolveItemByPath");
@@ -200,14 +213,14 @@ describe("Studio Full Mode", () => {
       .click();
 
     // The side panel's close clears only the field selection; the layout
-    // selection stays, so the empty panel must not call the <h1> uneditable.
-    cy.getBySelector("StudioSidePanel").should("not.exist");
+    // selection stays, and the panel falls back to the item details rather
+    // than calling the <h1> uneditable.
     cy.getBySelector("StudioBreadcrumbChip").last().should("have.text", "h1");
-    cy.getBySelector("StudioEmptyPanelTitle").should("have.text", "Inspector");
-    cy.getBySelector("StudioEmptyPanelMessage").should(
-      "have.text",
-      "Select an element on the canvas or in Layers to edit it."
-    );
+    cy.getBySelector("StudioSidePanel")
+      .find('button[aria-label="Close Studio preview"]')
+      .should("not.exist");
+    cy.getBySelector("StudioSidePanel").should("exist");
+    cy.getBySelector("StudioEmptyPanel").should("not.exist");
   });
 
   it("writes an inline canvas edit back to the item in full mode", () => {
@@ -294,8 +307,12 @@ describe("Studio Full Mode", () => {
     });
 
     cy.getBySelector("toast").should("contain.text", "Switch to Content mode");
-    // The panel staying shut is what proves the guard still guards.
-    cy.getBySelector("StudioSidePanel").should("not.exist");
+    // The panel staying on the item details, with no content editor close
+    // button, is what proves the guard still guards.
+    cy.getBySelector("StudioSidePanel").should("exist");
+    cy.getBySelector("StudioSidePanel")
+      .find('button[aria-label="Close Studio preview"]')
+      .should("not.exist");
   });
 
   it("shows the layout breadcrumb trail in full mode", () => {

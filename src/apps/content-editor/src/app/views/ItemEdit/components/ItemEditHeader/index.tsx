@@ -92,7 +92,7 @@ const tabs = [
 
 type HeaderProps = {
   saving: boolean;
-  onSave: () => void;
+  onSave: () => void | Promise<boolean | void>;
   hasError: boolean;
   isLoadingItem?: boolean;
 };

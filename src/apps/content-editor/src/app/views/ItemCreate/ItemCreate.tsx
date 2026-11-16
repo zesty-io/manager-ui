@@ -6,6 +6,7 @@ import {
   useContext,
   useCallback,
 } from "react";
+import { notifyIfResponseFailed } from "utility/request";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import { useTranslation } from "react-i18next";
 import useIsMounted from "ismounted";
@@ -372,7 +373,10 @@ export const ItemCreate = () => {
           }
         } else if (res.data && res.data.ZUID) {
           // fetch item we just saved
-          await dispatch(fetchItem(modelZUID, res.data.ZUID));
+          notifyIfResponseFailed(
+            dispatch,
+            await dispatch(fetchItem(modelZUID, res.data.ZUID))
+          );
 
           setNewItemZUID(res.data.ZUID);
           setFieldErrors({});

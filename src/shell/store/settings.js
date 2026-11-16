@@ -1,5 +1,5 @@
 import { notify } from "shell/store/notifications";
-import { request } from "utility/request";
+import { request, toRequestFailure } from "utility/request";
 import {
   faCog,
   faEnvelope,
@@ -202,40 +202,45 @@ export function fetchStylesVariables() {
 
 export function saveStyleVariable(zuid, data) {
   return (dispatch) => {
-    return request(`${CONFIG.API_INSTANCE}/web/stylesheets/variables/${zuid}`, {
-      method: "PUT",
-      json: true,
-      body: data,
-    })
-      .then((res) => {
-        if (res) {
+    return (
+      request(`${CONFIG.API_INSTANCE}/web/stylesheets/variables/${zuid}`, {
+        method: "PUT",
+        json: true,
+        rejectOnError: true,
+        body: data,
+      })
+        .then((res) => {
           dispatch({
             type: "UPDATE_STYLES_SUCCESS",
             payload: data,
           });
-        }
-      })
-      .catch((err) => console.log("err", err));
+          return res;
+        })
+        // Resolves { error, status } silently, the component aggregates results
+        .catch((err) => toRequestFailure(err))
+    );
   };
 }
 
 export function updateSettings(zuid, data) {
   return (dispatch) => {
-    return request(`${CONFIG.API_INSTANCE}/env/settings/${zuid}`, {
-      method: "PUT",
-      json: true,
-      body: data,
-    })
-      .then((res) => {
-        if (res) {
+    return (
+      request(`${CONFIG.API_INSTANCE}/env/settings/${zuid}`, {
+        method: "PUT",
+        json: true,
+        rejectOnError: true,
+        body: data,
+      })
+        .then((res) => {
           dispatch({
             type: "UPDATE_SETTINGS_SUCCESS",
             payload: data,
           });
-        }
-        return res;
-      })
-      .catch((err) => err);
+          return res;
+        })
+        // Resolves { error, status } silently, the component aggregates results
+        .catch((err) => toRequestFailure(err))
+    );
   };
 }
 

@@ -149,7 +149,8 @@ export const Header = ({ dateRange, onDateRangeChange }: Props) => {
         FabProps={{
           size: "small",
           sx: {
-            backgroundColor: "#fff !important",
+            backgroundColor: (theme) =>
+              `${theme.palette.common.white} !important`,
             boxShadow: "none",
             color: "primary.main",
           },
