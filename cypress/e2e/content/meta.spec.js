@@ -235,6 +235,14 @@ describe("Content Meta: dataset items", () => {
         sort: 0,
         settings: { list: true },
       });
+      // Not the first text field, so it never auto-populates Meta Title
+      cy.createField(modelZUID, {
+        label: "Subtitle",
+        name: "subtitle",
+        datatype: "text",
+        sort: 1,
+        settings: { list: true, maxCharLimit: 10 },
+      });
     });
   });
 
@@ -282,5 +290,48 @@ describe("Content Meta: dataset items", () => {
       .its("request.body.web.metaTitle")
       .should("eq", title);
     cy.getBySelector("toast").contains(`Created Item: ${title}`);
+  });
+
+  it("Does not mark Meta Title as required", () => {
+    visitNewItem();
+
+    cy.getBySelector("ManualMetaFlow").click();
+    cy.getBySelector("metaTitle-input").should("exist");
+    cy.getBySelector("metaTitle").should("not.contain", "*");
+  });
+
+  it("Creates an item without a Meta Title", () => {
+    cy.intercept("POST", `**/v1/content/models/${modelZUID}/items`).as(
+      "createItem"
+    );
+    visitNewItem();
+
+    cy.getBySelector("field:subtitle").find("input").type("no title");
+    cy.getBySelector("CreateItemSaveButton").click();
+    cy.wait("@createItem").then(({ request, response }) => {
+      expect(request.body.web.metaTitle).to.not.be.ok;
+      expect(response.statusCode).to.be.within(200, 299);
+    });
+    cy.getBySelector("toast").contains("Created Item");
+  });
+
+  it("Blocks a save when a value typed straight before it is over the limit", () => {
+    cy.intercept("POST", `**/v1/content/models/${modelZUID}/items`).as(
+      "createItem"
+    );
+    visitNewItem();
+
+    cy.getBySelector("field:subtitle").find("input").type("far too long");
+    cy.getBySelector("CreateItemSaveButton").click();
+    cy.getBySelector("FieldErrorsList").should("contain", "Subtitle");
+
+    cy.getBySelector("field:subtitle")
+      .find("input")
+      .type("{selectall}{backspace}short");
+    cy.getBySelector("CreateItemSaveButton").click();
+    // The first create request must be the corrected one
+    cy.wait("@createItem")
+      .its("request.body.data.subtitle")
+      .should("eq", "short");
   });
 });
