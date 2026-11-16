@@ -109,9 +109,7 @@ export const DYNAMIC_META_FIELD_NAMES = [
   "tc_image",
 ];
 
-// A required field's value of "" or whitespace-only is not meaningful
-// content, so treat it the same as missing rather than letting `!value`
-// pass whitespace through as satisfying the requirement.
+// Whitespace-only counts as missing for required fields
 const isBlank = (value: unknown) =>
   typeof value === "string" ? !value.trim() : !value;
 
@@ -275,9 +273,7 @@ export const Meta = forwardRef(
       () => {
         return {
           validateMetaFields() {
-            // Read the item from the store rather than this render's props: a
-            // field can flush its debounced value in the same task as the
-            // Save click, before React has re-rendered with it.
+            // From the store: save()'s flush lands before React re-renders
             const latestItem =
               store.getState().content[
                 isCreateItemPage ? `new:${modelZUID}` : itemZUID
