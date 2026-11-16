@@ -36,9 +36,10 @@ import {
   ManageAccountsRounded,
   ScheduleRounded,
 } from "@mui/icons-material";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, useStore } from "react-redux";
 import { AppState } from "../../../../../../../../shell/store/types";
 import { useMetaKey } from "../../../../../../../../shell/hooks/useMetaKey";
+import { flushAllDebouncedInputs } from "../../../../../../../../shell/hooks/useDebouncedInput";
 import {
   fetchAllModelPublishings,
   fetchItemPublishing,
@@ -115,6 +116,7 @@ export const ItemEditHeaderActions = ({
   const resolvedItemZUID = itemZUIDOverride || itemZUID;
   const { openChangeDialog } = useRedirectsDialog();
   const dispatch = useDispatch();
+  const store = useStore<AppState>();
   const canPublish = usePermission("PUBLISH", resolvedItemZUID);
   const canUpdate = usePermission("UPDATE", resolvedItemZUID);
   const [publishMenu, setPublishMenu] = useState<null | HTMLElement>(null);
@@ -356,16 +358,22 @@ export const ItemEditHeaderActions = ({
     scheduledPublishDialogOpen,
   ]);
 
+  // Shortcuts don't move focus: land debounced values, then read dirty fresh
+  const flushAndCheckDirty = () => {
+    flushAllDebouncedInputs();
+    return !!store.getState().content[resolvedItemZUID]?.dirty;
+  };
+
   const saveShortcut = useMetaKey("s", () => {
     if (!canUpdate) return;
-    if (itemState === ITEM_STATES.dirty) {
+    if (flushAndCheckDirty()) {
       onSave();
     }
   });
 
   const publishShortcut = useMetaKey("p", () => {
     if (!canPublish) return;
-    if (itemState === ITEM_STATES.dirty) {
+    if (flushAndCheckDirty()) {
       saveAndQueue(onSave, setPublishAfterSave);
     } else {
       setIsConfirmPublishModalOpen(true);
