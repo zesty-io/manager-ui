@@ -358,21 +358,22 @@ export const ItemEditHeaderActions = ({
     scheduledPublishDialogOpen,
   ]);
 
+  // Shortcuts don't move focus: land debounced values, then read dirty fresh
+  const flushAndCheckDirty = () => {
+    flushAllDebouncedInputs();
+    return !!store.getState().content[resolvedItemZUID]?.dirty;
+  };
+
   const saveShortcut = useMetaKey("s", () => {
     if (!canUpdate) return;
-    // The shortcut doesn't move focus, so a value typed within the debounce
-    // delay hasn't reached the store yet and the item isn't dirty. Commit it,
-    // then read dirtiness from the store, as this render's itemState predates
-    // the flush.
-    flushAllDebouncedInputs();
-    if (store.getState().content[resolvedItemZUID]?.dirty) {
+    if (flushAndCheckDirty()) {
       onSave();
     }
   });
 
   const publishShortcut = useMetaKey("p", () => {
     if (!canPublish) return;
-    if (itemState === ITEM_STATES.dirty) {
+    if (flushAndCheckDirty()) {
       saveAndQueue(onSave, setPublishAfterSave);
     } else {
       setIsConfirmPublishModalOpen(true);
