@@ -86,7 +86,6 @@ export default connect((state) => {
       >
         <Box
           position="relative"
-          component="main"
           sx={{
             height: "100%",
             width: "100%",

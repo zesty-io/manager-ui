@@ -714,15 +714,18 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
             return false;
           });
 
-    // Block items do not require SEO fields
+    // Block and dataset items do not require SEO fields
     let hasMissingRequiredSEOFields = false;
 
-    if (model?.type !== "block") {
+    if (model?.type !== "block" && model?.type !== "dataset") {
+      const metaTitle = item?.web?.metaTitle;
+      const isMetaTitleBlank =
+        typeof metaTitle === "string" ? !metaTitle.trim() : !metaTitle;
+
       if (skipPathPartValidation) {
-        hasMissingRequiredSEOFields = !item?.web?.metaTitle;
+        hasMissingRequiredSEOFields = isMetaTitleBlank;
       } else {
-        hasMissingRequiredSEOFields =
-          !item?.web?.metaTitle || !item?.web?.pathPart;
+        hasMissingRequiredSEOFields = isMetaTitleBlank || !item?.web?.pathPart;
       }
     }
 

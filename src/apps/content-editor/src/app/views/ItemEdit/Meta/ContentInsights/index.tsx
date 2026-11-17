@@ -8,6 +8,7 @@ import { WordCount } from "./WordCount";
 import { MatchedWords } from "./MatchedWords";
 import { MostMentionedWords } from "./MostMentionedWords";
 import { DYNAMIC_META_FIELD_NAMES } from "../index";
+import { isTextLikeFieldType } from "shell/fieldTypes";
 
 export const COMMON_WORDS: Readonly<string[]> = [
   "null",
@@ -183,18 +184,9 @@ export const ContentInsights = ({}) => {
 
   const textFieldNames = useMemo(() => {
     if (modelFields?.length) {
-      const textFieldTypes = [
-        "text",
-        "wysiwyg_basic",
-        "wysiwyg_advanced",
-        "article_writer",
-        "markdown",
-        "textarea",
-      ];
-
       return modelFields.reduce((accu: string[], curr) => {
         if (
-          textFieldTypes.includes(curr.datatype) &&
+          isTextLikeFieldType(curr.datatype) &&
           !curr.deletedAt &&
           !DYNAMIC_META_FIELD_NAMES.includes(curr.name)
         ) {

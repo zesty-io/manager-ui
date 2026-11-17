@@ -17,7 +17,7 @@ describe("Code Editor", () => {
       pathname: "/v1/web/scripts",
       query: { action: "updateSort" },
     }).as("updateSort");
-    cy.get("footer").last().get("[data-cy=saveOrder]").click();
+    cy.getBySelector("saveOrder").click();
     cy.wait("@updateSort");
 
     // success message
