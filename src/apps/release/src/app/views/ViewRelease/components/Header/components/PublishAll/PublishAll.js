@@ -45,10 +45,6 @@ export const PublishAll = memo(function PublishAll() {
           left: 0,
           boxShadow: `2px 2px 4px ${theme.palette.grey[800]}`,
           minWidth: 420,
-          "& > footer": {
-            display: "flex",
-            justifyContent: "space-between",
-          },
         },
       })}
     >
@@ -69,26 +65,28 @@ export const PublishAll = memo(function PublishAll() {
           <Notice>{t("release.publishAllNoticeBody")}</Notice>
         </ModalContent>
         <ModalFooter>
-          <Button
-            variant="contained"
-            data-cy="release-publishAll-cancel"
-            onClick={() => setOpen(false)}
-            startIcon={<DoDisturbAltIcon />}
-          >
-            {t("shell.cancelEsc")}
-          </Button>
-          <Button
-            variant="contained"
-            color="success"
-            data-cy="release-publishAll-confirm"
-            disabled={loading}
-            onClick={onPublishAll}
-            startIcon={
-              loading ? <CircularProgress size="20px" /> : <CheckCircleIcon />
-            }
-          >
-            {loading ? t("release.publishing") : t("release.publishAll")}
-          </Button>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Button
+              variant="contained"
+              data-cy="release-publishAll-cancel"
+              onClick={() => setOpen(false)}
+              startIcon={<DoDisturbAltIcon />}
+            >
+              {t("shell.cancelEsc")}
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              data-cy="release-publishAll-confirm"
+              disabled={loading}
+              onClick={onPublishAll}
+              startIcon={
+                loading ? <CircularProgress size="20px" /> : <CheckCircleIcon />
+              }
+            >
+              {loading ? t("release.publishing") : t("release.publishAll")}
+            </Button>
+          </Box>
         </ModalFooter>
       </Modal>
     </Box>

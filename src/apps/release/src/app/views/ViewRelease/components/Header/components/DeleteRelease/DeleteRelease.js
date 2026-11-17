@@ -66,10 +66,6 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
           top: 0,
           right: 0,
           boxShadow: `2px 2px 4px ${theme.palette.grey[800]}`,
-          "& > footer": {
-            display: "flex",
-            justifyContent: "space-between",
-          },
         },
       })}
     >
@@ -89,24 +85,26 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
           <Notice>{t("release.deleteWarning")}</Notice>
         </ModalContent>
         <ModalFooter>
-          <Button
-            variant="contained"
-            data-cy="release-delete-cancel"
-            onClick={() => setOpen(false)}
-            startIcon={<DoDisturbAltIcon />}
-          >
-            {t("shell.cancelEsc")}
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            data-cy="release-delete-confirm"
-            disabled={loading}
-            onClick={onDeleteRelease}
-            startIcon={<DeleteIcon />}
-          >
-            {t("release.deleteRelease")}
-          </Button>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Button
+              variant="contained"
+              data-cy="release-delete-cancel"
+              onClick={() => setOpen(false)}
+              startIcon={<DoDisturbAltIcon />}
+            >
+              {t("shell.cancelEsc")}
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              data-cy="release-delete-confirm"
+              disabled={loading}
+              onClick={onDeleteRelease}
+              startIcon={<DeleteIcon />}
+            >
+              {t("release.deleteRelease")}
+            </Button>
+          </Box>
         </ModalFooter>
       </Modal>
     </Box>
