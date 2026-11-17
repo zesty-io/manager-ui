@@ -30,7 +30,11 @@ export const EmptyState = (ids: Props) => {
         </Box>
         <Box>
           {/* Illustration Attribution: Illustration from Storyset (a company owned by Flaticon) */}
-          <img src={uploadFiles} height={280} />
+          <img
+            src={uploadFiles}
+            height={280}
+            alt={t("media.emptyStateImageAlt")}
+          />
         </Box>
       </Stack>
     </Box>

@@ -26,7 +26,7 @@
   "deleteFile": "Bestand verwijderen",
   "deleteFileCdnWarning": "Als je een bestand verwijdert, wordt het definitief verwijderd en wordt er een CDN-opschoning (purge) geactiveerd, waardoor de productieomgeving onmiddellijk wordt bijgewerkt.",
   "deleteFileError": "Verwijderen van bestand {{fileName}} mislukt. {{error}}",
-  "deleteFileLabel": "Bestand verwijderen",
+  "deleteFileTitleRich": "Bestand verwijderen: <name>{{fileName}}</name>",
   "developerResources": "Bronnen voor ontwikkelaars",
   "diffVersions": "Versies vergelijken (Diff)",
   "editItemContent": "Item-inhoud bewerken",

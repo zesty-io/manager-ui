@@ -28,8 +28,16 @@ export const DirtyCodeModal: FC<DirtyCodeModal> = ({
   const { t } = useTranslation();
   return (
     <ConfirmDialog
-      title={<Typography variant="h5">{title}</Typography>}
-      content={<Typography variant="body2">{content}</Typography>}
+      title={
+        <Typography variant="h5" component="span">
+          {title}
+        </Typography>
+      }
+      content={
+        <Typography variant="body2" component="span">
+          {content}
+        </Typography>
+      }
       open={open}
       callback={() => {} /* TODO fix dialog in DS lib */}
       maxWidth="xs"

@@ -20,13 +20,14 @@ describe("Studio two-way binding", () => {
   let studioPath = "/";
   let fieldByName = {};
 
-  before(() => {
+  before(function () {
     cy.task("seed:content", "fixtures/studio-complex.json", {
       timeout: 120000,
     }).then(({ items, fields }) => {
       itemZUID = items[0].meta.ZUID;
       studioPath = `/${items[0].web.pathPart}`;
       fieldByName = Object.fromEntries(fields.map((f) => [f.name, f]));
+      cy.skipIfPreviewDown(this, studioPath);
     });
   });
 
@@ -129,7 +130,9 @@ describe("Studio two-way binding", () => {
   // mounted and the item hydrated in the store. Dispatching before either is
   // true produces a green-looking no-op.
   const editInPanel = (name, value) => {
-    cy.getBySelector("StudioSidePanel").should("exist");
+    cy.getBySelector("StudioSidePanel")
+      .find('button[aria-label="Close Studio preview"]')
+      .should("exist");
     cy.window().should((win) => {
       expect(
         win.zestyStore.getState().content[itemZUID]?.meta?.ZUID,

@@ -20,7 +20,7 @@ import {
   IconButton,
 } from "@mui/material";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
-import { resolvePathPart } from "../../../store/files";
+import { resolveCodePathPart } from "utility/resolveCodePathPart";
 import { fetchHeaders, saveSort } from "../../../store/headers";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation, Trans } from "react-i18next";
@@ -137,7 +137,7 @@ const Draggable = (props: any) => {
 };
 
 const mapStateToProps = (state: any, props: { type: string }) => {
-  const typePathPart = resolvePathPart(props.type);
+  const typePathPart = resolveCodePathPart(props.type);
 
   const headersMap = state.headers
     .filter((header: any) => header.resourceZUID) // must have a resourceZUID
@@ -147,7 +147,7 @@ const mapStateToProps = (state: any, props: { type: string }) => {
     }, {}); // convert to map for easy lookups
 
   const files = state.files.filter((f: any) => {
-    let filePathPart = resolvePathPart(f.type);
+    let filePathPart = resolveCodePathPart(f.type);
     return filePathPart === typePathPart && f.status === state.status.selected;
   });
 

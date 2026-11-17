@@ -1,4 +1,9 @@
-type NavModal = null | ((callback: (result: boolean) => void) => void);
+// `contentOnly`: the prompt is about content edits alone, so Save and Don't
+// Save must leave any other pending work alone.
+export type NavModalScope = { contentOnly?: boolean };
+type NavModal =
+  | null
+  | ((callback: (result: boolean) => void, scope?: NavModalScope) => void);
 
 declare global {
   interface Window {
