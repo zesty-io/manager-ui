@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo } from "react";
-import cx from "classnames";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
@@ -13,8 +12,7 @@ import { CopyButton } from "@zesty-io/material";
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Link from "@mui/material/Link";
-
-import styles from "./Metrics.less";
+import { Box, Typography } from "@mui/material";
 
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -53,6 +51,47 @@ const floatWithCommas = (x) => {
   return parts.join(".");
 };
 
+// Holds the legacy headline metrics on top of the h3 variant
+const headlineSx = {
+  fontWeight: 200,
+  lineHeight: "42px",
+  letterSpacing: "0.32px",
+};
+
+// Styles every row and cell of the request tables, including TopReq's rows
+const metricsTableSx = (theme) => ({
+  borderCollapse: "collapse",
+  textAlign: "left",
+  width: "100%",
+  "& > thead": {
+    fontSize: theme.typography.body2.fontSize,
+  },
+  "& tr": {
+    bgcolor: "common.white",
+    alignItems: "center",
+    "&:nth-of-type(odd)": {
+      bgcolor: "grey.50",
+    },
+    "&:hover, &:focus, &:active, &:nth-of-type(odd):hover, &:nth-of-type(odd):focus, &:nth-of-type(odd):active":
+      {
+        bgcolor: "grey.100",
+      },
+  },
+  "& td, & th": {
+    p: 2,
+    "& a": {
+      display: "inline-block",
+      maxWidth: 500,
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+    },
+    "& svg": {
+      mr: 1,
+    },
+  },
+});
+
 export default function Metrics() {
   const { t } = useTranslation();
   const [timePeriod, setTimePeriod] = useState(30);
@@ -87,9 +126,18 @@ export default function Metrics() {
 
   return (
     <>
-      <section className={styles.MetricsHeader}>
+      <Box
+        component="section"
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          px: 2,
+          mt: 2,
+        }}
+      >
         <ButtonGroup variant="contained">
           <Button
+            data-cy="metrics-past-day"
             title={t("reports.pastDay")}
             onClick={() => setTimePeriod(1)}
             disabled={timePeriod === 1}
@@ -97,6 +145,7 @@ export default function Metrics() {
             {t("reports.pastDay")}
           </Button>
           <Button
+            data-cy="metrics-past-7-days"
             title={t("reports.pastDayWeek")}
             onClick={() => setTimePeriod(7)}
             disabled={timePeriod === 7}
@@ -104,6 +153,7 @@ export default function Metrics() {
             {t("reports.past7Days")}
           </Button>
           <Button
+            data-cy="metrics-past-30-days"
             title={t("reports.past30Days")}
             onClick={() => setTimePeriod(30)}
             disabled={timePeriod === 30}
@@ -112,11 +162,15 @@ export default function Metrics() {
           </Button>
         </ButtonGroup>
 
-        <h1 className={styles.subheadline}>
+        <Typography
+          variant="h5"
+          component="h1"
+          sx={{ fontWeight: 400, letterSpacing: "0.08px" }}
+        >
           {/* eslint-disable-next-line i18next/no-literal-string -- brand name */}
           <>Zesty.io</> {t("reports.usageReport")}
-        </h1>
-      </section>
+        </Typography>
+      </Box>
 
       <WithLoader
         width="100%"
@@ -140,15 +194,19 @@ const Body = ({
   const { t } = useTranslation();
   if (requestError) {
     return (
-      <Notice className={styles.ErrorMessage}>
-        {t("reports.metricsLoadError", { message: requestError.message })}
-      </Notice>
+      <Box sx={{ m: 2 }}>
+        <Notice>
+          {t("reports.metricsLoadError", { message: requestError.message })}
+        </Notice>
+      </Box>
     );
   } else if (usageError) {
     return (
-      <Notice className={styles.ErrorMessage}>
-        {t("reports.metricsLoadError", { message: usageError.message })}
-      </Notice>
+      <Box sx={{ m: 2 }}>
+        <Notice>
+          {t("reports.metricsLoadError", { message: usageError.message })}
+        </Notice>
+      </Box>
     );
   } else {
     return (
@@ -222,9 +280,10 @@ const Content = ({
     const throughput = floatWithCommas(media.ThroughtputGB) + "GB";
 
     return (
-      <tr className={cx(styles.MetricsTableRow)}>
-        <td className={cx(styles.MetricsTableRowCell)}>
+      <tr>
+        <td>
           <Link
+            data-cy="metrics-media-link"
             underline="none"
             color="secondary"
             href={fullPath}
@@ -235,8 +294,8 @@ const Content = ({
             &nbsp;<code>{path}</code>
           </Link>
         </td>
-        <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
-        <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
+        <td>{requests}</td>
+        <td>{throughput}</td>
       </tr>
     );
   };
@@ -245,10 +304,10 @@ const Content = ({
     const count = numberWithCommas(req.RequestCount);
     const throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
     return (
-      <tr className={cx(styles.MetricsTableRow)}>
-        <td className={cx(styles.MetricsTableRowCell)}>{req.Code}</td>
-        <td className={cx(styles.MetricsTableRowCell)}>{count}</td>
-        <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
+      <tr>
+        <td>{req.Code}</td>
+        <td>{count}</td>
+        <td>{throughput}</td>
       </tr>
     );
   };
@@ -285,17 +344,20 @@ const Content = ({
           <CardHeader title={usageData.Account.Name}></CardHeader>
 
           <CardContent
-            className={styles.CardContentHeader}
-            sx={{ display: "flex", justifyContent: "space-between" }}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              "& aside p:not(:last-child)": { pb: 1 },
+            }}
           >
-            <h1 className={styles.headline}>
+            <Typography variant="h3" component="h1" sx={headlineSx}>
               {t("reports.usageReportFor", {
                 timePeriod,
                 unit: timePeriod > 1 ? "days" : "day",
                 startDisplay: StartDisplay,
                 endDisplay: EndDisplay,
               })}
-            </h1>
+            </Typography>
             <aside>
               <p>
                 {t("reports.instanceZuid")}
@@ -324,17 +386,30 @@ const Content = ({
       <figure>
         <Card sx={{ m: 2 }}>
           <CardHeader title={t("reports.totalUsageBreakdown")}></CardHeader>
-          <CardContent className={styles.CardContentGraphs}>
-            <div className={styles.GraphTitles}>
+          <CardContent
+            sx={{
+              display: "grid",
+              gridTemplateColumns:
+                "minmax(100px, 200px) repeat(auto-fit, minmax(320px, 1fr))",
+              gap: 2,
+              alignItems: "center",
+              "@media only screen and (max-width: 1300px)": {
+                gridTemplateColumns: "auto",
+                gridTemplateRows: "1fr 1fr 1fr",
+                justifyItems: "center",
+              },
+            }}
+          >
+            <Box sx={{ justifySelf: "center" }}>
               <p>{t("reports.totalBandwidth")}</p>
-              <h1 className={styles.headline}>
+              <Typography variant="h3" component="h1" sx={headlineSx}>
                 {floatWithCommas(totalThroughput)} GB
-              </h1>
+              </Typography>
               <p>{t("reports.totalRequests")}</p>
-              <h1 className={styles.headline}>
+              <Typography variant="h3" component="h1" sx={headlineSx}>
                 {numberWithCommas(totalRequests)}
-              </h1>
-            </div>
+              </Typography>
+            </Box>
 
             <div id="chart2">
               <Pie
@@ -355,39 +430,51 @@ const Content = ({
       <section>
         <Card sx={{ m: 2 }}>
           <CardHeader title={t("reports.bandwidthBreakdown")}></CardHeader>
-          <CardContent className={styles.CardContentBandwidth}>
+          <CardContent
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, auto)",
+              gap: 2,
+            }}
+          >
             <div>
               <p>{t("reports.totalBandwidth")}</p>
-              <p className={styles.headline}>
+              <Typography variant="h3" component="p" sx={headlineSx}>
                 {floatWithCommas(totalThroughput)} GB
-              </p>
+              </Typography>
             </div>
 
             <div>
               <p>{t("reports.htmlCssBandwidth")}</p>
-              <p
-                className={cx(
-                  styles.headline,
-                  styles.IsSuccess,
-                  styles.requestThroughput
-                )}
+              <Typography
+                variant="h3"
+                component="p"
+                sx={{ ...headlineSx, color: "success.main" }}
               >
                 {floatWithCommas(totalRequestThroughput)} GB
-              </p>
+              </Typography>
             </div>
 
             <div>
               <p>{t("reports.mediaBandwidth")}</p>
-              <p className={cx(styles.headline, styles.IsInfo)}>
+              <Typography
+                variant="h3"
+                component="p"
+                sx={{ ...headlineSx, color: "info.main" }}
+              >
                 {floatWithCommas(totalMediaThroughput)} GB
-              </p>
+              </Typography>
             </div>
 
             <div>
               <p>{t("reports.successfulMediaRequests")}</p>
-              <p className={cx(styles.IsInfo, styles.headline)}>
+              <Typography
+                variant="h3"
+                component="p"
+                sx={{ ...headlineSx, color: "info.main" }}
+              >
                 {numberWithCommas(usageData.MediaConsumption.TotalRequests)}
-              </p>
+              </Typography>
             </div>
           </CardContent>
         </Card>
@@ -398,45 +485,74 @@ const Content = ({
           <CardHeader
             title={t("reports.platformRequestBreakdown")}
           ></CardHeader>
-          <CardContent className={styles.CardContentRequest}>
+          <CardContent
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "repeat(5, auto)",
+              gap: 2,
+            }}
+          >
             <div>
               <p>{t("reports.successfulPageLoads")}</p>
-              <p className={cx(styles.IsSuccess, styles.headline)}>
+              <Typography
+                variant="h3"
+                component="p"
+                sx={{ ...headlineSx, color: "success.main" }}
+              >
                 {numberWithCommas(reqs["200"])}
-              </p>
+              </Typography>
             </div>
 
             <div>
               <p>{t("reports.pageRedirects")}</p>
-              <p className={cx(styles.IsWarning, styles.headline)}>
+              <Typography
+                variant="h3"
+                component="p"
+                sx={{ ...headlineSx, color: "warning.main" }}
+              >
                 {numberWithCommas(reqs["301"])}
-              </p>
+              </Typography>
             </div>
 
             <div>
               <p>{t("reports.failingNotFound")}</p>
-              <p className={cx(styles.IsOrange, styles.headline)}>
+              <Typography
+                variant="h3"
+                component="p"
+                sx={{ ...headlineSx, color: "deepOrange.400" }}
+              >
                 {numberWithCommas(reqs["404"])}
-              </p>
+              </Typography>
             </div>
 
             <div>
               <p>{t("reports.maliciousDeflected")}</p>
-              <p className={cx(styles.IsDanger, styles.headline)}>
+              <Typography
+                variant="h3"
+                component="p"
+                sx={{ ...headlineSx, color: "error.main" }}
+              >
                 {numberWithCommas(reqs["403"])}
-              </p>
+              </Typography>
             </div>
 
             <div>
               <p>{t("reports.other")}</p>
-              <p className={styles.headline}>
+              <Typography variant="h3" component="p" sx={headlineSx}>
                 {numberWithCommas(reqs["other"])}
-              </p>
+              </Typography>
             </div>
           </CardContent>
         </Card>
       </section>
-      <div className={styles.TableContainer}>
+      <Box
+        sx={{
+          "@media only screen and (min-width: 2000px)": {
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+          },
+        }}
+      >
         <section>
           <Card sx={{ m: 2 }}>
             <CardHeader
@@ -444,18 +560,12 @@ const Content = ({
               sx={{ color: "success.main" }}
             ></CardHeader>
             <CardContent>
-              <table className={cx(styles.MetricsTable)}>
+              <Box component="table" sx={metricsTableSx}>
                 <thead>
-                  <tr className={cx(styles.MetricsTableRow)}>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.url")}
-                    </th>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.requests")}
-                    </th>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.bandwidth")}
-                    </th>
+                  <tr>
+                    <th>{t("reports.url")}</th>
+                    <th>{t("reports.requests")}</th>
+                    <th>{t("reports.bandwidth")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -474,7 +584,7 @@ const Content = ({
                     )
                   )}
                 </tbody>
-              </table>
+              </Box>
             </CardContent>
           </Card>
         </section>
@@ -485,18 +595,12 @@ const Content = ({
               sx={{ color: "secondary.main" }}
             ></CardHeader>
             <CardContent>
-              <table className={cx(styles.MetricsTable)}>
+              <Box component="table" sx={metricsTableSx}>
                 <thead>
-                  <tr className={cx(styles.MetricsTableRow)}>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.fileName")}
-                    </th>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.request")}
-                    </th>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.bandwidth")}
-                    </th>
+                  <tr>
+                    <th>{t("reports.fileName")}</th>
+                    <th>{t("reports.request")}</th>
+                    <th>{t("reports.bandwidth")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -504,7 +608,7 @@ const Content = ({
                     <Media media={m} key={i} />
                   ))}
                 </tbody>
-              </table>
+              </Box>
             </CardContent>
           </Card>
         </section>
@@ -516,18 +620,12 @@ const Content = ({
               sx={{ color: "warning.main" }}
             ></CardHeader>
             <CardContent>
-              <table className={cx(styles.MetricsTable)}>
+              <Box component="table" sx={metricsTableSx}>
                 <thead>
-                  <tr className={cx(styles.MetricsTableRow)}>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.url")}
-                    </th>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.request")}
-                    </th>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.bandwidth")}
-                    </th>
+                  <tr>
+                    <th>{t("reports.url")}</th>
+                    <th>{t("reports.request")}</th>
+                    <th>{t("reports.bandwidth")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -546,7 +644,7 @@ const Content = ({
                     )
                   )}
                 </tbody>
-              </table>
+              </Box>
             </CardContent>
           </Card>
         </section>
@@ -557,18 +655,12 @@ const Content = ({
               sx={{ color: "warning.main" }}
             ></CardHeader>
             <CardContent>
-              <table className={cx(styles.MetricsTable)}>
+              <Box component="table" sx={metricsTableSx}>
                 <thead>
-                  <tr className={cx(styles.MetricsTableRow)}>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.url")}
-                    </th>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.request")}
-                    </th>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.bandwidth")}
-                    </th>
+                  <tr>
+                    <th>{t("reports.url")}</th>
+                    <th>{t("reports.request")}</th>
+                    <th>{t("reports.bandwidth")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -587,7 +679,7 @@ const Content = ({
                     )
                   )}
                 </tbody>
-              </table>
+              </Box>
             </CardContent>
           </Card>
         </section>
@@ -598,18 +690,12 @@ const Content = ({
               sx={{ color: "error.main" }}
             ></CardHeader>
             <CardContent>
-              <table className={cx(styles.MetricsTable)}>
+              <Box component="table" sx={metricsTableSx}>
                 <thead>
-                  <tr className={cx(styles.MetricsTableRow)}>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.url")}
-                    </th>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.request")}
-                    </th>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.bandwidth")}
-                    </th>
+                  <tr>
+                    <th>{t("reports.url")}</th>
+                    <th>{t("reports.request")}</th>
+                    <th>{t("reports.bandwidth")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -628,7 +714,7 @@ const Content = ({
                     )
                   )}
                 </tbody>
-              </table>
+              </Box>
             </CardContent>
           </Card>
         </section>
@@ -637,18 +723,12 @@ const Content = ({
           <Card sx={{ m: 2 }}>
             <CardHeader title={t("reports.allResponseCodes")}></CardHeader>
             <CardContent>
-              <table className={cx(styles.MetricsTable)}>
+              <Box component="table" sx={metricsTableSx}>
                 <thead>
-                  <tr className={cx(styles.MetricsTableRow)}>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("common.code")}
-                    </th>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.requests")}
-                    </th>
-                    <th className={cx(styles.MetricsTableRowCell)}>
-                      {t("reports.bandwidth")}
-                    </th>
+                  <tr>
+                    <th>{t("common.code")}</th>
+                    <th>{t("reports.requests")}</th>
+                    <th>{t("reports.bandwidth")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -656,11 +736,11 @@ const Content = ({
                     <TopReqAllRow req={req} key={i} />
                   ))}
                 </tbody>
-              </table>
+              </Box>
             </CardContent>
           </Card>
         </section>
-      </div>
+      </Box>
     </>
   );
 };

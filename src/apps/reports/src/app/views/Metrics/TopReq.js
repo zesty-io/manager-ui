@@ -1,10 +1,7 @@
-import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 import Link from "@mui/material/Link";
-
-import styles from "./Metrics.less";
 
 const numberWithCommas = (x) => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -26,9 +23,10 @@ const TopReq = ({ req, path }) => {
   const throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
 
   return (
-    <tr className={cx(styles.MetricsTableRow)}>
-      <td className={cx(styles.MetricsTableRowCell)}>
+    <tr>
+      <td>
         <Link
+          data-cy="metrics-path-link"
           underline="none"
           color="secondary"
           href={fullPath}
@@ -39,8 +37,8 @@ const TopReq = ({ req, path }) => {
           &nbsp;<code>{path}</code>
         </Link>
       </td>
-      <td className={cx(styles.MetricsTableRowCell)}>{requests}</td>
-      <td className={cx(styles.MetricsTableRowCell)}>{throughput}</td>
+      <td>{requests}</td>
+      <td>{throughput}</td>
     </tr>
   );
 };
