@@ -18,11 +18,9 @@ import { useTranslation } from "react-i18next";
 
 import { ContentModelField } from "../../../../../../../shell/services/types";
 import { FieldIcon } from "../../../../../../schema/src/app/components/Field/FieldIcon";
-import {
-  getTypeText,
-  FieldType,
-} from "../../../../../../schema/src/app/components/configs";
+import { getTypeText } from "../../../../../../schema/src/app/components/configs";
 import { formatLocalized } from "shell/i18n/dates";
+import { FieldType } from "shell/fieldTypes";
 
 type FieldTooltipBodyProps = {
   data: Partial<ContentModelField>;
