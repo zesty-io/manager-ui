@@ -5,7 +5,7 @@ import { Dialog } from "@mui/material";
 import { FieldSelection } from "./views/FieldSelection";
 import { FieldForm } from "./views/FieldForm";
 import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/instance";
-import { FieldType } from "../configs";
+import { FieldType } from "shell/fieldTypes";
 import { ContentModelFieldDataType } from "../../../../../../shell/services/types";
 
 type Params = {
