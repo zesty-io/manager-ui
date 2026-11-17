@@ -59,12 +59,14 @@ const headlineSx = {
 };
 
 // Styles every row and cell of the request tables, including TopReq's rows
-const metricsTableSx = (theme) => ({
+const metricsTableSx = {
   borderCollapse: "collapse",
   textAlign: "left",
   width: "100%",
   "& > thead": {
-    fontSize: theme.typography.body2.fontSize,
+    typography: "body2",
+    lineHeight: "inherit",
+    letterSpacing: "inherit",
   },
   "& tr": {
     bgcolor: "common.white",
@@ -90,7 +92,7 @@ const metricsTableSx = (theme) => ({
       mr: 1,
     },
   },
-});
+};
 
 export default function Metrics() {
   const { t } = useTranslation();
@@ -280,7 +282,7 @@ const Content = ({
     const throughput = floatWithCommas(media.ThroughtputGB) + "GB";
 
     return (
-      <tr>
+      <tr data-cy="metrics-row">
         <td>
           <Link
             data-cy="metrics-media-link"
@@ -304,7 +306,7 @@ const Content = ({
     const count = numberWithCommas(req.RequestCount);
     const throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
     return (
-      <tr>
+      <tr data-cy="metrics-row">
         <td>{req.Code}</td>
         <td>{count}</td>
         <td>{throughput}</td>

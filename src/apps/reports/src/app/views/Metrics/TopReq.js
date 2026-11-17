@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 import Link from "@mui/material/Link";
+import { useTranslation } from "react-i18next";
 
 const numberWithCommas = (x) => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -15,6 +16,8 @@ const floatWithCommas = (x) => {
 };
 
 const TopReq = ({ req, path }) => {
+  const { t } = useTranslation();
+
   if (req == undefined) return null;
 
   const fullPath = req.FullPath;
@@ -23,7 +26,7 @@ const TopReq = ({ req, path }) => {
   const throughput = floatWithCommas(req.DataThroughputInGB) + "GB";
 
   return (
-    <tr>
+    <tr data-cy="metrics-row">
       <td>
         <Link
           data-cy="metrics-path-link"
@@ -31,7 +34,7 @@ const TopReq = ({ req, path }) => {
           color="secondary"
           href={fullPath}
           target="_blank"
-          title="Redirect URL"
+          title={t("reports.redirectUrl")}
         >
           <FontAwesomeIcon icon={faExternalLinkAlt} />
           &nbsp;<code>{path}</code>
