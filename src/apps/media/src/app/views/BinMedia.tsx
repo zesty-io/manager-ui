@@ -167,7 +167,6 @@ export const BinMedia = ({
 
   return (
     <Box
-      component="main"
       sx={{
         flex: 1,
         display: "flex",

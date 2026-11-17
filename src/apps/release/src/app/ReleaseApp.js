@@ -63,7 +63,7 @@ export default function ReleaseApp() {
         overflow: "auto",
       }}
     >
-      <Box component="main" sx={{ m: 2 }}>
+      <Box sx={{ m: 2 }}>
         <WithLoader
           condition={!loading}
           message={t("release.startingRelease")}
