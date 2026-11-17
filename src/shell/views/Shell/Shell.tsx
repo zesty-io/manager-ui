@@ -111,7 +111,6 @@ export default memo(function Shell() {
 
   return (
     <Box
-      component="section"
       className={styles.Shell}
       height="100vh"
       overflow="clip"
@@ -131,13 +130,14 @@ export default memo(function Shell() {
         }}
         openNav={openNav}
       />
-      <main className={styles.AppLoader}>
+      <Box className={styles.AppLoader}>
         <GlobalTopbar
           onShowAiDrawerToggle={() => {
             setShowAiDrawer(!showAiDrawer);
           }}
         />
         <Box
+          component="main"
           className={styles.SubApp}
           data-cy="SubApp"
           sx={{
@@ -279,7 +279,7 @@ export default memo(function Shell() {
             )}
           </Sentry.ErrorBoundary>
         </Box>
-      </main>
+      </Box>
     </Box>
   );
 });

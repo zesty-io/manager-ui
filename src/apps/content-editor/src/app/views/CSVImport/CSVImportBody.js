@@ -357,7 +357,7 @@ class CSVImportBody extends Component {
     ];
 
     return (
-      <main className={styles.CSVImport}>
+      <div className={styles.CSVImport}>
         <div className={styles.Top}>
           <form className={styles.File}>
             <input
@@ -435,7 +435,7 @@ class CSVImportBody extends Component {
             rowComponent={Row}
           />
         </Box>
-      </main>
+      </div>
     );
   }
 }
