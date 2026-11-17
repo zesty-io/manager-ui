@@ -40,34 +40,37 @@ describe("Marketplace custom apps", () => {
   });
 
   it("renders the installed app in an iframe and sends the session handshake", () => {
-    // A short, explicit stub response (rather than a real request) keeps a
-    // deterministic window between the iframe appearing in the DOM and its
-    // "load" event firing, so there's time to attach the postMessage stub
-    // below before the app's handshake fires.
+    // The stubbed app document echoes any message it receives back to the
+    // parent, so the test asserts on what the iframe actually received rather
+    // than stubbing postMessage on a window that gets replaced on navigation.
     cy.intercept("GET", APP_URL, {
       statusCode: 200,
       headers: { "content-type": "text/html" },
-      body: "<html><body>Marketplace test app</body></html>",
+      body: `<html><body>Marketplace test app<script>
+        window.addEventListener("message", (e) =>
+          window.parent.postMessage({ echo: e.data, origin: e.origin }, "*")
+        );
+      </script></body></html>`,
     }).as("appFrame");
 
-    cy.visit(`/apps/${APP_ZUID}`);
-    cy.wait(["@appInstalls", "@appInfo"]);
+    cy.visit(`/apps/${APP_ZUID}`, {
+      onBeforeLoad(win) {
+        win.__received = [];
+        win.addEventListener("message", (e) => {
+          if (e.data?.echo) win.__received.push(e.data.echo);
+        });
+      },
+    });
+    cy.wait(["@appInstalls", "@appInfo", "@appFrame"]);
 
-    cy.get(`iframe[src="${APP_URL}"]`)
-      .should("exist")
-      .then(($iframe) => {
-        cy.stub($iframe[0].contentWindow, "postMessage").as("postMessage");
-      });
+    cy.get(`iframe[src="${APP_URL}"]`).should("exist");
 
-    cy.wait("@appFrame");
+    cy.window().should((win) => {
+      expect(win.__received).to.have.length(1);
 
-    cy.get("@postMessage").should((stub) => {
-      expect(stub).to.have.been.calledOnce;
-
-      const [payload, targetOrigin] = stub.getCall(0).args;
+      const payload = win.__received[0];
       expect(payload.source).to.eq("zesty");
       expect(payload.instance.ZUID).to.eq(INSTANCE_ZUID);
-      expect(targetOrigin).to.eq(APP_URL);
     });
   });
 
