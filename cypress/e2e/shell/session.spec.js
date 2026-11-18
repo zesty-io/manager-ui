@@ -6,6 +6,9 @@ describe("Shell: Logout and session expiry", () => {
   afterEach(() => {
     cy.login();
     cy.visit("/content");
+    // "loginScreen should not exist" can pass while the app is still
+    // verifying, so assert the app actually loaded as an authenticated user.
+    cy.getBySelector("globalAccountAvatar", { timeout: 30000 }).should("exist");
     cy.getBySelector("loginScreen").should("not.exist");
   });
 
