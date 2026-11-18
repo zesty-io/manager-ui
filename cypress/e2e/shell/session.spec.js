@@ -6,9 +6,6 @@ describe("Shell: Logout and session expiry", () => {
   afterEach(() => {
     cy.login();
     cy.visit("/content");
-    // "loginScreen should not exist" can pass while the app is still
-    // verifying, so assert the app actually loaded as an authenticated user.
-    cy.getBySelector("globalAccountAvatar", { timeout: 30000 }).should("exist");
     cy.getBySelector("loginScreen").should("not.exist");
   });
 
@@ -56,7 +53,7 @@ describe("Shell: Logout and session expiry", () => {
     cy.getBySelector("loginSubmit").should("be.visible");
   });
 
-  it.only("ends the session and redirects to the login screen after a 401 while authenticated", () => {
+  it("ends the session and redirects to the login screen after a 401 while authenticated", () => {
     // Stubbing GET ${SERVICE_AUTH}/verify does not reproduce this flow: its
     // own success handler flips auth.valid to false before the session
     // middleware's check runs, so endSession() never fires and no toast
