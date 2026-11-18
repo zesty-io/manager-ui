@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import cx from "classnames";
 import { useTranslation } from "react-i18next";
+import { Typography } from "@mui/material";
 
 import { searchItems } from "shell/store/content";
 import { fetchVersions } from "shell/store/contentVersions";
@@ -12,7 +12,6 @@ import { Header } from "./components/Header";
 import { PlanTable } from "./components/PlanTable";
 import { WithLoader } from "shell/components/legacy/WithLoader";
 
-import styles from "./ViewRelease.less";
 export function ViewRelease({ isContentSubpage }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -75,11 +74,21 @@ export function ViewRelease({ isContentSubpage }) {
       {Array.isArray(members) && members.length ? (
         <PlanTable members={members} />
       ) : (
-        <ol className={cx(styles.Instructions, styles.display)}>
+        <Typography
+          variant="h2"
+          component="ol"
+          sx={{
+            fontWeight: 200,
+            lineHeight: "48px",
+            letterSpacing: "0.32px",
+            listStylePosition: "inside",
+            my: 4.5,
+          }}
+        >
           <li>{t("release.instructionBeginSearch")}</li>
           <li>{t("release.instructionSelectItem")}</li>
           <li>{t("release.instructionPublishAll")}</li>
-        </ol>
+        </Typography>
       )}
     </WithLoader>
   );

@@ -28,13 +28,10 @@
   "neverPublished": "कभी पब्लिश नहीं किया गया",
   "publishAll": "सभी पब्लिश करें",
   "publishAllNoticeBody": "यह इस रिलीज़ के सभी सदस्यों को पब्लिश कर देगा। सभी सदस्य URLs और संबंधित कंटेंट को पर्ज (purge) कर दिया जाएगा।",
-  "publishedItems_one": "{{count}} आइटम पब्लिश किया गया",
-  "publishedItems_other": "{{count}} आइटम पब्लिश किए गए",
   "publishing": "पब्लिश किया जा रहा है",
   "releasesHeading": "रिलीज़",
   "searchPlaceholder": "अपनी रिलीज़ में शामिल करने के लिए ZUID या मेटा टाइटल द्वारा खोजें",
   "startingRelease": "रिलीज़ शुरू की जा रही है",
-  "startNewPublishPlan": "नई पब्लिश योजना शुरू करें",
   "updatedReleaseMember": "रिलीज़ ({{releaseName}}) के सदस्य ({{itemTitle}}) को वर्ज़न {{version}} में अपडेट किया गया",
   "versionNumber": "वर्ज़न {{version}}",
   "versionPublishedAgo": "वर्ज़न {{version}} को {{timeAgo}} पहले पब्लिश किया गया था"

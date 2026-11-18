@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
-import cx from "classnames";
 import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import AddIcon from "@mui/icons-material/Add";
+import { Box } from "@mui/material";
 
 import { FieldTypeText } from "@zesty-io/material";
 
@@ -14,7 +14,6 @@ import { createRelease, fetchReleases } from "shell/store/releases";
 import { notify } from "shell/store/notifications";
 import { isRequestFailed, notifyFailure } from "utility/request";
 
-import styles from "./CreateRelease.less";
 export function CreateRelease({ isContentSubpage }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -67,7 +66,18 @@ export function CreateRelease({ isContentSubpage }) {
   };
 
   return (
-    <div className={cx(styles.CreateRelease, styles.bodyText)}>
+    <Box
+      sx={{
+        typography: "body2",
+        lineHeight: "24px",
+        letterSpacing: 0,
+        height: "calc(100vh - 225px)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <div>
         <FieldTypeText
           data-cy="release-name"
@@ -95,7 +105,7 @@ export function CreateRelease({ isContentSubpage }) {
           variant="contained"
           data-cy="release-createBtn"
           disabled={loading}
-          className={styles.Create}
+          sx={{ mt: 4 }}
           kind="save"
           size="large"
           onClick={handleCreate}
@@ -104,6 +114,6 @@ export function CreateRelease({ isContentSubpage }) {
           {t("release.createReleaseButton")}
         </Button>
       </div>
-    </div>
+    </Box>
   );
 }

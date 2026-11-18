@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Route, Switch, useHistory, useLocation } from "react-router";
-import cx from "classnames";
 import { useTranslation } from "react-i18next";
+import { Box } from "@mui/material";
 
 import { WithLoader } from "shell/components/legacy/WithLoader";
 
@@ -15,7 +15,6 @@ import { CreateRelease } from "./views/CreateRelease";
 import { ListReleases } from "./views/ListReleases";
 import { ViewRelease } from "./views/ViewRelease";
 
-import styles from "./ReleaseApp.less";
 export default function ReleaseApp() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -54,8 +53,17 @@ export default function ReleaseApp() {
   }, []);
 
   return (
-    <section className={cx(styles.ReleaseApp, styles.bodyText)}>
-      <div className={styles.Body}>
+    <Box
+      component="section"
+      sx={{
+        typography: "body2",
+        lineHeight: "24px",
+        letterSpacing: 0,
+        height: "calc(100vh - 54px)",
+        overflow: "auto",
+      }}
+    >
+      <Box sx={{ m: 2 }}>
         <WithLoader
           condition={!loading}
           message={t("release.startingRelease")}
@@ -90,7 +98,7 @@ export default function ReleaseApp() {
             />
           </Switch>
         </WithLoader>
-      </div>
-    </section>
+      </Box>
+    </Box>
   );
 }
