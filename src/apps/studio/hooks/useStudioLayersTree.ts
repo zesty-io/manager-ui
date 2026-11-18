@@ -215,6 +215,29 @@ const findLayoutPanelTarget = (
   return isPanelNode(target, interactionMode) ? target : null;
 };
 
+// A field node's slots, with the node's identity copied onto its dynamic text
+// slot as `boundField` so the slot's chip can open the field's editor. The
+// bridge omits `fieldZuid` from that slot on purpose; `boundField` is a
+// separate key so nothing that reads `fieldZuid` as the slot's own binding
+// changes. Any other node's slots come back as they are.
+const withBoundField = (node: LayersTreeNode): ElementSlot[] | undefined => {
+  if (node.kind !== "field" || !node.fieldZuid || !node.slots) {
+    return node.slots;
+  }
+  const boundField = {
+    studioId: node.studioId,
+    fieldZuid: node.fieldZuid,
+    fieldType: node.fieldType,
+    itemZuid: node.itemZuid,
+    modelZuid: node.modelZuid,
+  };
+  return node.slots.map((slot) =>
+    slot.kind === "text" && slot.isDynamic && !slot.fieldZuid
+      ? { ...slot, boundField }
+      : slot
+  );
+};
+
 // The slots an Inspector panel shows for a node: its own, plus — in layout mode,
 // for an element whose content is a lone text run or bound field — that row's
 // Value slot, so Tag and Value share one panel. Mixed content is unchanged.
@@ -228,11 +251,11 @@ const getPanelSlots = (
     !isPanelNode(node, interactionMode) ||
     !node.layoutPatch?.isSelf
   ) {
-    return node.slots;
+    return withBoundField(node);
   }
   const loneChild = findLoneTextSlotChild(node);
   if (!loneChild || !isPanelNode(loneChild, interactionMode)) return node.slots;
-  return [...(node.slots || []), ...(loneChild.slots || [])];
+  return [...(node.slots || []), ...(withBoundField(loneChild) || [])];
 };
 
 // Whether the Inspector's Link controls belong on THIS row.

@@ -50,6 +50,18 @@ export type ElementSlot = {
   fieldType?: string;
   itemZuid?: string;
   modelZuid?: string;
+  // The identity of the field node that owns a dynamic text slot. The bridge
+  // leaves `fieldZuid` off such a slot on purpose (studio-bridge `src/index.js`,
+  // "deliberately omitted from the slot"), so the host copies the owning field
+  // row's identity here. Navigation only: it opens the field's editor when the
+  // slot's chip is clicked, and nothing reads it as the slot's own binding.
+  boundField?: {
+    studioId?: string;
+    fieldZuid: string;
+    fieldType?: string;
+    itemZuid?: string;
+    modelZuid?: string;
+  };
 };
 
 // Coordinates the host needs to patch an element's attribute back into the
