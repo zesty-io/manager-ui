@@ -1,7 +1,7 @@
 import idb from "utility/idb";
 
 import DocumentScannerRoundedIcon from "@mui/icons-material/DocumentScannerRounded";
-import { resolvePathPart } from "./files";
+import { resolveCodePathPart } from "utility/resolveCodePathPart";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import { SvgIcon } from "@mui/material";
@@ -197,7 +197,7 @@ function resolveNavData(file) {
     404: DocumentScannerRoundedIcon,
   };
 
-  const pathPart = resolvePathPart(file.type);
+  const pathPart = resolveCodePathPart(file.type);
 
   let node = {
     ...file,
@@ -218,8 +218,8 @@ export const buildNavTree = (nodes, type) => {
   let map = nodes
     .filter(
       (node) =>
-        resolvePathPart(node.type) === type ||
-        resolvePathPart(node.type) === "directory"
+        resolveCodePathPart(node.type) === type ||
+        resolveCodePathPart(node.type) === "directory"
     )
     .reduce((acc, node) => {
       // Remove the first "/" to have a consistent file name split

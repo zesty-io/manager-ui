@@ -60,11 +60,8 @@ export const CURRENCY_OBJECT: Record<string, Currency> = currencies.reduce(
 export const getHtmlText = (html: string) => {
   if (!html) return "";
 
-  const rawData = html;
-  let elementFromData = document.createElement("div");
-  elementFromData.innerHTML = rawData;
-  const strippedData =
-    elementFromData?.textContent || elementFromData?.innerText;
+  const strippedData = new DOMParser().parseFromString(html, "text/html").body
+    .textContent;
   return strippedData?.replace(/<[^>]*>/g, "").slice(0, 120) || "";
 };
 

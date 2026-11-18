@@ -4,6 +4,7 @@
   "allBlocksTitle": "所有区块",
   "blockImageAlt": "区块图片",
   "createBlock": "创建区块",
+  "createVariantFailed": "无法创建变体：{{variantName}}",
   "createVariantOf": "创建 {{label}} 的变体",
   "documentation": "核心文档",
   "emptyItemsListAlt": "空项目列表",
