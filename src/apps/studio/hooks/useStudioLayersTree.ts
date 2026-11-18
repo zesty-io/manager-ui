@@ -215,11 +215,7 @@ const findLayoutPanelTarget = (
   return isPanelNode(target, interactionMode) ? target : null;
 };
 
-// A field node's slots, with the node's identity copied onto its dynamic text
-// slot as `boundField` so the slot's chip can open the field's editor. The
-// bridge omits `fieldZuid` from that slot on purpose; `boundField` is a
-// separate key so nothing that reads `fieldZuid` as the slot's own binding
-// changes. Any other node's slots come back as they are.
+// Copies a field node's identity onto its dynamic text slot as `boundField`.
 const withBoundField = (node: LayersTreeNode): ElementSlot[] | undefined => {
   if (node.kind !== "field" || !node.fieldZuid || !node.slots) {
     return node.slots;

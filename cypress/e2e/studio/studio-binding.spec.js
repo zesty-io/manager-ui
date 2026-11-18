@@ -172,14 +172,6 @@ describe("Studio two-way binding", () => {
   });
 
   it("opens a bound field's editor from its chip in the Inspector", () => {
-    // The bridge leaves fieldZuid off a bound text slot on purpose, so the
-    // chip has no field of its own to open; the host must carry the owning
-    // field row's identity to it. Only the real tree has that shape.
-    //
-    // No mode switch: the toggle renders for staff only, and a role holding
-    // both CODE and UPDATE lands in full mode, where a canvas mousedown opens
-    // the Inspector and its chip is clickable.
-
     // Stand in for a canvas mousedown on the title <h1>, addressed the way the
     // real bridge addresses it.
     cy.window().then((win) => {
@@ -212,6 +204,9 @@ describe("Studio two-way binding", () => {
       .should("exist");
     cy.getBySelector("field:title").should("exist");
     cy.getBySelector("field:subtitle").should("not.exist");
+
+    editInPanel("title", "CHIP_TITLE");
+    canvasShows("CHIP_TITLE");
   });
 
   it("writes an inline canvas edit back to the item", () => {
