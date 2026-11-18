@@ -14,7 +14,9 @@ The change is already checked out. WORKSPACE/i18n-objective-results.json holds d
 findings already computed by a script — read it first; never re-judge or second-guess those, just
 report them.
 
-Read CLAUDE.md's "Localization (i18next)" section for the full rules, then read
+Read CLAUDE.md's "Localization (i18next)" section and docs/i18n.md (the detail moved out of
+CLAUDE.md: eslint-disable rationale, eager-loading history, MUI/date localization) for the
+full rules, then read
 WORKSPACE/i18n-relevant.diff with the Read tool — it's the change's diff, already pre-filtered to
 only files under `src/**/*.{js,jsx,ts,tsx}` and `public/locales/**`, as per-file plain-text diff
 sections. Never run `gh pr diff` or `gh api` to fetch the diff yourself; this file is the full
