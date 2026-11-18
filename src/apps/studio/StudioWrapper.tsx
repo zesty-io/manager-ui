@@ -1954,16 +1954,19 @@ export const StudioWrapper = () => {
   }, [handlePreviewLoad]);
 
   // Content mode: a dynamic slot (a bound attribute or bound text) was clicked
-  // — open the existing single-field content editor for its field.
+  // — open the existing single-field content editor for its field. A bound
+  // attribute carries its own fieldZuid; a bound text slot does not (the
+  // bridge omits it), so it falls back to its owning field row's `boundField`.
   const handleEditDynamicSlot = useCallback(
     (slot: ElementSlot) => {
-      if (!slot.fieldZuid) return;
+      const field = slot.fieldZuid ? slot : slot.boundField;
+      if (!field?.fieldZuid) return;
       applyBridgeSelection({
-        studioId: slot.studioId,
-        fieldZuid: slot.fieldZuid,
-        fieldType: slot.fieldType,
-        itemZuid: slot.itemZuid,
-        modelZuid: slot.modelZuid,
+        studioId: field.studioId,
+        fieldZuid: field.fieldZuid,
+        fieldType: field.fieldType,
+        itemZuid: field.itemZuid,
+        modelZuid: field.modelZuid,
       });
     },
     [applyBridgeSelection]
