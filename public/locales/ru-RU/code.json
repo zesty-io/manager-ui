@@ -26,7 +26,7 @@
   "deleteFile": "Удалить файл",
   "deleteFileCdnWarning": "Удаление файла приведет к его окончательному стиранию и запустит очистку CDN, что повлечет за собой мгновенное обновление рабочей среды (production).",
   "deleteFileError": "Не удалось удалить файл {{fileName}}. {{error}}",
-  "deleteFileLabel": "Удалить файл",
+  "deleteFileTitleRich": "Удалить файл: <name>{{fileName}}</name>",
   "developerResources": "Ресурсы для разработчиков",
   "diffVersions": "Сравнить версии (Diff)",
   "editItemContent": "Редактировать содержимое элемента",

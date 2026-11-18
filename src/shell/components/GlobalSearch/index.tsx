@@ -47,6 +47,7 @@ import { useSearchBlocksByKeyword } from "../../hooks/useSearchBlocksByKeyword";
 import { fetchModels } from "shell/store/models";
 import { AppState } from "shell/store/types";
 import { searchItems } from "shell/store/content";
+import { resolveCodePathPart } from "utility/resolveCodePathPart";
 
 // List of dropdown options that are NOT suggestions
 const AdditionalDropdownOptions = [
@@ -209,7 +210,7 @@ export const GlobalSearch = () => {
           ZUID: file.ZUID,
           title: file.fileName?.split("/").pop(), // Removes the file path from the file name
           updatedAt: file.updatedAt,
-          url: `/code/file/views/${file.ZUID}`,
+          url: `/code/file/${resolveCodePathPart(file.type)}/${file.ZUID}`,
         };
       }) || [];
 

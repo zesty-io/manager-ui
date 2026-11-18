@@ -1,8 +1,70 @@
 import Cookies from "js-cookie";
 import { rest } from "lodash";
 import { store } from "shell/store";
+import i18n from "shell/i18n";
 import { notify } from "../shell/store/notifications";
 // import { endSession } from "shell/store/auth";
+
+// Typed error thrown by request() when called with `rejectOnError: true`
+export class RequestError extends Error {
+  constructor({ status = 0, error, body } = {}) {
+    super(
+      error || `${i18n.t("shell.unknownError")}${status ? ` (${status})` : ""}`
+    );
+    this.name = "RequestError";
+    this.status = status;
+    this.error = this.message;
+    this.body = body;
+  }
+}
+
+// Normalize anything thrown/resolved by a migrated thunk to { error, status }
+export function toRequestFailure(err) {
+  return {
+    error: (err && (err.error || err.message)) || i18n.t("shell.unknownError"),
+    status: (err && err.status) || 0,
+  };
+}
+
+/**
+ * @typedef {{ error: string, status: number }} RequestFailure
+ */
+
+// True for a { error, status } result resolved by a migrated thunk
+/**
+ * @param {unknown} res
+ * @returns {res is RequestFailure}
+ */
+export function isRequestFailed(res) {
+  return (
+    !!res &&
+    typeof res === "object" &&
+    !!res.error &&
+    !(res.status >= 200 && res.status < 300)
+  );
+}
+
+// Dispatch the shared error toast for a failed request
+export function notifyFailure(dispatch, failure, message) {
+  dispatch(
+    notify({
+      kind: "error",
+      message:
+        message ||
+        i18n.t("shell.requestFailed", { error: failure?.error || "" }),
+    })
+  );
+}
+
+// Toast once for the first failure in a result or an array of results.
+// Returns the input so it can sit in a promise chain.
+export function notifyIfResponseFailed(dispatch, res) {
+  const failure = Array.isArray(res) ? res.find(isRequestFailed) : res;
+  if (isRequestFailed(failure)) {
+    notifyFailure(dispatch, failure);
+  }
+  return res;
+}
 
 export function request(url, opts = {}) {
   if (!url) {
@@ -49,7 +111,7 @@ export function request(url, opts = {}) {
   opts.method = opts.method || "GET";
 
   return fetch(url, opts)
-    .then((res) => {
+    .then(async (res) => {
       // console.log("Request:", res);
 
       //HTTP Code No Content 204
@@ -74,6 +136,22 @@ export function request(url, opts = {}) {
 
       // if (res.status === 422) {}
 
+      if (opts.rejectOnError && !res.ok) {
+        // Body may not be JSON (e.g. a 502 HTML page), keep the status anyway
+        const body = await res.json().catch(() => ({}));
+
+        throw new RequestError({
+          status: res.status,
+          error:
+            body?.error ||
+            body?.message ||
+            body?.error_message ||
+            res.statusText ||
+            undefined,
+          body,
+        });
+      }
+
       if (res.status === 500) {
         // Throw on 500 to trigger callers catch statement
         throw new Error(`500:RequestError: ${res.url}`);
@@ -90,6 +168,13 @@ export function request(url, opts = {}) {
       return json;
     })
     .catch((err) => {
+      if (opts.rejectOnError) {
+        // Opt-in mode: never toast here, caller decides
+        throw err instanceof RequestError
+          ? err
+          : new RequestError({ status: 0, error: err?.message });
+      }
+
       if (err && err.res && err.res.status >= 500) {
         // Server Failed
         console.error(

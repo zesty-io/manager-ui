@@ -1,0 +1,172 @@
+import { v4 as uuidv4 } from "uuid";
+
+// Anchored to the seeded item so sibling endpoints (items/publishings,
+// items/batch) are never stubbed
+const itemUrl = () =>
+  new RegExp(
+    `/content/models/[^/]+/items/${Cypress.env("failItemZUID")}(\\?.*)?$`
+  );
+
+describe("Failed requests are surfaced", () => {
+  before(() => {
+    cy.login();
+    cy.task("seed:content", "fixtures/item.json").then(({ model, items }) => {
+      Cypress.env("failModelZUID", model?.ZUID);
+      Cypress.env("failItemZUID", items[0]?.meta?.ZUID);
+    });
+  });
+
+  after(() => {
+    cy.deleteModel(Cypress.env("failModelZUID"));
+  });
+
+  beforeEach(() => {
+    cy.login();
+    cy.blockLock();
+  });
+
+  const makeDirty = () => {
+    cy.getBySelector("field:text")
+      .find("input")
+      .first()
+      .clear()
+      .type(`Edited ${uuidv4()}`);
+    cy.getBySelector("SaveItemButton").should("be.enabled");
+  };
+
+  const visitItem = () => {
+    cy.visit(
+      `/content/${Cypress.env("failModelZUID")}/${Cypress.env("failItemZUID")}`
+    );
+  };
+
+  [403, 404, 409, 503].forEach((statusCode) => {
+    it(`Item save shows one error toast on ${statusCode} and stays dirty`, () => {
+      cy.intercept("PUT", itemUrl(), {
+        statusCode,
+        body: { error: "Injected failure" },
+      }).as("saveItem");
+
+      visitItem();
+      makeDirty();
+      cy.getBySelector("SaveItemButton").click();
+      cy.wait("@saveItem");
+
+      cy.getBySelector("toast").should("have.length", 1);
+      cy.getBySelector("toast").contains("Injected failure");
+      cy.getBySelector("toast").contains("Saved").should("not.exist");
+      cy.getBySelector("SaveItemButton").should("exist");
+    });
+  });
+
+  it("Save and Publish does not open the publish modal when the save fails", () => {
+    cy.intercept("PUT", itemUrl(), {
+      statusCode: 503,
+      body: { error: "Injected failure" },
+    }).as("saveItem");
+
+    visitItem();
+    makeDirty();
+    cy.getBySelector("PublishButton").click();
+    cy.wait("@saveItem");
+
+    cy.getBySelector("toast").should("have.length", 1);
+    cy.getBySelector("ConfirmPublishModal").should("not.exist");
+    cy.getBySelector("SaveItemButton").should("be.enabled");
+  });
+
+  it("Save and Schedule Publish does not open the schedule modal when the save fails", () => {
+    cy.intercept("PUT", itemUrl(), {
+      statusCode: 503,
+      body: { error: "Injected failure" },
+    }).as("saveItem");
+
+    visitItem();
+    makeDirty();
+    cy.getBySelector("PublishMenuButton").click();
+    cy.getBySelector("PublishScheduleButton").click();
+    cy.wait("@saveItem");
+
+    cy.getBySelector("toast").should("have.length", 1);
+    cy.getBySelector("SchedulePublishModal").should("not.exist");
+    cy.getBySelector("SaveItemButton").should("be.enabled");
+  });
+
+  it("Item save shows both the saved and refresh error toasts when only the refetch fails", () => {
+    cy.intercept("PUT", itemUrl(), {
+      statusCode: 200,
+      body: { data: {}, meta: {} },
+    }).as("saveItem");
+
+    visitItem();
+    makeDirty();
+    // Stub after load so only the post-save refetch fails
+    cy.intercept("GET", itemUrl(), {
+      statusCode: 503,
+      body: { error: "Injected failure" },
+    }).as("refetchItem");
+    cy.getBySelector("SaveItemButton").click();
+    cy.wait("@saveItem");
+    cy.wait("@refetchItem");
+
+    cy.getBySelector("toast").should("have.length", 2);
+    cy.getBySelector("toast").contains("Item Saved");
+    cy.getBySelector("toast").contains("could not be refreshed");
+  });
+
+  it("Item save shows an error on network failure and stays dirty", () => {
+    cy.intercept("PUT", itemUrl(), { forceNetworkError: true }).as("saveItem");
+
+    visitItem();
+    makeDirty();
+    cy.getBySelector("SaveItemButton").click();
+    cy.wait("@saveItem");
+
+    cy.getBySelector("toast").should("have.length", 1);
+    cy.getBySelector("SaveItemButton").should("exist");
+  });
+
+  [400, 403, 404, 503].forEach((statusCode) => {
+    it(`Item load shows the not-found screen and an error toast on ${statusCode}`, () => {
+      cy.intercept("GET", itemUrl(), {
+        statusCode,
+        body: { error: "Injected failure" },
+      }).as("loadItem");
+
+      visitItem();
+      cy.wait("@loadItem");
+      cy.getBySelector("ItemNotFound").should("exist");
+      // Text instead of a count, StrictMode double-runs the load in dev
+      cy.getBySelector("toast").contains("Injected failure");
+    });
+  });
+
+  it("Item load shows the not-found screen and an error toast on network failure", () => {
+    cy.intercept("GET", itemUrl(), { forceNetworkError: true }).as("loadItem");
+
+    visitItem();
+    cy.wait("@loadItem");
+    cy.getBySelector("ItemNotFound").should("exist");
+    cy.getBySelector("toast").contains("Failed to fetch");
+  });
+
+  it("Instance settings save shows a single error toast on failure", () => {
+    cy.intercept("PUT", "**/env/settings/*", {
+      statusCode: 403,
+      body: { error: "Injected failure" },
+    }).as("saveSetting");
+
+    cy.visit("/settings");
+    cy.getBySelector("SubApp").should("exist");
+    cy.get("[data-cy^=SettingTextarea-]")
+      .find("textarea")
+      .first()
+      .type(uuidv4());
+    cy.getBySelector("SaveSettings").click();
+    cy.getBySelector("ConfirmSaveSettings").click();
+    cy.wait("@saveSetting");
+
+    cy.getBySelector("toast").should("have.length", 1);
+    cy.getBySelector("toast").contains("Settings Saved").should("not.exist");
+  });
+});

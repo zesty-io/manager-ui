@@ -4,6 +4,7 @@
   "allBlocksTitle": "All Blocks",
   "blockImageAlt": "Block Image",
   "createBlock": "Create Block",
+  "createVariantFailed": "Failed to create variant: {{variantName}}",
   "createVariantOf": "Create Variant of {{label}}",
   "documentation": "Documentation",
   "emptyItemsListAlt": "Empty Items List",

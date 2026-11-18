@@ -11,6 +11,7 @@ import {
   saveItem,
 } from "shell/store/content";
 import { notify } from "shell/store/notifications";
+import { notifyIfResponseFailed, notifyFailure } from "utility/request";
 import { useCreateItemPublishingMutation } from "shell/services/instance";
 
 // Number of items published per batch. Mirrors the chunk size used by the
@@ -118,6 +119,7 @@ export const useStudioContentSave = ({
     const items = getDirtyContentItems();
     const saved: SavedContentItem[] = [];
     let failedCount = 0;
+    let refetchFailure: { error: string; status: number } | undefined;
 
     for (const item of items) {
       const res = (await dispatch(
@@ -131,12 +133,22 @@ export const useStudioContentSave = ({
       // new version, and a 201 is still a successful save.
       if (res?.status >= 200 && res?.status < 300) {
         saved.push(item);
+        refetchFailure = refetchFailure || res.refetchFailure;
       } else {
         failedCount += 1;
         // Batch saves cover items the user isn't actively editing, so don't
         // write field errors into the selected item's panel — toast only.
         applyItemSaveErrors(res, item.label, { applyFieldErrors: false });
       }
+    }
+
+    // One toast for the batch, the saves themselves succeeded
+    if (refetchFailure) {
+      notifyFailure(
+        dispatch,
+        refetchFailure,
+        t("content.itemEditRefreshFailed", { error: refetchFailure.error })
+      );
     }
 
     const modelZUIDs = Array.from(new Set(saved.map((item) => item.modelZUID)));
@@ -147,7 +159,7 @@ export const useStudioContentSave = ({
     );
 
     return { saved, failedCount, total: items.length };
-  }, [applyItemSaveErrors, dispatch, getDirtyContentItems]);
+  }, [applyItemSaveErrors, dispatch, getDirtyContentItems, t]);
 
   const saveAllContent = useCallback(async (): Promise<SaveAllResult> => {
     setStudioSaving(true);
@@ -261,8 +273,12 @@ export const useStudioContentSave = ({
       items: items.map((item) => item.itemZUID),
     });
 
-    await Promise.all(
-      items.map((item) => dispatch(fetchItem(item.modelZUID, item.itemZUID)))
+    // One toast for the batch
+    notifyIfResponseFailed(
+      dispatch,
+      await Promise.all(
+        items.map((item) => dispatch(fetchItem(item.modelZUID, item.itemZUID)))
+      )
     );
 
     refreshPreviewFrame();

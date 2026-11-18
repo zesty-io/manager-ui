@@ -55,7 +55,7 @@ export const DeleteRedirectModal = ({
       dispatch(
         notify({
           message: t("content.redirectDeletedPath", { path: incomingPath }),
-          kind: "error",
+          kind: "success",
         })
       );
     }
