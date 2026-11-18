@@ -1,21 +1,11 @@
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  DialogContentText,
-  IconButton,
-} from "@mui/material";
 import {
   useDeleteGroupMutation,
   useGetBinsQuery,
 } from "../../../../../shell/services/mediaManager";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useHistory } from "react-router";
 import { useSelector } from "react-redux";
+import { ConfirmDialog } from "../../../../../shell/components/ConfirmDialog";
 
 interface Props {
   open: boolean;
@@ -26,59 +16,30 @@ interface Props {
 
 export const DeleteFolderDialog = ({ open, onClose, id, groupId }: Props) => {
   const { t } = useTranslation();
-  const [deleteGroup, { isLoading, isSuccess }] = useDeleteGroupMutation();
+  const [deleteGroup] = useDeleteGroupMutation();
   const instanceId = useSelector((state: any) => state.instance.ID);
   const ecoId = useSelector((state: any) => state.instance.ecoID);
   const { data: bins } = useGetBinsQuery({ instanceId, ecoId });
   const history = useHistory();
-  useEffect(() => {
-    if (isSuccess) {
-      onClose();
-      if (bins.length === 1) {
-        history.push(`/media`);
-      } else {
-        history.push(`/media/folder/${groupId}`);
-      }
+
+  const handleDelete = async () => {
+    await deleteGroup({ id, groupId }).unwrap();
+    if (bins?.length === 1) {
+      history.push(`/media`);
+    } else {
+      history.push(`/media/folder/${groupId}`);
     }
-  }, [isSuccess]);
+  };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
-      <DialogTitle>
-        <DeleteIcon
-          color="error"
-          sx={{
-            p: 1,
-            borderRadius: "20px",
-            backgroundColor: "red.100",
-            display: "block",
-            mb: 1.5,
-            width: "40px",
-            height: "40px",
-          }}
-        />
-        {t("media.deleteFolderDialogTitle")}
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          {t("media.deleteFolderDialogMessage")}
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="inherit">
-          {t("common.cancel")}
-        </Button>
-        <Button
-          disabled={isLoading}
-          variant="contained"
-          color="error"
-          onClick={() => {
-            deleteGroup({ id, groupId });
-          }}
-        >
-          {t("media.deleteFolderDialogConfirmButton")}
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <ConfirmDialog
+      open={open}
+      onClose={onClose}
+      onConfirm={handleDelete}
+      title={t("media.deleteFolderDialogTitle")}
+      description={t("media.deleteFolderDialogMessage")}
+      confirmLabel={t("media.deleteFolderDialogConfirmButton")}
+      confirmDataCy="DeleteFolderDialogConfirmButton"
+    />
   );
 };

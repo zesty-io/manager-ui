@@ -7,6 +7,7 @@ import { File } from "../../../hooks/useSearchCodeFilesByKeyword";
 import { SearchListItem } from "./SearchListItem";
 import { useGetAuditsQuery } from "../../../services/instance";
 import { formatDistanceToNowLocalized } from "../../../i18n/dates";
+import { resolveCodePathPart } from "utility/resolveCodePathPart";
 
 interface Code {
   data: File;
@@ -51,7 +52,7 @@ export const Code: FC<Code> = ({
   return (
     <SearchListItem
       title={data.fileName?.split("/").pop()}
-      url={`/code/file/views/${data.ZUID}`}
+      url={`/code/file/${resolveCodePathPart(data.type)}/${data.ZUID}`}
       chips={chips}
       icon={CodeRounded}
       style={style}

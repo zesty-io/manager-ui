@@ -1,7 +1,7 @@
 import { useParams as useRouterParams } from "react-router";
 import { Trans, useTranslation } from "react-i18next";
 import { ContentBreadcrumbs } from "../../components/ContentBreadcrumbs";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import {
   useGetContentModelFieldsQuery,
   useGetContentModelQuery,
@@ -18,8 +18,7 @@ import {
   useContext,
   useCallback,
 } from "react";
-import { SearchRounded, RestartAltRounded } from "@mui/icons-material";
-import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
+import { EmptyResults } from "shell/components/EmptyResults";
 import { ItemListFilters } from "./ItemListFilters";
 import { useParams } from "../../../../../../shell/hooks/useParams";
 import { useDispatch, useSelector } from "react-redux";
@@ -44,39 +43,7 @@ import { fetchFields } from "../../../../../../shell/store/fields";
 import { debounce } from "lodash";
 import { SkeletonContentHeader, SkeletonItemListFilters } from "./Loader";
 import { NotFound } from "../../../../../../shell/components/NotFound";
-
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-  timeZone: "UTC",
-});
-
-const timeFormatter = new Intl.DateTimeFormat("en-US", {
-  hour: "numeric",
-  minute: "numeric",
-});
-
-const formatDateTime = (source: string) => {
-  if (!source) return "";
-
-  const dateObj = new Date(source);
-  if (isNaN(dateObj.getTime())) return "";
-
-  const date = dateFormatter.format(dateObj);
-  const time = timeFormatter.format(dateObj);
-
-  return `${date} ${time}`;
-};
-
-const formatDate = (source: string) => {
-  if (!source) return "";
-
-  const dateObj = new Date(source);
-  if (isNaN(dateObj.getTime())) return "";
-
-  return dateFormatter.format(dateObj);
-};
+import { formatDate, formatDateTime } from "shell/fieldTypes";
 
 export const ItemList = () => {
   const { t } = useTranslation();
@@ -484,13 +451,21 @@ export const ItemList = () => {
         }
 
         if (dataType === "yes_no") {
-          if (!a.data[sort]) {
-            return 1;
-          } else if (!b.data[sort]) {
-            return -1;
-          } else {
-            return sortOrder === "asc" ? a - b : b - a;
-          }
+          const aBoolValue = a.data[sort];
+          const bBoolValue = b.data[sort];
+          const aBlank =
+            aBoolValue === null ||
+            aBoolValue === undefined ||
+            aBoolValue === "";
+          const bBlank =
+            bBoolValue === null ||
+            bBoolValue === undefined ||
+            bBoolValue === "";
+          if (aBlank) return 1;
+          if (bBlank) return -1;
+          return sortOrder === "asc"
+            ? Number(aBoolValue) - Number(bBoolValue)
+            : Number(bBoolValue) - Number(aBoolValue);
         }
 
         const aValue =
@@ -691,40 +666,22 @@ export const ItemList = () => {
                       alignItems="center"
                       height="100%"
                     >
-                      <Box
-                        data-cy="NoResults"
-                        textAlign="center"
-                        sx={{
-                          maxWidth: 387,
-                          mx: "auto",
-                        }}
-                      >
-                        <img
-                          src={noSearchResults}
-                          alt={t("content.itemListNoSearchResultsAlt")}
-                        />
-                        <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
+                      <EmptyResults
+                        dataCy="NoResults"
+                        variant="search"
+                        size="dialog"
+                        imageHeight={200}
+                        query={search}
+                        title={
                           <Trans
                             i18nKey="content.itemListSearchNoResultsTitleRich"
                             values={{ search }}
                             components={{ strong: <strong /> }}
                           />
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          pb={3}
-                          color="text.secondary"
-                        >
-                          {t("content.itemListSearchNoResultsBody")}
-                        </Typography>
-                        <Button
-                          onClick={() => searchRef.current?.focus()}
-                          variant="contained"
-                          startIcon={<SearchRounded />}
-                        >
-                          {t("common.searchAgain")}
-                        </Button>
-                      </Box>
+                        }
+                        description={t("content.itemListSearchNoResultsBody")}
+                        onAction={() => searchRef.current?.focus()}
+                      />
                     </Box>
                   );
                 }
@@ -746,38 +703,22 @@ export const ItemList = () => {
                       alignItems="center"
                       height="100%"
                     >
-                      <Box
-                        data-cy="NoResults"
-                        textAlign="center"
-                        sx={{
-                          maxWidth: 387,
-                          mx: "auto",
+                      <EmptyResults
+                        dataCy="NoResults"
+                        variant="filter"
+                        size="dialog"
+                        imageHeight={200}
+                        title={t("content.itemListFilterNoResultsTitle")}
+                        description={t("content.itemListFilterNoResultsBody")}
+                        actionLabel={t("content.itemListResetFilters")}
+                        onAction={() => {
+                          setParams(null, "statusFilter");
+                          setParams(null, "datePreset");
+                          setParams(null, "from");
+                          setParams(null, "to");
+                          setParams(null, "user");
                         }}
-                      >
-                        <img
-                          src={noSearchResults}
-                          alt={t("content.itemListNoSearchResultsAlt")}
-                        />
-                        <Typography pt={4} pb={1} variant="h4" fontWeight={600}>
-                          {t("content.itemListFilterNoResultsTitle")}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          pb={3}
-                          color="text.secondary"
-                        >
-                          {t("content.itemListFilterNoResultsBody")}
-                        </Typography>
-                        <Button
-                          onClick={() => {
-                            setParams(null, "statusFilter");
-                          }}
-                          variant="contained"
-                          startIcon={<RestartAltRounded />}
-                        >
-                          {t("content.itemListResetFilters")}
-                        </Button>
-                      </Box>
+                      />
                     </Box>
                   );
                 }

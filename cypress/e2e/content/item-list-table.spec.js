@@ -26,6 +26,33 @@ describe("Content item list table", () => {
       .contains(ITEMS?.[1]?.data?.text);
   });
 
+  it("Shows stripped wysiwyg preview text without executing HTML", () => {
+    cy.intercept("GET", "**/content/models/*/items*", (req) => {
+      req.continue((res) => {
+        if (Array.isArray(res.body?.data)) {
+          res.body.data = res.body.data.map((item) => ({
+            ...item,
+            data: {
+              ...item.data,
+              wysiwyg_basic:
+                '<p>Preview <b>text</b></p><img src="x" onerror="window.__xss = true">',
+            },
+          }));
+        }
+      });
+    });
+
+    cy.visit(`/content/${Cypress.env("modelZUID")}`);
+    cy.getBySelector("listItemTable").should("exist");
+    cy.getBySelector("listItemTable")
+      .find('[data-cy="itemListRow"]')
+      .first()
+      .find('[data-field="wysiwyg_basic"]')
+      .should("contain.text", "Preview text")
+      .and("not.contain.text", "<");
+    cy.window().its("__xss").should("not.exist");
+  });
+
   it("properly removes deleted content items from cache even after page reload", () => {
     cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
     // Content may load from IndexedDB cache — wait for UI instead of network

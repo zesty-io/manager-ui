@@ -24,12 +24,10 @@ const CodeApp = () => (
 );
 
 const CodeAppInner = () => {
-  // Requesting the namespaces here triggers their lazy load and suspends this
+  // Requesting the namespace here triggers its lazy load and suspends this
   // subtree until ready; child components use bare useTranslation() with
-  // qualified keys once they're in the store.
-  // "schema" is hoisted here because FileList imports NoResults from the
-  // schema app, which resolves keys under the schema namespace.
-  useTranslation(["code", "schema"]);
+  // qualified keys once it's in the store.
+  useTranslation("code");
   return <CodeEditor />;
 };
 

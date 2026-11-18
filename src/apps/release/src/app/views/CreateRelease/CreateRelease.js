@@ -11,6 +11,8 @@ import AddIcon from "@mui/icons-material/Add";
 import { FieldTypeText } from "@zesty-io/material";
 
 import { createRelease, fetchReleases } from "shell/store/releases";
+import { notify } from "shell/store/notifications";
+import { isRequestFailed, notifyFailure } from "utility/request";
 
 import styles from "./CreateRelease.less";
 export function CreateRelease({ isContentSubpage }) {
@@ -38,7 +40,13 @@ export function CreateRelease({ isContentSubpage }) {
       })
     )
       .then((res) => {
-        if (res.status === 201) {
+        if (!isRequestFailed(res)) {
+          dispatch(
+            notify({
+              kind: "success",
+              message: t("release.createdRelease", { name: res.data.name }),
+            })
+          );
           dispatch(fetchReleases(res.data.ZUID))
             .then(() => {
               history.push(
@@ -50,6 +58,7 @@ export function CreateRelease({ isContentSubpage }) {
             .finally(() => setLoading(false));
         } else {
           setError(res.error);
+          notifyFailure(dispatch, res, t("release.failedCreatingRelease"));
         }
       })
       .finally(() => {

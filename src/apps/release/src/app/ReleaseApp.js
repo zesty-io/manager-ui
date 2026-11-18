@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { WithLoader } from "shell/components/legacy/WithLoader";
 
 import { fetchReleases } from "shell/store/releases";
+import { isRequestFailed, notifyFailure } from "utility/request";
 import { fetchMembers } from "shell/store/releaseMembers";
 
 import { Activate } from "./views/Activate";
@@ -30,12 +31,18 @@ export default function ReleaseApp() {
     setLoading(true);
     dispatch(fetchReleases())
       .then((res) => {
-        if (!res.data?.length) {
+        if (isRequestFailed(res)) {
           if (res.status === 412) {
             history.push("/release/activate");
           } else {
-            history.push("/release/create");
+            notifyFailure(
+              dispatch,
+              res,
+              t("release.failedFetchingReleases", { error: res.error })
+            );
           }
+        } else if (!res.data?.length) {
+          history.push("/release/create");
         } else {
           // pre-fetch all members
           return Promise.all(
@@ -48,7 +55,7 @@ export default function ReleaseApp() {
 
   return (
     <section className={cx(styles.ReleaseApp, styles.bodyText)}>
-      <main>
+      <div className={styles.Body}>
         <WithLoader
           condition={!loading}
           message={t("release.startingRelease")}
@@ -83,7 +90,7 @@ export default function ReleaseApp() {
             />
           </Switch>
         </WithLoader>
-      </main>
+      </div>
     </section>
   );
 }

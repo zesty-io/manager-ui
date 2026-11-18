@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { ContentItem } from "../../services/types";
 import { formatLocalized } from "../../i18n/dates";
 import { useGetUsersQuery } from "../../services/accounts";
-import { NoSearchResults } from "../NoSearchResults";
+import { EmptyResults } from "../EmptyResults";
 import { NoVariant } from "./NoVariant";
 import blockPlaceholder from "../../../../public/images/blockPlaceholder.png";
 
@@ -228,11 +228,12 @@ export const VariantSelector = ({
           })
         ) : (
           <Box my={4}>
-            <NoSearchResults
+            <EmptyResults
+              variant="search"
+              size="dialog"
               query={filterKeyword}
               imageHeight={109}
-              hideBackButton
-              onSearchAgain={() => {
+              onAction={() => {
                 setFilterKeyword("");
                 filterTextField.current?.querySelector("input").focus();
               }}

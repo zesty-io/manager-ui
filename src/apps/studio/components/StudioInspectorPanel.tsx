@@ -681,6 +681,7 @@ const SlotField = ({
             fullWidth
             disabled
             inputProps={{ "data-cy": dataCy }}
+            SelectProps={{ displayEmpty: isNewTabAttr }}
           >
             {selectOptions.map((option) => (
               <MenuItem key={option.value} value={option.value}>
@@ -744,6 +745,9 @@ const SlotField = ({
           fullWidth
           disabled={!slot.layoutEditable}
           onChange={(evt) => onChangeSlot(slot, evt.target.value)}
+          // "No" is the empty string (no `target` attribute), and MUI only
+          // renders a selected label for a non-empty value unless told to.
+          SelectProps={{ displayEmpty: isNewTabAttr }}
           inputProps={{ "data-cy": dataCy }}
         >
           {selectOptions.map((option) => (
@@ -940,6 +944,8 @@ const LinkFields = ({
               value={target}
               fullWidth
               onChange={(evt) => handleTargetChange(evt.target.value)}
+              // "No" is the empty string — see the note on the slot select.
+              SelectProps={{ displayEmpty: true }}
               inputProps={{ "data-cy": "StudioOpenInNewTab" }}
             >
               {getNewTabOptions(t).map((option) => (

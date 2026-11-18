@@ -5,25 +5,25 @@ import { refRegistry } from "./refRegistry";
 
 export const handlers: Record<ActionType, (payload: any) => Promise<void>> = {
   SET_VALUE: async ({ refKey, value }: any) => {
-    const h = refRegistry[refKey].handle;
+    const h = refRegistry[refKey]?.handle;
     if (!h) throw new Error(`No handle for "${refKey}"`);
     h.setValue(value);
   },
 
   CLICK: async ({ refKey }: any) => {
-    const h = refRegistry[refKey].handle;
+    const h = refRegistry[refKey]?.handle;
     if (!h) throw new Error(`No handle for "${refKey}"`);
     h.click?.();
   },
 
   FOCUS: async ({ refKey }: any) => {
-    const h = refRegistry[refKey].handle;
+    const h = refRegistry[refKey]?.handle;
     if (!h) throw new Error(`No handle for "${refKey}"`);
     h.focus?.();
   },
 
   BLUR: async ({ refKey }: any) => {
-    const h = refRegistry[refKey].handle;
+    const h = refRegistry[refKey]?.handle;
     if (!h) throw new Error(`No handle for "${refKey}"`);
     h.blur?.();
   },
@@ -34,7 +34,7 @@ export const handlers: Record<ActionType, (payload: any) => Promise<void>> = {
   },
 
   CUSTOM: async ({ refKey, event, data }: any) => {
-    const h = refRegistry[refKey].handle;
+    const h = refRegistry[refKey]?.handle;
     if (!h) throw new Error(`No handle for "${refKey}"`);
     h[event]?.(data);
   },

@@ -91,7 +91,7 @@
     <%= htmlWebpackPlugin.tags.headTags %>
   </head>
   <body>
-    <main id="root">
+    <div id="root">
       <!-- App load screen -->
       <div class="initial-loading-screen">
         <nav class="global-sidebar">
@@ -339,7 +339,7 @@
           </div>
         </section>
       </div>
-    </main>
+    </div>
     <!-- High z-index to beat the TinyMCE toolbar which has 1300-->
     <div id="modalMount" style="position: relative; z-index: 1301"></div>
     <%= htmlWebpackPlugin.tags.bodyTags %>

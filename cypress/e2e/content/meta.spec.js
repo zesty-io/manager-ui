@@ -1,4 +1,9 @@
+import { v4 as uuidv4 } from "uuid";
+
 const today = Date.now();
+// Typed straight after the value, so it lands inside the fields' 500ms
+// debounce: these tests cover saving a value that hasn't committed yet.
+const saveShortcut = Cypress.platform === "darwin" ? "{cmd}s" : "{ctrl}s";
 
 describe("Content Meta", () => {
   let ITEM;
@@ -102,7 +107,7 @@ describe("Content Meta", () => {
     });
   });
 
-  it("Does not validate meta description for dataset items", () => {
+  it("Creates an item when Save is clicked straight after typing", () => {
     cy.waitOn("/v1/content/models*", () => {
       cy.waitOn("/v1/env/nav", () => {
         cy.waitOn("/v1/search/items*", () => {
@@ -112,9 +117,44 @@ describe("Content Meta", () => {
     });
 
     cy.getBySelector("field:text").find("input").type(today);
-    cy.wait(500); // wait for debounced input to settle
     cy.getBySelector("CreateItemSaveButton").click();
     cy.getBySelector("toast").contains("Created Item");
+  });
+
+  it("Saves the pending field value when using the save shortcut", () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.waitOn("/v1/env/nav", () => {
+        cy.waitOn("/v1/search/items*", () => {
+          cy.visit(`/content/${Cypress.env("modelZUID")}/new`);
+        });
+      });
+    });
+
+    const title = `shortcut ${uuidv4()}`;
+
+    cy.getBySelector("field:text").find("input").type(title).type(saveShortcut);
+    cy.getBySelector("toast").contains(`Created Item: ${title}`);
+  });
+
+  it("Saves the pending field value when using the save shortcut on an existing item", () => {
+    cy.intercept(
+      "PUT",
+      `**/v1/content/models/${Cypress.env("modelZUID")}/items/${Cypress.env(
+        "itemZUID"
+      )}`
+    ).as("saveItem");
+    cy.visit(`/content/${Cypress.env("modelZUID")}/${Cypress.env("itemZUID")}`);
+
+    const value = `edit shortcut ${uuidv4()}`;
+
+    cy.getBySelector("field:text")
+      .find("input")
+      // Wait for the loaded item before replacing its value
+      .should("not.have.value", "")
+      .type(`{selectall}{backspace}${value}`)
+      .type(saveShortcut);
+    cy.wait("@saveItem").its("request.body.data.text").should("eq", value);
+    cy.getBySelector("toast").contains("Item Saved");
   });
 
   it("Auto applies page parent when creating an item", () => {
@@ -173,5 +213,156 @@ describe("Content Meta", () => {
     // on the item's social-image data populating and an external bynder image load,
     // which is unreliable in CI (the element intermittently never renders). Title and
     // description cover the dedicated-Twitter-fields behavior.
+  });
+});
+
+describe("Content Meta: dataset items", () => {
+  const suffix = uuidv4();
+  let modelZUID;
+
+  before(() => {
+    cy.createModel({
+      label: `E2E: Meta Dataset | ${suffix}`,
+      name: `e2e_meta_dataset_${suffix.replace(/-/g, "_")}`,
+      type: "dataset",
+      listed: true,
+    }).then(({ data }) => {
+      modelZUID = data?.ZUID;
+      cy.createField(modelZUID, {
+        label: "Title",
+        name: "title",
+        datatype: "text",
+        sort: 0,
+        settings: { list: true },
+      });
+      // Not the first text field, so it never auto-populates Meta Title
+      cy.createField(modelZUID, {
+        label: "Subtitle",
+        name: "subtitle",
+        datatype: "text",
+        sort: 1,
+        settings: { list: true, maxCharLimit: 10 },
+      });
+      cy.createField(modelZUID, {
+        label: "Notes",
+        name: "notes",
+        datatype: "text",
+        sort: 2,
+        settings: { list: true },
+      });
+    });
+  });
+
+  after(() => {
+    if (modelZUID) {
+      cy.deleteModel(modelZUID);
+    }
+  });
+
+  const visitNewItem = () => {
+    cy.waitOn("/v1/content/models*", () => {
+      cy.visit(`/content/${modelZUID}/new`);
+    });
+  };
+
+  it("Creates an item when Save is clicked straight after typing", () => {
+    cy.intercept("POST", `**/v1/content/models/${modelZUID}/items`).as(
+      "createItem"
+    );
+    visitNewItem();
+
+    const title = `dataset click ${uuidv4()}`;
+
+    cy.getBySelector("field:title").find("input").type(title);
+    cy.getBySelector("CreateItemSaveButton").click();
+    cy.wait("@createItem")
+      .its("request.body.web.metaTitle")
+      .should("eq", title);
+    cy.getBySelector("toast").contains(`Created Item: ${title}`);
+  });
+
+  it("Creates an item when using the save shortcut straight after typing", () => {
+    cy.intercept("POST", `**/v1/content/models/${modelZUID}/items`).as(
+      "createItem"
+    );
+    visitNewItem();
+
+    const title = `dataset shortcut ${uuidv4()}`;
+
+    cy.getBySelector("field:title")
+      .find("input")
+      .type(title)
+      .type(saveShortcut);
+    cy.wait("@createItem")
+      .its("request.body.web.metaTitle")
+      .should("eq", title);
+    cy.getBySelector("toast").contains(`Created Item: ${title}`);
+  });
+
+  it("Does not mark Meta Title as required", () => {
+    visitNewItem();
+
+    cy.getBySelector("ManualMetaFlow").click();
+    cy.getBySelector("metaTitle-input").should("exist");
+    cy.getBySelector("metaTitle").should("not.contain", "*");
+  });
+
+  it("Creates an item without a Meta Title", () => {
+    cy.intercept("POST", `**/v1/content/models/${modelZUID}/items`).as(
+      "createItem"
+    );
+    visitNewItem();
+
+    cy.getBySelector("field:subtitle").find("input").type("no title");
+    cy.getBySelector("CreateItemSaveButton").click();
+    cy.wait("@createItem").then(({ request, response }) => {
+      expect(request.body.web.metaTitle).to.not.be.ok;
+      expect(response.statusCode).to.be.within(200, 299);
+    });
+    cy.getBySelector("toast").contains("Created Item");
+  });
+
+  it("Blocks a save when a value typed straight before it is over the limit", () => {
+    cy.intercept("POST", `**/v1/content/models/${modelZUID}/items`).as(
+      "createItem"
+    );
+    visitNewItem();
+
+    cy.getBySelector("field:subtitle").find("input").type("far too long");
+    cy.getBySelector("CreateItemSaveButton").click();
+    cy.getBySelector("FieldErrorsList").should("contain", "Subtitle");
+
+    cy.getBySelector("field:subtitle")
+      .find("input")
+      .type("{selectall}{backspace}short");
+    cy.getBySelector("CreateItemSaveButton").click();
+    // The first create request must be the corrected one
+    cy.wait("@createItem")
+      .its("request.body.data.subtitle")
+      .should("eq", "short");
+  });
+
+  it("Keeps an earlier field's error when several fields flush in one save", () => {
+    cy.intercept("POST", `**/v1/content/models/${modelZUID}/items`).as(
+      "createItem"
+    );
+    visitNewItem();
+    cy.getBySelector("field:notes").find("input").should("exist");
+
+    // Freeze timers so both fields are still mid-debounce when Save runs
+    cy.clock();
+    cy.getBySelector("field:subtitle").find("input").type("far too long");
+    cy.getBySelector("field:notes").find("input").type("fine");
+    cy.getBySelector("CreateItemSaveButton").click();
+    cy.getBySelector("FieldErrorsList").should("contain", "Subtitle");
+
+    cy.getBySelector("field:subtitle")
+      .find("input")
+      .type("{selectall}{backspace}short");
+    cy.getBySelector("CreateItemSaveButton").click();
+    // The first create request must be the corrected one
+    cy.wait("@createItem")
+      .its("request.body.data.subtitle")
+      .should("eq", "short");
   });
 });

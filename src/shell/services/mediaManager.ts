@@ -334,6 +334,31 @@ export const mediaManagerApi = createApi({
         "BinGroups",
       ],
     }),
+    // Files up to 32 MB go through media-storage, not this service's base
+    // URL; the media app's signed-URL path for larger ones is not covered.
+    uploadFile: builder.mutation<
+      File[],
+      { bin: Bin; groupId: string; userZUID: string; file: Blob }
+    >({
+      query: ({ bin, groupId, userZUID, file }) => {
+        const body = new FormData();
+        body.append("file", file);
+        body.append("bin_id", bin.id);
+        body.append("group_id", groupId);
+        body.append("user_id", userZUID);
+
+        return {
+          url: `${CONFIG.SERVICE_MEDIA_STORAGE}/upload/${bin.storage_driver}/${bin.storage_name}`,
+          method: "POST",
+          body,
+        };
+      },
+      transformResponse: getResponseData,
+      invalidatesTags: (result, error, arg) => [
+        "BinFiles",
+        { type: "GroupData", id: arg.groupId },
+      ],
+    }),
     deleteGroup: builder.mutation<GroupData, { id: string; groupId: string }>({
       query: ({ id }) => ({
         url: `/group/${id}`,
@@ -371,10 +396,12 @@ export const {
   useLazyGetFileQuery,
   useGetBinQuery,
   useGetBinsQuery,
+  useLazyGetBinsQuery,
   useGetAllBinFilesQuery,
   useGetAllBinGroupsQuery,
   useGetBinFilesQuery,
   useGetBinGroupsQuery,
+  useLazyGetBinGroupsQuery,
   useGetGroupDataQuery,
   useUpdateBinMutation,
   useUpdateFileMutation,
@@ -386,4 +413,5 @@ export const {
   useSearchBinFilesQuery,
   useUpdateFilesMutation,
   useDeleteFilesMutation,
+  useUploadFileMutation,
 } = mediaManagerApi;
