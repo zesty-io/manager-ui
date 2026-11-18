@@ -34,10 +34,18 @@ const uploadAndOpenFile = () => {
     expect(response.statusCode).to.eq(201);
     const file = response.body.data[0];
 
-    cy.getBySelector("upload-modal-done-btn").click();
-    cy.getBySelector(file.id).click();
+    // Deep-link straight to the file modal rather than closing the upload
+    // modal and clicking the tile in the virtualized grid, which races the
+    // grid's refetch/re-render. `sort` keeps the file in the grid behind the
+    // modal for tests that need it after closing.
+    cy.visit(`/media?sort=dateadded&fileId=${file.id}`);
+    cy.getBySelector("file-modal-settings-btn", { timeout: 20_000 }).should(
+      "be.visible"
+    );
 
-    return file;
+    // Cypress forbids returning a plain value from a callback that queued cy
+    // commands, so yield the file through the command chain instead.
+    return cy.wrap(file);
   });
 };
 
