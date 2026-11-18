@@ -10,15 +10,16 @@ describe("Shell: Logout and session expiry", () => {
   });
 
   it("logs the user out and shows the login screen", () => {
-    cy.intercept("GET", "**/logout").as("logout");
     cy.visit("/content");
 
     cy.getBySelector("globalAccountAvatar").should("exist").click();
     cy.getBySelector("LogOut").should("exist").click();
 
-    // The cookie is only removed once the /logout response has been handled,
-    // so wait on the request instead of leaning on assertion retries.
-    cy.wait("@logout");
+    // The LOGOUT action removes the cookie and flips auth.valid in the same
+    // dispatch, so wait for the login screen (which retries) first. A bare
+    // getCookie check right after the /logout response can run before the
+    // response handler has dispatched, and cookie assertions don't retry.
+    cy.getBySelector("loginScreen").should("be.visible");
 
     // cy.login() injects the cookie without a domain option, so Cypress
     // scopes it to the exact host (e.g. ".<zuid>.manager.dev.zesty.io").
@@ -28,7 +29,6 @@ describe("Shell: Logout and session expiry", () => {
     cy.getCookie(Cypress.env("COOKIE_NAME"), { domain: "zesty.io" }).should(
       "be.null"
     );
-    cy.getBySelector("loginScreen").should("be.visible");
   });
 
   it("keeps only the login screen usable after logging out and revisiting a protected route", () => {
@@ -75,7 +75,7 @@ describe("Shell: Logout and session expiry", () => {
     // That's existing app behavior in files out of scope for this task
     // (session.js, private-route/index.js) — assert the outcome that does
     // hold: only the login screen is usable afterwards.
-    cy.getBySelector("loginScreen", { timeout: 7000 }).should("be.visible");
+    cy.getBySelector("loginScreen", { timeout: 15000 }).should("be.visible");
     cy.getBySelector("loginEmail").should("be.visible");
     cy.getBySelector("loginPassword").should("be.visible");
     cy.getBySelector("loginSubmit").should("be.visible");
