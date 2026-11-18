@@ -74,6 +74,25 @@ describe("Marketplace custom apps", () => {
     });
   });
 
+  it("opens the installed app from the sidebar nav", () => {
+    cy.intercept("GET", APP_URL, {
+      statusCode: 200,
+      headers: { "content-type": "text/html" },
+      body: "<html><body>Marketplace test app</body></html>",
+    }).as("appFrame");
+
+    // Start from the marketplace root so navigation to the app is driven by
+    // the nav entry rather than a direct visit.
+    cy.visit("/apps");
+    cy.wait(["@appInstalls", "@appInfo"]);
+
+    cy.getBySelector(`app-${APP_ZUID}`).click();
+
+    cy.location("pathname").should("eq", `/apps/${APP_ZUID}`);
+    cy.wait("@appFrame");
+    cy.get(`iframe[src="${APP_URL}"]`).should("exist");
+  });
+
   it("shows the not found state for an app that is not installed", () => {
     cy.visit(`/apps/${NOT_INSTALLED_ZUID}`);
     cy.wait(["@appInstalls", "@appInfo"]);
