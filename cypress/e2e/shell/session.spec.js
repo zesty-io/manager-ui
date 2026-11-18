@@ -1,12 +1,13 @@
 describe("Shell: Logout and session expiry", () => {
-  // Every test that ends the session (logout or forced session expiry)
-  // must restore cy.session's cached cookie before the next spec runs,
-  // since testIsolation: false means nothing re-authenticates automatically.
-  const restoreSession = () => {
+  // Every test here ends the session (logout or forced session expiry), and
+  // testIsolation: false means nothing re-authenticates automatically. Restore
+  // in afterEach so a failed assertion mid-test can't leave the shared session
+  // logged out for later specs.
+  afterEach(() => {
     cy.login();
     cy.visit("/content");
     cy.getBySelector("loginScreen").should("not.exist");
-  };
+  });
 
   it("logs the user out and shows the login screen", () => {
     cy.visit("/content");
@@ -23,8 +24,6 @@ describe("Shell: Logout and session expiry", () => {
       "be.null"
     );
     cy.getBySelector("loginScreen").should("be.visible");
-
-    restoreSession();
   });
 
   it("keeps only the login screen usable after logging out and revisiting a protected route", () => {
@@ -45,8 +44,6 @@ describe("Shell: Logout and session expiry", () => {
     cy.getBySelector("loginEmail").should("be.visible");
     cy.getBySelector("loginPassword").should("be.visible");
     cy.getBySelector("loginSubmit").should("be.visible");
-
-    restoreSession();
   });
 
   it("ends the session and redirects to the login screen after a 401 while authenticated", () => {
@@ -75,12 +72,9 @@ describe("Shell: Logout and session expiry", () => {
     cy.getBySelector("loginEmail").should("be.visible");
     cy.getBySelector("loginPassword").should("be.visible");
     cy.getBySelector("loginSubmit").should("be.visible");
-
-    restoreSession();
   });
 
-  // AC4 ("logout failure leaves the user signed in, no login screen") is not
-  // covered here — see the blocked report for this task: logout()'s .catch
+  // Not covered: "a failed logout leaves the user signed in". logout()'s .catch
   // (src/shell/store/auth.js:235-241) always dispatches FETCH_AUTH_ERROR with
   // payload.auth: false on any /logout failure, and the reducer
   // (src/shell/store/auth.js:34-39) applies that straight to auth.valid, so
