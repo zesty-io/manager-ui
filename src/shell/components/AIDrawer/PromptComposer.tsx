@@ -17,7 +17,8 @@ type PromptComposerProps = {
   // Returns whether the prompt was actually sent, so the draft is only
   // cleared on a real send (e.g. not when the caller silently bails out
   // because required data, like the user's role, hasn't loaded yet).
-  onSubmit: (value: string) => boolean;
+  // A promise when the send waits on something first, like an upload.
+  onSubmit: (value: string) => boolean | Promise<boolean>;
   onHasValueChange: (hasValue: boolean) => void;
   placeholder?: string;
 };
@@ -34,6 +35,8 @@ export const PromptComposer = memo(
       const [draft, setDraft] = useState(seed);
       const inputRef = useRef<HTMLInputElement>(null);
       const hasValueRef = useRef(false);
+      // Set while an async send is out, so Enter cannot send it twice.
+      const isSubmittingRef = useRef(false);
 
       useEffect(() => {
         setDraft(seed);
@@ -53,12 +56,22 @@ export const PromptComposer = memo(
       }, [draft, onHasValueChange]);
 
       const submitDraft = useCallback(() => {
-        if (!draft.trim()) {
+        if (!draft.trim() || isSubmittingRef.current) {
           return;
         }
-        if (onSubmit(draft)) {
-          setDraft("");
+        const sent = onSubmit(draft);
+        if (typeof sent === "boolean") {
+          if (sent) setDraft("");
+          return;
         }
+        isSubmittingRef.current = true;
+        sent
+          .then((isSent) => {
+            if (isSent) setDraft("");
+          })
+          .finally(() => {
+            isSubmittingRef.current = false;
+          });
       }, [draft, onSubmit]);
 
       useImperativeHandle(

@@ -22,6 +22,7 @@ import { cloneDeep } from "lodash";
 import { useTranslation } from "react-i18next";
 
 import { notify } from "shell/store/notifications";
+import { isRequestFailed, notifyFailure } from "utility/request";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
 import { fetchFields } from "shell/store/fields";
 import {
@@ -34,6 +35,7 @@ import {
   fetchAllModelPublishings,
 } from "shell/store/content";
 import { selectLang } from "shell/store/user";
+import { flushAllDebouncedInputs } from "shell/hooks/useDebouncedInput";
 import { PendingEditsModal } from "../../components/PendingEditsModal";
 import { LockedItem } from "../../components/LockedItem";
 import { Content } from "./Content";
@@ -56,6 +58,7 @@ import { useLocalStorage } from "react-use";
 import { FreestyleWrapper } from "./FreestyleWrapper";
 import { Meta } from "./Meta";
 import { FieldError } from "../../components/Editor/FieldError";
+import { hasFieldErrors } from "../../components/Editor/Field/hasFieldErrors";
 import { AIGeneratorProvider } from "../../../../../../shell/components/withAi/AIGeneratorProvider";
 import { Redirects } from "../Redirects";
 import RedirectsDialogContextProvider from "../../../../../seo/src/app/components/RedirectsDialogProvider";
@@ -107,6 +110,12 @@ export default function ItemEdit() {
   const [notFound, setNotFound] = useState("");
   const [saveClicked, setSaveClicked] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  // Updated synchronously, so save() sees errors raised by its own flush
+  const fieldErrorsRef = useRef({});
+  const updateFieldErrors = (errors) => {
+    fieldErrorsRef.current = errors;
+    setFieldErrors(errors);
+  };
   const [SEOErrors, setSEOErrors] = useState({});
   // const [hasSEOErrors, setHasSEOErrors] = useState(false);
   const {
@@ -174,7 +183,7 @@ export default function ItemEdit() {
 
   useEffect(() => {
     setSaveClicked(false);
-    setFieldErrors({});
+    updateFieldErrors({});
     setSEOErrors({});
   }, [location.pathname]);
 
@@ -258,8 +267,11 @@ export default function ItemEdit() {
     try {
       const itemResponse = await dispatch(fetchItem(modelZUID, itemZUID));
 
-      if (itemResponse.status === 404 || itemResponse.status === 400) {
-        setNotFound(itemResponse.message || itemResponse.error);
+      if (isRequestFailed(itemResponse)) {
+        // Not-found screen plus the error toast
+        notifyFailure(dispatch, itemResponse);
+        setNotFound(itemResponse.error);
+        return;
       }
 
       if (itemResponse.data === null) {
@@ -317,11 +329,13 @@ export default function ItemEdit() {
   }
 
   const save = useCallback(async () => {
+    // Land debounced field values before validating and saving
+    flushAllDebouncedInputs();
     setSaveClicked(true);
 
     try {
       if (
-        hasErrors ||
+        hasFieldErrors(fieldErrorsRef.current) ||
         hasSEOErrors ||
         metaRef.current?.validateMetaFields?.()
       ) {
@@ -343,6 +357,19 @@ export default function ItemEdit() {
             location?.pathname?.split("/")?.pop() === "meta",
         })
       );
+
+      if (isRequestFailed(res) && res.status !== 400) {
+        notifyFailure(
+          dispatch,
+          res,
+          t("content.itemEditCannotSaveWithError", {
+            title: item.web.metaTitle,
+            error: res.error,
+          })
+        );
+        throw new Error(res.error);
+      }
+
       if (res.err === "VALIDATION_ERROR") {
         const missingRequiredFieldNames = res.missingRequired?.reduce(
           (acc, curr) => {
@@ -352,7 +379,7 @@ export default function ItemEdit() {
           []
         );
 
-        const errors = cloneDeep(fieldErrors);
+        const errors = cloneDeep(fieldErrorsRef.current);
 
         if (missingRequiredFieldNames?.length) {
           missingRequiredFieldNames?.forEach((fieldName) => {
@@ -423,7 +450,7 @@ export default function ItemEdit() {
           });
         }
 
-        setFieldErrors(errors);
+        updateFieldErrors(errors);
         throw new Error(errors);
       }
       if (res.status === 400) {
@@ -433,7 +460,7 @@ export default function ItemEdit() {
 
           if (dataLongErrorMatch?.[1]) {
             const fieldName = dataLongErrorMatch[1];
-            const errors = cloneDeep(fieldErrors);
+            const errors = cloneDeep(fieldErrorsRef.current);
             const oneToManyFieldNames = activeFields?.reduce(
               (names, currItem) => {
                 if (currItem?.datatype === "one_to_many") {
@@ -452,7 +479,7 @@ export default function ItemEdit() {
                 : t("content.itemEditCannotSaveValueTooLong"),
             };
 
-            setFieldErrors(errors);
+            updateFieldErrors(errors);
           }
         }
 
@@ -469,6 +496,16 @@ export default function ItemEdit() {
           t("content.itemEditCannotSaveWithError", {
             title: item.web.metaTitle,
             error: res.error,
+          })
+        );
+      }
+
+      if (res.refetchFailure) {
+        notifyFailure(
+          dispatch,
+          res.refetchFailure,
+          t("content.itemEditRefreshFailed", {
+            error: res.refetchFailure.error,
           })
         );
       }
@@ -512,16 +549,25 @@ export default function ItemEdit() {
       items: [itemZUID],
     });
     // Keep promise chain
-    return dispatch(fetchItem(modelZUID, itemZUID));
+    return dispatch(fetchItem(modelZUID, itemZUID)).then((res) => {
+      if (isRequestFailed(res)) {
+        notifyFailure(dispatch, res);
+      }
+      return res;
+    });
   }
 
   const isLocked =
     isMounted.current && !checkingLock && lockState.userZUID !== user.ZUID;
 
   const handleSave = useCallback(() => {
-    return save().catch((err) => {
-      console.error("ItemEdit:onSave:error", err);
-    });
+    // Resolves a boolean so callers can chain work only after a successful save
+    return save()
+      .then(() => true)
+      .catch((err) => {
+        console.error("ItemEdit:onSave:error", err);
+        return false;
+      });
   }, [save]);
   return (
     <Fragment>
@@ -568,7 +614,7 @@ export default function ItemEdit() {
               }}
             >
               <ItemEditHeader
-                onSave={() => save().catch((err) => console.error(err))}
+                onSave={handleSave}
                 saving={saving}
                 hasError={Object.keys(fieldErrors)?.length}
                 isLoadingItem={loading || isLoadingFields}
@@ -691,7 +737,7 @@ export default function ItemEdit() {
                           saving={saving}
                           saveClicked={saveClicked}
                           onUpdateFieldErrors={(errors) => {
-                            setFieldErrors(errors);
+                            updateFieldErrors(errors);
                           }}
                           fieldErrors={fieldErrors}
                           hasErrors={hasErrors}

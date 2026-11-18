@@ -380,7 +380,7 @@ export const FileTypePreview: FC<Props> = ({
         <Box
           data-cy="file-preview"
           sx={{
-            backgroundColor: "#000",
+            backgroundColor: "common.black",
             ...styledBox,
           }}
         >
@@ -390,7 +390,7 @@ export const FileTypePreview: FC<Props> = ({
             // Prevents the browser cache
             src={`${src}?versionHash=${new Date(updatedAt).getTime()}`}
             sx={{
-              backgroundColor: "#000",
+              backgroundColor: "common.black",
               display: "flex",
               alignItems: "center",
               flexWrap: "wrap",

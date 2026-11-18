@@ -1,5 +1,5 @@
 import { notify } from "shell/store/notifications";
-import { resolvePathPart } from "./files";
+import { resolveCodePathPart } from "utility/resolveCodePathPart";
 import { request } from "utility/request";
 import i18n from "shell/i18n";
 
@@ -47,7 +47,7 @@ export function saveSort(type, headers) {
     throw new Error("saveSort requires an array of headers");
   }
 
-  const pathPart = resolvePathPart(type);
+  const pathPart = resolveCodePathPart(type);
 
   return (dispatch) => {
     const body = headers.map((header) => {

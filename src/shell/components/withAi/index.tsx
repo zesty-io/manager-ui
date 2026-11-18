@@ -8,6 +8,7 @@ import { keyframes } from "@emotion/react";
 import { AppState } from "../../store/types";
 import instanceZUID from "../../../utility/instanceZUID";
 import { AIGenerator, TONE_OPTIONS } from "./AIGenerator";
+import { isRichTextFieldType } from "shell/fieldTypes";
 
 const rotateAnimation = keyframes`
 	0% {
@@ -71,12 +72,7 @@ export const withAI = (WrappedComponent: ComponentType) =>
     };
 
     const handleApprove = (generatedText: string) => {
-      if (
-        props.datatype === "article_writer" ||
-        props.datatype === "markdown" ||
-        props.datatype === "wysiwyg_advanced" ||
-        props.datatype === "wysiwyg_basic"
-      ) {
+      if (isRichTextFieldType(props.datatype)) {
         props.onChange(
           `${props.value || ""}${
             props.datatype === "markdown"

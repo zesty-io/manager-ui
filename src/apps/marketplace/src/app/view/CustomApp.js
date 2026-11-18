@@ -18,7 +18,6 @@ const IframeWithDAM = withDAM(IframeComponent);
 export default function CustomApp() {
   return (
     <Box
-      component="main"
       sx={{
         height: "calc(100vh - 40px)",
         width: "100%",

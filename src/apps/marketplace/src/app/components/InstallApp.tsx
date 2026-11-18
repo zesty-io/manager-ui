@@ -2,7 +2,7 @@ import { Stack, Box, Typography, Button } from "@mui/material";
 import StorefrontRoundedIcon from "@mui/icons-material/StorefrontRounded";
 import { useTranslation } from "react-i18next";
 
-import zestyRocket from "../../../../../../public/images/zestyRocket.svg";
+import zestyRocket from "../../../../../../public/images/zestyRocket.webp";
 import microsoftIcon from "../../../../../../public/images/microsoftLogo.png";
 import googleAnalyticsIcon from "../../../../../../public/images/googleAnalyticsLogo.png";
 import npmIcon from "../../../../../../public/images/npmLogo.png";
@@ -40,6 +40,8 @@ export const InstallApp = () => {
         component="img"
         src={zestyRocket}
         alt={t("marketplace.zestyRocketLogoAlt")}
+        width={462}
+        height={258}
         mb={3}
       />
       <Stack direction="row" gap={1} mb={8}>

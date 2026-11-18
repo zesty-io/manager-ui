@@ -46,7 +46,7 @@ import {
   useGetContentNavItemsQuery,
   useGetContentItemQuery,
 } from "../../../../../../shell/services/instance";
-import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
+import { EmptyResults } from "shell/components/EmptyResults";
 import { CreateContentItemDialog } from "../../../../../../shell/components/CreateContentItemDialog";
 import {
   ContentNavItem,
@@ -502,17 +502,11 @@ export const ContentNav = () => {
   const memoizedSidebarChildren = useMemo(() => {
     if (noMatchedItems) {
       return (
-        <Stack gap={1.5} alignItems="center" justifyContent="center" p={1.5}>
-          <img
-            src={noSearchResults}
-            alt={t("content.navNoSearchResultsAlt")}
-            width="70px"
-            height="64px"
-          />
-          <Typography color="text.secondary" variant="body2" align="center">
-            {t("content.navNoResultsFor", { keyword: debouncedKeyword })}
-          </Typography>
-        </Stack>
+        <EmptyResults
+          variant="search"
+          size="compact"
+          title={t("content.navNoResultsFor", { keyword: debouncedKeyword })}
+        />
       );
     }
 
