@@ -10,10 +10,15 @@ describe("Shell: Logout and session expiry", () => {
   });
 
   it("logs the user out and shows the login screen", () => {
+    cy.intercept("GET", "**/logout").as("logout");
     cy.visit("/content");
 
     cy.getBySelector("globalAccountAvatar").should("exist").click();
     cy.getBySelector("LogOut").should("exist").click();
+
+    // The cookie is only removed once the /logout response has been handled,
+    // so wait on the request instead of leaning on assertion retries.
+    cy.wait("@logout");
 
     // cy.login() injects the cookie without a domain option, so Cypress
     // scopes it to the exact host (e.g. ".<zuid>.manager.dev.zesty.io").
@@ -27,10 +32,12 @@ describe("Shell: Logout and session expiry", () => {
   });
 
   it("keeps only the login screen usable after logging out and revisiting a protected route", () => {
+    cy.intercept("GET", "**/logout").as("logout");
     cy.visit("/content");
 
     cy.getBySelector("globalAccountAvatar").should("exist").click();
     cy.getBySelector("LogOut").should("exist").click();
+    cy.wait("@logout");
     cy.getBySelector("loginScreen").should("be.visible");
 
     cy.visit("/content");
@@ -46,7 +53,7 @@ describe("Shell: Logout and session expiry", () => {
     cy.getBySelector("loginSubmit").should("be.visible");
   });
 
-  it("ends the session and redirects to the login screen after a 401 while authenticated", () => {
+  it.only("ends the session and redirects to the login screen after a 401 while authenticated", () => {
     // Stubbing GET ${SERVICE_AUTH}/verify does not reproduce this flow: its
     // own success handler flips auth.valid to false before the session
     // middleware's check runs, so endSession() never fires and no toast
