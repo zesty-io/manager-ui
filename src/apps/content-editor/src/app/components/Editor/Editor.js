@@ -17,6 +17,7 @@ import { useGetContentModelFieldsQuery } from "../../../../../../shell/services/
 import { DYNAMIC_META_FIELD_NAMES } from "../../views/ItemEdit/Meta";
 import { FieldsLoader } from "./FieldsLoader";
 import { useResizeObserver } from "shell/hooks/useResizeObserver";
+import { isTextLikeFieldType } from "shell/fieldTypes";
 
 const COMPACT_MAX_WIDTH = 390;
 
@@ -56,6 +57,11 @@ export default memo(function Editor({
   const [isLoaded, setIsLoaded] = useState(false);
   const [prevFirstContentFieldValue, setPrevFirstContentFieldValue] =
     useState(null);
+  // Fields flushed in one pass each build on the previous one's errors
+  const latestErrorsRef = useRef(fieldErrors);
+  useLayoutEffect(() => {
+    latestErrorsRef.current = fieldErrors;
+  }, [fieldErrors]);
 
   // Sync initial compact state before the browser paints. React batches the
   // resulting setState with the first render so the user never sees the
@@ -120,10 +126,7 @@ export default memo(function Editor({
     if (activeFields?.length) {
       return activeFields.find(
         (field) =>
-          field.datatype === "textarea" ||
-          field.datatype === "article_writer" ||
-          field.datatype === "markdown" ||
-          field.datatype.includes("wysiwyg")
+          isTextLikeFieldType(field.datatype) && field.datatype !== "text"
       );
     }
   });
@@ -149,7 +152,8 @@ export default memo(function Editor({
       const field = activeFields?.find((field) => field.name === name);
       const fieldMaxLength =
         field?.settings?.maxCharLimit ?? MaxLengths[field?.datatype];
-      const errors = cloneDeep(fieldErrors);
+      const prevErrors = latestErrorsRef.current;
+      const errors = cloneDeep(prevErrors);
 
       // Remove the required field error message when a value has been added
       if (field?.required) {
@@ -263,7 +267,8 @@ export default memo(function Editor({
         CUSTOM_ERROR: "",
       };
 
-      if (!isEqual(errors, fieldErrors)) {
+      if (!isEqual(errors, prevErrors)) {
+        latestErrorsRef.current = errors;
         onUpdateFieldErrors(errors);
       }
 

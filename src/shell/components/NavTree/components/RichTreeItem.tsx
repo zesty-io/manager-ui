@@ -8,6 +8,7 @@ import {
 
 import { NavTreeLabel } from "./NavTreeLabel";
 import { Theme, alpha } from "@mui/material";
+import { theme } from "@zesty-io/material";
 
 type CustomTreeItem2Props = TreeItem2Props & {
   onItemDrop?: (draggedItem: any, targetItem: any) => void;
@@ -91,7 +92,8 @@ export const RichTreeItem = memo(
               onDragOver: (event: any) => {
                 if (dragAndDrop) {
                   event.preventDefault();
-                  event.currentTarget.style.backgroundColor = "#f6f6f7";
+                  event.currentTarget.style.backgroundColor =
+                    theme.palette.grey[100];
                 }
               },
               onDragLeave: (event: any) => {

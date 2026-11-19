@@ -8,16 +8,12 @@ import {
   ListItemIcon,
   ListItemText,
   Stack,
-  Typography,
-  Button,
-  Box,
   Tooltip,
   Skeleton,
   MenuList,
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
-import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { cloneDeep } from "lodash";
 import { List, type RowComponentProps } from "react-window";
 import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
@@ -25,7 +21,7 @@ import ManageSearchRoundedIcon from "@mui/icons-material/ManageSearchRounded";
 import { AppState } from "../../../../../store/types";
 import { User, Instance } from "../../../../../services/types";
 import { useGetInstancesQuery } from "../../../../../services/accounts";
-import noSearchResults from "../../../../../../../public/images/noSearchResults.svg";
+import { EmptyResults } from "../../../../EmptyResults";
 import { CascadingMenuItem } from "../../../../CascadingMenuItem";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 
@@ -226,25 +222,13 @@ export const InstancesList = () => {
             textAlign="center"
             height={445}
           >
-            <img
-              src={noSearchResults}
-              alt={t("shell.noSearchResultsAlt")}
-              width={88}
-              height={80}
+            <EmptyResults
+              variant="search"
+              size="dialog"
+              query={filter}
+              title={t("shell.searchNoResults", { query: filter })}
+              onAction={handleResetFilter}
             />
-            <Typography variant="h5" fontWeight={600}>
-              {t("shell.searchNoResults", { query: filter })}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" pb={3}>
-              {t("shell.searchNoResultsSuggestion")}
-            </Typography>
-            <Button
-              variant="contained"
-              onClick={handleResetFilter}
-              startIcon={<SearchRoundedIcon />}
-            >
-              {t("common.searchAgain")}
-            </Button>
           </Stack>
         ) : (
           <MenuList

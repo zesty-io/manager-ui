@@ -92,6 +92,11 @@ import { contentKey, useStudioHistory } from "./hooks/useStudioHistory";
 import { getRefRegistry } from "../../engine/refRegistry";
 import { useMultiPermission } from "shell/hooks/use-permissions";
 import { MediaApp } from "../media/src/app";
+import {
+  isInlineEditableFieldType,
+  isRichTextFieldType,
+  isTextLikeFieldType,
+} from "shell/fieldTypes";
 
 const drawerWidth = 440;
 
@@ -1639,9 +1644,8 @@ export const StudioWrapper = () => {
         : String(rawValue);
 
     if (
-      ["markdown", "wysiwyg_basic", "wysiwyg_advanced"].includes(
-        selectedElement.fieldType
-      )
+      isInlineEditableFieldType(selectedElement.fieldType) &&
+      isRichTextFieldType(selectedElement.fieldType)
     ) {
       // Use ref registry to update tinyMCE field
       if (bridgeUpdatedFieldZuidRef.current === selectedElement.fieldZuid) {
@@ -1660,8 +1664,9 @@ export const StudioWrapper = () => {
     }
 
     if (
-      selectedElement.fieldType &&
-      ["text", "textarea"].includes(selectedElement.fieldType)
+      isInlineEditableFieldType(selectedElement.fieldType) &&
+      isTextLikeFieldType(selectedElement.fieldType) &&
+      !isRichTextFieldType(selectedElement.fieldType)
     ) {
       // A text field can hold markup, and WebEngine renders it as markup — so
       // the server already painted a real element here. Seeding it as text
@@ -1949,16 +1954,19 @@ export const StudioWrapper = () => {
   }, [handlePreviewLoad]);
 
   // Content mode: a dynamic slot (a bound attribute or bound text) was clicked
-  // — open the existing single-field content editor for its field.
+  // — open the existing single-field content editor for its field. A bound
+  // attribute carries its own fieldZuid; a bound text slot does not (the
+  // bridge omits it), so it falls back to its owning field row's `boundField`.
   const handleEditDynamicSlot = useCallback(
     (slot: ElementSlot) => {
-      if (!slot.fieldZuid) return;
+      const field = slot.fieldZuid ? slot : slot.boundField;
+      if (!field?.fieldZuid) return;
       applyBridgeSelection({
-        studioId: slot.studioId,
-        fieldZuid: slot.fieldZuid,
-        fieldType: slot.fieldType,
-        itemZuid: slot.itemZuid,
-        modelZuid: slot.modelZuid,
+        studioId: field.studioId,
+        fieldZuid: field.fieldZuid,
+        fieldType: field.fieldType,
+        itemZuid: field.itemZuid,
+        modelZuid: field.modelZuid,
       });
     },
     [applyBridgeSelection]

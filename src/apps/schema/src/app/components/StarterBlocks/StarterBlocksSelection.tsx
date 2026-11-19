@@ -24,7 +24,7 @@ import SearchIcon from "@mui/icons-material/Search";
 
 import { useTranslation } from "react-i18next";
 
-import { NoResults } from "../NoResults";
+import { EmptyResults } from "shell/components/EmptyResults";
 import { StarterBlockProps, STARTER_BLOCKS } from "./configs";
 import SearchBox from "../../../../../../shell/components/SearchBox";
 
@@ -252,13 +252,12 @@ export const StarterBlocksSelection: React.FC<StarterBlocksSelectionProps> = ({
               overflow="hidden"
               sx={{ placeContent: "center", minHeight: "100%" }}
             >
-              <NoResults
-                type="search"
-                onButtonClick={handleSearchRetry}
-                searchTerm={search}
-                sx={{
-                  "& img": { height: "109px", width: "109px" },
-                }}
+              <EmptyResults
+                dataCy="NoResults"
+                variant="search"
+                query={search}
+                onAction={handleSearchRetry}
+                imageHeight={109}
               />
             </Box>
           ) : (
