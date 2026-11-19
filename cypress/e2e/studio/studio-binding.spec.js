@@ -171,6 +171,44 @@ describe("Studio two-way binding", () => {
     canvasShows("REPAINTED_BODY");
   });
 
+  it("opens a bound field's editor from its chip in the Inspector", () => {
+    // Stand in for a canvas mousedown on the title <h1>, addressed the way the
+    // real bridge addresses it.
+    cy.window().then((win) => {
+      const node = bridgeNodeFor(win, fieldByName.title.ZUID);
+      expect(node, "title present in the bridge's layers tree").to.exist;
+      const codeId = node.layoutPatch?.codeId || node.codeId;
+      const layoutId = node.layoutPatch?.layoutId || node.layoutId;
+      expect(layoutId, "title's element has a layout id").to.exist;
+      win.postMessage(
+        {
+          source: "studio-bridge",
+          message: {
+            type: "DOM_EVENT",
+            eventType: "mousedown",
+            element: { dataset: { codeId, layoutId } },
+          },
+        },
+        "*"
+      );
+    });
+
+    cy.getBySelector("StudioInspectorPanel")
+      .find('[data-cy="StudioConnectedField"]')
+      .should("be.visible")
+      .click();
+
+    cy.getBySelector("StudioInspectorPanel").should("not.exist");
+    cy.getBySelector("StudioSidePanel")
+      .find('button[aria-label="Close Studio preview"]')
+      .should("exist");
+    cy.getBySelector("field:title").should("exist");
+    cy.getBySelector("field:subtitle").should("not.exist");
+
+    editInPanel("title", "CHIP_TITLE");
+    canvasShows("CHIP_TITLE");
+  });
+
   it("writes an inline canvas edit back to the item", () => {
     const field = fieldByName.title;
     cy.window().then((win) => {

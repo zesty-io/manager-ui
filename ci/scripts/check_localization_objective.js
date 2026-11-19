@@ -32,7 +32,7 @@ const REQUIRED_PLURAL_FORMS = {
   "zh-CN": ["_other"],
 };
 
-// src/apps/<dir> -> namespace, per CLAUDE.md's sub-app inventory + namespace rules.
+// src/apps/<dir> -> namespace, per the namespace rules in CLAUDE.md (dir -> app mapping: src/shell/views/Shell/Shell.tsx).
 const APP_NS_MAP = {
   "content-editor": "content",
   schema: "schema",
