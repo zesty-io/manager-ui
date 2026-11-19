@@ -142,7 +142,7 @@ Workflow({
 - `crossNamespaceGaps` — files pulled in transitively that live in a _different_ namespace than the target: their strings are extracted into that namespace's JSON but left unwired, since wiring them under the wrong namespace would misattribute them. Each entry includes a ready-to-run follow-up, e.g. `Workflow({ name: "localize", args: { namespace: "shell", target: "src/shell/store/ui.ts" } })`.
 - `inaccessibleThirdParty` — third-party components with hardcoded strings and no locale API; needs a manual call (wrap it, or accept it stays English).
 
-See the "Localization (i18next)" section of `CLAUDE.md` for the conventions this workflow enforces (key naming, pluralization/CLDR rules, what to skip, value-formatting rules).
+See the "Localization (i18next)" section of `CLAUDE.md` (and `docs/i18n.md`) for the conventions this workflow enforces (key naming, pluralization/CLDR rules, what to skip, value-formatting rules).
 
 ---
 

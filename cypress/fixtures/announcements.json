@@ -1,0 +1,170 @@
+{
+  "blankEnd": {
+    "data": [
+      {
+        "meta": {
+          "zuid": "7-test-announcement"
+        },
+        "version": {
+          "createdAt": "2024-01-01T00:00:00Z"
+        },
+        "content": {
+          "lang_id": "1",
+          "title": "Test announcement",
+          "description": "Test",
+          "cta_type": "read_more",
+          "announcement_link": "https://zesty.io",
+          "start_date_and_time": "2020-01-01 00:00:00",
+          "end_date_and_time": ""
+        }
+      }
+    ]
+  },
+  "nullEnd": {
+    "data": [
+      {
+        "meta": {
+          "zuid": "7-test-announcement"
+        },
+        "version": {
+          "createdAt": "2024-01-01T00:00:00Z"
+        },
+        "content": {
+          "lang_id": "1",
+          "title": "Test announcement",
+          "description": "Test",
+          "cta_type": "read_more",
+          "announcement_link": "https://zesty.io",
+          "start_date_and_time": "2020-01-01 00:00:00",
+          "end_date_and_time": null
+        }
+      }
+    ]
+  },
+  "missingEnd": {
+    "data": [
+      {
+        "meta": {
+          "zuid": "7-test-announcement"
+        },
+        "version": {
+          "createdAt": "2024-01-01T00:00:00Z"
+        },
+        "content": {
+          "lang_id": "1",
+          "title": "Test announcement",
+          "description": "Test",
+          "cta_type": "read_more",
+          "announcement_link": "https://zesty.io",
+          "start_date_and_time": "2020-01-01 00:00:00"
+        }
+      }
+    ]
+  },
+  "blankStart": {
+    "data": [
+      {
+        "meta": {
+          "zuid": "7-test-announcement"
+        },
+        "version": {
+          "createdAt": "2024-01-01T00:00:00Z"
+        },
+        "content": {
+          "lang_id": "1",
+          "title": "Test announcement",
+          "description": "Test",
+          "cta_type": "read_more",
+          "announcement_link": "https://zesty.io",
+          "start_date_and_time": "",
+          "end_date_and_time": "2099-12-31 00:00:00"
+        }
+      }
+    ]
+  },
+  "invalidDates": {
+    "data": [
+      {
+        "meta": {
+          "zuid": "7-test-announcement"
+        },
+        "version": {
+          "createdAt": "2024-01-01T00:00:00Z"
+        },
+        "content": {
+          "lang_id": "1",
+          "title": "Test announcement",
+          "description": "Test",
+          "cta_type": "read_more",
+          "announcement_link": "https://zesty.io",
+          "start_date_and_time": "not-a-date",
+          "end_date_and_time": "not-a-date"
+        }
+      }
+    ]
+  },
+  "startAfterEnd": {
+    "data": [
+      {
+        "meta": {
+          "zuid": "7-test-announcement"
+        },
+        "version": {
+          "createdAt": "2024-01-01T00:00:00Z"
+        },
+        "content": {
+          "lang_id": "1",
+          "title": "Test announcement",
+          "description": "Test",
+          "cta_type": "read_more",
+          "announcement_link": "https://zesty.io",
+          "start_date_and_time": "2099-12-31 00:00:00",
+          "end_date_and_time": "2020-01-01 00:00:00"
+        }
+      }
+    ]
+  },
+  "active": {
+    "data": [
+      {
+        "meta": {
+          "zuid": "7-test-announcement"
+        },
+        "version": {
+          "createdAt": "2024-01-01T00:00:00Z"
+        },
+        "content": {
+          "lang_id": "1",
+          "title": "Test announcement",
+          "description": "Test",
+          "cta_type": "read_more",
+          "announcement_link": "https://zesty.io",
+          "start_date_and_time": "2020-01-01 00:00:00",
+          "end_date_and_time": "2099-12-31 00:00:00"
+        }
+      }
+    ]
+  },
+  "activeNoFeatureImageData": {
+    "data": [
+      {
+        "meta": {
+          "zuid": "7-test-announcement"
+        },
+        "version": {
+          "createdAt": "2024-01-01T00:00:00Z"
+        },
+        "content": {
+          "lang_id": "1",
+          "title": "Test announcement",
+          "description": "Test",
+          "feature_image": {},
+          "cta_type": "read_more",
+          "announcement_link": "https://zesty.io",
+          "start_date_and_time": "2020-01-01 00:00:00",
+          "end_date_and_time": "2099-12-31 00:00:00"
+        }
+      }
+    ]
+  }
+}

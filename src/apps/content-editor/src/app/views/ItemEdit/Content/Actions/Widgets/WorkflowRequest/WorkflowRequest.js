@@ -68,7 +68,8 @@ export default memo(function WorkflowRequest({ itemTitle, fields }) {
 
 ${
   message
-    ? `<blockquote style="border-left: 3px solid #444;padding: 0 12px;">${message}</blockquote>`
+    ? // eslint-disable-next-line no-restricted-syntax -- quote-block styling emailed to an external client (design-system.md §3: markup we ship into a customer's page)
+      `<blockquote style="border-left: 3px solid #444;padding: 0 12px;">${message}</blockquote>`
     : ""
 }
 

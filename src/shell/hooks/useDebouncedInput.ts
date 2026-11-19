@@ -1,6 +1,6 @@
 import { debounce } from "lodash";
 import { flushSync } from "react-dom";
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // Every mounted input's debounce, so a caller about to read the store can land
 // whatever is still waiting out its delay. Flushing a debounce with nothing
@@ -20,9 +20,15 @@ export function useDebouncedInput(
 ) {
   const [local, setLocal] = useState(String(externalValue ?? ""));
 
-  useEffect(() => {
+  // Sync during render rather than in an effect, so children never render
+  // with a stale `local` (e.g. TinyMCE capturing it as a remount's initialValue).
+  const [prevExternalValue, setPrevExternalValue] = useState(externalValue);
+  // Object.is (as useEffect deps did): with !==, a NaN value (e.g. a number
+  // field set via Number("abc")) never equals itself and re-renders forever.
+  if (!Object.is(externalValue, prevExternalValue)) {
+    setPrevExternalValue(externalValue);
     setLocal(String(externalValue ?? ""));
-  }, [externalValue]);
+  }
 
   const commitRef = useRef(commit);
   useEffect(() => {

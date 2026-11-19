@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Run the CI "Claude: Code Review" reviewer locally (bugs, security, performance, CLAUDE.md red flags) on a PR or the current branch. Shows findings in the session and saves them under the gitignored .reviews/ folder. Never posts to GitHub. Invoke as /review-code [PR number].
+description: 'Run the CI "Claude: Code Review" reviewer locally (bugs, security, performance, CLAUDE.md red flags) on a PR or the current branch. Shows findings in the session and saves them under the gitignored .reviews/ folder. Never posts to GitHub. Invoke as /review-code [PR number].'
 ---
 
 Runs the review prompt in `.claude/skills/review-code/prompt.md`, the same file `.github/workflows/claude-auto-reviewer.yml` uses in CI. Read-only toward GitHub: never post comments or reviews.
