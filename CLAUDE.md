@@ -11,11 +11,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Install: `npm install --legacy-peer-deps` (CI uses this flag — peer deps don't resolve cleanly without it).
 - Dev server: `npm start` — webpack-dev-server on `http://0.0.0.0:8080` against the **dev** API. Use `npm run start:stage` to point at stage, or `npm run start:local` for `local` config.
 - Build: `npm run build:prod` (also `:dev`, `:stage`, `:local`). Output goes to `build/`.
-- Cypress E2E: `npm run test:open` (interactive) or `npm test` (headless electron). `cypress.env.json` with `{email, password}` credentials must exist at the repo root.
-- Run a single Cypress spec: `./node_modules/.bin/cypress run --spec "cypress/e2e/<area>/<file>.spec.js"`.
-- Combined dev-server + tests: `npm run ci` (uses `start-server-and-test`).
+- Cypress E2E: `npm run test:open` or `npm test` (needs root `cypress.env.json` with `{email, password}`); one spec: `./node_modules/.bin/cypress run --spec "cypress/e2e/<area>/<file>.spec.js"`; dev server + tests: `npm run ci`.
 
-Node is pinned to **22.19.0** via Volta and CI. `npm run lint` runs ESLint (`eslint src`, config in `eslint.config.js`) plus `scripts/lint-i18n-locales.js` for locale-JSON checks; it's required in CI (see Branch & PR flow). `pretty-quick` still runs on staged files via the husky `pre-commit` hook, separately from lint.
+Node is pinned to **22.19.0** via Volta and CI. `pretty-quick` runs on staged files via the husky `pre-commit` hook, separately from lint.
 
 ## Local dev requires a hosts entry
 
@@ -25,51 +23,38 @@ Every Zesty instance is identified by a ZUID, and the app derives the instance Z
 127.0.0.1  <YOUR_INSTANCE_ZUID>.manager.zesty.io
 ```
 
-…and visit `http://<ZUID>.manager.zesty.io:8080`. `npm start` selects the `development` block of `src/shell/app.config.js`, which points at `*.api.dev.zesty.io` with cookie `DEV_APP_SID` — the same **dev** instance Cypress uses, not production. Writes still hit a real shared instance that every PR's CI run also uses, so clean up anything you create. Use `npm run start:stage` for staging. (The README still claims `npm start` connects to production; it is out of date.)
+…and visit `http://<ZUID>.manager.zesty.io:8080`. `npm start` selects the `development` block of `src/shell/app.config.js`, which points at `*.api.dev.zesty.io` with cookie `DEV_APP_SID` — the same **dev** instance Cypress uses, not production. Writes still hit a real shared instance that every PR's CI run also uses, so clean up anything you create. (The README's claim that `npm start` connects to production is out of date.)
 
-The dev server's `historyApiFallback` selects a different HTML entry based on hostname suffix: `*.zesty.io` → `index-zesty.html`, `*.content.one` → `index-content.html`. Both render the same JS bundle but the theme palette branches on `isContentOne()` in `src/shell/index.js`.
+`historyApiFallback` picks the HTML entry by hostname suffix (`*.zesty.io` → `index-zesty.html`, `*.content.one` → `index-content.html`); same JS bundle, but the theme palette branches on `isContentOne()` in `src/shell/index.js`.
 
 ## Architecture
 
 ### App shell + sub-apps, single bundle
 
-Despite the README's mention of PRPL/per-app bundles, the current `src/shell/webpack.config.js` produces a single `main` bundle plus a separate `activePreview` entry. All dependencies live in the root `package.json` — sub-apps under `src/apps/*` do **not** have their own installable `package.json` (the file in `src/shell/` exists but is not used for installs).
+Despite the README's mention of per-app bundles, `src/shell/webpack.config.js` produces a single `main` bundle plus a separate `activePreview` entry. All dependencies live in the root `package.json` — sub-apps under `src/apps/*` do **not** have their own installable `package.json` (the file in `src/shell/` exists but is not used for installs).
 
 Layout:
 
 - `src/shell/` — app shell: bootstrap (`index.js`), router (`views/Shell/Shell.tsx`), Redux store, RTK Query services, top-level components (sidebar, topbar, global menus), and the webpack config.
-- `src/apps/<name>/src/index.js` — each sub-app exports a default React component and registers its own reducers by calling `injectReducer(store, name, reducer)` against the shared store. `Shell.tsx` imports them statically (`ContentApp`, `DamApp`, `ReleaseApp`, `ReportingApp`, `CodeApp`, `LeadsApp`, `SchemaApp`, `SeoApp`, `SettingsApp`, `HomeApp`, `StudioApp`, `MarketplaceApp`, `BlocksApp`) and routes between them with React Router v5 `<Switch>`.
-- `src/engine/` — a ref-registry + action-handler layer (`refRegistry`, `handlers.ts`, `navigator.ts`) that lets external code (notably the AI drawer in `views/Shell/AIDrawer.tsx`) drive UI by `refKey` rather than DOM queries. When adding components that should be controllable this way, register them via `useRegisterRef`.
+- `src/apps/<name>/src/index.js` — each sub-app exports a default React component and registers its own reducers by calling `injectReducer(store, name, reducer)` against the shared store. `Shell.tsx` imports them statically and routes between them with React Router v5 `<Switch>`. `studio` is a route shim over a visual builder whose in-iframe agent lives in a **separate repo**: read [`docs/studio.md`](docs/studio.md) before working on it. `active-preview` is **not** routed via `Shell.tsx`; it's the separate webpack entry that renders the preview iframe.
+- `src/engine/` — the bridge between the AI drawer (`src/shell/views/Shell/AIDrawer.tsx`, backed by `useGeminiGenerationMutation` from `src/shell/services/mcp.ts`) and the app's UI: a ref-registry + action-handler layer (`refRegistry`, `handlers.ts`, `navigator.ts`). The drawer dispatches actions by `refKey` rather than querying the DOM, so any control the AI should be able to drive must be registered:
+
+  ```ts
+  useRegisterRef(key, handle, context?, options?)
+  ```
+
+  - `key` — stable string id (must match what the action handlers expect).
+  - `handle` — a `RefHandle` exposing the imperative API the action will call (e.g. `{ open: () => void, save: () => void }`). The component owns it and unregisters automatically on unmount.
+  - `context` — optional snapshot (object or thunk) describing current state for the AI; the thunk form is re-evaluated on each action.
+
+  Action types and routing live in `src/engine/{actionTypes.ts, handlers.ts, navigator.ts, queue.ts}`. Add new actions there rather than special-casing inside `AIDrawer.tsx`.
+
 - `src/utility/` — framework-agnostic helpers (`request.js`, `idb.ts`, `history.ts`, `sentry.js`, `instanceZUID.js`).
-
-### Sub-apps inventory
-
-Each `src/apps/<name>/src/index.js` exports the app's root component and (optionally) calls `injectReducer`. Mapping directory → `Shell.tsx` import:
-
-- `content-editor` → `ContentApp` — content item editor (the primary editing surface).
-- `schema` → `SchemaApp` — content model and field editor.
-- `media` → `DamApp` — digital asset manager / file uploads.
-- `release` → `ReleaseApp` — versioned release management.
-- `reports` → `ReportingApp` — analytics and audit reports.
-- `code-editor` → `CodeApp` — instance code (templates, scripts, stylesheets).
-- `seo` → `SeoApp` — SEO settings.
-- `settings` → `SettingsApp` — instance settings.
-- `home` → `HomeApp` — dashboard / landing.
-- `leads` → `LeadsApp` — lead capture.
-- `studio` → `StudioApp` — visual builder. `index.tsx` is a route shim over `StudioWrapper.tsx`; the in-iframe agent it drives lives in a **separate repo**. Read [`docs/studio.md`](docs/studio.md) before working on it.
-- `marketplace` → `MarketplaceApp` — app/integration directory.
-- `blocks` → `BlocksApp` — reusable content blocks.
-- `active-preview` — **not** routed via `Shell.tsx`; it's the separate webpack entry that renders the preview iframe.
 
 ### State management
 
-- **Redux** (classic `createStore` + thunk + custom middleware) is the source of truth. Reducers are wired in `src/shell/store/index.js`.
-- **RTK Query** services live in `src/shell/services/*.ts` (`instanceApi`, `accountsApi`, `mediaManagerApi`, `metricsApi`, `cloudFunctionsApi`, `marketingApi`, `analyticsApi`, `mcpApi`). Each is registered both as a reducer (`[api.reducerPath]: api.reducer`) and as middleware. Prefer extending these for new HTTP calls instead of writing raw thunks.
-- Custom middleware in `src/shell/store/middleware/`:
-  - `api.js` — handles `FETCH_RESOURCE` actions with inflight de-duplication.
-  - `local-storage.js`, `session.js` — sync slices to storage.
-  - `app-bus.js` — event bus across sub-apps.
-  - `nav.js` — content nav tree updates.
+- **Redux** (classic `createStore` + thunk + custom middleware in `src/shell/store/middleware/`) is the source of truth. Reducers are wired in `src/shell/store/index.js`.
+- **RTK Query** services live in `src/shell/services/*.ts`. Each is registered both as a reducer (`[api.reducerPath]: api.reducer`) and as middleware. Prefer extending these for new HTTP calls instead of writing raw thunks.
 - Sub-apps add reducers asynchronously via `injectReducer(store, name, reducer)` (`src/shell/store/index.js`). This is how content-editor adds `modal` and `listFilters`, and how the shell itself adds `navContent`.
 - Some legacy code reads from a global `window.zesty` (a `@riotjs/observable`) and `window.zestyStore` — both are set up in `src/shell/index.js`. Don't add new dependencies on these.
 
@@ -104,7 +89,7 @@ On boot, `src/shell/index.js` reads several keys from IndexedDB (`<ZUID>:languag
 
 ### TypeScript
 
-Mixed JS/TS. `tsconfig.json` sets `allowJs: true`, `noImplicitAny: true`, `skipLibCheck: true`, `jsx: "react-jsx"`, and a single path alias `shell/* → ./src/shell/*`. Webpack adds matching aliases for `shell`, `utility`, and `apps`. `ts-loader` compiles `.ts(x)`; `babel-loader` handles `.js`.
+Mixed JS/TS (`allowJs: true`, `noImplicitAny: true`; config in `tsconfig.json`, webpack aliases `shell`, `utility`, `apps`).
 
 `skipLibCheck: true` skips checking inside every `.d.ts`, including this repo's own. Ambient declarations still fail at their use sites, but a derived type (`typeof import(...)`, `ReturnType<...>`) fails silently and degrades to `any` — keep those in a real `.ts` file, which is what `src/shell/configTypes.ts` is for.
 
@@ -112,67 +97,30 @@ Coverage instrumentation (`babel-plugin-istanbul`) is hard-coded `on` in the web
 
 ### Theming
 
-Uses `@zesty-io/material` (a wrapper around MUI v5 + MUI X with a paid license key set in `src/shell/index.js`). The theme is built once at boot in `index.js` and provided via `<ThemeProvider>`. To preview local changes to `@zesty-io/material`, use `npm link @zesty-io/material` (the README has the full flow).
+Uses `@zesty-io/material` (MUI v5 + MUI X wrapper; license key set in `src/shell/index.js`). The theme is built once at boot in `index.js` and provided via `<ThemeProvider>`. Preview local changes with `npm link @zesty-io/material` (see README).
 
 ### Observability
 
-- Sentry is initialized in `src/utility/sentry.js` and wraps the root component (`Sentry.withProfiler`, `Sentry.ErrorBoundary`). A redux-sentry-middleware allowlists which slices are sent.
+- Sentry is initialized in `src/utility/sentry.js` and wraps the root component; a redux-sentry-middleware allowlists which slices are sent.
 - Amplitude (`@amplitude/analytics-browser`) is initialized in `index.js` and identified per-user in `Shell.tsx`. Event names live in `src/amplitude-events.ts`.
-
-### Engine and the AI drawer
-
-`src/engine/` is the bridge between the AI drawer (`src/shell/views/Shell/AIDrawer.tsx`, backed by `useGeminiGenerationMutation` from `src/shell/services/mcp.ts`) and the app's UI. The drawer dispatches actions by `refKey` rather than querying the DOM, so any control the AI should be able to drive must be registered:
-
-```ts
-useRegisterRef(key, handle, context?, options?)
-```
-
-- `key` — stable string id (must match what the action handlers expect).
-- `handle` — a `RefHandle` exposing the imperative API the action will call (e.g. `{ open: () => void, save: () => void }`). The component owns it and unregisters automatically on unmount.
-- `context` — optional snapshot (object or thunk) describing current state for the AI; the thunk form is re-evaluated on each action.
-
-Action types and routing live in `src/engine/{actionTypes.ts, handlers.ts, navigator.ts, queue.ts}`. Add new actions there rather than special-casing inside `AIDrawer.tsx`.
 
 ## Testing with Cypress
 
-Specs live in `cypress/e2e/<area>/<file>.spec.js`. Required setup: a `cypress.env.json` at the repo root with `{ "email", "password" }` plus the env vars consumed by the custom commands (`API_AUTH`, `COOKIE_NAME`, etc. — see `cypress.config.js`).
-
-Custom commands (`cypress/support/commands.js`) — use these instead of hand-rolling:
-
-- `cy.login()` — POSTs `${API_AUTH}/login` and writes the `COOKIE_NAME` cookie. Call in `beforeEach`.
-- `cy.apiRequest({ method, url, body })` — wraps `cy.request` and auto-injects the bearer from the cookie. Use for setup/teardown HTTP, not raw `cy.request`.
-- `cy.getBySelector("foo")` — selects `[data-cy="foo"]`. New components should expose `data-cy` attributes for anything tests will target; don't lean on class names or text.
-- `cy.blockLock()` — stubs `/door/knock*` to defeat the "instance is locked" modal. Call before any edit-page test.
-- `cy.blockAnnouncements()` — stubs the announcements feed. Use when announcements would otherwise interrupt the flow.
-- `cy.waitOn(path, cb)` — runs `cb` after intercepting `path` and waits up to 30s for the request.
-
-Fixtures (`cypress/fixtures/`) seed instance/content/model JSON. Don't hand-roll fixtures inline in specs.
-
-**Tests hit a real dev instance, not mocks.** `cypress/support/api.js` exposes seeding helpers — `cy.createModel`, `cy.deleteModel(s)`, `cy.createField`, `cy.createStatusLabel`, `cy.deleteStatusLabels` — that POST/DELETE against the dev API (`API_ENDPOINTS.devInstance`). Use them in `before` / `after` hooks and clean up everything you create; leaked records pollute later runs within the same day. Hardcoded ZUIDs in specs (e.g. `/content/6-0c960c-d1n0kx`) reference seed data on the configured instance — don't repoint specs at a different instance without re-seeding.
-
-**The dev instance is synced nightly from prod.** Test data created during a run is wiped on the next nightly sync, so specs must not rely on data from a previous day's run still being present — always seed what you need in `before` hooks. Instance-level configuration (integrations, fonts, analytics connections) reflects prod state after each sync.
-
-**`data-cy` is the only selector strategy.** Tests use `cy.getBySelector("Foo")` exclusively; class-based selectors, MUI class hooks, and text-matching for clicks are flake risks. When writing or modifying a component, add a `data-cy="…"` attribute to every interactive element (button, input, menu item, table row) that a test may need to target — never rely on class names or MUI internals. New interactive controls without a `data-cy` are effectively untestable.
-
-**No hard waits.** Do not use `cy.wait(ms)` with a fixed number. Use `cy.waitOn(path, cb)` to wait for a network request, or Cypress's built-in retry-ability (`.should(…)`, `.contains(…)` with a `timeout` option). Hard waits make tests slow and mask real timing issues.
-
-**Use `uuidv4` for unique test data names, not timestamps.** Import `{ v4 as uuidv4 } from "uuid"` and append the result to test record names (e.g. `` `My Model | ${uuidv4()}` ``). UUIDs are collision-resistant across parallel runners; timestamps are not. Derive any dependent values (e.g. reference IDs) programmatically from the same constant rather than hardcoding expected strings.
+Detailed guidance (custom commands, seeding, selectors, no hard waits, `uuidv4` names) lives in [`cypress/CLAUDE.md`](cypress/CLAUDE.md); read it before writing or changing specs. Cypress is the only test surface. **Every interactive element needs a `data-cy` attribute** (the only selector strategy tests use).
 
 ## Localization (i18next)
 
-`manager-ui` is localized with **i18next + react-i18next** across 6 locales: `en-US` (fallback), `es-ES`, `hi-IN`, `zh-CN`, `ru-RU`, `nl-NL`. Hindi has almost no upstream support in third-party libs, so its bundles are hand-authored everywhere.
+`manager-ui` is localized with **i18next + react-i18next** across 6 locales: `en-US` (fallback), `es-ES`, `hi-IN`, `zh-CN`, `ru-RU`, `nl-NL`. Hindi bundles are hand-authored everywhere (little upstream support).
 
-### Architecture
+Read [`docs/i18n.md`](docs/i18n.md) before changing i18n config, locale loading, dates or MUI localization, or when `npm run lint` fails on an i18n rule. It also covers the `localize` workflow and `npm run i18n:extract`.
 
-- **Config:** `src/shell/i18n/index.ts`, imported in `src/shell/index.js` before the React root renders; root is wrapped in `<Suspense>`.
-- **Locale data:** `public/locales/<locale>/<namespace>.json`, served at `/locales/{{lng}}/{{ns}}.json`.
+### Core
+
+- **Locale data:** `public/locales/<locale>/<namespace>.json`. Components call `useTranslation()` with **no namespace argument**; the namespace lives in the key.
 - **Key syntax:** config sets `nsSeparator: "."` + `keySeparator: false`. Keys are **qualified, flat camelCase strings** — `t("content.publishItem")`, `t("common.save")`. The namespace is the first dot-segment; the rest is one flat key. **Never nest JSON objects and never use a second dot** — a multi-dot key like `t("media.dateFilter.today")` resolves to a broken lookup and throws in dev.
-- **Components** call `useTranslation()` with **no namespace argument** — the namespace lives in the key. (Exception: the per-sub-app root trigger below, and shared widgets that must self-load a namespace.)
-- **Namespaces are all loaded eagerly at init**, not lazy-loaded per sub-app. `src/shell/i18n/index.ts`'s `ns:` array lists all 15 namespaces, so every namespace's locale JSON is fetched at boot regardless of which sub-app the user visits first. Each sub-app root still wraps a local `<Suspense>` and calls `useTranslation("<ns>")` once (canonical examples: `HomeApp` → `dashboard`, `ContentApp` → `content`, `MediaApp` → `media`), but that trigger is now effectively a no-op — kept intentionally rather than ripped out. **This is deliberate, not a bug:** true per-sub-app lazy-loading was tried and reverted because it caused crashes — a race condition where Redux-driven code (thunks/middleware calling `i18n.t()` outside of React, e.g. boot-time error notifications) could fire before the relevant sub-app's namespace had loaded, hitting the "namespace not loaded" throw path in `handleMissingKey`. The lazy-load perf gain was also minimal. Don't "fix" this back to lazy-loading without addressing that race first.
-- **Missing keys:** **dev throws** (names the key + the `public/locales/<lng>/<ns>.json` path; dev also disables the en-US fallback so gaps in _non-English_ locales surface). **Stage/prod** fall back to en-US and `Sentry.captureMessage` once per key.
-- **Caching:** git hash is the cache-bust `defaultVersion`. Dev uses `HttpBackend` only (edit a JSON, refresh, see it — no stale localStorage).
-- **MUI component labels are separate from i18next.** DataGrid/DatePicker/Autocomplete built-in labels localize through the theme, not `t()`: `src/shell/i18n/mui-locale.ts` exports `localizeTheme(theme, muiLocaleString)`; `LocalizedThemeProvider` (`src/shell/components/LocalizedThemeProvider.tsx`) re-runs it on language change via the `MUI_LOCALE` map (BCP 47 → MUI locale string). Adding a locale: add a `MUI_LOCALE` entry, verify the MUI string is a valid named export of `@mui/material/locale`, and if MUI X doesn't ship it, hand-author a bundle in `@zesty-io/material` (see that repo's `LOCALIZATION.md`).
-- **Dates are separate from i18next.** Display strings go through `formatLocalized`/`formatDistanceToNowLocalized` (`src/shell/i18n/dates.ts`); MUI pickers take `adapterLocale={getDateFnsLocale(i18n.language)}`. **Keep machine formats locale-independent** — `yyyy-MM-dd`, API/CSV payloads, URL params, IndexedDB/search keys. Localizing these silently breaks storage/search.
+- **All namespaces load eagerly at init, deliberately.** Per-sub-app lazy-loading was tried and reverted (a race: Redux-driven code calling `i18n.t()` before the namespace loaded). Don't "fix" this back to lazy-loading without addressing that race first (history in `docs/i18n.md`).
+- **Missing keys:** dev throws; stage/prod fall back to en-US and report to Sentry.
+- **Dates and MUI component labels are separate from i18next** (see `docs/i18n.md`). Keep machine formats (`yyyy-MM-dd`, API/CSV payloads, URL params, IndexedDB/search keys) locale-independent.
 
 ### Rules for translating new copy
 
@@ -180,10 +128,10 @@ Fixtures (`cypress/fixtures/`) seed instance/content/model JSON. Don't hand-roll
 
 - JSX text + string props (`label`, `placeholder`, `title`, `aria-label`, `alt`).
 - Functions that return strings (`getLabel`, `getErrorMessage`, …).
-- Module-level object maps/arrays — `t()` can't run at module scope. Store i18n _keys_ in the map and resolve with `t()` inside the component (or move the lookup in). Verify the const isn't imported elsewhere before changing it.
-- Strings passed as props — translate at the **call site**, not in the receiving component.
-- `notify()` / `dispatch()` messages, including in **redux thunks and hooks** — a render-only scan misses these. In non-component modules/thunks use the **i18n singleton**: `import i18n from "shell/i18n"; i18n.t("ns.key")`.
-- Class components → wrap with `withTranslation()`, use `this.props.t`.
+- Module-level object maps/arrays: `t()` can't run at module scope. Store i18n _keys_ in the map and resolve with `t()` in the component. Verify the const isn't imported elsewhere first.
+- Strings passed as props: translate at the **call site**.
+- `notify()` / `dispatch()` messages, including in **redux thunks and hooks**. In non-component modules use the **i18n singleton**: `import i18n from "shell/i18n"; i18n.t("ns.key")`.
+- Class components: `withTranslation()`, `this.props.t`.
 
 **What to SKIP (data / not UI copy):**
 
@@ -193,12 +141,12 @@ Fixtures (`cypress/fixtures/`) seed instance/content/model JSON. Don't hand-roll
 
 **Value formatting rules:**
 
-- **No decorative special characters** prefixing/suffixing the value — strip trailing colons, surrounding em-dashes, wrapping parentheses, `-- --` select-prompt decorations from JSON values; add them back in the component at every render site (`{"("}`, `` `— ${t(...)} —` ``). Violations: `"— None —"`, `"(optional)"`, `"({{count}} fields)"`. Not violations: `"Archives (zip)"` — the parenthetical is semantic content. Updating the JSON across 6 locales produces many more diff lines than the number of component edits — that ratio is expected.
+- **No decorative special characters** prefixing/suffixing the value (trailing colons, surrounding em-dashes, wrapping parentheses, `-- --` prompts); add them back in the component at every render site. Violations: `"— None —"`, `"(optional)"`, `"({{count}} fields)"`. Not violations: `"Archives (zip)"` (semantic parenthetical). Large JSON diffs across 6 locales are expected.
 - **No ALL CAPS values.** Apply `textTransform: "uppercase"` in the component instead (or rely on `variant="overline"` / MUI `Button`, which already uppercase). Two keys (`"Fields"` vs `"FIELDS"`) for the same concept is a dedup problem across locales.
-- **No HTML in translation values.** Use `<Trans components={{...}}>` in React; `{{var}}` interpolation only in thunks/`notify()`/`i18n.t()` (no `<Trans>` outside render context). Since `escapeValue: false` is set, calling `t()` on a value containing raw tags (`<strong>`, `<em>`, custom placeholders) renders the tags as literal text instead of throwing — the mistake is silent. Keys whose value contains angle-bracket component placeholders **must** carry a `Rich` suffix (e.g. `shell.filterNoResultsRich`, `content.itemEditStatusSearchNoResultsTitleRich`) so it's obvious at the call site that only `<Trans i18nKey="...">` is safe, never `t()`.
+- **No HTML in translation values.** Use `<Trans components={{...}}>` in React; `{{var}}` interpolation only in thunks/`notify()`/`i18n.t()`. Since `escapeValue: false`, `t()` on a value with raw tags renders them as literal text, silently. Keys whose value contains component placeholders **must** carry a `Rich` suffix (e.g. `shell.filterNoResultsRich`) so only `<Trans i18nKey="...">` is used for them, never `t()`.
 - **No hardcoded URLs or asset paths** — use `{{var}}` and pass the value at the call site.
 
-**Which namespace a string belongs to:** the app dir the file physically lives in, _even when_ another app imports it — e.g. `src/shell/components/FieldType*` → `shell` (shared); a component under `src/apps/content-editor/src` → `content` even though schema/blocks import it. Namespace names must be **flat camelCase** (`activePreview`, not `active-preview`) — a hyphen is inconsistent with the key convention and easy to confuse with the `.` separator. A shared component that can mount in an app that doesn't load its home namespace should still self-load it: `useTranslation("<homeNs>", { useSuspense: false })` (non-suspense so it never crashes a tree without a Suspense boundary). Since all namespaces load eagerly at boot (see above), this is now belt-and-suspenders rather than strictly required, but keep the pattern for new shared components in case eager-loading is ever scoped back. Precedent: `FieldTypeMedia` (a `content` key) mounts in shell + schema.
+**Which namespace a string belongs to:** the app dir the file physically lives in, _even when_ another app imports it (`src/shell/components/FieldType*` → `shell`; `src/apps/content-editor/src/*` → `content`). Namespace names are **flat camelCase** (`activePreview`, not `active-preview`). A shared component that can mount where its home namespace isn't loaded should self-load it: `useTranslation("<homeNs>", { useSuspense: false })`.
 
 **Pluralization is mandatory: every CLDR form, every locale.** A plural key (`_one`, `_other`, …) used with `{ count }` **throws in dev for any missing category**. Forms differ per locale — define all of them:
 
@@ -209,11 +157,11 @@ Fixtures (`cypress/fixtures/`) seed instance/content/model JSON. Don't hand-roll
 | `ru-RU`                   | `_one`, `_few`, `_many`, `_other` |
 | `zh-CN`                   | `_other`                          |
 
-This is the **one exception** to strict key-parity across locales. A non-suffixed key used with `{count}` is fine (no inflection); Spanish `_many` usually equals `_other`; get exact suffixes via `i18n.services.pluralResolver.getSuffixes(tag)`.
+This is the **one exception** to strict key-parity across locales. A non-suffixed key with `{count}` is fine; Spanish `_many` usually equals `_other`; exact suffixes via `i18n.services.pluralResolver.getSuffixes(tag)`.
 
-**Verification**: `npm run lint` (`eslint src` — includes `eslint-plugin-i18next`'s `no-literal-string` in its default `jsx-text-only` mode, plus this repo's own `zesty-i18n/key-format` rule for call-site key format/existence — then `node scripts/lint-i18n-locales.js` for locale-JSON-level checks: flat structure, key format, no decorative/ALL-CAPS values, `Rich`-suffix requirement, and key/plural parity across all 6 locales) runs in CI as the `lint` step of `.github/workflows/ci.yaml`'s `setup` job (so a lint failure gates the e2e jobs and fails `all_tests_passed`) and is required before merge. `npx tsc --noEmit` is covered repo-wide by another step in the same job, but run both yourself for faster feedback.
+**Verification**: `npm run lint` (ESLint incl. `i18next/no-literal-string` and `zesty-i18n/key-format`, then `scripts/lint-i18n-locales.js` for locale-JSON checks and 6-locale key/plural parity) and `npx tsc --noEmit` are required before merge; run both yourself.
 
-**Suppressing `i18next/no-literal-string` for a genuinely non-translatable literal** (a brand name, an email, a URL, a version-number prefix like `v{version}`, a file-format token like `MP4`, etc.): wrap _only_ that literal in a React fragment (`<>...</>`, not a `<span>` — no extra DOM node) and put `{/* eslint-disable-next-line i18next/no-literal-string -- <reason> */}` on the line directly above the fragment's own opening `<>`, e.g.:
+**Suppressing `i18next/no-literal-string`** for a genuinely non-translatable literal (brand name, email, URL, `v{version}`, `MP4`): wrap _only_ that literal in a fragment (`<>...</>`) and put `{/* eslint-disable-next-line i18next/no-literal-string -- <reason> */}` directly above the fragment's opening `<>`:
 
 ```jsx
 <Link>
@@ -223,25 +171,22 @@ This is the **one exception** to strict key-parity across locales. A non-suffixe
 </Link>
 ```
 
-Do **not** put the comment directly above a bare JSXText child with no wrapping element (`{/* eslint-disable-next-line */}\nTwitter`) — it silently does nothing. The reason: a bare JSXText node's reported position starts immediately after the _previous_ sibling ends (here, the disable comment's own `{/* ... */}` expression container), which is the comment's own line, not the line the text visually renders on — so `eslint-disable-next-line` (which targets `comment.line + 1`) never matches, and ESLint stays silent about it (no "unused directive" warning either, since nothing in that exact spot was suppressed to begin with — the check simply never ran against that reported node). Wrapping in a fragment gives the literal its own self-contained element whose opening tag genuinely starts on the following line, which is what `eslint-disable-next-line` actually binds to. Don't reach for `eslint-disable-line` on the line _above_ the text as a workaround either — it happens to suppress the violation for the exact reason above (the bare JSXText's reported line coincides with the comment's own line), but it reads as backwards to every reviewer who doesn't know that, and multiple PRs have already gotten flagged/re-litigated over exactly this. Always use the fragment-wrap + `eslint-disable-next-line` pattern, never `eslint-disable-line` for this rule. And prefer this per-site pattern over adding a category to a shared `words.exclude` config list — this repo intentionally does not maintain a growing global allowlist for i18n literal exceptions; keep the exception local to where it applies.
+Never put the comment above a bare JSXText child (it silently does nothing), never use `eslint-disable-line` for this rule, and never add to a global `words.exclude` list. Why: `docs/i18n.md`.
 
-### Tools
-
-- **`Workflow({ name: "localize", args: { target: "<path>" } })`** — the paved path for localizing a new component or sub-app. Requires Claude Code (see README's "Localizing new copy" section for full usage, args, and cost caveats). Extracts strings, wires `t()`/`i18n.t()` calls, writes locale JSON, verifies. `namespace` is optional and inferred if omitted. The Composer scaffolds keys and CLDR plural forms in the 5 non-English locales, then a separate haiku `Translate` phase (one agent per locale) replaces only the newly added English placeholders with machine translations, preserving `{{var}}`, `Rich` tag placeholders and brand tokens. Existing translated keys are never touched. The result lists them under `autoTranslated` — native/QA review is still needed.
-- **`npm run i18n:extract`** — runs `i18next-parser` (config: `i18next-parser.config.js`) as a lightweight, non-AI safety net. Statically finds `t()` calls and adds any keys missing from the locale JSON (seeded from an existing bare-key translation when one exists, per-locale — never an English leak into another locale). `keepRemoved: true` and `sort: true` are load-bearing: this codebase uses computed key lookups the parser can't statically resolve, and the locale files are kept alphabetically sorted. Safe to run repeatedly — a clean run is a no-op.
+## Conventions
 
 - **New endpoints → RTK Query.** Extend an existing `src/shell/services/<service>.ts` with a new `endpoints` builder and reuse `prepareHeaders` / `getResponseData` from `src/shell/services/util.js`. Don't write a new thunk for HTTP. The legacy `FETCH_RESOURCE` middleware in `src/shell/store/middleware/api.js` is still wired for existing call sites — don't add new ones.
-- **New slices → `createSlice`** from `@reduxjs/toolkit`. All current shell slices follow this pattern (`src/shell/store/{ui,users,releases,releaseMembers,media,...}`). Don't introduce hand-rolled switch reducers.
-- **`useSelector` is typed against `AppState`** from `src/shell/store/types.ts`. Pattern: `useSelector((state: AppState) => state.ui.openNav)`. When you add a slice, extend `AppState` (note its TODO — most members are still `any`; type yours as you go).
-- **Sub-app reducers register via `injectReducer`** in the sub-app's `src/index.js`. Canonical example: `src/apps/content-editor/src/index.js` (it injects `modal` and `listFilters`).
-- **Components.** Functional + hooks only — there are no class components. Default to flat `Foo.tsx`; promote to `Foo/index.tsx` only when the component grows colocated files (`Foo.less`, child components, types). Type props with `type FooProps = { … }`; reach for `interface` only when extending. `memo()` is used selectively for high-rerender cases (tabs, sidebars, large list rows) — not by default.
+- **New slices → `createSlice`** from `@reduxjs/toolkit` (see `src/shell/store/{ui,users,...}`). No hand-rolled switch reducers.
+- **`useSelector` is typed against `AppState`** (`src/shell/store/types.ts`): `useSelector((state: AppState) => state.ui.openNav)`. When you add a slice, extend `AppState` (most members are still `any`; type yours).
+- **Sub-app reducers** register via `injectReducer` (see State management; canonical example `src/apps/content-editor/src/index.js`).
+- **Components.** Functional + hooks only. Default to flat `Foo.tsx`; promote to `Foo/index.tsx` only when it grows colocated files. Type props with `type FooProps = { … }` (`interface` only when extending). `memo()` only for high-rerender cases (tabs, sidebars, list rows).
 - **Routing is React Router v5.** Use `<Switch>`, `<Route>`, `useHistory`, `useLocation`, `<Redirect>`. Do not use v6 syntax (`useNavigate`, `<Routes>`, `element={}`). Top-level routes live in `src/shell/views/Shell/Shell.tsx`; sub-app internal routes nest inside the sub-app.
-- **Styling.** Prefer the MUI `sx` prop (the dominant pattern). LESS modules (`Component.less` + `import styles from "./Component.less"`) exist for shell-level layout (sidebar, topbar) and are fine to maintain there, but don't reach for them in new feature code. Avoid `styled()` from `@mui/material/styles` unless `sx` genuinely cannot express the rule. That is _how_ to attach a style; for _which value_, see [`docs/design-system.md`](docs/design-system.md) — a hex literal or a raw `fontSize` in `src/` is a bug unless that doc covers it.
-- **Service URLs come from `window.CONFIG`** (populated in `src/shell/index.js`), never hardcoded and never imported from `src/shell/app.config.js` directly at runtime.
-- **TypeScript first for new files.** `allowJs: true` keeps existing `.js` working; new modules should be `.ts`/`.tsx` with explicit types.
-- **Long lists virtualize.** This codebase ships `react-window`, `react-virtualized-auto-sizer`, and `react-virtualized-sticky-tree` for a reason — re-render perf matters here, and `why-did-you-render` is wired up in `src/shell/wdyr.js`. Virtualize new tables and long content lists.
-- **Deeplinks use path params, not query params**, for "which view." Query params are reserved for refining a view. See README "Deeplinks" for examples.
-- **MUI `ToggleButtonGroup`** with `exclusive` returns `null` when nothing is selected, which can break the UI. Existing code uses `toggleHandlers` helpers to guard against `null` — follow that pattern.
+- **Styling.** Prefer the MUI `sx` prop. LESS modules only for existing shell-level layout (sidebar, topbar), not new feature code. Avoid `styled()` unless `sx` cannot express the rule. For _which value_, see [`docs/design-system.md`](docs/design-system.md): a hex literal or raw `fontSize` in `src/` is a bug unless that doc covers it.
+- **Service URLs come from `window.CONFIG`**, never hardcoded or imported from `src/shell/app.config.js` at runtime.
+- **TypeScript first**: new modules are `.ts`/`.tsx` with explicit types.
+- **Long lists virtualize** (`react-window`, `react-virtualized-auto-sizer`, `react-virtualized-sticky-tree`). Virtualize new tables and long content lists.
+- **Deeplinks use path params, not query params**, for "which view"; query params only refine a view (README "Deeplinks").
+- **MUI `ToggleButtonGroup`** with `exclusive` returns `null` when nothing is selected; follow the existing `toggleHandlers` null-guard pattern.
 - **Issue titles** follow `[APP NAME] - [DESCRIPTION]` (e.g. `Content - Laggy Horizontal Scrolling`).
 - **Assets** (images, SVGs) belong on the Zesty CDN at `assets.zesty.io/manager/...`, not committed to the repo.
 
@@ -263,12 +208,7 @@ Things the codebase actively avoids — flag if you see them in a PR:
 ## Branch & PR flow
 
 - PRs target **`dev`**. After merge, automation cascades changes through `dev → stage → beta → stable` via auto-generated PRs (`.github/workflows/cd-*.yaml`). Each promotion still requires a human merge.
-- **Cypress, a lint gate, and a typecheck gate.** `.github/workflows/ci.yaml` runs `npm run ci` (`start-server-and-test start … test`), plus a `lint` step (`npm run lint` — ESLint with the design-system hex-literal rule, `eslint-plugin-i18next`, and this repo's own i18n key-format/locale-JSON checks) and a repo-wide typecheck step (`npx tsc --noEmit`) in the `setup` job that gates the e2e jobs; `all_tests_passed` requires all of them. There is still **no build gate** — nothing runs `npm run build:*` in CI.
-- **e2e runs are serialized FIFO across PRs.** `ci.yaml` uses a workflow-level `concurrency` group (`manager-ui-e2e-dev-instance`, `queue: max`) because every PR shares one dev instance. `ci-cancel-superseded.yml` cancels older _pending_ runs of the same PR on each push (never `in_progress` ones). **Keep it a separate workflow and keep the concurrency at workflow level:** a cancel job inside `ci.yaml` wouldn't start until its run left the queue (too late), and job-level concurrency would let `run_tests` and `run_global_tests` interleave across PRs.
-- **Three Claude workflows also run on PRs**, none of them blocking: `claude-auto-reviewer.yml` (code-level review, inline comments), `claude-issue-critique.yml` (issue triage), and `claude-qa.yml` (below).
-- **`claude-qa.yml` runs QA in three jobs.** `ac`, holding no secret beyond the agent's API key and `GITHUB_TOKEN` because it reads public issue text, has an acceptance-criteria agent judge the diff against the linked issue's criteria from the code alone: each checkable criterion is marked ✅ or ❌ and those needing a running app are listed ungraded; the verdict is computed from the marks, not written by the agent, so a browser setup failure cannot cost it. `browser` then has a second agent drive the real app against a **dedicated instance** (`8-acabf6a8d6-bj9tr2`, INTERNAL-NEGATIVE-QA) whose fixtures are authored once in production and reach dev through the nightly prod→dev sync — that sync is also the cleanup, so the agent may mutate anything and nothing is torn down per run. `ci/scripts/qa_session.mjs` resolves the fixture model by name and hands Playwright MCP a pre-authenticated session through a `--storage-state` file (so the token never reaches the agent's prompt), then a senior-QA persona attacks the surfaces the PR diff touches. `post` then posts one new PR comment per run carrying both sections, with `<!-- cv-verifier -->` and `<!-- negative-qa -->` each present only when that half reported, ending `<!-- qa-verdict: PASS|FAIL|NO_REPORT -->`, with screenshots pushed to `gs://cypress_screenshots/negative-qa/…`. It is **advisory**: a ❌ is an annotation, not a failure. A job goes red only when its half did not run: `browser` on setup (install, dev server, login), `post` when neither half wrote a report. It runs on `opened`, `reopened`, `ready_for_review` and every push (`synchronize`), except doc-only PRs; a pass costs ~9 minutes of browser-agent time. Re-run it manually from the Actions tab (`workflow_dispatch` with the PR number, selecting the PR's branch as the ref) or with "Re-run jobs" on the previous run. `ac` is grouped per PR and cancels on a new push; `browser` uses its own global `manager-ui-qa` concurrency group rather than ci.yaml's `manager-ui-e2e-dev-instance`: GitHub allows only one _pending_ run per group, so sharing ci.yaml's group meant this job was routinely cancelled before starting whenever another PR queued a Cypress run. The group now only stops two QA agents fighting over the same instance — isolation from other PRs comes from the instance being dedicated to this workflow in the first place.
-- **Each Claude reviewer is split into the thinking part and everything around it.** The thinking part is `.claude/skills/review-{code,acceptance,localization}/prompt.md`: what to look for and the report shape, with no posting, paths or diff commands. It is the single prompt shared by CI and the local skills. Around it, the workflow (in CI) or the `/review-code`, `/review-acceptance` and `/review-localization` skill (locally, in your own Claude Code session, saving reports to the gitignored `.reviews/` and never posting to GitHub) prepares the inputs, hands them to the agent with "read the prompt", and handles the output. The agent only writes a report file and deterministic steps post it (`ci/scripts/post_inline_comments.js`, `ci/scripts/code_review_verdict.js`, the `post` job in `claude-qa.yml`). Edit the prompt there, and keep the report shapes it defines in sync with the steps that parse them. The browser QA agent's prompt is not shared; it stays inline in `claude-qa.yml`.
-- **CI is parallelized across 5 runners** using `cypress-split`. Runner 4 is dedicated to publish-related specs (`content/actions`, `content/list`, `content/redirects`, `settings/workflows`) to prevent cross-runner interference — `workflows.spec.js` creates a publish-blocking workflow label that causes concurrent publish tests on other runners to fail. Runners 0–3 split the remaining specs using `SPLIT=4` and `SKIP_SPEC`. To add more general runners, increment the matrix array and `SPLIT` together and update the `if: matrix.split_index != 4` condition. A `timings.json` at the repo root enables runtime-based distribution for runners 0–3; if absent, cypress-split falls back to spec count. Refresh `timings.json` by downloading the `merged-timings` artifact after a CI run and committing it. Update it every 1–2 months or when runners become noticeably unbalanced.
-- Coverage from Cypress is posted as a PR comment by `ci.yaml`. Treat dropping coverage on changed files as a review signal, not a hard gate.
+- **Lint and typecheck gate, no build gate.** `.github/workflows/ci.yaml` runs Cypress (`npm run ci`), plus `npm run lint` and `npx tsc --noEmit` in the `setup` job, which gates the e2e jobs; `all_tests_passed` requires all of them. Nothing runs `npm run build:*` in CI.
+- Three Claude workflows also run on PRs (`claude-auto-reviewer.yml`, `claude-issue-critique.yml`, `claude-qa.yml`), none blocking. CI internals (e2e concurrency queue, QA jobs, reviewer prompt split, `cypress-split` runners, `timings.json`, coverage comment) are in [`.github/CLAUDE.md`](.github/CLAUDE.md); read it before editing workflows or `ci/`.
 - Pre-commit (`.husky/pre-commit`) runs `pretty-quick --staged` only. There is no pre-push hook.
 - Commit/PR titles follow `[Area] - Description` (e.g. `Content - Prevent app from crashing…`); the PR number is appended on merge by GitHub. No conventional-commits prefixes.
