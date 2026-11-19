@@ -11,8 +11,10 @@ All of it is under `src/apps/studio/`:
 ```
 src/apps/studio/
   index.tsx                                  <Route path="/studio"> → <StudioWrapper/>
-  StudioWrapper.tsx                          the orchestrator (~2000 lines)
+  StudioWrapper.tsx                          the orchestrator (~3000 lines)
   utils/pathResolver.ts                      normalizePath / findItemByPath / resolveItemByPath
+  utils/aiSelection.ts                       buildAiSelection: the selection handed to the AI
+  bridge/protocol.ts                         host ↔ bridge message types + envelope sources
   hooks/
     studioTypes.ts                           LayersTreeNode, ElementSlot, ElementLayoutPatch, …
     useStudioBridge.ts                       window "message" listener; routes bridge → host
@@ -22,10 +24,12 @@ src/apps/studio/
     useStudioContentSave.ts                  batch content-item save/publish/discard
     useCrossModelConnectField.ts             read-back for a cross-item binding
     useStudioAiEdit.ts                       AI edits to the page's view: staging + PVL preview
+    useStudioHistory.ts                      undo/redo across content, layout and AI edits
   components/
     StudioHeader · StudioPreview · StudioSidePanel · StudioInspectorPanel
     StudioLayersPanel · StudioLayersTreeItem · StudioSaveChangesModal
-    StudioLinkItemDialog · StudioFreestyleAlert · FieldIconChip
+    StudioLinkItemDialog · StudioFreestyleAlert · StudioEmptyPanel
+    StudioFeedbackModal · FieldIconChip
     StudioAIPanel · StudioAIPreview
     studioTags.ts · studioFieldMeta.ts · studioParsley.ts
 ```
@@ -47,7 +51,7 @@ Two consequences:
 
 `BRIDGE.md` in that repo is not a reliable protocol contract — it omits several commands and payload fields. Read the `handleIncomingMessage` dispatch chain in `src/index.js` instead.
 
-The bridge is written in ES5 (`var`, no spread) on purpose: it executes inside arbitrary customer pages. Keep it that way.
+The bridge source keeps a conservative style on purpose (`var`, no arrow functions, no spread): it executes inside arbitrary customer pages. It is not ES5, though — it uses optional chaining (`?.`), and its esbuild build targets `es2020`.
 
 ## The postMessage protocol
 
@@ -60,9 +64,7 @@ Envelopes are asymmetric — always check `source` before trusting a message:
 { source: "studio-bridge",     message: { type: "<TYPE>", ... } }
 ```
 
-**Bridge → host** (handled in `useStudioBridge.ts`): `BRIDGE_READY` · `BRIDGE_ERROR` · `DOM_EVENT` · `LAYERS_TREE` · `TEMPLATE_SOURCE_MAP` · `REORDER_OUTPUT` · `LAYOUT_CONTENT_UPDATE` · `STATIC_EDIT_REJECTED` · `STATIC_EDIT_IMAGE` · `CODE_REGION_REPLACED`
-
-**Host → bridge** (`payload.action`): `injectCss` · `setInteractionMode` · `requestLayersTree` · `addClass` · `removeClass` · `addClassByLayoutId` · `removeClassByLayoutId` · `enableEditing` · `disableEditing` · `setTextByField` · `setHtmlByField` · `setSelectedLayoutId` · `clearSelectedLayout` · `enableReorderByUid` · `disableReorderByUid` · `moveLayoutElement` · `enterStaticEditingByLayoutId` · `updateElementText` · `updateElementAttr` · `updateElementTag` · `updateImageSrc` · `syncTemplateSource` · `replaceCodeRegion` · `setPreviewLock`
+The full set of commands and messages, with their payload fields, is typed in `src/apps/studio/bridge/protocol.ts` (`HostCommand`, `BridgeMessage`). Bridge → host messages are handled in `useStudioBridge.ts`.
 
 `updateElementText` carries three non-obvious fields: `previewValue` (a resolved value to _display_ while the template keeps `value`), `previewAsHtml` (parse it as markup rather than writing a text node), and `textIndex` (which of the leaf's own text runs to write).
 

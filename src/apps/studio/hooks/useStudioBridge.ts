@@ -9,6 +9,7 @@ import {
   usesLayoutGrammar,
 } from "./studioTypes";
 import { CodeRegionReplaced } from "./useStudioAiEdit";
+import { BRIDGE_SOURCE } from "../bridge/protocol";
 
 type Args = {
   dispatch: (action: any) => any;
@@ -358,7 +359,7 @@ export const useStudioBridge = ({
   useEffect(() => {
     function handleMessage(evt: MessageEvent<any>) {
       const data = evt.data;
-      if (!data || data.source !== "studio-bridge") {
+      if (!data || data.source !== BRIDGE_SOURCE) {
         return;
       }
 
