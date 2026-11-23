@@ -1578,6 +1578,12 @@ export const StudioWrapper = () => {
           ? basePath
           : normalizePath(`/${langCode.toLowerCase()}${basePath}`);
 
+      // Re-picking the active language resolves to the page already shown: the
+      // iframe src would not change, so no `load` would clear `isNavigating`.
+      if (localizedPath === normalizedPath) {
+        return;
+      }
+
       const nextSrc = buildIframeSrc(localizedPath);
       if (!nextSrc) {
         dispatch(
