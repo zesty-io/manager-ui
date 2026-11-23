@@ -2,7 +2,15 @@ import { useEffect, useReducer, useState } from "react";
 import { MemoryRouter } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Dialog, IconButton, Button, Skeleton } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  IconButton,
+  Button,
+  Skeleton,
+  Typography,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { Close, Save, DoDisturbAlt } from "@mui/icons-material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons";
@@ -11,7 +19,6 @@ import { AppLink } from "shell/components/AppLink";
 
 import { MediaApp } from "../../../apps/media/src/app";
 import { notify } from "../../store/notifications";
-import styles from "./favicon.less";
 import { isImage } from "../../../apps/media/src/app/utils/fileUtils";
 import {
   useCreateHeadTagMutation,
@@ -26,6 +33,23 @@ import {
 } from "../../services/mediaManager";
 
 const SIZES = [32, 128, 152, 167, 180, 192, 196] as const;
+
+// The legacy Modal and ModalFooter only take a className. "&&" outranks the
+// legacy `.Modal` rule (same single-class specificity) regardless of
+// stylesheet order.
+const FaviconModal = styled(Modal)({
+  "&&": {
+    width: 800,
+    maxWidth: "none",
+    overflowY: "auto",
+    maxHeight: "80vh",
+  },
+});
+
+const FaviconModalFooter = styled(ModalFooter)({
+  display: "flex",
+  justifyContent: "space-between",
+});
 
 type FaviconData = {
   faviconZUID: string;
@@ -225,15 +249,22 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
 
   return (
     <>
-      <Modal
+      <FaviconModal
         open={ui.isUpdateFaviconModalOpen}
-        className={styles.Modal}
         onClose={() => onCloseFaviconModal()}
       >
         <ModalHeader>
-          <h1 className={styles.headline}>
+          <Typography
+            variant="h3"
+            component="h1"
+            sx={{
+              fontWeight: 200,
+              lineHeight: "42px",
+              letterSpacing: "0.32px",
+            }}
+          >
             {t("shell.selectInstanceFavicon")}
-          </h1>
+          </Typography>
         </ModalHeader>
         <ModalContent>
           {isLoading ? (
@@ -292,20 +323,29 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
               )}
 
               {faviconData?.faviconZUID && showSizePreviews && (
-                <section className={styles.Sizes}>
+                <Box
+                  component="section"
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    my: 4,
+                  }}
+                >
                   {SIZES.map((size) => (
-                    <figure key={size}>
+                    <Box component="figure" key={size} sx={{ m: 4 }}>
                       <img
                         src={`${CONFIG.SERVICE_MEDIA_RESOLVER}/resolve/${faviconData?.faviconZUID}/getimage/?w=${size}&h=${size}&type=fit`}
                       />
                       <figcaption>{`${size}x${size}`}</figcaption>
-                    </figure>
+                    </Box>
                   ))}
-                </section>
+                </Box>
               )}
               <AppLink
-                className={styles.SettingsLink}
                 to="/settings/head"
+                data-cy="favicon-settings-link"
+                sx={{ display: "block", my: 2, "& .svg-inline--fa": { mr: 1 } }}
                 onClick={() => {
                   onCloseFaviconModal();
                 }}
@@ -316,12 +356,13 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
             </>
           )}
         </ModalContent>
-        <ModalFooter className={styles.Actions}>
+        <FaviconModalFooter>
           <Button
             variant="contained"
             onClick={() => {
               onCloseFaviconModal();
             }}
+            data-cy="favicon-cancel"
             startIcon={<DoDisturbAlt />}
           >
             {t("shell.cancelEsc")}
@@ -338,8 +379,8 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
           >
             {t("shell.saveFavicon")}
           </Button>
-        </ModalFooter>
-      </Modal>
+        </FaviconModalFooter>
+      </FaviconModal>
     </>
   );
 };
