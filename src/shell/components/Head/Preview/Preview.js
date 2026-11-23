@@ -1,9 +1,21 @@
-import styles from "./Preview.less";
+import { Box } from "@mui/material";
+
 export const Preview = (props) => (
-  <aside className={styles.TagPreviewWrap}>
+  <Box component="aside" sx={{ bgcolor: "grey.800", overflow: "auto" }}>
     {/* {`<!-- Global head tags are inserted before local tags --> \n`} */}
-    <pre className={styles.TagPreview}>
-      <div className={styles.Tag}>{`<head>`}</div>
+    <Box
+      component="pre"
+      sx={{
+        height: "100%",
+        typography: "body2",
+        lineHeight: "inherit",
+        letterSpacing: "inherit",
+        fontFamily: '"Courier New", Courier, monospace',
+        p: 2,
+        color: "grey.300",
+      }}
+    >
+      <Box sx={{ color: "green.400" }}>{`<head>`}</Box>
       <div>
         {props.item &&
           props.item.web &&
@@ -48,7 +60,7 @@ export const Preview = (props) => (
           )
           .join("\n")}
 
-      <div className={styles.Tag}>{`</head>`}</div>
-    </pre>
-  </aside>
+      <Box sx={{ color: "green.400" }}>{`</head>`}</Box>
+    </Box>
+  </Box>
 );

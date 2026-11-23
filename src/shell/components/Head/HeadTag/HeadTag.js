@@ -32,7 +32,6 @@ import { FieldTypeSort } from "@zesty-io/material";
 
 import { FormControl, FormLabel, Select, MenuItem } from "@mui/material";
 
-import styles from "./HeadTag.less";
 export const HeadTag = (props) => {
   const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
@@ -115,7 +114,6 @@ export const HeadTag = (props) => {
   return (
     <Card
       data-cy={tag.hasOwnProperty("createdAt") ? "tagCard" : "newTagCard"}
-      className={styles.HeadTag}
       sx={{ mr: 2, my: 2 }}
     >
       <CardHeader
@@ -205,7 +203,16 @@ export const HeadTag = (props) => {
       <CardContent>
         {tag.attributes.map((attr, index) => {
           return (
-            <div className={styles.Pair} key={index}>
+            <Box
+              key={index}
+              sx={{
+                alignItems: "flex-end",
+                display: "flex",
+                my: 1,
+                gap: 1,
+                "&:hover .MuiButton-root": { visibility: "visible" },
+              }}
+            >
               <FieldTypeText
                 label={t("shell.headTagAttributeLabel")}
                 id="Attribute"
@@ -222,7 +229,7 @@ export const HeadTag = (props) => {
                 }
               />
               <FieldTypeText
-                className={styles.Value}
+                sx={{ width: "100%" }}
                 label={t("shell.headTagValueLabel")}
                 name={`tag-${tag.ZUID}-${index}-val`}
                 value={attr.value}
@@ -242,6 +249,7 @@ export const HeadTag = (props) => {
                   color="error"
                   title={t("shell.headTagDeleteAttributeTitle")}
                   onClick={() => dispatch(deleteTagAttribute(tag.ZUID, index))}
+                  data-cy="head-tag-attribute-delete"
                   sx={{
                     visibility: "hidden",
                     height: "40px",
@@ -252,7 +260,7 @@ export const HeadTag = (props) => {
               ) : (
                 <div style={{ width: "40px" }}></div>
               )}
-            </div>
+            </Box>
           );
         })}
       </CardContent>

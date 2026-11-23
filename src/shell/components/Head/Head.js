@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
-import cx from "classnames";
 
 import { Button, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -15,7 +14,19 @@ import { fetchHeadTags, addHeadTag } from "shell/store/headTags";
 import { useDomain } from "shell/hooks/use-domain";
 import { useGetLegacyHeadTagsQuery } from "../../services/instance";
 
-import styles from "./Head.less";
+const noticeSx = {
+  display: "flex",
+  alignItems: "center",
+  mt: 2.5,
+  mr: 2,
+  mb: 4,
+  ml: 0,
+  color: "text.secondary",
+  typography: "body2",
+  lineHeight: "inherit",
+  letterSpacing: "inherit",
+};
+
 export default connect((state, props) => {
   let item;
   if (props.resourceZUID) {
@@ -76,9 +87,15 @@ export default connect((state, props) => {
   }
 
   return (
-    <div className={styles.Head}>
-      <div className={styles.Tags}>
-        <div className={styles.Notice}>
+    <Box
+      sx={{
+        height: "100%",
+        display: "grid",
+        gridTemplateColumns: "minmax(400px, 1fr) 1fr",
+      }}
+    >
+      <Box sx={{ height: "100%", overflowY: "auto" }}>
+        <Box sx={noticeSx}>
           <Button
             title={t("shell.headCreateTag")}
             variant="contained"
@@ -93,14 +110,14 @@ export default connect((state, props) => {
           <h3>
             <Notice>{t("shell.headNotVersionedNotice")}</Notice>
           </h3>
-        </div>
-        <div className={styles.Notice}>
+        </Box>
+        <Box sx={noticeSx}>
           {legacyHeadTags?.length && (
             <Box component="h3">
               <Notice>{t("shell.headLegacyNotice")}</Notice>
             </Box>
           )}
-        </div>
+        </Box>
         {props.tags.length ? (
           props.tags
             .sort((a, b) => (a.sort > b.sort ? 1 : -1))
@@ -110,11 +127,20 @@ export default connect((state, props) => {
               );
             })
         ) : (
-          <h3 className={cx(styles.headline, styles.NoTags)}>
+          <Box
+            component="h3"
+            sx={{
+              typography: "h3",
+              fontWeight: 200,
+              lineHeight: "42px",
+              letterSpacing: "0.32px",
+              m: 4,
+            }}
+          >
             {t("shell.headNoTags")}
-          </h3>
+          </Box>
         )}
-      </div>
+      </Box>
 
       <Preview
         item={props.item}
@@ -123,6 +149,6 @@ export default connect((state, props) => {
         tags={props.tags}
         legacyHeadTags={legacyHeadTags}
       />
-    </div>
+    </Box>
   );
 });
