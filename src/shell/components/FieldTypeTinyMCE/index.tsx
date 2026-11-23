@@ -41,6 +41,7 @@ import "./plugins/slashcommands";
 import "./plugins/socialmediaembed";
 import "./plugins/imageresizer";
 import "./plugins/compactToolbar";
+import "./plugins/googleDocsPaste";
 
 // importing plugin resources
 import "tinymce/plugins/emoticons/js/emojis";
@@ -329,6 +330,7 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               "socialmediaembed",
               "imageresizer",
               "compactToolbar",
+              "googleDocsPaste",
               // "bynder",
             ],
             // NOTE: premium plugins are being loaded from a self hosted location
@@ -376,7 +378,6 @@ export const FieldTypeTinyMCE = React.memo(function FieldTypeTinyMCE({
               : "blocks | bold italic underline backcolor link superscript subscript strikethrough | align bullist numlist outdent indent | removeformat",
             help_accessibility: false,
 
-            // powerpaste_word_import: "prompt",
             // media_live_embeds: true,
             image_advtab: true,
 
