@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
 
-import { Button, Box } from "@mui/material";
+import { Button, Box, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
 import { Notice } from "shell/components/legacy/Notice";
@@ -127,10 +127,10 @@ export default connect((state, props) => {
               );
             })
         ) : (
-          <Box
+          <Typography
+            variant="h3"
             component="h3"
             sx={{
-              typography: "h3",
               fontWeight: 200,
               lineHeight: "42px",
               letterSpacing: "0.32px",
@@ -138,7 +138,7 @@ export default connect((state, props) => {
             }}
           >
             {t("shell.headNoTags")}
-          </Box>
+          </Typography>
         )}
       </Box>
 

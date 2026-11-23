@@ -2,7 +2,14 @@ import { useEffect, useReducer, useState } from "react";
 import { MemoryRouter } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, Dialog, IconButton, Button, Skeleton } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  IconButton,
+  Button,
+  Skeleton,
+  Typography,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Close, Save, DoDisturbAlt } from "@mui/icons-material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -247,17 +254,17 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
         onClose={() => onCloseFaviconModal()}
       >
         <ModalHeader>
-          <Box
+          <Typography
+            variant="h3"
             component="h1"
             sx={{
-              typography: "h3",
               fontWeight: 200,
               lineHeight: "42px",
               letterSpacing: "0.32px",
             }}
           >
             {t("shell.selectInstanceFavicon")}
-          </Box>
+          </Typography>
         </ModalHeader>
         <ModalContent>
           {isLoading ? (
@@ -338,7 +345,7 @@ export const Favicon = ({ onCloseFaviconModal }: FaviconProps) => {
               <AppLink
                 to="/settings/head"
                 data-cy="favicon-settings-link"
-                sx={{ display: "block", my: 2, "& svg": { mr: 1 } }}
+                sx={{ display: "block", my: 2, "& .svg-inline--fa": { mr: 1 } }}
                 onClick={() => {
                   onCloseFaviconModal();
                 }}
