@@ -1,27 +1,54 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import cx from "classnames";
-
-import { Select, MenuItem } from "@mui/material";
+import { Box, Select, MenuItem } from "@mui/material";
 
 import { formatName } from "utility/formatName";
-
-import styles from "./Columns.less";
 
 export default function Columns(props) {
   const { t } = useTranslation();
   const filterDeactivated = props.fields.filter((field) => !field.deletedAt);
 
   return (
-    <header className={styles.TableHeader} style={props.style}>
-      <span className={styles.wrap}>
+    <Box
+      component="header"
+      style={props.style}
+      sx={{ display: "flex", zIndex: 1 }}
+    >
+      <Box
+        component="span"
+        sx={{
+          bgcolor: "grey.600",
+          color: "blue.50",
+          display: "flex",
+          flex: 1,
+          height: "100%",
+          alignItems: "center",
+          minHeight: 60,
+        }}
+      >
         {props.cols.map((col, index) => {
           // Handles empty columns
           const colName = `${formatName(col)}-${index}`;
           return (
-            <div key={index} className={styles.column}>
-              <span className={cx(styles.Cell)}>{col.toUpperCase()}</span>
+            <Box
+              key={index}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                minWidth: 250,
+                maxWidth: 250,
+                py: 0.5,
+                px: 2,
+                mb: 1,
+              }}
+            >
+              <Box
+                component="span"
+                sx={{ display: "inline-block", minWidth: 250, py: 1 }}
+              >
+                {col.toUpperCase()}
+              </Box>
               <Select
                 name={colName}
                 value={props.fieldMaps[col] || "none"}
@@ -37,10 +64,10 @@ export default function Columns(props) {
                   </MenuItem>
                 ))}
               </Select>
-            </div>
+            </Box>
           );
         })}
-      </span>
-    </header>
+      </Box>
+    </Box>
   );
 }

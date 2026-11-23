@@ -1,14 +1,24 @@
 import { Component } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Select, MenuItem, TextField } from "@mui/material";
+import { Box, Select, MenuItem, TextField } from "@mui/material";
 
-import styles from "./CsvSettings.less";
+const settingSx = { m: 1, minWidth: 250 };
+
 export const CsvSettings = (props) => {
   const { t } = useTranslation();
   return (
-    <section className={styles.CsvSettings}>
-      <article className={styles.Setting}>
+    <Box
+      component="section"
+      sx={{
+        display: "grid",
+        p: 1,
+        gridTemplateColumns: "min-content min-content min-content",
+        bgcolor: "grey.600",
+        color: "blue.50",
+      }}
+    >
+      <Box component="article" sx={settingSx}>
         <label>{t("content.itemEditMetaDescription")}</label>
         <Select
           name={"metaDescription"}
@@ -26,8 +36,8 @@ export const CsvSettings = (props) => {
             </MenuItem>
           ))}
         </Select>
-      </article>
-      <article className={styles.Setting}>
+      </Box>
+      <Box component="article" sx={settingSx}>
         <label>{t("content.itemEditMetaKeywords")}</label>
         <Select
           name="metaKeywords"
@@ -43,8 +53,8 @@ export const CsvSettings = (props) => {
             </MenuItem>
           ))}
         </Select>
-      </article>
-      <article className={styles.Setting}>
+      </Box>
+      <Box component="article" sx={settingSx}>
         <label>{t("content.csvSettingsMetaLinkText")}</label>
         <Select
           name="metaLinkText"
@@ -60,8 +70,8 @@ export const CsvSettings = (props) => {
             </MenuItem>
           ))}
         </Select>
-      </article>
-      <article className={styles.Setting}>
+      </Box>
+      <Box component="article" sx={settingSx}>
         <label>{t("content.itemEditMetaTitle")}</label>
         <Select
           name="metaTitle"
@@ -77,8 +87,8 @@ export const CsvSettings = (props) => {
             </MenuItem>
           ))}
         </Select>
-      </article>
-      <article className={styles.Setting}>
+      </Box>
+      <Box component="article" sx={settingSx}>
         <label>{t("content.csvSettingsParentZuid")}</label>
         <Select
           name="parentZUID"
@@ -94,8 +104,8 @@ export const CsvSettings = (props) => {
             </MenuItem>
           ))}
         </Select>
-      </article>
-      <article className={styles.Setting}>
+      </Box>
+      <Box component="article" sx={settingSx}>
         <label>{t("content.csvSettingsPathPart")}</label>
         <Select
           name="pathPart"
@@ -111,15 +121,15 @@ export const CsvSettings = (props) => {
             </MenuItem>
           ))}
         </Select>
-      </article>
-      <article className={styles.Setting}>
+      </Box>
+      <Box component="article" sx={settingSx}>
         <CanonicalTag
           name="canonicalTagMode"
           onChange={props.handleMap}
           t={t}
         />
-      </article>
-      <article className={styles.Setting}>
+      </Box>
+      <Box component="article" sx={settingSx}>
         <label>{t("content.itemEditMetaSitemapPriority")}</label>
         <Select
           name="sitemapPriority"
@@ -145,8 +155,8 @@ export const CsvSettings = (props) => {
           <MenuItem value={0.1}>0.1</MenuItem>
           <MenuItem value={-2.0}>{t("content.csvSettingsNoSitemap")}</MenuItem>
         </Select>
-      </article>
-    </section>
+      </Box>
+    </Box>
   );
 };
 
