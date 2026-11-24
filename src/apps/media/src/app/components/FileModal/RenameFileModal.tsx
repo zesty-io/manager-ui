@@ -79,6 +79,7 @@ export const RenameFileModal: FC<Props> = ({
       <DialogContent>
         <InputLabel>{t("media.renameFileModalNewNameLabel")}</InputLabel>
         <TextFieldWithCursorPosition
+          data-cy="rename-file-field"
           sx={{
             mt: 1,
             width: "100%",
@@ -125,6 +126,7 @@ export const RenameFileModal: FC<Props> = ({
           {t("common.cancel")}
         </Button>
         <Button
+          data-cy="rename-file-update-btn"
           variant="contained"
           onClick={handleUpdate}
           disabled={isLoadingUpdate}

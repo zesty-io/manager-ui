@@ -38,6 +38,18 @@ Cypress.Commands.add("deleteModel", (zuid) => {
   });
 });
 
+Cypress.Commands.add("deleteMediaFile", (id) => {
+  if (!id) return;
+  cy.log(`[CLEAN UP] Media File`);
+  return cy.apiRequest({
+    url: `${Cypress.env("MEDIA_MANAGER_URL")}/file/${id}`,
+    method: "DELETE",
+    // Idempotent: the test itself may have already deleted the file, in
+    // which case this 404s and should not fail cleanup.
+    failOnStatusCode: false,
+  });
+});
+
 Cypress.Commands.add("deleteModels", (models = []) => {
   cy.log(`[CLEAN UP] Content Models`);
   cy.apiRequest({
