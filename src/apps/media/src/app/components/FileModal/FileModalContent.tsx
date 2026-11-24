@@ -308,6 +308,7 @@ export const FileModalContent: FC<Props> = ({
             <IconButton
               size="small"
               aria-label={t("media.fileModalContentReplaceAria")}
+              data-cy="replace-file-btn"
               onClick={onOpenReplaceFileModal}
             >
               <FileReplace fontSize="small" />

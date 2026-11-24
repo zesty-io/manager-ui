@@ -23,7 +23,6 @@ import {
 import { UploadHeaderText } from "../UploadModal";
 import { AppState } from "../../../../../../shell/store/types";
 import { UploadThumbnail } from "../UploadThumbnail";
-import { mediaManagerApi } from "../../../../../../shell/services/mediaManager";
 import { FileTypePreview } from "./FileTypePreview";
 import { useGetCurrentUserRolesQuery } from "../../../../../../shell/services/accounts";
 import instanceZUID from "../../../../../../utility/instanceZUID";
@@ -75,17 +74,8 @@ export const ReplaceFileModal = ({
   }, [newFile]);
 
   const handleCloseUploadingFileModal = () => {
+    // Refetching is handled by replaceFile once the upload completes
     dispatch(dismissFileUploads());
-
-    if (filesToUpload.length) {
-      dispatch(
-        mediaManagerApi.util.invalidateTags([
-          { type: "GroupData", id: originalFile.group_id },
-          "BinFiles",
-        ])
-      );
-    }
-
     onClose();
   };
 
@@ -125,7 +115,11 @@ export const ReplaceFileModal = ({
             headerKeyword="replacedFile"
             showCount={false}
           />
-          <IconButton onClick={handleCloseUploadingFileModal} size="small">
+          <IconButton
+            onClick={handleCloseUploadingFileModal}
+            size="small"
+            data-cy="replace-file-close-btn"
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -145,6 +139,7 @@ export const ReplaceFileModal = ({
           <Button
             color="primary"
             variant="contained"
+            data-cy="replace-file-done-btn"
             onClick={handleCloseUploadingFileModal}
           >
             {t("common.done")}
@@ -196,6 +191,7 @@ export const ReplaceFileModal = ({
           <Button
             variant="contained"
             color="primary"
+            data-cy="replace-file-confirm-btn"
             onClick={() => {
               hiddenFileInput.current.value = "";
               hiddenFileInput.current.click();
@@ -212,6 +208,7 @@ export const ReplaceFileModal = ({
           setNewFile(evt.target.files[0]);
         }}
         hidden
+        data-cy="replace-file-input"
         accept={acceptedExtension}
         style={{ display: "none" }}
       />
