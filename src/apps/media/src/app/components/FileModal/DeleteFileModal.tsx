@@ -45,7 +45,7 @@ export const DeleteFileModal: FC<Props> = ({
           : t("common.delete")
       }
       confirmAriaLabel={t("media.deleteFileModalDeleteButtonAria")}
-      confirmDataCy="DeleteFileModalConfirmButton"
+      confirmDataCy="delete-file-confirm-btn"
     />
   );
 };

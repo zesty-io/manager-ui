@@ -41,6 +41,7 @@ export const RichTreeItem = memo(
         slotProps={
           {
             content: {
+              "data-cy": item?.nodeData?.id,
               sx: {
                 "&:hover, &.hovered": {
                   bgcolor: (theme: Theme) =>

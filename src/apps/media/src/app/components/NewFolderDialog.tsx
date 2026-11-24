@@ -152,6 +152,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
         />
         <InputLabel>{t("media.newFolderDialogFolderNameLabel")}</InputLabel>
         <TextField
+          data-cy="new-folder-name-field"
           autoFocus
           value={name}
           hiddenLabel
@@ -167,6 +168,7 @@ export const NewFolderDialog = ({ open, onClose, id, binId }: Props) => {
           {t("common.cancel")}
         </Button>
         <Button
+          data-cy="new-folder-create-btn"
           loading={isCreatingGroup}
           disabled={loading || !selectedGroup || selectedGroup?.bin_id === null}
           variant="contained"
