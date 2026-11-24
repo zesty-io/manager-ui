@@ -150,6 +150,7 @@ export const UploadModal: FC = () => {
           }}
         >
           <Button
+            data-cy="upload-modal-done-btn"
             color="primary"
             variant="contained"
             disabled={loading}
