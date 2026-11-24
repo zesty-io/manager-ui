@@ -4,6 +4,7 @@ import { useHistory, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
+import { Box } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoDisturbAltIcon from "@mui/icons-material/DoDisturbAlt";
 
@@ -19,7 +20,6 @@ import { notify } from "shell/store/notifications";
 import { isRequestFailed, notifyFailure } from "utility/request";
 import { usePermission } from "shell/hooks/use-permissions";
 
-import styles from "./DeleteRelease.less";
 export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -60,10 +60,19 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
   };
 
   return (
-    <div>
+    <Box
+      sx={(theme) => ({
+        "& article": {
+          top: 0,
+          right: 0,
+          boxShadow: `2px 2px 4px ${theme.palette.grey[800]}`,
+        },
+      })}
+    >
       <Button
         variant="contained"
         color="error"
+        data-cy="release-delete"
         onClick={() => setOpen(true)}
         disabled={!canPublish || loading}
         startIcon={<DeleteIcon />}
@@ -71,34 +80,33 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
         {t("common.delete")}
       </Button>
 
-      <Modal
-        className={styles.DeleteReleaseModal}
-        type="local"
-        open={open}
-        onClose={() => setOpen(false)}
-      >
+      <Modal type="local" open={open} onClose={() => setOpen(false)}>
         <ModalContent>
           <Notice>{t("release.deleteWarning")}</Notice>
         </ModalContent>
-        <ModalFooter className={styles.ModalFooter}>
-          <Button
-            variant="contained"
-            onClick={() => setOpen(false)}
-            startIcon={<DoDisturbAltIcon />}
-          >
-            {t("shell.cancelEsc")}
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            disabled={loading}
-            onClick={onDeleteRelease}
-            startIcon={<DeleteIcon />}
-          >
-            {t("release.deleteRelease")}
-          </Button>
+        <ModalFooter>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Button
+              variant="contained"
+              data-cy="release-delete-cancel"
+              onClick={() => setOpen(false)}
+              startIcon={<DoDisturbAltIcon />}
+            >
+              {t("shell.cancelEsc")}
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              data-cy="release-delete-confirm"
+              disabled={loading}
+              onClick={onDeleteRelease}
+              startIcon={<DeleteIcon />}
+            >
+              {t("release.deleteRelease")}
+            </Button>
+          </Box>
         </ModalFooter>
       </Modal>
-    </div>
+    </Box>
   );
 });

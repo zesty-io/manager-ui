@@ -57,12 +57,6 @@ export const releases = createSlice({
       //   return plan;
       // }
     },
-    resetPlan(state) {
-      state.data = [];
-      state.status = "loaded";
-      state.successes = 0;
-      state.failures = 0;
-    },
     // addStep(state, action) {
     //   // prevent duplicate ZUIDs
     //   if (!state.data.find((step) => step.ZUID === action.payload.ZUID)) {

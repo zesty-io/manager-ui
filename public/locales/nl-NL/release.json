@@ -28,13 +28,10 @@
   "neverPublished": "Nooit gepubliceerd",
   "publishAll": "Alles publiceren",
   "publishAllNoticeBody": "Dit publiceert alle onderdelen in deze release. Alle URL's van onderdelen en gerelateerde inhoud worden opgeschoond (purged).",
-  "publishedItems_one": "{{count}} item gepubliceerd",
-  "publishedItems_other": "{{count}} items gepubliceerd",
   "publishing": "Publiceren...",
   "releasesHeading": "Releases",
   "searchPlaceholder": "Zoek op ZUID of metatitel om op te nemen in je release",
   "startingRelease": "Release starten",
-  "startNewPublishPlan": "Nieuw publicatieplan starten",
   "updatedReleaseMember": "Release ({{releaseName}}) lid ({{itemTitle}}) bijgewerkt naar versie {{version}}",
   "versionNumber": "Versie {{version}}",
   "versionPublishedAgo": "Versie {{version}} is {{timeAgo}} gepubliceerd"

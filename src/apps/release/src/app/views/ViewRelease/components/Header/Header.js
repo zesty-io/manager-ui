@@ -6,7 +6,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { createMember } from "shell/store/releaseMembers";
 import { fetchVersions } from "shell/store/contentVersions";
 
-import { Button, Select, MenuItem } from "@mui/material";
+import { Box, Button, Select, MenuItem } from "@mui/material";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
 
 import ContentSearch from "shell/components/LegacyContentSearch";
@@ -14,7 +14,6 @@ import ContentSearch from "shell/components/LegacyContentSearch";
 import { PublishAll } from "./components/PublishAll";
 import { DeleteRelease } from "./components/DeleteRelease";
 
-import styles from "./Header.less";
 export function Header({ plan, isContentSubpage }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -37,12 +36,21 @@ export function Header({ plan, isContentSubpage }) {
   );
 
   return (
-    <header data-cy="ReleaseHeader" className={styles.Header}>
+    <Box
+      component="header"
+      data-cy="ReleaseHeader"
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "auto max-content 225px 1fr max-content",
+        columnGap: 2,
+        alignItems: "center",
+      }}
+    >
       <Button
         component={RouterLink}
         to={isContentSubpage ? `/content/releases` : `/release`}
         variant="contained"
-        className={styles.BackBtn}
+        data-cy="release-backBtn"
       >
         <FastRewindIcon fontSize="small" />
       </Button>
@@ -74,6 +82,6 @@ export function Header({ plan, isContentSubpage }) {
         keepResultsOnSelect={true}
       />
       <DeleteRelease isContentSubpage={isContentSubpage} />
-    </header>
+    </Box>
   );
 }
