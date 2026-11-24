@@ -4,9 +4,9 @@ import { connect } from "react-redux";
 import parse from "csv-parse/lib/es5/sync";
 import chunk from "lodash/chunk";
 import { List } from "react-window";
-import cx from "classnames";
 
 import Button from "@mui/material/Button";
+import { alpha } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 
@@ -19,8 +19,30 @@ import { request } from "utility/request";
 import { notify } from "shell/store/notifications";
 import { fetchFields } from "shell/store/fields";
 
-import styles from "./CSVImport.less";
 import { Box } from "@mui/material";
+import { theme } from "@zesty-io/material";
+
+const insetShadow = ({ palette }) => {
+  const shade = (opacity) => alpha(palette.text.primary, opacity);
+  return `inset 0 -2px 2px 0 ${shade(0.24)}, inset 0 0 2px 0 ${shade(0.12)}`;
+};
+
+const rowBorder = ({ palette }) =>
+  `1px solid ${alpha(palette.text.primary, 0.12)}`;
+
+const cellSx = {
+  display: "flex",
+  minWidth: 250,
+  maxWidth: 250,
+  py: 0.5,
+  px: 2,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  height: "100%",
+  alignItems: "center",
+  borderRight: rowBorder,
+};
+
 class CSVImportBody extends Component {
   state = {
     modelZUID: this.props.modelZUID,
@@ -357,22 +379,55 @@ class CSVImportBody extends Component {
     ];
 
     return (
-      <div className={styles.CSVImport}>
-        <div className={styles.Top}>
-          <form className={styles.File}>
-            <input
+      <div>
+        <Box sx={{ display: "flex", alignItems: "center", m: 1 }}>
+          <Box
+            component="form"
+            sx={{ display: "flex", flexDirection: "column", mr: 1 }}
+          >
+            <Box
+              component="input"
               type="file"
               id="csv"
               name="csv"
               accept=".csv"
               onChange={this.handleFile}
+              data-cy="csv-import-file"
+              sx={{ height: 0, width: 0, overflow: "hidden" }}
             />
-            <label htmlFor="csv">
-              <FileUploadIcon fontSize="small" />
+            <Box
+              component="label"
+              htmlFor="csv"
+              data-cy="csv-import-open-file"
+              sx={{
+                alignItems: "center",
+                bgcolor: "grey.700",
+                border: "none",
+                borderRadius: "4px",
+                boxShadow: insetShadow,
+                color: "common.white",
+                cursor: "pointer",
+                display: "flex",
+                fontWeight: 500,
+                fontStyle: "normal",
+                fontStretch: "normal",
+                lineHeight: "24px",
+                letterSpacing: "0.1px",
+                py: 1,
+                px: 2,
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                textTransform: "uppercase",
+                textAlign: "left",
+              }}
+            >
+              <FileUploadIcon fontSize="small" sx={{ mr: 1 }} />
               {t("content.csvImportOpenFile")}
-            </label>
-          </form>
+            </Box>
+          </Box>
           <Button
+            data-cy="csv-import-create-items"
+            sx={{ mr: 1 }}
             variant="contained"
             color="success"
             disabled={
@@ -387,11 +442,17 @@ class CSVImportBody extends Component {
             {t("content.csvImportCreateItems")}
           </Button>
 
-          {this.state.warn && (
-            <Notice className={styles.Notice}>{this.state.warn}</Notice>
-          )}
+          {this.state.warn && <Notice>{this.state.warn}</Notice>}
 
-          <div className={cx(styles.ImportResults, styles.subheadline)}>
+          <Box
+            sx={{
+              textAlign: "right",
+              flex: 1,
+              typography: "h5",
+              fontWeight: 400,
+              letterSpacing: "0.08px",
+            }}
+          >
             {this.state.mappedMetaItems &&
               t("content.csvImportImportedCount", {
                 count: this.state.successes || 0,
@@ -405,10 +466,10 @@ class CSVImportBody extends Component {
                 })}
               </div>
             ) : null}
-          </div>
-        </div>
+          </Box>
+        </Box>
 
-        <div className={styles.Mid}>
+        <div>
           {/* WebData/MetaData Mapping */}
           {this.state.cols && (
             <CsvSettings
@@ -422,7 +483,7 @@ class CSVImportBody extends Component {
           sx={{ height: this.state.height, width: "100%", overflowY: "scroll" }}
         >
           <List
-            className={styles.Bottom}
+            style={{ backgroundColor: theme.palette.common.white }}
             rowCount={recordsWithColumns.length}
             rowProps={{
               data: {
@@ -455,20 +516,31 @@ class Row extends PureComponent {
       );
     }
     return (
-      <span
+      <Box
+        component="span"
         style={{ ...this.props.style, width: "auto" }}
-        className={cx(styles.wrap, { [styles.failure]: this.props.data.error })}
+        sx={{
+          display: "flex",
+          borderBottom: rowBorder,
+          ...(this.props.data.error && {
+            color: "common.white",
+            bgcolor: "error.main",
+          }),
+          "&:hover": {
+            boxShadow: insetShadow,
+            bgcolor: "blue.50",
+            color: "inherit",
+          },
+        }}
       >
         {Object.keys(item).map((key) => {
           return (
-            <div key={key} className={styles.column}>
-              <span key={item[key]} className={styles.Cell}>
-                {item[key].substr(0, 120)}
-              </span>
-            </div>
+            <Box key={key} sx={cellSx}>
+              <span key={item[key]}>{item[key].substr(0, 120)}</span>
+            </Box>
           );
         })}
-      </span>
+      </Box>
     );
   }
 }
