@@ -115,7 +115,11 @@ export const ReplaceFileModal = ({
             headerKeyword="replacedFile"
             showCount={false}
           />
-          <IconButton onClick={handleCloseUploadingFileModal} size="small">
+          <IconButton
+            onClick={handleCloseUploadingFileModal}
+            size="small"
+            data-cy="replace-file-close-btn"
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -135,6 +139,7 @@ export const ReplaceFileModal = ({
           <Button
             color="primary"
             variant="contained"
+            data-cy="replace-file-done-btn"
             onClick={handleCloseUploadingFileModal}
           >
             {t("common.done")}
@@ -186,6 +191,7 @@ export const ReplaceFileModal = ({
           <Button
             variant="contained"
             color="primary"
+            data-cy="replace-file-confirm-btn"
             onClick={() => {
               hiddenFileInput.current.value = "";
               hiddenFileInput.current.click();
@@ -202,6 +208,7 @@ export const ReplaceFileModal = ({
           setNewFile(evt.target.files[0]);
         }}
         hidden
+        data-cy="replace-file-input"
         accept={acceptedExtension}
         style={{ display: "none" }}
       />
