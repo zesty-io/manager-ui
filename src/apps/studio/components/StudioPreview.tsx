@@ -42,6 +42,7 @@ export const StudioPreview = ({
     />
     {isNavigating ? (
       <Box
+        data-cy="StudioPreviewNavigating"
         component="div"
         sx={{
           position: "absolute",

@@ -342,6 +342,8 @@ describe("Studio Wrapper", () => {
           cy.getBySelector("StudioPreviewFrame")
             .should("have.attr", "src")
             .and("not.equal", initialSrc);
+          // The new page's iframe load is what clears the spinner.
+          cy.getBySelector("StudioPreviewNavigating").should("not.exist");
         });
       });
   });
@@ -515,6 +517,92 @@ describe("Studio Wrapper", () => {
   describe("with the live preview bridge", () => {
     before(function () {
       cy.skipIfPreviewDown(this, studioPath);
+    });
+
+    it("keeps Studio loaded when the active language is re-selected", () => {
+      // A language pick that navigates resolves the page through this request
+      // first.
+      cy.intercept({
+        method: "GET",
+        pathname: "**/search/items",
+        query: { field: "path" },
+      }).as("resolveItemByPath");
+      cy.waitForBridgeTemplateMap();
+      cy.getBySelector("StudioPreviewNavigating").should("not.exist");
+
+      cy.getBySelector("StudioPreviewFrame")
+        .invoke("attr", "src")
+        .then((initialSrc) => {
+          const initialPath = new URL(initialSrc).pathname;
+          const requestsFor = (interceptions, path) =>
+            interceptions.filter(
+              ({ request }) =>
+                new URL(request.url).searchParams.get("q") === path
+            );
+
+          cy.get("@resolveItemByPath.all").then((beforeRepick) => {
+            const repickBaseline = requestsFor(
+              beforeRepick,
+              initialPath
+            ).length;
+
+            cy.getBySelector("language-selector").click();
+            cy.get('[role="menu"] [role="menuitem"]').then(($items) => {
+              const currentLabel = Cypress.$('[data-cy="language-selector"]')
+                .text()
+                .trim();
+              const currentItem = [...$items].find(
+                (item) => Cypress.$(item).text().trim() === currentLabel
+              );
+
+              expect(currentItem, "active language menu item").to.exist;
+              cy.wrap(currentItem).click();
+            });
+
+            cy.getBySelector("StudioPreviewFrame").should(
+              "have.attr",
+              "src",
+              initialSrc
+            );
+
+            // There is no event to wait on for "nothing happened", so switch to
+            // another language: its resolve request is sent after any the
+            // re-pick sent, so once it is seen the re-pick's would be too.
+            cy.getBySelector("language-selector").click();
+            cy.get('[role="menu"] [role="menuitem"]').then(($items) => {
+              const currentLabel = Cypress.$('[data-cy="language-selector"]')
+                .text()
+                .trim();
+              const nextItem = [...$items].find(
+                (item) => Cypress.$(item).text().trim() !== currentLabel
+              );
+
+              expect(nextItem, "next language menu item").to.exist;
+              cy.wrap(nextItem).click();
+            });
+
+            cy.getBySelector("StudioPreviewFrame")
+              .should("have.attr", "src")
+              .and("not.equal", initialSrc)
+              .then((nextSrc) => {
+                const nextPath = new URL(nextSrc).pathname;
+
+                cy.get("@resolveItemByPath.all")
+                  .should((interceptions) => {
+                    expect(
+                      requestsFor(interceptions, nextPath),
+                      "resolve request for the next language"
+                    ).to.not.be.empty;
+                  })
+                  .then((interceptions) => {
+                    expect(
+                      requestsFor(interceptions, initialPath),
+                      "resolve requests for the active language after re-pick"
+                    ).to.have.length(repickBaseline);
+                  });
+              });
+          });
+        });
     });
 
     it("saves sanitized mapped source for a pending layout draft", () => {
