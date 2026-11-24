@@ -43,6 +43,7 @@ import {
 } from "../../services/instance";
 import { AppState } from "../../store/types";
 import { AIGeneratorContext } from "./AIGeneratorProvider";
+import { isTextLikeFieldType } from "shell/fieldTypes";
 
 const DEFAULT_LIMITS: Record<AIType, number> = {
   text: 150,
@@ -169,17 +170,8 @@ export const AIGenerator = ({
     )
       return "";
 
-    const textFieldTypes = [
-      "text",
-      "wysiwyg_basic",
-      "wysiwyg_advanced",
-      "article_writer",
-      "markdown",
-      "textarea",
-    ];
-
     return fields.reduce((accu, curr) => {
-      if (!curr.deletedAt && textFieldTypes.includes(curr.datatype)) {
+      if (!curr.deletedAt && isTextLikeFieldType(curr.datatype)) {
         return (accu = `${accu} ${item.data[curr.name] || ""}`);
       }
 
