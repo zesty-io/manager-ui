@@ -63,6 +63,7 @@
   "blockSelectorSelectVariant": "Выберите вариант",
   "blockSelectorUpdatedOnBy": "Обновлено {{date}} пользователем {{user}}",
   "blockSelectorViewBlock": "Просмотреть блок",
+  "bynderLoadFailed": "Не удалось загрузить Bynder. Проверьте подключение и повторите попытку.",
   "cancelEsc": "Отмена (ESC)",
   "cannotBeUndone": "Это действие нельзя отменить",
   "characterLimit": "Лимит символов",

@@ -1,4 +1,48 @@
+import * as Sentry from "@sentry/react";
 import i18n from "../shell/i18n";
+import { store } from "shell/store";
+import { notify } from "shell/store/notifications";
+
+const BYNDER_SCRIPT_URL =
+  "https://ucv.bynder.com/5.0.5/modules/compactview/bynder-compactview-3-latest.js";
+
+let bynderScriptPromise: Promise<void> | null = null;
+// Ignore clicks while the first load is pending so the picker can't open twice.
+let isOpening = false;
+
+// Inject the SDK once; a failed load clears the memo so a later click retries.
+const loadBynderScript = () => {
+  if (!bynderScriptPromise) {
+    bynderScriptPromise = new Promise<void>((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = BYNDER_SCRIPT_URL;
+      script.async = true;
+      const fail = () => {
+        script.remove();
+        bynderScriptPromise = null;
+        reject(new Error("Failed to load the Bynder Compact View script"));
+      };
+      // A blocked or stubbed response can fire onload without defining the global.
+      script.onload = () =>
+        typeof BynderCompactView === "undefined" ? fail() : resolve();
+      script.onerror = fail;
+      document.head.appendChild(script);
+    });
+  }
+
+  return bynderScriptPromise;
+};
+
+// Tag the stage so Sentry separates SDK load failures from `open` throwing.
+const reportBynderFailure = (stage: "script" | "open", error: unknown) => {
+  Sentry.captureException(error, {
+    tags: { bynder_failure: stage },
+    fingerprint: ["bynder-failure", stage],
+  });
+  store.dispatch(
+    notify({ kind: "error", message: i18n.t("shell.bynderLoadFailed") })
+  );
+};
 
 // Bynder Compact View has two SDK-owned locale paths: the `language` option
 // accepts underscore IDs, then the modal also fetches
@@ -27,10 +71,26 @@ export default ({
   onSuccess?: (assets: ReadonlyArray<BynderImage>) => void;
   mode?: BynderMode;
 }) => {
-  BynderCompactView.open({
-    portal: { url },
-    mode,
-    language: getBynderLanguage(),
-    onSuccess,
-  });
+  if (isOpening) return;
+  isOpening = true;
+
+  loadBynderScript()
+    .then(
+      () => {
+        try {
+          BynderCompactView.open({
+            portal: { url },
+            mode,
+            language: getBynderLanguage(),
+            onSuccess,
+          });
+        } catch (error) {
+          reportBynderFailure("open", error);
+        }
+      },
+      (error) => reportBynderFailure("script", error)
+    )
+    .finally(() => {
+      isOpening = false;
+    });
 };

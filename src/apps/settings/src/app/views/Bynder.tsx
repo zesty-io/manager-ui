@@ -234,7 +234,12 @@ export const Bynder = () => {
             <Typography variant="body2" color="text.secondary" mb={2}>
               {t("settings.bynderAssetsDescription")}
             </Typography>
-            <Button variant="contained" size="small" onClick={handleOpenBynder}>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleOpenBynder}
+              data-cy="bynderConnectBtn"
+            >
               {t("settings.bynderConnect")}
             </Button>
           </Box>

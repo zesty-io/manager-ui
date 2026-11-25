@@ -63,6 +63,7 @@
   "blockSelectorSelectVariant": "Select variant",
   "blockSelectorUpdatedOnBy": "Updated on {{date}} by {{user}}",
   "blockSelectorViewBlock": "View Block",
+  "bynderLoadFailed": "Unable to load Bynder. Please check your connection and try again.",
   "cancelEsc": "Cancel (ESC)",
   "cannotBeUndone": "This cannot be undone",
   "characterLimit": "Character Limit",
