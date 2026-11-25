@@ -678,7 +678,6 @@
   "studioFreestyleAlertTitle": "Deze lay-out is gemaakt in Freestyle",
   "studioFullHint": "Selecteer items op het canvas om ze te bewerken, of sleep blokken om de lay-out opnieuw te ordenen",
   "studioInlineEditFailed": "Kan inline bewerking voor dit blok niet toepassen.",
-  "studioInvalidUrl": "Ongeldige URL. Controleer het en probeer het opnieuw.",
   "studioItemPublished": "Gepubliceerd: {{label}}",
   "studioItemSaved": "Item opgeslagen: {{label}}",
   "studioItemsPublishedCount_one": "{{count}} item opgeslagen en gepubliceerd",

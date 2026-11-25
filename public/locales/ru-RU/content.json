@@ -712,7 +712,6 @@
   "studioFreestyleAlertTitle": "Этот макет был создан в Freestyle",
   "studioFullHint": "Выбирайте элементы на холсте, чтобы редактировать их, или перетаскивайте блоки, чтобы изменить порядок макета",
   "studioInlineEditFailed": "Не удалось применить редактирование на месте для этого блока.",
-  "studioInvalidUrl": "Недействительный URL. Проверьте и попробуйте снова.",
   "studioItemPublished": "Опубликовано: {{label}}",
   "studioItemSaved": "Элемент сохранён: {{label}}",
   "studioItemsPublishedCount_one": "Сохранено и опубликовано {{count}} элемент",
