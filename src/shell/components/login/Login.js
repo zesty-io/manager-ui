@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useState } from "react";
 import { connect, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { alpha } from "@mui/material/styles";
@@ -41,7 +41,6 @@ export default connect((state) => {
     const [loading, setLoading] = useState(false);
     const [twoFactor, setTwoFactor] = useState(false);
     const [error, setError] = useState("");
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = (evt) => {
@@ -82,11 +81,47 @@ export default connect((state) => {
         .finally(() => setLoading(false));
     };
 
-    useEffect(() => {
-      if (isAuthenticated) {
-        props.dispatch(verify());
+    const handleSSOError = (errorMessage) => {
+      if (props.auth.valid) {
+        return;
       }
-    }, [isAuthenticated]);
+
+      setError(errorMessage || t("shell.loginProblem"));
+    };
+
+    const handleSSOSuccess = (message) => {
+      // Login stays mounted while the session is valid; ignore stray messages
+      if (props.auth.valid) {
+        return;
+      }
+
+      // Once one SSO login has succeeded, SSOButtonGroup reports every later
+      // message (errors included) through onSuccess, so only a successful
+      // message that carries a token signs the user in. Anything else is a
+      // failed sign-in.
+      if (message?.status !== "200") {
+        handleSSOError(message?.error_message);
+        return;
+      }
+
+      if (!message?.token) {
+        handleSSOError();
+        return;
+      }
+
+      setError("");
+      dispatch({
+        type: "FETCH_LOGIN_SUCCESS",
+        payload: {
+          // No code: verify() marks the session valid together with the
+          // user ZUID, which LoadInstance needs when it reacts to it.
+          meta: {
+            token: message.token,
+          },
+        },
+      });
+      dispatch(verify());
+    };
 
     return (
       <Box
@@ -176,21 +211,8 @@ export default connect((state) => {
               </Box>
               <SSOButtonGroup
                 authServiceUrl={CONFIG.SERVICE_AUTH}
-                onSuccess={(data) => {
-                  dispatch({
-                    type: "FETCH_LOGIN_SUCCESS",
-                    payload: {
-                      code: data.status,
-                      meta: {
-                        token: data.token,
-                      },
-                    },
-                  });
-                  setIsAuthenticated(true);
-                }}
-                onError={(err) => {
-                  setError(err);
-                }}
+                onSuccess={handleSSOSuccess}
+                onError={handleSSOError}
               >
                 <SSOButton
                   service="google"
@@ -223,6 +245,7 @@ export default connect((state) => {
               </Box>
               {!!error && (
                 <Alert
+                  data-cy="LoginError"
                   severity="error"
                   onClose={() => setError("")}
                   sx={{
