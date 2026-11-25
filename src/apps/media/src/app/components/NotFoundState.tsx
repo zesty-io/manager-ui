@@ -28,6 +28,7 @@ export const NotFoundState: FC<Props> = ({ title, message }) => {
       height="100%"
       textAlign={"center"}
       className="NotFoundState"
+      data-cy="media-not-found-state"
     >
       <Box width="400px">
         <img src={notFound} height="320px" />
