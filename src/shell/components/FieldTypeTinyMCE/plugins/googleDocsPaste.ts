@@ -2,9 +2,21 @@ import tinymce from "tinymce/tinymce";
 
 const DOCS_GUID_PATTERN = /id=["']docs-internal-guid-/i;
 const BLOCK_SELECTOR = "p, h1, h2, h3, h4, h5, h6";
-// Inline wrappers Docs puts around empty lines. Anything else (img, a, etc.)
+// Inline wrappers Docs puts around empty lines (including the ones
+// convertStyledSpans adds). Anything else (img, a, etc.)
 // means the block has real content and must be kept.
-const EMPTY_SAFE_TAGS = new Set(["BR", "B", "STRONG", "I", "EM", "U", "SPAN"]);
+const EMPTY_SAFE_TAGS = new Set([
+  "BR",
+  "B",
+  "STRONG",
+  "I",
+  "EM",
+  "U",
+  "S",
+  "SUP",
+  "SUB",
+  "SPAN",
+]);
 
 const isGoogleDocsPaste = (html: string) => DOCS_GUID_PATTERN.test(html ?? "");
 
@@ -116,8 +128,9 @@ const cleanGoogleDocsPaste = (root: HTMLElement) => {
   });
 
   // Blank lines the author typed between blocks arrive as bare top-level
-  // <br>s. Group each run into one <p> of <br>s (what PowerPaste outputs),
-  // and drop the trailing one Docs always appends.
+  // <br>s. Group each run into one <p> of <br>s (what PowerPaste outputs).
+  // Trailing blank lines are dropped entirely: Docs always appends one, and
+  // the ticket asks for trailing <br>s to be removed.
   while (root.lastChild?.nodeName === "BR") {
     root.removeChild(root.lastChild);
   }
