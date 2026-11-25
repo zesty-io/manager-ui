@@ -63,6 +63,7 @@
   "blockSelectorSelectVariant": "वेरिएंट चुनें",
   "blockSelectorUpdatedOnBy": "{{date}} को {{user}} द्वारा अपडेट किया गया",
   "blockSelectorViewBlock": "ब्लॉक देखें",
+  "bynderLoadFailed": "Bynder लोड नहीं हो सका। कृपया अपना कनेक्शन जांचें और फिर से प्रयास करें।",
   "cancelEsc": "रद्द करें (ESC)",
   "cannotBeUndone": "इसे पूर्ववत नहीं किया जा सकता",
   "characterLimit": "वर्ण सीमा",

@@ -63,6 +63,7 @@
   "blockSelectorSelectVariant": "Variant selecteren",
   "blockSelectorUpdatedOnBy": "Bijgewerkt op {{date}} door {{user}}",
   "blockSelectorViewBlock": "Blok bekijken",
+  "bynderLoadFailed": "Bynder kan niet worden geladen. Controleer je verbinding en probeer het opnieuw.",
   "cancelEsc": "Annuleren (ESC)",
   "cannotBeUndone": "Dit kan niet ongedaan worden gemaakt",
   "characterLimit": "Tekenlimiet",

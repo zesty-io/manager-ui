@@ -63,6 +63,7 @@
   "blockSelectorSelectVariant": "Seleccionar variante",
   "blockSelectorUpdatedOnBy": "Actualizado el {{date}} por {{user}}",
   "blockSelectorViewBlock": "Ver bloque",
+  "bynderLoadFailed": "No se pudo cargar Bynder. Revisa tu conexión e inténtalo de nuevo.",
   "cancelEsc": "Cancelar (ESC)",
   "cannotBeUndone": "Esto no se puede deshacer",
   "characterLimit": "Límite de caracteres",

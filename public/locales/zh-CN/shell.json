@@ -63,6 +63,7 @@
   "blockSelectorSelectVariant": "选择变体",
   "blockSelectorUpdatedOnBy": "{{user}} 于 {{date}} 更新",
   "blockSelectorViewBlock": "查看区块",
+  "bynderLoadFailed": "无法加载 Bynder。请检查网络连接后重试。",
   "cancelEsc": "取消 (ESC)",
   "cannotBeUndone": "此操作无法撤销",
   "characterLimit": "字符限制",
