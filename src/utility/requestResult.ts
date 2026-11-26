@@ -4,27 +4,10 @@ import { notify } from "shell/store/notifications";
 import { ContentModelField } from "shell/services/types";
 
 /**
- * Result contract for thunks that call the API.
- *
- * Every migrated thunk resolves (never rejects) one of:
- *  - `{ ok: true, data, status }`             success
- *  - `{ ok: false, kind: "request", ... }`    the request failed
- *  - `{ ok: false, kind: "validation", ... }` client-side validation failed
- *
- * Callers branch on `ok`, then on `kind` when they care which failure it was.
- * In TS files compare explicitly (`res.ok === false`): without
- * strictNullChecks, truthiness checks (`!res.ok`) do not narrow the union.
- *
- * Success carries only the API's `data` and the HTTP `status`. Other envelope
- * fields (`meta`, `message`, ...) are dropped, same as `getResponseData` in the
- * RTK Query services. A thunk that needs more passes `pick` to `toSuccess` and
- * declares the extras in its return type via `X`.
- *
- * A 204 resolves `data: undefined` with the response's status.
- *
- * Thunks build results with `toSuccess`, `toRequestFailure` and
- * `toValidationFailure`, never with object literals. The first two are used
- * together with `request(url, { rejectOnError: true })`.
+ * Thunks resolve `{ ok: true, data, status }` or a failure with `kind` "request"
+ * or "validation". Branch on `ok`, then `kind`. In TS compare `res.ok === false`,
+ * truthiness doesn't narrow without strictNullChecks. Extra envelope fields are
+ * opt-in via `toSuccess`'s `pick`.
  */
 
 export type RequestFailure = {
@@ -88,7 +71,9 @@ export function toSuccess<T, X extends object = {}>(
 }
 
 // Normalizes anything thrown (RequestError, Error, ...) to a request failure
-export function toRequestFailure(err: any): RequestFailure {
+export function toRequestFailure(
+  err: { error?: string; message?: string; status?: number } | undefined
+): RequestFailure {
   return {
     ok: false,
     kind: "request",
@@ -119,6 +104,7 @@ export function notifyFailure(
   );
 }
 
+// any: callers pass untyped dispatch results
 // Toast once for the first request failure in a result or an array of results.
 // Validation failures are skipped, callers render those inline.
 // Returns the input so it can sit in a promise chain.

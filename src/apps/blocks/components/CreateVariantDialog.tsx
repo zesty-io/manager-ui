@@ -70,7 +70,7 @@ export const CreateVariantDialog = ({
       // Stay in the dialog so the user can retry
       notifyFailure(
         dispatch,
-        undefined,
+        res.ok === false && res.kind === "request" ? res : undefined,
         t("blocks.createVariantFailed", { variantName })
       );
       setIsLoading(false);

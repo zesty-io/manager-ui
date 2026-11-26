@@ -77,9 +77,6 @@ export type AppState = {
 };
 
 // content.js is untyped, these describe what its thunks resolve
-export type FetchItemResult =
-  ThunkResult<ContentItemWithDirtyAndPublishing | null>;
-
 export type SaveItemResult = ThunkResult<
   ContentItemWithDirtyAndPublishing,
   // The save worked but refetching the item did not

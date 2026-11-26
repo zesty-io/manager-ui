@@ -831,28 +831,28 @@ export const StudioWrapper = () => {
           setFieldErrors((prev) => {
             const errors = cloneDeep(prev);
 
-            res.fields.missingRequired?.forEach((field: any) => {
+            res.fields.missingRequired?.forEach((field) => {
               errors[field.name] = {
                 ...(errors[field.name] ?? {}),
                 MISSING_REQUIRED: true,
               };
             });
 
-            res.fields.lackingCharLength?.forEach((field: any) => {
+            res.fields.lackingCharLength?.forEach((field) => {
               errors[field.name] = {
                 ...(errors[field.name] ?? {}),
                 LACKING_MINLENGTH: field.settings?.minCharLimit,
               };
             });
 
-            res.fields.regexPatternMismatch?.forEach((field: any) => {
+            res.fields.regexPatternMismatch?.forEach((field) => {
               errors[field.name] = {
                 ...(errors[field.name] ?? {}),
                 REGEX_PATTERN_MISMATCH: field.settings?.regexMatchErrorMessage,
               };
             });
 
-            res.fields.regexRestrictPatternMatch?.forEach((field: any) => {
+            res.fields.regexRestrictPatternMatch?.forEach((field) => {
               errors[field.name] = {
                 ...(errors[field.name] ?? {}),
                 REGEX_RESTRICT_PATTERN_MATCH:
@@ -860,7 +860,7 @@ export const StudioWrapper = () => {
               };
             });
 
-            res.fields.invalidRange?.forEach((field: any) => {
+            res.fields.invalidRange?.forEach((field) => {
               errors[field.name] = {
                 ...(errors[field.name] ?? {}),
                 INVALID_RANGE: t("content.valueMustBeBetween", {
@@ -870,7 +870,7 @@ export const StudioWrapper = () => {
               };
             });
 
-            res.fields.invalidBlockVariantValue?.forEach((field: any) => {
+            res.fields.invalidBlockVariantValue?.forEach((field) => {
               errors[field.name] = {
                 ...(errors[field.name] ?? {}),
                 INVALID_BLOCK_VARIANT: true,
