@@ -12,7 +12,7 @@ import { FieldTypeText } from "@zesty-io/material";
 
 import { createRelease, fetchReleases } from "shell/store/releases";
 import { notify } from "shell/store/notifications";
-import { isRequestFailed, notifyFailure } from "utility/request";
+import { notifyFailure } from "utility/requestResult";
 
 import styles from "./CreateRelease.less";
 export function CreateRelease({ isContentSubpage }) {
@@ -40,7 +40,7 @@ export function CreateRelease({ isContentSubpage }) {
       })
     )
       .then((res) => {
-        if (!isRequestFailed(res)) {
+        if (res.ok) {
           dispatch(
             notify({
               kind: "success",

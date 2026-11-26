@@ -21,7 +21,7 @@ import { TopBar } from "../../components/TopBar";
 import { FieldWrapper, MainWrapper } from "../../components/Containers";
 import Box from "@mui/material/Box";
 import { notify } from "../../../../../../shell/store/notifications";
-import { isRequestFailed, notifyFailure } from "utility/request";
+import { notifyFailure } from "utility/requestResult";
 import { saveStyleVariable } from "../../../../../../shell/store/settings";
 import { useInstalledFonts } from "../Fonts/Installed";
 import { getStyleCategoryLabel } from "../../utils/categoryLabels";
@@ -116,7 +116,7 @@ export default connect((state, props) => {
 
     const responses = await Promise.all(requests);
     const failed = responses
-      .map((res, idx) => (isRequestFailed(res) ? idx : -1))
+      .map((res, idx) => (!res.ok ? idx : -1))
       .filter((idx) => idx !== -1);
 
     setSaving(false);

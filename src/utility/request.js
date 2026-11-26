@@ -18,54 +18,6 @@ export class RequestError extends Error {
   }
 }
 
-// Normalize anything thrown/resolved by a migrated thunk to { error, status }
-export function toRequestFailure(err) {
-  return {
-    error: (err && (err.error || err.message)) || i18n.t("shell.unknownError"),
-    status: (err && err.status) || 0,
-  };
-}
-
-/**
- * @typedef {{ error: string, status: number }} RequestFailure
- */
-
-// True for a { error, status } result resolved by a migrated thunk
-/**
- * @param {unknown} res
- * @returns {res is RequestFailure}
- */
-export function isRequestFailed(res) {
-  return (
-    !!res &&
-    typeof res === "object" &&
-    !!res.error &&
-    !(res.status >= 200 && res.status < 300)
-  );
-}
-
-// Dispatch the shared error toast for a failed request
-export function notifyFailure(dispatch, failure, message) {
-  dispatch(
-    notify({
-      kind: "error",
-      message:
-        message ||
-        i18n.t("shell.requestFailed", { error: failure?.error || "" }),
-    })
-  );
-}
-
-// Toast once for the first failure in a result or an array of results.
-// Returns the input so it can sit in a promise chain.
-export function notifyIfResponseFailed(dispatch, res) {
-  const failure = Array.isArray(res) ? res.find(isRequestFailed) : res;
-  if (isRequestFailed(failure)) {
-    notifyFailure(dispatch, failure);
-  }
-  return res;
-}
-
 export function request(url, opts = {}) {
   if (!url) {
     throw new Error("A URL is required to make a request");

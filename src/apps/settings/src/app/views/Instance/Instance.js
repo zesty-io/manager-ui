@@ -18,7 +18,7 @@ import { TopBar } from "../../components/TopBar";
 import { FieldWrapper, MainWrapper } from "../../components/Containers";
 import { Typography } from "@mui/material";
 import { notify } from "../../../../../../shell/store/notifications";
-import { isRequestFailed, notifyFailure } from "utility/request";
+import { notifyFailure } from "utility/requestResult";
 import { updateSettings } from "../../../../../../shell/store/settings";
 import { getCategoryLabel } from "../../utils/categoryLabels";
 
@@ -143,7 +143,7 @@ export default connect((state) => {
 
     const responses = await Promise.all(requests);
     const failed = responses
-      .map((res, idx) => (isRequestFailed(res) ? idx : -1))
+      .map((res, idx) => (!res.ok ? idx : -1))
       .filter((idx) => idx !== -1);
 
     setSaving(false);

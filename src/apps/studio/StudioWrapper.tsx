@@ -14,7 +14,11 @@ import { useDispatch, useSelector, useStore } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { MemoryRouter, useHistory, useLocation } from "react-router";
 import { cloneDeep } from "lodash";
-import { AppState } from "shell/store/types";
+import type {
+  AppState,
+  SaveItemFailure,
+  SaveItemResult,
+} from "shell/store/types";
 import { usePermission } from "shell/hooks/use-permissions";
 import {
   fetchAllModelPublishings,
@@ -24,7 +28,7 @@ import {
 import { fetchModel } from "shell/store/models";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
 import { notify } from "shell/store/notifications";
-import { notifyIfResponseFailed, notifyFailure } from "utility/request";
+import { notifyIfResponseFailed, notifyFailure } from "utility/requestResult";
 import { fetchFields } from "shell/store/fields";
 import { ContentInfo } from "../content-editor/src/app/views/ItemEdit/Content/Actions/Widgets/ContentInfo";
 import Editor from "../content-editor/src/app/components/Editor/Editor";
@@ -813,38 +817,42 @@ export const StudioWrapper = () => {
   // fieldErrors UI state and surfaces a notification. Shared by the single-item
   // save (handleSave) and the staged batch save (useStudioContentSave).
   const applyItemSaveErrors = useCallback(
-    (res: any, itemLabel: string, options?: { applyFieldErrors?: boolean }) => {
+    (
+      res: SaveItemFailure,
+      itemLabel: string,
+      options?: { applyFieldErrors?: boolean }
+    ) => {
       // `setFieldErrors` / `activeFields` are scoped to the selected item, so
       // callers batch-saving non-selected items pass applyFieldErrors: false to
       // get the toast without polluting the active item's field panel.
       const applyFieldErrors = options?.applyFieldErrors ?? true;
-      if (res?.err === "VALIDATION_ERROR") {
+      if (res.kind === "validation") {
         if (applyFieldErrors) {
           setFieldErrors((prev) => {
             const errors = cloneDeep(prev);
 
-            res?.missingRequired?.forEach((field: any) => {
+            res.fields.missingRequired?.forEach((field: any) => {
               errors[field.name] = {
                 ...(errors[field.name] ?? {}),
                 MISSING_REQUIRED: true,
               };
             });
 
-            res?.lackingCharLength?.forEach((field: any) => {
+            res.fields.lackingCharLength?.forEach((field: any) => {
               errors[field.name] = {
                 ...(errors[field.name] ?? {}),
                 LACKING_MINLENGTH: field.settings?.minCharLimit,
               };
             });
 
-            res?.regexPatternMismatch?.forEach((field: any) => {
+            res.fields.regexPatternMismatch?.forEach((field: any) => {
               errors[field.name] = {
                 ...(errors[field.name] ?? {}),
                 REGEX_PATTERN_MISMATCH: field.settings?.regexMatchErrorMessage,
               };
             });
 
-            res?.regexRestrictPatternMatch?.forEach((field: any) => {
+            res.fields.regexRestrictPatternMatch?.forEach((field: any) => {
               errors[field.name] = {
                 ...(errors[field.name] ?? {}),
                 REGEX_RESTRICT_PATTERN_MATCH:
@@ -852,7 +860,7 @@ export const StudioWrapper = () => {
               };
             });
 
-            res?.invalidRange?.forEach((field: any) => {
+            res.fields.invalidRange?.forEach((field: any) => {
               errors[field.name] = {
                 ...(errors[field.name] ?? {}),
                 INVALID_RANGE: t("content.valueMustBeBetween", {
@@ -862,7 +870,7 @@ export const StudioWrapper = () => {
               };
             });
 
-            res?.invalidBlockVariantValue?.forEach((field: any) => {
+            res.fields.invalidBlockVariantValue?.forEach((field: any) => {
               errors[field.name] = {
                 ...(errors[field.name] ?? {}),
                 INVALID_BLOCK_VARIANT: true,
@@ -882,7 +890,7 @@ export const StudioWrapper = () => {
         return;
       }
 
-      if (res?.status === 400) {
+      if (res.status === 400) {
         if (
           applyFieldErrors &&
           res.error?.toLowerCase()?.includes("data too long")
@@ -1712,10 +1720,9 @@ export const StudioWrapper = () => {
           itemZUID: selectedItemZUID,
           skipContentItemValidation: false,
         })
-      )) as any;
+      )) as unknown as SaveItemResult;
 
-      // Any 2xx is a successful save (saveItem resolves 201 on version create).
-      if (res?.status >= 200 && res?.status < 300) {
+      if (res.ok === true) {
         if (res.refetchFailure) {
           notifyFailure(
             dispatch,
@@ -2914,7 +2921,7 @@ export const StudioWrapper = () => {
                   try {
                     const res = await handleSave();
                     // false tells the header to drop a queued publish
-                    return !!res && !(res as any).error && !(res as any).err;
+                    return !!res && res.ok === true;
                   } catch {
                     return false;
                   }

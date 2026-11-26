@@ -1,5 +1,6 @@
 import { notify } from "shell/store/notifications";
-import { request, toRequestFailure } from "utility/request";
+import { request } from "utility/request";
+import { toSuccess, toRequestFailure } from "utility/requestResult";
 import {
   faCog,
   faEnvelope,
@@ -214,9 +215,9 @@ export function saveStyleVariable(zuid, data) {
             type: "UPDATE_STYLES_SUCCESS",
             payload: data,
           });
-          return res;
+          return toSuccess(res);
         })
-        // Resolves { error, status } silently, the component aggregates results
+        // Resolves silently, the component aggregates results
         .catch((err) => toRequestFailure(err))
     );
   };
@@ -236,9 +237,9 @@ export function updateSettings(zuid, data) {
             type: "UPDATE_SETTINGS_SUCCESS",
             payload: data,
           });
-          return res;
+          return toSuccess(res);
         })
-        // Resolves { error, status } silently, the component aggregates results
+        // Resolves silently, the component aggregates results
         .catch((err) => toRequestFailure(err))
     );
   };

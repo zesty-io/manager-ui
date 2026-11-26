@@ -7,6 +7,7 @@ import {
   User,
   Products,
 } from "../services/types";
+import { RequestFailure, ThunkResult } from "utility/requestResult";
 /*
   TODO
   The UI state is well typed but the rest of the application state is entirely
@@ -74,3 +75,19 @@ export type AppState = {
   settings: any;
   navContent: any;
 };
+
+// content.js is untyped, these describe what its thunks resolve
+export type FetchItemResult =
+  ThunkResult<ContentItemWithDirtyAndPublishing | null>;
+
+export type SaveItemResult = ThunkResult<
+  ContentItemWithDirtyAndPublishing,
+  // The save worked but refetching the item did not
+  { refetchFailure?: RequestFailure }
+>;
+
+// The API only returns the new item's ZUID for a create
+export type CreateItemResult = ThunkResult<{ ZUID?: string }>;
+
+// What the save error handlers receive
+export type SaveItemFailure = Extract<SaveItemResult, { ok: false }>;

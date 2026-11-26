@@ -8,7 +8,7 @@ import {
   MenuItem,
   ListItemIcon,
 } from "@mui/material";
-import { notifyIfResponseFailed } from "utility/request";
+import { notifyIfResponseFailed } from "utility/requestResult";
 import { IconButton } from "@zesty-io/material";
 import {
   SaveRounded,

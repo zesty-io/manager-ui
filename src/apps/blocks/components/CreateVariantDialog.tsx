@@ -13,20 +13,11 @@ import {
 import { ModeEditRounded } from "@mui/icons-material";
 import { ContentModel } from "../../../shell/services/types";
 import { createItem, generateItem } from "../../../shell/store/content";
-import {
-  isRequestFailed,
-  notifyFailure,
-  type RequestFailure,
-} from "../../../utility/request";
+import { notifyFailure } from "../../../utility/requestResult";
+import { type CreateItemResult } from "../../../shell/store/types";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import { useGetContentModelFieldsQuery } from "../../../shell/services/instance";
-
-// What createItem resolves: created item, client validation or request failure
-type CreateItemResult =
-  | RequestFailure
-  | { err: string }
-  | { data?: { ZUID?: string } };
 
 export const CreateVariantDialog = ({
   onClose,
@@ -73,13 +64,13 @@ export const CreateVariantDialog = ({
           skipPathPartValidation: true,
         })
       )
-    )) as CreateItemResult;
+    )) as unknown as CreateItemResult;
 
-    if (isRequestFailed(res) || "err" in res || !res.data?.ZUID) {
+    if (res.ok === false || !res.data?.ZUID) {
       // Stay in the dialog so the user can retry
       notifyFailure(
         dispatch,
-        res,
+        undefined,
         t("blocks.createVariantFailed", { variantName })
       );
       setIsLoading(false);

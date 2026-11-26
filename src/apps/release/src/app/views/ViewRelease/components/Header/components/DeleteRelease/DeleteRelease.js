@@ -16,7 +16,7 @@ import {
 
 import { deleteRelease } from "shell/store/releases";
 import { notify } from "shell/store/notifications";
-import { isRequestFailed, notifyFailure } from "utility/request";
+import { notifyFailure } from "utility/requestResult";
 import { usePermission } from "shell/hooks/use-permissions";
 
 import styles from "./DeleteRelease.less";
@@ -38,7 +38,7 @@ export const DeleteRelease = memo(function DeleteRelease({ isContentSubpage }) {
   const onDeleteRelease = () => {
     setLoading(true);
     dispatch(deleteRelease(params.zuid)).then((res) => {
-      if (isRequestFailed(res)) {
+      if (!res.ok) {
         // Stay on the page so the user can retry
         setLoading(false);
         setOpen(false);
