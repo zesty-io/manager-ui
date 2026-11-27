@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import chunk from "lodash/chunk";
 
-import { request, toRequestFailure } from "utility/request";
+import { request } from "utility/request";
+import { toSuccess, toRequestFailure } from "utility/requestResult";
 
 import { publish } from "shell/store/content";
 import { notify } from "shell/store/notifications";
@@ -242,11 +243,11 @@ export function fetchReleases() {
         });
 
         dispatch(actions.fetchReleasesSuccess(sorted));
-        return res;
+        return toSuccess(res);
       })
       .catch((err) => {
         console.error("Failed to fetch releases:", err);
-        // Resolves { error, status }, 412 means releases are not activated
+        // A 412 failure means releases are not activated
         return toRequestFailure(err);
       });
   };
@@ -275,11 +276,12 @@ export function createRelease(payload) {
       body: payload,
       json: true,
       rejectOnError: true,
-    }).catch((err) => {
-      console.error("Failed to create release:", err);
-      // Resolves { error, status }
-      return toRequestFailure(err);
-    });
+    })
+      .then((res) => toSuccess(res))
+      .catch((err) => {
+        console.error("Failed to create release:", err);
+        return toRequestFailure(err);
+      });
   };
 }
 
@@ -292,11 +294,10 @@ export function deleteRelease(zuid) {
       .then(async (res) => {
         // Update store
         await dispatch(fetchReleases());
-        return res;
+        return toSuccess(res);
       })
       .catch((err) => {
         console.error("Failed to delete release:", err);
-        // Resolves { error, status }
         return toRequestFailure(err);
       });
   };

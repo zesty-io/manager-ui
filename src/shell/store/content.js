@@ -2,7 +2,12 @@ import cloneDeep from "lodash/cloneDeep";
 
 import i18n from "shell/i18n";
 import { notify } from "shell/store/notifications";
-import { request, toRequestFailure, isRequestFailed } from "utility/request";
+import { request } from "utility/request";
+import {
+  toSuccess,
+  toRequestFailure,
+  toValidationFailure,
+} from "utility/requestResult";
 import instanceZUID from "utility/instanceZUID";
 import { fetchNav, navContent } from "apps/content-editor/src/store/navContent";
 import { instanceApi } from "../../shell/services/instance";
@@ -287,7 +292,7 @@ export function fetchItem(modelZUID, itemZUID) {
             type: "REMOVE_ITEM",
             itemZUID,
           });
-          return res;
+          return toSuccess(res);
         }
 
         // Only insert valid items into state
@@ -298,7 +303,7 @@ export function fetchItem(modelZUID, itemZUID) {
             itemZUID,
           });
         }
-        return res;
+        return toSuccess(res);
       },
     }).catch((err) => {
       console.error("Failed to fetch item:", err);
@@ -311,7 +316,7 @@ export function fetchItem(modelZUID, itemZUID) {
         });
       }
 
-      // Resolves { error, status }, callers check with isRequestFailed()
+      // Resolves a request failure, callers check `ok`
       return failure;
     });
   };
@@ -543,17 +548,20 @@ export function saveItem({
         invalidRange?.length ||
         invalidBlockVariantValue?.length)
     ) {
-      return Promise.resolve({
-        err: "VALIDATION_ERROR",
-        ...(!!missingRequired?.length && { missingRequired }),
-        ...(!!lackingCharLength?.length && { lackingCharLength }),
-        ...(!!regexPatternMismatch?.length && { regexPatternMismatch }),
-        ...(!!regexRestrictPatternMatch?.length && {
-          regexRestrictPatternMatch,
-        }),
-        ...(!!invalidRange?.length && { invalidRange }),
-        ...(!!invalidBlockVariantValue && { invalidBlockVariantValue }),
-      });
+      return Promise.resolve(
+        toValidationFailure({
+          ...(!!missingRequired?.length && { missingRequired }),
+          ...(!!lackingCharLength?.length && { lackingCharLength }),
+          ...(!!regexPatternMismatch?.length && { regexPatternMismatch }),
+          ...(!!regexRestrictPatternMatch?.length && {
+            regexRestrictPatternMatch,
+          }),
+          ...(!!invalidRange?.length && { invalidRange }),
+          ...(!!invalidBlockVariantValue?.length && {
+            invalidBlockVariantValue,
+          }),
+        })
+      );
     }
 
     if (item.web.metaDescription) {
@@ -650,13 +658,14 @@ export function saveItem({
 
         zesty.trigger("PREVIEW_REFRESH");
 
-        return isRequestFailed(refetch)
-          ? { ...res, refetchFailure: refetch }
-          : res;
+        return {
+          ...toSuccess(res),
+          ...(!refetch.ok && { refetchFailure: refetch }),
+        };
       })
       .catch((err) => {
         console.error("Failed to save item:", err);
-        // Resolves { error, status }, item stays dirty
+        // Item stays dirty
         return toRequestFailure(err);
       });
   };
@@ -781,17 +790,20 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
       hasMissingRequiredSEOFields ||
       invalidBlockVariantValue?.length
     ) {
-      return Promise.resolve({
-        err: "VALIDATION_ERROR",
-        ...(!!missingRequired?.length && { missingRequired }),
-        ...(!!lackingCharLength?.length && { lackingCharLength }),
-        ...(!!regexPatternMismatch?.length && { regexPatternMismatch }),
-        ...(!!regexRestrictPatternMatch?.length && {
-          regexRestrictPatternMatch,
-        }),
-        ...(!!invalidRange?.length && { invalidRange }),
-        ...(!!invalidBlockVariantValue && { invalidBlockVariantValue }),
-      });
+      return Promise.resolve(
+        toValidationFailure({
+          ...(!!missingRequired?.length && { missingRequired }),
+          ...(!!lackingCharLength?.length && { lackingCharLength }),
+          ...(!!regexPatternMismatch?.length && { regexPatternMismatch }),
+          ...(!!regexRestrictPatternMatch?.length && {
+            regexRestrictPatternMatch,
+          }),
+          ...(!!invalidRange?.length && { invalidRange }),
+          ...(!!invalidBlockVariantValue?.length && {
+            invalidBlockVariantValue,
+          }),
+        })
+      );
     }
 
     if (item.web.metaDescription) {
@@ -823,7 +835,7 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
           const newItem = await dispatch(
             fetchItem(item.meta.contentModelZUID, res?.data?.ZUID)
           );
-          if (!isRequestFailed(newItem) && newItem?.data) {
+          if (newItem.ok && newItem.data) {
             await dispatch(
               saveItem({
                 itemZUID: res?.data?.ZUID,
@@ -832,7 +844,7 @@ export function createItem({ modelZUID, itemZUID, skipPathPartValidation }) {
             );
           }
         }
-        return res;
+        return toSuccess(res);
       })
       .catch((err) => {
         console.error("Failed to create item:", err);

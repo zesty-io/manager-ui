@@ -22,7 +22,7 @@ import { cloneDeep } from "lodash";
 import { useTranslation } from "react-i18next";
 
 import { notify } from "shell/store/notifications";
-import { isRequestFailed, notifyFailure } from "utility/request";
+import { notifyFailure } from "utility/requestResult";
 import { fetchAuditTrailDrafting } from "shell/store/logs";
 import { fetchFields } from "shell/store/fields";
 import {
@@ -267,7 +267,7 @@ export default function ItemEdit() {
     try {
       const itemResponse = await dispatch(fetchItem(modelZUID, itemZUID));
 
-      if (isRequestFailed(itemResponse)) {
+      if (!itemResponse.ok) {
         // Not-found screen plus the error toast
         notifyFailure(dispatch, itemResponse);
         setNotFound(itemResponse.error);
@@ -358,20 +358,8 @@ export default function ItemEdit() {
         })
       );
 
-      if (isRequestFailed(res) && res.status !== 400) {
-        notifyFailure(
-          dispatch,
-          res,
-          t("content.itemEditCannotSaveWithError", {
-            title: item.web.metaTitle,
-            error: res.error,
-          })
-        );
-        throw new Error(res.error);
-      }
-
-      if (res.err === "VALIDATION_ERROR") {
-        const missingRequiredFieldNames = res.missingRequired?.reduce(
+      if (!res.ok && res.kind === "validation") {
+        const missingRequiredFieldNames = res.fields.missingRequired?.reduce(
           (acc, curr) => {
             acc = [curr.name, ...acc];
             return acc;
@@ -401,8 +389,8 @@ export default function ItemEdit() {
         }
 
         // Map min length validation errors
-        if (res.lackingCharLength?.length) {
-          res.lackingCharLength?.forEach((field) => {
+        if (res.fields.lackingCharLength?.length) {
+          res.fields.lackingCharLength?.forEach((field) => {
             errors[field.name] = {
               ...(errors[field.name] ?? {}),
               LACKING_MINLENGTH: field.settings?.minCharLimit,
@@ -410,8 +398,8 @@ export default function ItemEdit() {
           });
         }
 
-        if (res.regexPatternMismatch?.length) {
-          res.regexPatternMismatch?.forEach((field) => {
+        if (res.fields.regexPatternMismatch?.length) {
+          res.fields.regexPatternMismatch?.forEach((field) => {
             errors[field.name] = {
               ...(errors[field.name] ?? {}),
               REGEX_PATTERN_MISMATCH: field.settings?.regexMatchErrorMessage,
@@ -419,8 +407,8 @@ export default function ItemEdit() {
           });
         }
 
-        if (res.regexRestrictPatternMatch?.length) {
-          res.regexRestrictPatternMatch?.forEach((field) => {
+        if (res.fields.regexRestrictPatternMatch?.length) {
+          res.fields.regexRestrictPatternMatch?.forEach((field) => {
             errors[field.name] = {
               ...(errors[field.name] ?? {}),
               REGEX_RESTRICT_PATTERN_MATCH:
@@ -429,8 +417,8 @@ export default function ItemEdit() {
           });
         }
 
-        if (res.invalidRange?.length) {
-          res.invalidRange?.forEach((field) => {
+        if (res.fields.invalidRange?.length) {
+          res.fields.invalidRange?.forEach((field) => {
             errors[field.name] = {
               ...(errors[field.name] ?? {}),
               INVALID_RANGE: t("content.valueMustBeBetween", {
@@ -441,8 +429,8 @@ export default function ItemEdit() {
           });
         }
 
-        if (res.invalidBlockVariantValue?.length) {
-          res.invalidBlockVariantValue?.forEach((field) => {
+        if (res.fields.invalidBlockVariantValue?.length) {
+          res.fields.invalidBlockVariantValue?.forEach((field) => {
             errors[field.name] = {
               ...(errors[field.name] ?? {}),
               INVALID_BLOCK_VARIANT: true,
@@ -453,7 +441,7 @@ export default function ItemEdit() {
         updateFieldErrors(errors);
         throw new Error(errors);
       }
-      if (res.status === 400) {
+      if (!res.ok) {
         // Handles backend validation error for when the data is too long
         if (res.error?.toLowerCase()?.includes("data too long")) {
           const dataLongErrorMatch = res.error?.match(/'([^']*)'/);
@@ -483,21 +471,12 @@ export default function ItemEdit() {
           }
         }
 
-        dispatch(
-          notify({
-            message: t("content.itemEditCannotSaveWithError", {
-              title: item.web.metaTitle,
-              error: res.error,
-            }),
-            kind: "error",
-          })
-        );
-        throw new Error(
-          t("content.itemEditCannotSaveWithError", {
-            title: item.web.metaTitle,
-            error: res.error,
-          })
-        );
+        const message = t("content.itemEditCannotSaveWithError", {
+          title: item.web.metaTitle,
+          error: res.error,
+        });
+        notifyFailure(dispatch, res, message);
+        throw new Error(message);
       }
 
       if (res.refetchFailure) {
@@ -550,7 +529,7 @@ export default function ItemEdit() {
     });
     // Keep promise chain
     return dispatch(fetchItem(modelZUID, itemZUID)).then((res) => {
-      if (isRequestFailed(res)) {
+      if (!res.ok) {
         notifyFailure(dispatch, res);
       }
       return res;

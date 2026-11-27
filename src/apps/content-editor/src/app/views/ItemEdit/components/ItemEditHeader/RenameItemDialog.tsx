@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { notifyIfResponseFailed } from "utility/request";
+import { notifyIfResponseFailed } from "utility/requestResult";
 import {
   Box,
   Button,

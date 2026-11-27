@@ -6,7 +6,7 @@ import {
   useContext,
   useCallback,
 } from "react";
-import { notifyIfResponseFailed } from "utility/request";
+import { notifyIfResponseFailed } from "utility/requestResult";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import { useTranslation } from "react-i18next";
 import useIsMounted from "ismounted";
@@ -31,7 +31,10 @@ import {
 } from "../../../../../../shell/store/content";
 import { notify } from "../../../../../../shell/store/notifications";
 import styles from "./ItemCreate.less";
-import { AppState } from "../../../../../../shell/store/types";
+import {
+  AppState,
+  CreateItemResult,
+} from "../../../../../../shell/store/types";
 import {
   useCreateItemPublishingMutation,
   useGetContentItemQuery,
@@ -103,7 +106,7 @@ export const ItemCreate = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [active, setActive] = useState();
-  const [newItemZUID, setNewItemZUID] = useState();
+  const [newItemZUID, setNewItemZUID] = useState<string>();
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
   const [willRedirect, setWillRedirect] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -233,22 +236,18 @@ export const ItemCreate = () => {
       setSaving(true);
 
       try {
-        const res: any = await dispatch(
+        const res = (await dispatch(
           createItem({
             modelZUID,
             itemZUID,
             skipPathPartValidation:
               model?.type === "dataset" || model?.type === "block",
           })
-        );
-        if (res.err || res.error) {
-          if (
-            res.missingRequired ||
-            res.lackingCharLength ||
-            res.invalidBlockVariantValue
-          ) {
-            const missingRequiredFieldNames: string[] =
-              res.missingRequired?.reduce(
+        )) as unknown as CreateItemResult;
+        if (res.ok === false) {
+          if (res.kind === "validation") {
+            const missingRequiredFieldNames: string[] | undefined =
+              res.fields.missingRequired?.reduce(
                 (acc: string[], curr: ContentModelField) => {
                   acc = [curr.name, ...acc];
                   return acc;
@@ -275,27 +274,31 @@ export const ItemCreate = () => {
             }
 
             // Map min length validation errors
-            if (res.lackingCharLength?.length) {
-              res.lackingCharLength?.forEach((field: ContentModelField) => {
-                errors[field.name] = {
-                  ...(errors[field.name] ?? {}),
-                  LACKING_MINLENGTH: field.settings?.minCharLimit,
-                };
-              });
+            if (res.fields.lackingCharLength?.length) {
+              res.fields.lackingCharLength?.forEach(
+                (field: ContentModelField) => {
+                  errors[field.name] = {
+                    ...(errors[field.name] ?? {}),
+                    LACKING_MINLENGTH: field.settings?.minCharLimit,
+                  };
+                }
+              );
             }
 
-            if (res.regexPatternMismatch?.length) {
-              res.regexPatternMismatch?.forEach((field: ContentModelField) => {
-                errors[field.name] = {
-                  ...(errors[field.name] ?? {}),
-                  REGEX_PATTERN_MISMATCH:
-                    field.settings?.regexMatchErrorMessage,
-                };
-              });
+            if (res.fields.regexPatternMismatch?.length) {
+              res.fields.regexPatternMismatch?.forEach(
+                (field: ContentModelField) => {
+                  errors[field.name] = {
+                    ...(errors[field.name] ?? {}),
+                    REGEX_PATTERN_MISMATCH:
+                      field.settings?.regexMatchErrorMessage,
+                  };
+                }
+              );
             }
 
-            if (res.regexRestrictPatternMatch?.length) {
-              res.regexRestrictPatternMatch?.forEach(
+            if (res.fields.regexRestrictPatternMatch?.length) {
+              res.fields.regexRestrictPatternMatch?.forEach(
                 (field: ContentModelField) => {
                   errors[field.name] = {
                     ...(errors[field.name] ?? {}),
@@ -306,8 +309,8 @@ export const ItemCreate = () => {
               );
             }
 
-            if (res.invalidRange?.length) {
-              res.invalidRange?.forEach((field: ContentModelField) => {
+            if (res.fields.invalidRange?.length) {
+              res.fields.invalidRange?.forEach((field: ContentModelField) => {
                 errors[field.name] = {
                   ...(errors[field.name] ?? {}),
                   INVALID_RANGE: t("content.valueMustBeBetween", {
@@ -318,8 +321,8 @@ export const ItemCreate = () => {
               });
             }
 
-            if (res.invalidBlockVariantValue?.length) {
-              res.invalidBlockVariantValue?.forEach(
+            if (res.fields.invalidBlockVariantValue?.length) {
+              res.fields.invalidBlockVariantValue?.forEach(
                 (field: ContentModelField) => {
                   errors[field.name] = {
                     ...(errors[field.name] ?? {}),
@@ -333,9 +336,7 @@ export const ItemCreate = () => {
 
             // scroll to required field
             fieldErrorRef.current?.scrollToErrors?.();
-          }
-
-          if (res.error) {
+          } else {
             // Handles backend validation error for when the data is too long
             if (res.error?.toLowerCase()?.includes("data too long")) {
               const dataLongErrorMatch = res.error?.match(/'([^']*)'/);

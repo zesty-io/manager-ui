@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { notifyIfResponseFailed } from "utility/request";
+import { notifyIfResponseFailed } from "utility/requestResult";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import {

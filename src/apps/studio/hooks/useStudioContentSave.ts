@@ -3,7 +3,11 @@ import { useStore } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { chunk } from "lodash";
 import i18n from "shell/i18n";
-import { AppState } from "shell/store/types";
+import type {
+  AppState,
+  SaveItemFailure,
+  SaveItemResult,
+} from "shell/store/types";
 import { ContentItemWithDirtyAndPublishing } from "shell/services/types";
 import {
   fetchAllModelPublishings,
@@ -11,7 +15,11 @@ import {
   saveItem,
 } from "shell/store/content";
 import { notify } from "shell/store/notifications";
-import { notifyIfResponseFailed, notifyFailure } from "utility/request";
+import {
+  notifyIfResponseFailed,
+  notifyFailure,
+  type RequestFailure,
+} from "utility/requestResult";
 import { useCreateItemPublishingMutation } from "shell/services/instance";
 
 // Number of items published per batch. Mirrors the chunk size used by the
@@ -85,11 +93,10 @@ type UseStudioContentSaveArgs = {
   refreshPreviewFrame: (onReloadComplete?: () => void) => void;
   // Maps a saveItem() response's validation/server errors into the shared
   // fieldErrors UI state. Reused from StudioWrapper's single-item save path.
-  // `res` is the untyped saveItem() thunk return (legacy JS store, see above).
   // `applyFieldErrors: false` skips the field-panel write (which is scoped to
   // the selected item) so a non-selected item's failure only toasts.
   applyItemSaveErrors: (
-    res: any,
+    res: SaveItemFailure,
     itemLabel: string,
     options?: { applyFieldErrors?: boolean }
   ) => void;
@@ -119,7 +126,7 @@ export const useStudioContentSave = ({
     const items = getDirtyContentItems();
     const saved: SavedContentItem[] = [];
     let failedCount = 0;
-    let refetchFailure: { error: string; status: number } | undefined;
+    let refetchFailure: RequestFailure | undefined;
 
     for (const item of items) {
       const res = (await dispatch(
@@ -127,11 +134,9 @@ export const useStudioContentSave = ({
           itemZUID: item.itemZUID,
           skipContentItemValidation: false,
         })
-      )) as any;
+      )) as unknown as SaveItemResult;
 
-      // Treat any 2xx as success — saveItem resolves 201 when the API creates a
-      // new version, and a 201 is still a successful save.
-      if (res?.status >= 200 && res?.status < 300) {
+      if (res.ok === true) {
         saved.push(item);
         refetchFailure = refetchFailure || res.refetchFailure;
       } else {
